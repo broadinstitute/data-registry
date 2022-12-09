@@ -26,6 +26,12 @@
       <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
     </ul>
+    <h4>Post new content:</h4>
+    <div>
+        <label>Title: <input v-model="newTitle"/></label>
+        <label>Content: <textarea v-model="newContent"></textarea></label>
+        <button @click="postNew">Post</button>
+    </div>
     <h4>Here is the content of all posts:</h4>
     <ul>
       <li v-for="post in posts">Here is a post: {{post}}</li>
@@ -40,7 +46,7 @@ export default {
   name: 'HelloWorld',
 
   mounted(){
-    axios.get('//127.0.0.1/jsonapi/node/article')
+    axios.get('//localhost/jsonapi/node/article')
       .then(response => this.posts = response.data)
       .catch(error => console.log(error));
   },
@@ -49,7 +55,33 @@ export default {
   },
   data: function(){
     return {
-      posts: null
+      posts: null,
+      newTitle: "",
+      newContent: ""
+    }
+  },
+  methods: {
+    postNew(){
+      console.log(`New title: ${this.newTitle}`);
+      console.log(`New content: ${this.newContent}`);
+      axios.post('//localhost/jsonapi/node/article',
+        {
+          "data": {
+            "type": "node--article",
+            "attributes": {
+              "title": this.newTitle,
+              "body": {
+                "value": this.newContent,
+                "format": "plain_text"
+              }
+            }
+          }
+        }
+      )
+        .then(response => console.log(response))
+        .catch(error => console.log(error));
+      this.newTitle = "";
+      this.newContent = "";
     }
   }
 }
