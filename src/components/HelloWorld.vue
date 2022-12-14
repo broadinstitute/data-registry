@@ -64,20 +64,27 @@ export default {
     postNew(){
       console.log(`New title: ${this.newTitle}`);
       console.log(`New content: ${this.newContent}`);
-      axios.post('//localhost/jsonapi/node/article',
-        {
-          "data": {
-            "type": "node--article",
-            "attributes": {
-              "title": this.newTitle,
-              "body": {
-                "value": this.newContent,
-                "format": "plain_text"
-              }
+      let formData = {
+        "data": {
+          type: "node--article",
+          attributes: {
+            title: this.newTitle,
+            body: {
+              value: this.newContent,
+              format: 'plain_text'
             }
           }
         }
-      )
+      };
+      fetch('//localhost/jsonapi/node/article', {
+        method: 'post',
+        body: JSON.stringify(formData),
+        headers: {
+          'Accept': 'application/vnd.api+json',
+          'Content-Type': 'application/vnd.api+json',
+          'Authorization': 'Basic ' + btoa('api:api'),
+        }
+      })
         .then(response => console.log(response))
         .catch(error => console.log(error));
       this.newTitle = "";
