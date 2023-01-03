@@ -32,6 +32,13 @@
         <label>Content: <textarea v-model="newContent"></textarea></label>
         <button @click="postNew">Post</button>
     </div>
+    <h4>Create new user:</h4>
+    <div>
+        <label>Username:<input v-model="newUser"/></label>
+        <label>Email:<input type="email" v-model="newUserEmail"/></label>
+        <label>Password: <input type="password" v-model="newUserPassword"/></label>
+        <button @click="registerNewUser">Register</button>
+    </div>
     <h4>Here is the content of all posts:</h4>
     <ul>
       <li v-for="post in posts">Here is a post: {{post}}</li>
@@ -46,6 +53,10 @@ export default {
   name: 'HelloWorld',
 
   mounted(){
+    axios.get('//localhost/session/token')
+      .then(response => {this.sessionToken = response.data;
+      console.log(this.sessionToken);})
+      .catch(error => console.log(error));
     axios.get('//localhost/jsonapi/node/article')
       .then(response => this.posts = response.data)
       .catch(error => console.log(error));
@@ -55,15 +66,17 @@ export default {
   },
   data: function(){
     return {
+      sessionToken: "",
       posts: null,
       newTitle: "",
-      newContent: ""
+      newContent: "",
+      newUser: "",
+      newUserEmail: "",
+      newUserPassword: ""
     }
   },
   methods: {
     postNew(){
-      console.log(`New title: ${this.newTitle}`);
-      console.log(`New content: ${this.newContent}`);
       let formData = {
         "data": {
           type: "node--article",
@@ -89,6 +102,38 @@ export default {
         .catch(error => console.log(error));
       this.newTitle = "";
       this.newContent = "";
+    },
+    registerNewUser(){
+      let userData = {
+        "_links": {
+          "type": {
+            "href": "http://localhost/rest/type/user/user"
+          }
+        },
+        "name": [{
+          "value": this.newUser
+        }],
+        "pass": [{
+          "value": this.newUserPassword
+        }],
+        "mail": [{
+          "value": this.newUserEmail
+        }]
+      };
+      fetch("http://localhost/user/register?_format=hal_json", {
+        method: "post",
+        body: userData,
+        headers: {
+          "Content-Type": "application/hal+json",
+          "X-CSRF-Token": this.sessionToken
+        }
+      }).then(response => {
+        console.log(response);
+        this.newUser = "";
+        this.newUserEmail = "";
+        this.newUserPassword = "";
+      })
+        .catch(error => console.log(error));
     }
   }
 }
