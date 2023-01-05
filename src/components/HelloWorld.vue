@@ -122,7 +122,7 @@ export default {
       };
       fetch("http://localhost/user/register?_format=hal_json", {
         method: "post",
-        body: userData,
+        body: JSON.stringify(userData),
         headers: {
           "Content-Type": "application/hal+json",
           "X-CSRF-Token": this.sessionToken
