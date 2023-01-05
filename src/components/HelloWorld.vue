@@ -107,7 +107,7 @@ export default {
       let userData = {
         "_links": {
           "type": {
-            "href": "http://localhost/rest/type/user/user"
+            "href": "//localhost/rest/type/user/user"
           }
         },
         "name": [{
@@ -120,11 +120,12 @@ export default {
           "value": this.newUserEmail
         }]
       };
-      fetch("http://localhost/user/register?_format=hal_json", {
+      fetch("//localhost/user/register?_format=hal_json", {
         method: "post",
         body: JSON.stringify(userData),
         headers: {
           "Content-Type": "application/hal+json",
+          "Accept": "application/json",
           "X-CSRF-Token": this.sessionToken
         }
       }).then(response => {
