@@ -33,9 +33,16 @@ if (process.env.NODE_ENV === "production") {
 
 module.exports = {
     devServer: {
-        writeToDisk: true, // https://webpack.js.org/configuration/dev-server/#devserverwritetodisk-
+        devMiddleware: {
+            writeToDisk: true, // https://webpack.js.org/configuration/dev-server/#devserverwritetodisk-
+        },
     },
     configureWebpack: (config) => {
+        let data_registry_key = process.env.DATA_REGISTRY_API_KEY;
+        if(!data_registry_key){
+            console.error("DATA_REGISTRY_API_KEY needs to be set");
+            process.exit(1);
+        }
         let bioindex_dev = process.env.BIOINDEX_DEV;
         let bioindex_host = "https://bioindex.hugeamp.org"; // production by default
         //set private bioindex host if variable is defined, otherwise use default
@@ -61,6 +68,16 @@ module.exports = {
             options: {
                 search: "SERVER_IP_ADDRESS",
                 replace: bioindex_host,
+                flags: "g",
+            },
+        });
+
+        config.module.rules.push({
+            test: /dataRegistryUtils\.js$/,
+            loader: "string-replace-loader",
+            options: {
+                search: "REGISTY_API_TOKEN",
+                replace: data_registry_key,
                 flags: "g",
             },
         });

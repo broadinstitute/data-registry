@@ -44,6 +44,7 @@
                                 type="text"
                                 class="form-control input-default"
                                 placeholder="Dataset name"
+                                v-model="datasetName"
                             />
                         </div>
                         <div class="col-md-3 col filter-col-md">
@@ -59,7 +60,7 @@
 
                         <div class="col-md-3 col filter-col-md">
                             <div class="label">Status<sup>*</sup></div>
-                            <select class="form-control">
+                            <select class="form-control" v-model="status">
                                 <option value="pre">Pre-publication</option>
                                 <option value="open">Open access</option>
                             </select>
@@ -81,7 +82,7 @@
                                     <div class="label">
                                         Data source type<sup>*</sup>
                                     </div>
-                                    <select class="form-control">
+                                    <select class="form-control" v-model="dataSourceType">
                                         <option value="api">API</option>
                                         <option value="file">File</option>
                                         <option value="remote">
@@ -93,7 +94,7 @@
                                     <div class="label">
                                         Data source<sup>*</sup>
                                     </div>
-                                    <input
+                                    <input v-model="dataSource"
                                         type="text"
                                         class="form-control input-default"
                                         placeholder="Data source"
@@ -105,7 +106,7 @@
                                     <div class="label">
                                         Data type<sup>*</sup>
                                     </div>
-                                    <select class="form-control">
+                                    <select class="form-control" v-model="dataType">
                                         <option value="gwas">GWAS</option>
                                         <option value="exomchip">
                                             Exome chip
@@ -123,7 +124,7 @@
                                     <div class="label">
                                         Genome build<sup>*</sup>
                                     </div>
-                                    <select class="form-control">
+                                    <select class="form-control" v-model="genomeBuild">
                                         <option value="hg19">
                                             hg19 (GRCh37)
                                         </option>
@@ -136,7 +137,7 @@
                                     <div class="label">
                                         Ancestry<sup>*</sup>
                                     </div>
-                                    <select class="form-control">
+                                    <select class="form-control" v-model="ancestry">
                                         <option value="ABA">
                                             Aboriginal Australian
                                         </option>
@@ -194,7 +195,7 @@
                             <div class="row">
                                 <div class="col-md-6 col filter-col-md">
                                     <div class="label">Sex<sup>*</sup></div>
-                                    <select class="form-control">
+                                    <select class="form-control" v-model="sex">
                                         <option value="mixed">Mixed</option>
                                         <option value="male">Male</option>
                                         <option value="female">Female</option>
@@ -239,6 +240,7 @@
                                         type="text"
                                         class="form-control input-default"
                                         placeholder="Sample size"
+                                        v-model="globalSampleSize"
                                     />
                                 </div>
                                 <div
@@ -263,6 +265,7 @@
                                         Sample size<sup>*</sup>
                                     </div>
                                     <input
+                                        v-model="t1dSampleSize"
                                         type="text"
                                         class="form-control input-default"
                                         placeholder="Sample size"
@@ -297,7 +300,7 @@
                                     <div class="label">
                                         Sample size<sup>*</sup>
                                     </div>
-                                    <input
+                                    <input v-model="bmiAdjSampleSize"
                                         type="text"
                                         class="form-control input-default"
                                         placeholder="Sample size"
@@ -338,7 +341,7 @@
                                 <div class="label">
                                     Data submitter<sup>*</sup>
                                 </div>
-                                <input
+                                <input v-model="dataSubmitter"
                                     type="text"
                                     class="form-control input-default"
                                     placeholder="Data submitter"
@@ -348,7 +351,7 @@
                                 <div class="label">
                                     Data submitter email<sup>*</sup>
                                 </div>
-                                <input
+                                <input v-model="dataSubmitterEmail"
                                     type="text"
                                     class="form-control input-default"
                                     placeholder="submitter@email"
@@ -372,7 +375,7 @@
                             </div>
                             <div class="col-md-12 col filter-col-md">
                                 <div class="label">Institution<sup>*</sup></div>
-                                <input
+                                <input v-model="institution"
                                     type="text"
                                     class="form-control input-default"
                                     placeholder="Institution"
@@ -436,7 +439,7 @@
                                     <div class="label">
                                         Description<sup>*</sup>
                                     </div>
-                                    <textarea
+                                    <textarea v-model="additionalData"
                                         rows="4"
                                         class="form-control"
                                     ></textarea>
@@ -465,7 +468,7 @@
                 <div class="card-body">
                     <div class="row dr-submit-section">
                         <div class="col-md-12 col filter-col-md">
-                            <button class="btn btn-primary" type="button">
+                            <button class="btn btn-primary" type="button" @click="addNewRecord()">
                                 Submit data
                             </button>
                         </div>
@@ -537,3 +540,54 @@
     margin-top: -15px;
 }
 </style>
+
+<script>
+  import { createResearchRecord } from '@/utils/dataRegistryUtils'
+
+
+  export default {
+    data(){
+      return {
+        datasetName: '',
+        dataSourceType: '',
+        dataSource: '',
+        status: '',
+        dataType: '',
+        genomeBuild: '',
+        ancestry: '',
+        sex: '',
+        globalSampleSize: 0,
+        dataSubmitter: '',
+        dataSubmitterEmail: '',
+        institution: '',
+        t1dSampleSize: 0,
+        bmiAdjSampleSize: 0,
+        additionalData: '',
+
+      }
+    },
+    methods: {
+      addNewRecord(){
+        const name = this.datasetName
+        const data_source_type = this.dataSourceType
+        const data_source = this.dataSource
+        const status = this.status
+        const data_type = this.dataType
+        const genome_build = this.genomeBuild
+        const ancestry = this.ancestry
+        const sex = this.sex
+        const global_sample_size = this.globalSampleSize
+        const data_submitter = this.dataSubmitter
+        const data_submitter_email = this.dataSubmitterEmail
+        const institution = this.institution
+        const t1d_sample_size = this.t1dSampleSize
+        const bmi_adj_sample_size = this.bmiAdjSampleSize
+        const additional_data = this.additionalData
+        let requestRecord = JSON.stringify({name, data_source_type, data_source, status,
+          data_type, genome_build, ancestry, sex, global_sample_size, data_submitter,
+          data_submitter_email, institution, t1d_sample_size, bmi_adj_sample_size, additional_data})
+        createResearchRecord(requestRecord)
+      },
+    }
+  }
+</script>
