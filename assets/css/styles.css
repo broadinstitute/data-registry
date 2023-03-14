@@ -1,0 +1,24 @@
+.dr-form sup {
+  font-size: 12px;
+  color: #ff0000;
+}
+
+.dr-form .col > div.label,
+.dataset-page-header .col > div.label {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.row  {
+  margin-bottom: 15px;
+}
+.dr-meta-info {
+  border-radius: 5px;
+  background-color: #eeeeee;
+  padding: 15px;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
