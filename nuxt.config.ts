@@ -5,6 +5,10 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             apiSecret: '',
+            apiBaseUrl: '',
+            phenotypesUrl: ''
         },
-    }
+    },
+
+
 })

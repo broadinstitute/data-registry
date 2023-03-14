@@ -293,7 +293,7 @@ function getBaseHttpOptions() {
 async function saveStudy() {
   const opts = getBaseHttpOptions()
   opts.body = JSON.stringify({'name': study.value, 'institution': institution.value})
-  return await $fetch('http://localhost:8000/api/studies', opts)
+  return await $fetch(`${config.apiBaseUrl}/api/studies`, opts)
 }
 
 async function save(){
@@ -314,11 +314,11 @@ async function save(){
 }
 
 function getUrl(dataset_id, pType) {
-  let retVal = `http://localhost:8000/api/uploadfile/${dataset_id}/${pType.name}/${pType.dichotomous}`
+  let url = `${config.apiBaseUrl}/api/uploadfile/${dataset_id}/${pType.name}/${pType.dichotomous}/${pType.sampleSize}`
   if(!pType.dichotomous){
-    return retVal
+    return url
   }
-  return retVal + `?sample_size=${pType.sampleSize}&cases=${pType.cases}`
+  return url + `?controls=${pType.controls}&cases=${pType.cases}`
 }
 
 async function savePhenotype(dataset_id, pKey){
@@ -351,7 +351,7 @@ async function saveDataset(study_id) {
     'pmid': pmid.value,
     'publication': publication.value
   })
-  const json = await $fetch('http://localhost:8000/api/datasets', opts)
+  const json = await $fetch(`${config.apiBaseUrl}/api/datasets`, opts)
   console.log(`Dataset saved with id ${json.dataset_id}`)
   return json.dataset_id
 }

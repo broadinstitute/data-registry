@@ -19,13 +19,13 @@
   })
 
   async function getPhenotypes() {
-    const { data } = await $fetch('https://bioindex.hugeamp.org/api/portal/phenotypes?q=md')
+    const { data } = await $fetch(config.phenotypesUrl)
     phenotypes.value = data
     phenotypeOptions.value = data.map(p => {return {"label": p.description, "value": p.name}})
   }
 
   async function fetchStudies(){
-    const data = await $fetch('http://localhost:8000/api/studies',
+    const data = await $fetch(`${config.apiBaseUrl}/api/studies`,
         { headers: {"access-token": config.apiSecret}})
     studies.value = data.map(s => {return {label: s.name, value: s.id, institution: s.institution}})
   }

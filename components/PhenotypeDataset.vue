@@ -4,14 +4,19 @@
       <div class="label">Phenotype<sup>*</sup></div>
       <phenotype-input :identifier="props.identifier" ></phenotype-input><br/>
     </div>
-    <div v-if="dichotomous" class="col col-md-3">
+    <div class="col col-md-2">
       <div class="label">Sample Size<sup>*</sup></div>
       <input type="number" v-model="selectedPhenotypes[props.identifier].sampleSize" placeholder="Sample Size"
              class="form-control input-default" min="0">
     </div>
-    <div v-if="dichotomous" class="col col-md-3">
+    <div v-if="dichotomous" class="col col-md-2">
       <div class="label">Cases<sup>*</sup></div>
       <input type="number" v-model="selectedPhenotypes[props.identifier].cases" placeholder="Cases" class="form-control input-default"
+             min="0">
+    </div>
+    <div v-if="dichotomous" class="col col-md-2">
+      <div class="label">Controls<sup>*</sup></div>
+      <input type="number" v-model="selectedPhenotypes[props.identifier].controls" placeholder="Controls" class="form-control input-default"
              min="0">
     </div>
     <div :class="pTypeClass">
@@ -44,7 +49,7 @@ watch(url, (newVal, oldVal) => {
 })
 
 const pTypeClass = computed(() => {
-  return dichotomous.value ? 'col col-md-3' : 'col col-md-6'
+  return dichotomous.value ? 'col col-md-3' : 'col col-md-5'
 })
 
 function deletePhenotype(){

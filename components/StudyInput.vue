@@ -3,7 +3,6 @@
                      placeholder="Study Name"
                      v-model:value="value"
                      :input-props="{autocomplete: 'disabled'}"
-                     class="form-control input-default"
                      @blur="leaveDialog"
     />
 </template>
