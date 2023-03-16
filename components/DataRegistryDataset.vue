@@ -1,32 +1,35 @@
 <template>
   <div class="card mdkp-card">
     <div class="card-body dr-form">
-      <div class="row dr-status-section">
-        <div class="col-md-6 col">
-          <div class="label">Dataset name<sup>*</sup></div>
-          <input
-              ref="datasetName"
-              type="text"
-              class="form-control input-default"
-              placeholder="Dataset name"
-              v-model="dsName"
-          />
-        </div>
+      <form class="needs-validation" id="inputForm" novalidate>
+        <div class="row dr-status-section">
+          <div class="col-md-6 col">
+            <div class="label">Dataset name<sup>*</sup></div>
+            <input
+                ref="datasetName"
+                type="text"
+                class="form-control input-default"
+                placeholder="Dataset name"
+                v-model="dsName"
+                required
+            />
+          </div>
 
-        <div class="col-md-6 col">
-          <div class="label">Status<sup>*</sup></div>
-          <select class="form-select" v-model="pubStatus">
-            <option value="pre">Pre-publication</option>
-            <option value="open">Open access</option>
-          </select>
+          <div class="col-md-6 col">
+            <div class="label">Status<sup>*</sup></div>
+            <select class="form-select" v-model="pubStatus" required>
+              <option value="pre">Pre-publication</option>
+              <option value="open">Open access</option>
+            </select>
+          </div>
         </div>
-      </div>
       <div class="row dr-status-section">
         <div class="col-md-12 col">
           <div class="label">
             Study<sup>*</sup>
           </div>
-          <StudyInput/>
+          <input type="text" class="study autocomplete form-control input-default" id="study"
+                 placeholder="Study" required @blur="leaveStudy">
         </div>
       </div>
       <div class="row dr-data-section">
@@ -38,7 +41,7 @@
               <div class="label">
                 Data source type<sup>*</sup>
               </div>
-              <select class="form-select" v-model="dataType">
+              <select class="form-select" v-model="dataType" required>
                 <option value="file">File</option>
                 <option value="remote">
                   Remote storage
@@ -49,7 +52,7 @@
               <div class="label">
                 Data type<sup>*</sup>
               </div>
-              <select class="form-select" v-model="geneticsDataType">
+              <select class="form-select" v-model="geneticsDataType" required>
                 <option value="gwas">GWAS</option>
                 <option value="exomchip">
                   Exome chip
@@ -67,7 +70,7 @@
               <div class="label">
                 Genome build<sup>*</sup>
               </div>
-              <select class="form-select" v-model="genomeBuild">
+              <select class="form-select" v-model="genomeBuild" required>
                 <option value="hg19">
                   hg19 (GRCh37)
                 </option>
@@ -80,7 +83,7 @@
               <div class="label">
                 Ancestry<sup>*</sup>
               </div>
-              <select class="form-select" v-model="ancestry">
+              <select class="form-select" v-model="ancestry" required>
                 <option value="ABA">
                   Aboriginal Australian
                 </option>
@@ -128,7 +131,7 @@
             </div>
             <div class="col-md-6 col">
               <div class="label">Sex<sup>*</sup></div>
-              <select class="form-select" v-model="sex">
+              <select class="form-select" v-model="sex" required>
                 <option value="mixed">Mixed</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -146,6 +149,7 @@
                   placeholder="Sample size"
                   min="0"
                   v-model="globalSampleSize"
+                  required
               />
             </div>
             <div
@@ -172,6 +176,7 @@
                 class="form-control input-default"
                 placeholder="Data submitter"
                 v-model="dataSubmitter"
+                required
             />
           </div>
           <div class="col-md-12 col">
@@ -183,6 +188,7 @@
                 class="form-control input-default"
                 placeholder="submitter@email"
                 v-model="dataSubmitterEmail"
+                required
             />
           </div>
           <div class="col-md-12 col">
@@ -210,6 +216,7 @@
                 class="form-control input-default"
                 placeholder="Institution"
                 v-model="institution"
+                required
             />
           </div>
         </div>
@@ -225,6 +232,7 @@
               <textarea v-model="description"
                         rows="4"
                         class="form-control"
+                        required
               ></textarea>
             </div>
           </div>
@@ -251,12 +259,14 @@
         </div>
       </div>
       <button type="button" class="btn btn-primary" @click="save">Save Dataset</button>
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
 import axios from 'axios'
+import Autocomplete from 'bootstrap5-autocomplete'
 
 
 const datasetName = ref(null)
@@ -280,10 +290,43 @@ const publication = ref(null)
 const config = useRuntimeConfig()
 const study = useState("study")
 const phenotypeDatasets = useState("selectedPhenotypes")
+const studies = useState("studies", () => [])
 
 onMounted(() => {
   datasetName.value.focus()
 })
+
+watch(studies, (newV, oldV) => {
+  Autocomplete.init('.study.autocomplete', {
+    items: studies.value,
+    valueField: "value",
+    labelField: "label",
+    updateOnSelect: true,
+    autoselectFirst: false,
+    fixed: true,
+    onSelectItem: checkStudy,
+  })
+})
+
+function leaveStudy() {
+  const input = document.getElementById("study")
+  console.log(`study = ${input.value}`)
+  const matches = studies.value.filter(s => s.label === input.value)
+  if(matches.length === 0){
+    study.value = input.value
+  } else {
+    study.value = matches[0]
+  }
+}
+
+function checkStudy(val){
+  const matches = studies.value.filter(s => s.label === val)
+  if(matches.length === 1){
+    study.value = matches[0]
+  } else {
+    study.value = val
+  }
+}
 
 function getBaseHttpOptions() {
   return { method: 'POST', headers: {"access-token": config.apiSecret,
@@ -292,12 +335,18 @@ function getBaseHttpOptions() {
 
 async function saveStudy() {
   const opts = getBaseHttpOptions()
+  console.log(study.value)
   opts.body = JSON.stringify({'name': study.value, 'institution': institution.value})
   return await $fetch(`${config.apiBaseUrl}/api/studies`, opts)
 }
 
 async function save(){
-  console.log(study.value)
+  const form = document.getElementById('inputForm')
+  if(!form.checkValidity()){
+    form.classList.add('was-validated')
+    return;
+  }
+
   let dataset_id;
   if(typeof study.value === 'object'){
     console.log("No need to save study")

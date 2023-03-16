@@ -6,8 +6,6 @@
 
 <script setup>
   import "bootstrap/dist/css/bootstrap.min.css"
-  import "bootstrap-icons/font/bootstrap-icons.css"
-  import { onBeforeMount } from 'vue'
   const phenotypes = useState("phenotypes",  () => [])
   const phenotypeOptions = useState("phenotypeOptions",  () => [])
   const studies = useState("studies", () => [])
@@ -18,9 +16,12 @@
     fetchStudies()
   })
 
+
   async function getPhenotypes() {
     const { data } = await $fetch(config.phenotypesUrl)
-    phenotypes.value = data
+    const mappedPhenotypes = {}
+    data.forEach(d => mappedPhenotypes[d.description] = d)
+    phenotypes.value = mappedPhenotypes
     phenotypeOptions.value = data.map(p => {return {"label": p.description, "value": p.name}})
   }
 
