@@ -51,16 +51,27 @@ function fileChange(e){
   selectedPhenotypes.value[props.identifier].file = e.target.files[0]
 }
 
-watch(phenotypeOptions, (newV, oldV) => {
+onMounted(() => {
+  initPhenotypeAutocomplete()
+})
+
+function initPhenotypeAutocomplete() {
+  if (phenotypeOptions.value.length === 0){
+    return
+  }
   Autocomplete.init('.pt.autocomplete', {
     items: phenotypeOptions.value,
-    valueField: "value",
-    labelField: "label",
+    valueField: 'value',
+    labelField: 'label',
     updateOnSelect: true,
     autoselectFirst: false,
     fixed: true,
-    onSelectItem: checkVal,
+    onSelectItem: checkVal
   })
+}
+
+watch(phenotypeOptions, (newV, oldV) => {
+  initPhenotypeAutocomplete()
 })
 
 function checkVal(val){
