@@ -260,6 +260,14 @@
       </div>
       <button type="button" class="btn btn-primary" @click="save">Save Dataset</button>
       </form>
+
+    </div>
+    <div class="dr-modal dr-hidden">
+      <div class="dr-container">
+        <div class="dr-modal-body">
+          <p id="modalMsg">Saving info to server...</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -346,7 +354,7 @@ async function save(){
     form.classList.add('was-validated')
     return;
   }
-
+  document.querySelector(".dr-modal").classList.remove("dr-hidden")
   let dataset_id;
   if(typeof study.value === 'object'){
     console.log("No need to save study")
@@ -358,8 +366,10 @@ async function save(){
     dataset_id = await saveDataset(study_id)
   }
   for(const phenotype of Object.keys(phenotypeDatasets.value)){
+    document.getElementById("modalMsg").innerText = `Uploading data for ${phenotypeDatasets.value[phenotype].name}`
     await savePhenotype(dataset_id, phenotype)
   }
+  document.querySelector(".dr-modal").classList.add("dr-hidden")
 }
 
 function getUrl(dataset_id, pType) {
