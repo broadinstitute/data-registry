@@ -30,13 +30,14 @@ npm run dev
 Build the application for production:
 
 ```bash
-npm run build
+npx nuxi generate --dotenv <path-to-env> 
 ```
 
-Locally preview production build:
-
-```bash
-npm run preview
+## Sample .env
+```
+NUXT_PUBLIC_API_SECRET=??
+NUXT_PUBLIC_API_BASE_URL=??
+NUXT_PUBLIC_PHENOTYPES_URL=??
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
