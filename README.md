@@ -30,7 +30,8 @@ npm run dev
 Build the application for production:
 
 ```bash
-npx nuxi generate --dotenv <path-to-env> 
+npx nuxi generate --dotenv <path-to-env>
+aws s3 cp --recursive .output/public s3://data-registry-vue/
 ```
 
 ## Sample .env
@@ -39,5 +40,7 @@ NUXT_PUBLIC_API_SECRET=??
 NUXT_PUBLIC_API_BASE_URL=??
 NUXT_PUBLIC_PHENOTYPES_URL=??
 ```
+
+[Production](http://data-registry-vue.s3-website-us-east-1.amazonaws.com/)
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
