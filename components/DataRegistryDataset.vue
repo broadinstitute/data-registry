@@ -313,7 +313,16 @@ onMounted(() => {
   })
 })
 
+watch(study, (newVal, _) => {
+  if(institution.value === '' && newVal && newVal.institution){
+    institution.value = newVal.institution
+  }
+})
+
 watch(studies, (newV, oldV) => {
+  if(newV.length === 0){
+    return
+  }
   Autocomplete.init('.study.autocomplete', {
     items: studies.value,
     valueField: "value",
@@ -344,35 +353,34 @@ function checkStudy(val){
   }
 }
 
-function getBaseHttpOptions() {
-  return { method: 'POST', headers: {"access-token": config.apiSecret,
-      "Content-Type": "application/json"}}
-}
-
 async function saveStudy() {
   return await configuredAxios.post('/api/studies',
       JSON.stringify({'name': study.value, 'institution': institution.value}))
 }
 
-async function save(){
+async function save() {
   const form = document.getElementById('inputForm')
-  if(!form.checkValidity()){
+  if (!form.checkValidity()) {
     form.classList.add('was-validated')
-    return;
+    return
   }
   processing.value = true
-  let dataset_id;
-  if(typeof study.value === 'object'){
+  let dataset_id
+  if (typeof study.value === 'object') {
     dataset_id = await saveDataset(study.value.value)
   } else {
-    const { data } = await saveStudy();
+    const { data } = await saveStudy()
+    const newStudy = { label: data.name, value: data.study_id, institution: institution.value }
+    studies.value.push(newStudy)
+    study.value = newStudy
     dataset_id = await saveDataset(data.study_id)
   }
-  for(const phenotype of Object.keys(phenotypeDatasets.value)){
+  for (const phenotype of Object.keys(phenotypeDatasets.value)) {
     modalMsg.value = `Uploading data for ${phenotypeDatasets.value[phenotype].description}`
     await savePhenotype(dataset_id, phenotype)
   }
   processing.value = false
+  serverSuccess.value = true
   showNotification.value = true
 }
 
@@ -388,7 +396,7 @@ async function savePhenotype(dataset_id, pKey){
   const formData = new FormData();
   const pType = phenotypeDatasets.value[pKey]
   formData.append('file', pType.file);
-  const res = await configuredAxios.post(getUrl(dataset_id, pType),
+  await configuredAxios.post(getUrl(dataset_id, pType),
       formData, {headers: { 'Content-Type': 'multipart/form-data'}})
 }
 
