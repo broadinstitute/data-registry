@@ -303,6 +303,8 @@ let configuredAxios
 
 onMounted(() => {
   datasetName.value.focus()
+  //save the typing the base url, common, headers, add error handler to show banner
+  //at top of the page in the event of a failure
   configuredAxios = axios.create({ baseURL: config.apiBaseUrl,
     headers: {"access-token": config.apiSecret, "Content-Type": "application/json"}})
   configuredAxios.interceptors.response.use(undefined, (error) => {
@@ -313,13 +315,16 @@ onMounted(() => {
   })
 })
 
+// institution is saved with study, so if user selects an existing study use that
+//saved institution
 watch(study, (newVal, _) => {
   if(institution.value === '' && newVal && newVal.institution){
     institution.value = newVal.institution
   }
 })
 
-watch(studies, (newV, oldV) => {
+watch(studies, (newV, _) => {
+  // don't initialize autocomplete until we have data, you can only call init one time it seems
   if(newV.length === 0){
     return
   }
@@ -334,6 +339,8 @@ watch(studies, (newV, oldV) => {
   })
 })
 
+//we need ot handle both the case where the user types in a new study and where
+//they select and existing study
 function leaveStudy() {
   const input = document.getElementById("study")
   const matches = studies.value.filter(s => s.label === input.value)
@@ -344,6 +351,7 @@ function leaveStudy() {
   }
 }
 
+//attach either the saved study or newly entered study to the study state
 function checkStudy(val){
   const matches = studies.value.filter(s => s.label === val)
   if(matches.length === 1){
@@ -370,6 +378,8 @@ async function save() {
     dataset_id = await saveDataset(study.value.value)
   } else {
     const { data } = await saveStudy()
+    //handle the case where we add a new study and dataset and then add another dataset
+    //to that study without a full page refresh
     const newStudy = { label: data.name, value: data.study_id, institution: institution.value }
     studies.value.push(newStudy)
     study.value = newStudy
