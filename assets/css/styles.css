@@ -22,32 +22,3 @@ ul {
   list-style: none;
   padding-left: 0;
 }
-
-.dr-modal {
-  background-color: rgba(0,0,0,0.4); /* Transparent dimmed overlay */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: table;
-}
-
-.dr-modal.dr-hidden {
-  display: none;
-}
-
-.dr-modal .dr-container {
-  display: table-cell;
-  text-align: center;
-  vertical-align: middle;
-  width: 200px;
-}
-
-.dr-modal .dr-modal-body {
-  box-shadow: 5px 10px #888888;
-  display: inline-block;
-  background-color: white;
-  border: 1px solid black;
-  padding: 10px;
-}

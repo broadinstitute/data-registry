@@ -1,4 +1,5 @@
 <template>
+  <ServerNotification :show-notification="showNotification" :message="serverMessage" :success="serverSuccess" />
   <div class="card mdkp-card">
     <div class="card-body dr-form">
       <form class="needs-validation" id="inputForm" novalidate>
@@ -260,24 +261,23 @@
       </div>
       <button type="button" class="btn btn-primary" @click="save">Save Dataset</button>
       </form>
-
     </div>
-    <div class="dr-modal dr-hidden">
-      <div class="dr-container">
-        <div class="dr-modal-body">
-          <p id="modalMsg">Saving info to server...</p>
-        </div>
-      </div>
-    </div>
+    <Modal :status-message="modalMsg" v-if="processing"/>
   </div>
 </template>
 
 <script setup>
 import axios from 'axios'
 import Autocomplete from 'bootstrap5-autocomplete'
+import Modal from '~/components/Modal.vue'
 
 
 const datasetName = ref(null)
+const processing = ref(false)
+const modalMsg = ref('Saving data...')
+const showNotification = ref(false)
+const serverMessage = ref('Successfully added dataset')
+const serverSuccess = ref(true)
 const dataType = ref('file')
 const geneticsDataType = ref('')
 const dsName = ref('')
@@ -299,9 +299,18 @@ const config = useRuntimeConfig()
 const study = useState("study")
 const phenotypeDatasets = useState("selectedPhenotypes")
 const studies = useState("studies", () => [])
+let configuredAxios
 
 onMounted(() => {
   datasetName.value.focus()
+  configuredAxios = axios.create({ baseURL: config.apiBaseUrl,
+    headers: {"access-token": config.apiSecret, "Content-Type": "application/json"}})
+  configuredAxios.interceptors.response.use(undefined, (error) => {
+    processing.value = false
+    serverMessage.value = error.message
+    serverSuccess.value = false
+    showNotification.value = true
+  })
 })
 
 watch(studies, (newV, oldV) => {
@@ -318,7 +327,6 @@ watch(studies, (newV, oldV) => {
 
 function leaveStudy() {
   const input = document.getElementById("study")
-  console.log(`study = ${input.value}`)
   const matches = studies.value.filter(s => s.label === input.value)
   if(matches.length === 0){
     study.value = input.value
@@ -342,10 +350,8 @@ function getBaseHttpOptions() {
 }
 
 async function saveStudy() {
-  const opts = getBaseHttpOptions()
-  console.log(study.value)
-  opts.body = JSON.stringify({'name': study.value, 'institution': institution.value})
-  return await $fetch(`${config.apiBaseUrl}/api/studies`, opts)
+  return await configuredAxios.post('/api/studies',
+      JSON.stringify({'name': study.value, 'institution': institution.value}))
 }
 
 async function save(){
@@ -354,26 +360,24 @@ async function save(){
     form.classList.add('was-validated')
     return;
   }
-  document.querySelector(".dr-modal").classList.remove("dr-hidden")
+  processing.value = true
   let dataset_id;
   if(typeof study.value === 'object'){
-    console.log("No need to save study")
     dataset_id = await saveDataset(study.value.value)
   } else {
-    const res = await saveStudy();
-    const { study_id } = res
-    console.log(`Saved study id is ${study_id}`)
-    dataset_id = await saveDataset(study_id)
+    const { data } = await saveStudy();
+    dataset_id = await saveDataset(data.study_id)
   }
   for(const phenotype of Object.keys(phenotypeDatasets.value)){
-    document.getElementById("modalMsg").innerText = `Uploading data for ${phenotypeDatasets.value[phenotype].name}`
+    modalMsg.value = `Uploading data for ${phenotypeDatasets.value[phenotype].description}`
     await savePhenotype(dataset_id, phenotype)
   }
-  document.querySelector(".dr-modal").classList.add("dr-hidden")
+  processing.value = false
+  showNotification.value = true
 }
 
 function getUrl(dataset_id, pType) {
-  let url = `${config.apiBaseUrl}/api/uploadfile/${dataset_id}/${pType.name}/${pType.dichotomous}/${pType.sampleSize}`
+  let url = `/api/uploadfile/${dataset_id}/${pType.name}/${pType.dichotomous}/${pType.sampleSize}`
   if(!pType.dichotomous){
     return url
   }
@@ -384,15 +388,13 @@ async function savePhenotype(dataset_id, pKey){
   const formData = new FormData();
   const pType = phenotypeDatasets.value[pKey]
   formData.append('file', pType.file);
-  const res = await axios.post(getUrl(dataset_id, pType),
-      formData, {headers: { "access-token": config.apiSecret, 'Content-Type': 'multipart/form-data'}})
-  console.log(JSON.stringify(res))
+  const res = await configuredAxios.post(getUrl(dataset_id, pType),
+      formData, {headers: { 'Content-Type': 'multipart/form-data'}})
 }
 
 async function saveDataset(study_id) {
   const shortened_study_id = study_id.replaceAll('-', '')
-  const opts = getBaseHttpOptions()
-  opts.body = JSON.stringify({
+  const opts = JSON.stringify({
     'name': dsName.value,
     'data_source_type': dataType.value,
     'data_type': geneticsDataType.value,
@@ -410,9 +412,8 @@ async function saveDataset(study_id) {
     'pmid': pmid.value,
     'publication': publication.value
   })
-  const json = await $fetch(`${config.apiBaseUrl}/api/datasets`, opts)
-  console.log(`Dataset saved with id ${json.dataset_id}`)
-  return json.dataset_id
+  const { data } =  await configuredAxios.post('/api/datasets', opts)
+  return data.dataset_id
 }
 
 </script>
