@@ -10,7 +10,7 @@
                 ref="datasetName"
                 type="text"
                 class="form-control input-default"
-                placeholder="Dataset name"
+                placeholder="Dataset name e.g., Cade2021_SleepApnea_EU_Female"
                 v-model="dsName"
                 required
             />
@@ -30,7 +30,7 @@
             Study<sup>*</sup>
           </div>
           <input type="text" class="study autocomplete form-control input-default" id="study"
-                 placeholder="Study" required @blur="leaveStudy">
+                 placeholder="Study name e.g., TOPMed Sleep Apnea WGS" required @blur="leaveStudy">
         </div>
       </div>
       <div class="row dr-data-section">
@@ -274,7 +274,7 @@ import Modal from '~/components/Modal.vue'
 
 const datasetName = ref(null)
 const processing = ref(false)
-const modalMsg = ref('Saving data...')
+const modalMsg = ref('Do not close this window, saving data...')
 const showNotification = ref(false)
 const serverMessage = ref('Successfully added dataset')
 const serverSuccess = ref(true)
@@ -386,7 +386,7 @@ async function save() {
     dataset_id = await saveDataset(data.study_id)
   }
   for (const phenotype of Object.keys(phenotypeDatasets.value)) {
-    modalMsg.value = `Uploading data for ${phenotypeDatasets.value[phenotype].description}`
+    modalMsg.value = `Do not close this window, uploading data for ${phenotypeDatasets.value[phenotype].description}`
     await savePhenotype(dataset_id, phenotype)
   }
   processing.value = false
