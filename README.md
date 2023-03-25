@@ -25,6 +25,13 @@ Start the development server on http://localhost:3000
 npm run dev
 ```
 
+## Local Dev With Docker
+```bash
+docker build -t data-registry-ui .
+docker run -it --rm -v ${PWD}:/app -v /app/node_modules -p 3000:3000 -p 24600:24600 data-registry-ui
+```
+Then you should be able to access the app at http://localhost:3000 and local dev changes to vue files should be be picked up seamlessly by the docker image 
+and hot reload in the browser.
 ## Production
 
 Build the application for production:

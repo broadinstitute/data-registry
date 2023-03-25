@@ -4,9 +4,13 @@ export default defineNuxtConfig({
     telemetry: false,
     css: ["bootstrap", "~/assets/css/styles.css"],
     vite: {
-        optimizeDeps: {
-            exclude: ["resolveComponent"],
-        },
+        server: {
+            // specify a know port, so we can use it in docker invocations
+            hmr: {
+                clientPort: 24600,
+                port: 24600
+            }
+        }
     },
     runtimeConfig: {
         public: {
