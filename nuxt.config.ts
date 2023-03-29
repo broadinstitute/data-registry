@@ -8,9 +8,9 @@ export default defineNuxtConfig({
             // specify a know port, so we can use it in docker invocations
             hmr: {
                 clientPort: 24600,
-                port: 24600
-            }
-        }
+                port: 24600,
+            },
+        },
     },
     runtimeConfig: {
         public: {
