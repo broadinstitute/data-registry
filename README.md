@@ -42,6 +42,9 @@ aws s3 cp --recursive .output/public s3://data-registry-vue/
 ```
 
 ## Sample .env
+
+A sample .env file is provided, `.env-sample`. It should be copied to the root directory and renamed to .env. The following environment variables are required:
+
 ```
 NUXT_PUBLIC_API_SECRET=??
 NUXT_PUBLIC_API_BASE_URL=??
