@@ -38,7 +38,6 @@
 <script setup>
 
 import Autocomplete from 'bootstrap5-autocomplete'
-import Index from '~/pages/index.vue'
 
 
 const props = defineProps({datasetDataType: String, identifier: String})
