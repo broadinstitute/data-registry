@@ -410,7 +410,7 @@ watch(studies, (newV, _) => {
     });
 });
 
-//we need ot handle both the case where the user types in a new study and where
+//we need to handle both the case where the user types in a new study and where
 //they select and existing study
 function leaveStudy() {
     const input = document.getElementById("study");
@@ -505,7 +505,6 @@ async function saveDataset(study_id) {
         study_id: shortened_study_id,
         status: pubStatus.value,
         description: description.value,
-        doi: doi.value,
         pmid: pmid.value,
         publication: publication.value,
     });
