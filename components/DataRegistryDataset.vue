@@ -243,36 +243,8 @@
                     <div class="col-md-9">
                         <h4>Data description</h4>
                         <div class="row">
-                            <div class="col-md-6 col filter-col-md">
-                                <div class="label">DOI ID</div>
-                                <div class="input-group">
-                                    <span class="input-group-text"
-                                        >https://doi.org/</span
-                                    >
-                                    <input
-                                        type="text"
-                                        class="form-control input-default"
-                                        placeholder="(e.g. 10.1038/ng.3830)"
-                                        v-model="doi"
-                                        required
-                                    />
-                                    <button
-                                        type="button"
-                                        :class="
-                                            !doi
-                                                ? 'btn btn-outline-primary'
-                                                : 'btn btn-primary'
-                                        "
-                                        title="Fetch data from DOI"
-                                        @click="getDOIInfo"
-                                        :disabled="!doi"
-                                    >
-                                        <i class="bi-cloud-arrow-down"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col filter-col-md">
-                                <div class="label">PubMed ID</div>
+                            <div class="col-md-12 col filter-col-md">
+                                <div class="label">PubMed ID, DOI, or PubMed Central ID</div>
                                 <div class="input-group">
                                     <span class="input-group-text"
                                         >https://pubmed.ncbi.nlm.nih.gov/</span
@@ -280,19 +252,19 @@
                                     <input
                                         type="text"
                                         class="form-control input-default"
-                                        placeholder="(e.g. 28300000)"
-                                        v-model="pmid"
+                                        placeholder="(e.g. 28300000, 10.1038/ng.3830, or PMC5968830)"
+                                        v-model="pubId"
                                     />
                                     <button
                                         type="button"
                                         :class="
-                                            !pmid
+                                            !pubId
                                                 ? 'btn btn-outline-primary'
                                                 : 'btn btn-primary'
                                         "
                                         title="Fetch data from PubMed"
                                         @click="getPubMedInfo"
-                                        :disabled="!pmid"
+                                        :disabled="!pubId"
                                     >
                                         <i class="bi-cloud-arrow-down"></i>
                                     </button>
@@ -358,7 +330,7 @@ const globalSampleSize = ref("");
 const pubStatus = ref("");
 const description = ref("");
 const doi = ref(null);
-const pmid = ref(null);
+const pubId = ref(null);
 const publication = ref(null);
 
 const config = useRuntimeConfig();
@@ -505,30 +477,19 @@ async function saveDataset(study_id) {
         study_id: shortened_study_id,
         status: pubStatus.value,
         description: description.value,
-        pmid: pmid.value,
+        pmid: pubId.value,
         publication: publication.value,
     });
     const { data } = await configuredAxios.post("/api/datasets", opts);
     return data.dataset_id;
 }
 
-//retrieve the study information from the DO
-async function getDOIInfo() {
-    const { data } = await configuredAxios.get(`/api/doi/${doi.value}`);
-    if (data) {
-        description.value = data.description;
-        pmid.value = data.pmid;
-        publication.value = data.publication;
-    }
-}
-
 //retrieve the study information from the PUBMED
 async function getPubMedInfo() {
-    const { data } = await configuredAxios.get(`/api/pmid/${pmid.value}`);
+    const { data } = await configuredAxios.get(`/api/publications?pub_id=${pubId.value.trim()}`);
     if (data) {
-        description.value = data.description;
-        doi.value = data.doi;
-        publication.value = data.publication;
+        description.value = data.abstract;
+        publication.value = data.title;
     }
 }
 </script>
