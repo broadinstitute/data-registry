@@ -477,7 +477,7 @@ async function saveDataset(study_id) {
         study_id: shortened_study_id,
         status: pubStatus.value,
         description: description.value,
-        pmid: pubId.value,
+        pub_id: pubId.value,
         publication: publication.value,
     });
     const { data } = await configuredAxios.post("/api/datasets", opts);
