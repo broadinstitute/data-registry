@@ -329,7 +329,6 @@ const sex = ref("");
 const globalSampleSize = ref("");
 const pubStatus = ref("");
 const description = ref("");
-const doi = ref(null);
 const pubId = ref(null);
 const publication = ref(null);
 
