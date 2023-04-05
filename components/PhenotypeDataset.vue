@@ -4,8 +4,8 @@
       <div class="label">Phenotype<sup>*</sup></div>
       <input type="text" class="pt autocomplete form-control input-default" :id="props.identifier"
              placeholder="Phenotype" required @blur="leaveDialog">
-      <div class="invalid-feedback">
-        Please choose a phenotype from the list.
+      <div v-if="needsDichotomousInfo">
+        <label for="dichotomousInfo" class="label">Dichotomous<sup>*</sup> &nbsp;</label><input type="checkbox" id="dichotomousInfo" v-model="selectedPhenotypes[props.identifier].dichotomous">
       </div>
     </div>
     <div class="col col-md-2">
@@ -45,6 +45,7 @@ const phenotypeOptions = useState("phenotypeOptions")
 const phenotypes = useState("phenotypes")
 const selectedPhenotypes = useState("selectedPhenotypes", () => {return {'p1':{}}})
 const url = ref(null)
+const needsDichotomousInfo = ref(false)
 const dichotomous = computed(() => selectedPhenotypes.value[props.identifier] && selectedPhenotypes.value[props.identifier].dichotomous)
 
 function fileChange(e){
@@ -77,6 +78,7 @@ watch(phenotypeOptions, (newV, oldV) => {
 function checkVal(val){
   const input = document.getElementById(props.identifier)
   selectedPhenotypes.value[props.identifier] = phenotypes.value[val.label]
+  needsDichotomousInfo.value = false
   input.setCustomValidity('')
 }
 
@@ -84,9 +86,8 @@ function leaveDialog() {
   const input = document.getElementById(props.identifier)
   const matches = phenotypes.value[input.value]
   if(!matches){
-    input.setCustomValidity('Invalid')
-  } else {
-    input.setCustomValidity('')
+    selectedPhenotypes.value[props.identifier] = {"name": input.value, "dichotomous": false}
+    needsDichotomousInfo.value = true
   }
 }
 
