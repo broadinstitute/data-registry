@@ -1,7 +1,10 @@
 <template>
   <div>
-    <input type="text" class="form-control" placeholder="Search for a phenotype" v-model="search" @focus="hasFocus = true" @blur="hasFocus = false"/>
-    <div class="byor-single-search-results-wrapper" v-if="hasFocus">
+    <input type="text" class="form-control" placeholder="Search for a phenotype" v-model="search"
+           @focus="listVisible = true"
+           @blur="listVisible = false"
+           @input="listVisible = true"/>
+    <div class="byor-single-search-results-wrapper" v-if="listVisible">
       <ul id="byor_single_search_results" class="byor-single-search-results"
            v-if="filteredItems.length > 0" style="border: gray thin groove">
           <li v-for="item in filteredItems" :key="item.name" @click="selectItem(item)"  @mousedown.prevent>
@@ -18,7 +21,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const search = ref("");
-const hasFocus = ref(false);
+const listVisible = ref(false);
 const props = defineProps({
   items: {
     type: Array,
@@ -38,7 +41,7 @@ const filteredItems = computed(() => props.filterFunction(search.value));
 function selectItem(item) {
   search.value = item.description;
   props.selectItem.value = item;
-  hasFocus.value = false;
+  listVisible.value = false;
   console.log(`Selected item: ${JSON.stringify(item)}`);
 }
 

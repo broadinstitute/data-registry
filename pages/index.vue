@@ -1,10 +1,12 @@
 <template>
     <div>
         <AutoComplete :items="phenotypes" :filter-function="filterFunc" :select-item="selectedPhenotype" />
+        <AutoCompleteDialog id="foo" :items="phenotypes" :filter-function="filterFunc" placeholder="Phenotype.."/>
     </div>
 </template>
 <script setup>
 import AutoComplete from "~/components/AutoComplete.vue";
+import AutoCompleteDialog from '~/components/AutoCompleteDialog.vue'
 
 const phenotypes = useState("phenotypes", () => []);
 const selectedPhenotype = ref({})
