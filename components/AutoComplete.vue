@@ -1,15 +1,15 @@
 <template>
-  <div @blur="hasFocus = false" tabindex="0" style="border: gray thin groove" ref="">
-    <input type="text" class="form-control" placeholder="Search for a phenotype" v-model="search" @focus="hasFocus = true"/>
+  <div>
+    <input type="text" class="form-control" placeholder="Search for a phenotype" v-model="search" @focus="hasFocus = true" @blur="hasFocus = false"/>
     <div class="byor-single-search-results-wrapper" v-if="hasFocus">
-      <div id="byor_single_search_results" class="byor-single-search-results"
-           v-if="filteredItems.length > 0">
-        <div v-for="item in filteredItems" :key="item.name" @click="selectItem(item)">
+      <ul id="byor_single_search_results" class="byor-single-search-results"
+           v-if="filteredItems.length > 0" style="border: gray thin groove">
+          <li v-for="item in filteredItems" :key="item.name" @click="selectItem(item)"  @mousedown.prevent>
           <span>
             {{ item.description }}
           </span>
-        </div>
-      </div>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -33,10 +33,6 @@ const props = defineProps({
     required: true
   }
 })
-
-function setFocus() {
-  hasFocus.value = true;
-}
 
 const filteredItems = computed(() => props.filterFunction(search.value));
 function selectItem(item) {
