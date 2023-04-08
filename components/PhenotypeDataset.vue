@@ -51,9 +51,11 @@ function fileChange(e){
 }
 
 function ptypeBlur(event){
-  console.log(JSON.stringify(event));
-  const matches = event.value instanceof Object;
-  if(!matches){
+  const isExistingPhenotype = event.value instanceof Object;
+  if(!isExistingPhenotype){
+    if(!event.value){
+      return;
+    }
     selectedPhenotypes.value[event.id] = {"name": event.value, "dichotomous": false,
       "description": event.value};
     needsDichotomousInfo.value = true;
