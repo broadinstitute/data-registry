@@ -5,6 +5,7 @@
         :id="id"
         class="form-control"
         type="text"
+        required
         :placeholder="placeholder"
         v-model="input"
         @input="onInput"
@@ -26,7 +27,7 @@
           @mousedown.prevent
           @click="selectItem(item)"
           @mouseenter="currentSelectionIndex = index">
-        {{item.description}}
+        {{props.itemDisplay(item)}}
       </div>
     </div>
   </div>
@@ -50,14 +51,9 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  defaultItem: {
-    default: null,
-  },
-  itemProjection: {
+  itemDisplay: {
     type: Function,
-    default(item) {
-      return item.description;
-    },
+    required: true
   },
   minInputLength: {
     type: Number,
@@ -77,8 +73,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   }
-})
+});
+const emit = defineEmits(['blur'])
 const input = ref('');
+const inputVal = ref(null);
 
 const filteredItems = computed(() => props.filterFunction(input.value));
 const wrapperId = computed(() => `${props.id}-wrapper`);
@@ -93,6 +91,7 @@ function onFocus() {
 
 function onBlur() {
   isInputFocused.value = false;
+  emit('blur', {value: inputVal.value ?? input.value, id: props.id});
 }
 
 function onArrowDown() {
@@ -132,12 +131,14 @@ function scrollSelectionIntoView() {
 }
 
 function selectItem(item) {
-  input.value = props.itemProjection(item);
+  input.value = props.itemDisplay(item);
+  inputVal.value = item;
   inputRef.value.blur();
 }
 
 function onInput() {
   currentSelectionIndex.value = 0;
+  inputVal.value = null;
 }
 
 function onEscape() {

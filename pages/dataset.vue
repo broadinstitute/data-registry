@@ -22,9 +22,6 @@ async function getPhenotypes() {
     const mappedPhenotypes = {};
     data.forEach((d) => (mappedPhenotypes[d.description] = d));
     phenotypes.value = mappedPhenotypes;
-    phenotypeOptions.value = data.map((p) => {
-        return { label: p.description, value: p.name };
-    });
 }
 
 async function fetchStudies() {
