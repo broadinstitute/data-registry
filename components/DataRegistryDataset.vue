@@ -1,7 +1,7 @@
 <template>
     <ServerNotification
         :show-notification="showNotification"
-        :message="serverMessage"
+        :message="errorMessage"
         :success="serverSuccess"
     />
     <div class="card mdkp-card">
@@ -312,7 +312,7 @@ const datasetName = ref(null);
 const processing = ref(false);
 const modalMsg = ref("Do not close this window, saving data...");
 const showNotification = ref(false);
-const serverMessage = ref("Successfully added dataset");
+const errorMessage = ref(null);
 const serverSuccess = ref(true);
 const dataType = ref("file");
 const geneticsDataType = ref("");
@@ -350,7 +350,7 @@ onMounted(() => {
     });
     configuredAxios.interceptors.response.use(undefined, (error) => {
         processing.value = false;
-        serverMessage.value = error.message;
+        errorMessage.value = error.message;
         serverSuccess.value = false;
         showNotification.value = true;
     });
