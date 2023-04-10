@@ -1,3 +1,4 @@
+<!--modified from  https://github.com/frikinside/vue3-simple-typeahead -->
 <template>
   <div :id="wrapperId" class="simple-typeahead">
     <input
