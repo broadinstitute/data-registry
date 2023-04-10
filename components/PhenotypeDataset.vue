@@ -61,6 +61,7 @@ function ptypeBlur(event){
     needsDichotomousInfo.value = true;
   } else {
     selectedPhenotypes.value[event.id].name = event.value.name;
+    selectedPhenotypes.value[event.id].description = event.value.description;
     selectedPhenotypes.value[event.id].dichotomous = event.value.dichotomous;
     needsDichotomousInfo.value = false;
   }
