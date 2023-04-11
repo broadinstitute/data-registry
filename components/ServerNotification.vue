@@ -1,10 +1,10 @@
 <template>
   <div v-if="showNotification">
     <div v-if="success" class="alert alert-success" role="alert">
-      {{ message }}
+      Successfully added dataset
     </div>
     <div v-else class="alert alert-danger" role="alert">
-      {{ message}}
+      {{ message }}
     </div>
   </div>
 </template>
