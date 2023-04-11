@@ -2,8 +2,9 @@
   <div class="row">
     <div :class="pTypeClass">
       <div class="label">Phenotype<sup>*</sup></div>
-      <input type="text" class="pt autocomplete form-control input-default" :id="props.identifier"
-             placeholder="Phenotype" required @blur="leaveDialog">
+      <AutoCompleteDialog placeholder="Phenotype" :items="Object.values(phenotypes)" :filter-function="filterFunc"
+                          :id="props.identifier"
+                          @blur="ptypeBlur" :item-display="i => i.description" />
       <div v-if="needsDichotomousInfo">
         <label for="dichotomousInfo" class="label">Dichotomous<sup>*</sup> &nbsp;</label><input type="checkbox" id="dichotomousInfo" v-model="selectedPhenotypes[props.identifier].dichotomous">
       </div>
@@ -37,12 +38,9 @@
 
 <script setup>
 
-import Autocomplete from 'bootstrap5-autocomplete'
-
-
 const props = defineProps({datasetDataType: String, identifier: String})
 const phenotypeOptions = useState("phenotypeOptions")
-const phenotypes = useState("phenotypes")
+const phenotypes = useState("phenotypes", () => []);
 const selectedPhenotypes = useState("selectedPhenotypes", () => {return {'p1':{}}})
 const url = ref(null)
 const needsDichotomousInfo = ref(false)
@@ -52,43 +50,33 @@ function fileChange(e){
   selectedPhenotypes.value[props.identifier].file = e.target.files[0]
 }
 
-onMounted(() => {
-  initPhenotypeAutocomplete()
-})
-
-function initPhenotypeAutocomplete() {
-  if (phenotypeOptions.value.length === 0){
-    return
+function ptypeBlur(event){
+  const isExistingPhenotype = event.value instanceof Object;
+  if(!isExistingPhenotype){
+    if(!event.value){
+      return;
+    }
+    selectedPhenotypes.value[event.id] = {"name": event.value, "dichotomous": false,
+      "description": event.value};
+    needsDichotomousInfo.value = true;
+  } else {
+    selectedPhenotypes.value[event.id].name = event.value.name;
+    selectedPhenotypes.value[event.id].description = event.value.description;
+    selectedPhenotypes.value[event.id].dichotomous = event.value.dichotomous;
+    needsDichotomousInfo.value = false;
   }
-  Autocomplete.init('.pt.autocomplete', {
-    items: phenotypeOptions.value,
-    valueField: 'value',
-    labelField: 'label',
-    updateOnSelect: true,
-    autoselectFirst: false,
-    fixed: true,
-    onSelectItem: checkVal
-  })
 }
 
-watch(phenotypeOptions, (newV, oldV) => {
-  initPhenotypeAutocomplete()
-})
-
-function checkVal(val){
-  const input = document.getElementById(props.identifier)
-  selectedPhenotypes.value[props.identifier] = phenotypes.value[val.label]
-  needsDichotomousInfo.value = false
-  input.setCustomValidity('')
-}
-
-function leaveDialog() {
-  const input = document.getElementById(props.identifier)
-  const matches = phenotypes.value[input.value]
-  if(!matches){
-    selectedPhenotypes.value[props.identifier] = {"name": input.value, "dichotomous": false}
-    needsDichotomousInfo.value = true
-  }
+function filterFunc(q){
+  return Object.values(phenotypes.value).filter((p) => {
+    if(q.length < 2) return false;
+    const words = q.split(" ")
+    let matches = 0;
+    words.forEach((word) => {
+      if(p.description.toLowerCase().indexOf(word.toLowerCase()) !== -1) matches++;
+    });
+    return matches === words.length;
+  });
 }
 
 watch(url, (newVal, oldVal) => {

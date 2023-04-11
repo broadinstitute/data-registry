@@ -1,7 +1,7 @@
 <template>
     <ServerNotification
         :show-notification="showNotification"
-        :message="serverMessage"
+        :message="errorMessage"
         :success="serverSuccess"
     />
     <div class="card mdkp-card">
@@ -35,12 +35,12 @@
                 <div class="row dr-status-section">
                     <div class="col-md-12 col">
                         <div class="label">Study<sup>*</sup></div>
-                        <input
-                            type="text"
-                            class="study autocomplete form-control input-default"
+                        <AutoCompleteDialog
+                            :items="studies"
+                            :filter-function="filterStudies"
+                            :item-display="s => s.label"
                             id="study"
                             placeholder="Study name e.g., TOPMed Sleep Apnea WGS"
-                            required
                             @blur="leaveStudy"
                         />
                     </div>
@@ -306,14 +306,13 @@
 
 <script setup>
 import axios from "axios";
-import Autocomplete from "bootstrap5-autocomplete";
 import Modal from "~/components/Modal.vue";
 
 const datasetName = ref(null);
 const processing = ref(false);
 const modalMsg = ref("Do not close this window, saving data...");
 const showNotification = ref(false);
-const serverMessage = ref("Successfully added dataset");
+const errorMessage = ref(null);
 const serverSuccess = ref(true);
 const dataType = ref("file");
 const geneticsDataType = ref("");
@@ -329,7 +328,6 @@ const sex = ref("");
 const globalSampleSize = ref("");
 const pubStatus = ref("");
 const description = ref("");
-const doi = ref(null);
 const pubId = ref(null);
 const publication = ref(null);
 
@@ -352,7 +350,7 @@ onMounted(() => {
     });
     configuredAxios.interceptors.response.use(undefined, (error) => {
         processing.value = false;
-        serverMessage.value = error.message;
+        errorMessage.value = error.message;
         serverSuccess.value = false;
         showNotification.value = true;
     });
@@ -366,42 +364,22 @@ watch(study, (newVal, _) => {
     }
 });
 
-watch(studies, (newV, _) => {
-    // don't initialize autocomplete until we have data, you can only call init one time it seems
-    if (newV.length === 0) {
-        return;
-    }
-    Autocomplete.init(".study.autocomplete", {
-        items: studies.value,
-        valueField: "value",
-        labelField: "label",
-        updateOnSelect: true,
-        autoselectFirst: false,
-        fixed: true,
-        onSelectItem: checkStudy,
-    });
-});
-
 //we need to handle both the case where the user types in a new study and where
 //they select and existing study
-function leaveStudy() {
-    const input = document.getElementById("study");
-    const matches = studies.value.filter((s) => s.label === input.value);
+function leaveStudy(event) {
+    const matches = studies.value.filter((s) => s.label === event.value);
     if (matches.length === 0) {
-        study.value = input.value;
+        study.value = event.value;
     } else {
         study.value = matches[0];
     }
 }
 
-//attach either the saved study or newly entered study to the study state
-function checkStudy(val) {
-    const matches = studies.value.filter((s) => s.label === val);
-    if (matches.length === 1) {
-        study.value = matches[0];
-    } else {
-        study.value = val;
-    }
+function filterStudies(q){
+    return studies.value.filter((s) => {
+        if(q.length < 2) return false;
+        return s.label.toLowerCase().includes(q.toLowerCase());
+    });
 }
 
 async function saveStudy() {
