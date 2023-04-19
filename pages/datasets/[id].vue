@@ -1,0 +1,36 @@
+<script setup>
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+const route = useRoute();
+const phenotypes = useState("phenotypes", () => []);
+const phenotypeOptions = useState("phenotypeOptions", () => []);
+const studies = useState("studies", () => []);
+const config = useRuntimeConfig();
+
+onBeforeMount(() => {
+  getPhenotypes();
+  fetchStudies();
+});
+
+async function getPhenotypes() {
+  const { data } = await $fetch(config.phenotypesUrl);
+  const mappedPhenotypes = {};
+  data.forEach((d) => (mappedPhenotypes[d.description] = d));
+  phenotypes.value = mappedPhenotypes;
+}
+
+async function fetchStudies() {
+  const data = await $fetch(`${config.apiBaseUrl}/api/studies`, {
+    headers: { "access-token": config.apiSecret },
+  });
+  studies.value = data.map((s) => {
+    return { label: s.name, value: s.id, institution: s.institution };
+  });
+}
+</script>
+
+<template>
+  <div class="container">
+    <DataRegistryDataset :existing-dataset="route.params.id"/>
+  </div>
+</template>
