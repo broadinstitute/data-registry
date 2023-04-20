@@ -1,5 +1,5 @@
 <template>
-    <div>
-        <h1>Homepage</h1>
-    </div>
+  <div class="hello">
+    <UserRegistration msg="Register New User"></UserRegistration>
+  </div>
 </template>
