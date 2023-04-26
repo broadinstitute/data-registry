@@ -308,6 +308,7 @@
 import axios from "axios";
 import Modal from "~/components/Modal.vue";
 
+const props = defineProps({existingDataset: String});
 const datasetName = ref(null);
 const processing = ref(false);
 const modalMsg = ref("Do not close this window, saving data...");
@@ -337,6 +338,26 @@ const phenotypeDatasets = useState("selectedPhenotypes");
 const studies = useState("studies", () => []);
 let configuredAxios;
 
+async function fetchExistingDataset(existingDataset) {
+    const {data} = await configuredAxios.get(`/api/datasets/${existingDataset}`);
+    const ds = data.dataset;
+    dsName.value = ds.name;
+    genomeBuild.value = ds.genome_build;
+    dataSubmitter.value = ds.data_submitter;
+    dataSubmitterEmail.value = ds.data_submitter_email;
+    ancestry.value = ds.ancestry;
+    sex.value = ds.sex;
+    pubStatus.value = ds.status;
+    geneticsDataType.value = ds.data_type;
+    globalSampleSize.value = ds.global_sample_size;
+    description.value = ds.description;
+
+    institution.value = data.study.institution;
+    setTimeout(() => {
+        document.getElementById('study').value = data.study.name;
+    }, 500);
+}
+
 onMounted(() => {
     datasetName.value.focus();
     //save the typing the base url, common, headers, add error handler to show banner
@@ -350,15 +371,20 @@ onMounted(() => {
     });
     configuredAxios.interceptors.response.use(undefined, (error) => {
         processing.value = false;
-        errorMessage.value = error.message;
+        errorMessage.value = error.response.data.message;
         serverSuccess.value = false;
         showNotification.value = true;
+        throw new Error("Server error");
     });
+    if(props.existingDataset){
+        fetchExistingDataset(props.existingDataset);
+    }
 });
 
 // institution is saved with study, so if user selects an existing study use that
 //saved institution
 watch(study, (newVal, _) => {
+    console.log(`study buddy ${JSON.stringify(newVal)}`);
     if (institution.value === "" && newVal && newVal.institution) {
         institution.value = newVal.institution;
     }
