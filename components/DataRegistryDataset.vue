@@ -38,7 +38,7 @@
                         <AutoCompleteDialog
                             :items="studies"
                             :filter-function="filterStudies"
-                            :item-display="s => s.label"
+                            :item-display="(s) => s.label"
                             id="study"
                             placeholder="Study name e.g., TOPMed Sleep Apnea WGS"
                             @blur="leaveStudy"
@@ -244,7 +244,9 @@
                         <h4>Data description</h4>
                         <div class="row">
                             <div class="col-md-12 col filter-col-md">
-                                <div class="label">PubMed ID, DOI, or PubMed Central ID</div>
+                                <div class="label">
+                                    PubMed ID, DOI, or PubMed Central ID
+                                </div>
                                 <div class="input-group">
                                     <span class="input-group-text"
                                         >https://pubmed.ncbi.nlm.nih.gov/</span
@@ -305,10 +307,12 @@
 </template>
 
 <script setup>
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import axios from "axios";
 import Modal from "~/components/Modal.vue";
 
-const props = defineProps({existingDataset: String});
+const props = defineProps({ existingDataset: String });
 const datasetName = ref(null);
 const processing = ref(false);
 const modalMsg = ref("Do not close this window, saving data...");
@@ -339,7 +343,9 @@ const studies = useState("studies", () => []);
 let configuredAxios;
 
 async function fetchExistingDataset(existingDataset) {
-    const {data} = await configuredAxios.get(`/api/datasets/${existingDataset}`);
+    const { data } = await configuredAxios.get(
+        `/api/datasets/${existingDataset}`,
+    );
     const ds = data.dataset;
     dsName.value = ds.name;
     genomeBuild.value = ds.genome_build;
@@ -354,7 +360,7 @@ async function fetchExistingDataset(existingDataset) {
 
     institution.value = data.study.institution;
     setTimeout(() => {
-        document.getElementById('study').value = data.study.name;
+        document.getElementById("study").value = data.study.name;
     }, 500);
 }
 
@@ -376,7 +382,7 @@ onMounted(() => {
         showNotification.value = true;
         throw new Error("Server error");
     });
-    if(props.existingDataset){
+    if (props.existingDataset) {
         fetchExistingDataset(props.existingDataset);
     }
 });
@@ -401,9 +407,9 @@ function leaveStudy(event) {
     }
 }
 
-function filterStudies(q){
+function filterStudies(q) {
     return studies.value.filter((s) => {
-        if(q.length < 2) return false;
+        if (q.length < 2) return false;
         return s.label.toLowerCase().includes(q.toLowerCase());
     });
 }
@@ -490,7 +496,9 @@ async function saveDataset(study_id) {
 
 //retrieve the study information from the PUBMED
 async function getPubMedInfo() {
-    const { data } = await configuredAxios.get(`/api/publications?pub_id=${pubId.value.trim()}`);
+    const { data } = await configuredAxios.get(
+        `/api/publications?pub_id=${pubId.value.trim()}`,
+    );
     if (data) {
         description.value = data.abstract;
         publication.value = data.title;
