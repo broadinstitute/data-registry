@@ -21,8 +21,4 @@ async function fetchStudies() {
 }
 </script>
 
-<style>
-tr {
-    cursor: pointer;
-}
-</style>
+<style></style>

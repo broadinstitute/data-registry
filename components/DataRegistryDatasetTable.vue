@@ -16,12 +16,10 @@
             </tr>
         </thead>
         <tbody class="table-group-divider">
-            <tr
-                v-for="dataset in props.dataSets"
-                :key="dataset.id"
-                @click="route.push({ path: `/datasets/${dataset.id}` })"
-            >
-                <td>{{ dataset.name }}</td>
+            <tr v-for="dataset in props.dataSets" :key="dataset.id">
+                <td @click="route.push({ path: `/datasets/${dataset.id}` })">
+                    {{ dataset.name }}
+                </td>
                 <td>
                     {{
                         dataset.description.length <= 20
@@ -29,7 +27,7 @@
                             : dataset.description.substring(0, 20) + "..."
                     }}
                 </td>
-                <td>{{ dataset.pub_id }}</td>
+                <td v-html="formatPubLink(dataset.pub_id)"></td>
                 <td>{{ dataset.data_type }}</td>
                 <td>{{ dataset.ancestry }}</td>
                 <td v-html="formatSex(dataset.sex)"></td>
@@ -37,7 +35,13 @@
                 <td>{{ dataset.status }}</td>
                 <td>{{ dataset.data_submitter }}</td>
 
-                <td>{{ dataset.created_at }}</td>
+                <td>
+                    {{
+                        dataset.created_at
+                            ? dataset.created_at.split("T")[0]
+                            : ""
+                    }}
+                </td>
             </tr>
         </tbody>
     </table>
@@ -62,5 +66,19 @@ function formatSex(gender) {
         }
     }
 }
+
+function formatPubLink(pubId) {
+    if (!pubId) return "";
+    else {
+        return `<a href="https://pubmed.ncbi.nlm.nih.gov/${pubId}" target="_blank">${pubId}</a>`;
+    }
+}
 </script>
-<style scoped></style>
+<style scoped>
+tr > td:first-child {
+    cursor: pointer;
+}
+a {
+    text-decoration: none;
+}
+</style>
