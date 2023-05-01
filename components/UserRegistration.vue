@@ -17,30 +17,35 @@
       </div>
       <h4>Here is the content of all posts:</h4>
       <ul>
-        <li v-for="post in posts">Here is a post: {{post}}</li>
+        <li v-for="post in posts.value">Here is a post: {{post}}</li>
       </ul>
     </div>
 </template>
   
 <script setup>
   import axios from 'axios';
-    const props = defineProps({msg: String});
-    const sessionToken = ref("");
-    const newTitle = ref("");
-    const newContent = ref("");
-    const newUser = ref("");
-    const newUserEmail = ref("");
-    const newUserPassword = ref("");
-    const posts = useState("posts", () => []);
+  const host = "http://ec2-52-23-213-123.compute-1.amazonaws.com";
+  const props = defineProps({msg: String});
+  const sessionToken = ref("");
+  const newTitle = ref("");
+  const newContent = ref("");
+  const newUser = ref("");
+  const newUserEmail = ref("");
+  const newUserPassword = ref("");
+  const posts = ref([]);
   onMounted(() => {
-        axios.get('//localhost/session/token')
+        axios.get(`${host}/session/token`)
         .then(response => {
-          sessionToken = response.data;
-          console.log(sessionToken);
+          sessionToken.value = response.data;
+          console.log(sessionToken.value);
           })
           .catch(error => console.log(error));
-        axios.get('//localhost/jsonapi/node/article')
-          .then(response => posts = response.data)
+        axios.get(`${host}/jsonapi/node/article`)
+          .then(response => {
+            posts.value = response.data;
+            console.log(response.data);
+            console.log(typeof(response.data));
+          })
           .catch(error => console.log(error));
     });
     function postNew(){
@@ -56,7 +61,7 @@
             }
           }
         };
-        fetch('//localhost/jsonapi/node/article', {
+        fetch(`${host}/jsonapi/node/article`, {
           method: 'post',
           body: JSON.stringify(formData),
           headers: {
@@ -74,7 +79,7 @@
         let userData = {
           "_links": {
             "type": {
-              "href": "//localhost/rest/type/user/user"
+              "href": `${host}/rest/type/user/user`
             }
           },
           "name": [{
@@ -87,13 +92,13 @@
             "value": newUserEmail
           }]
         };
-        fetch("//localhost/user/register?_format=hal_json", {
+        fetch(`${host}/user/register?_format=hal_json`, {
           method: "post",
           body: JSON.stringify(userData),
           headers: {
             "Content-Type": "application/hal+json",
             "Accept": "application/json",
-            "X-CSRF-Token": sessionToken
+            "X-CSRF-Token": sessionToken.value
           }
         }).then(response => {
           console.log(response);
@@ -103,8 +108,6 @@
         })
           .catch(error => console.log(error));
     }
-    
-  
   </script>
   
   <!-- Add "scoped" attribute to limit CSS to this component only -->
