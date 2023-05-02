@@ -27,11 +27,11 @@
   const host = "http://ec2-52-23-213-123.compute-1.amazonaws.com";
   const props = defineProps({msg: String});
   const sessionToken = ref("");
-  const newTitle = ref("");
-  const newContent = ref("");
-  const newUser = ref("");
-  const newUserEmail = ref("");
-  const newUserPassword = ref("");
+  let newTitle = "";
+  let newContent = "";
+  let newUser = "";
+  let newUserEmail = "";
+  let newUserPassword = "";
   const posts = ref([]);
   onMounted(() => {
         axios.get(`${host}/session/token`)
@@ -90,13 +90,16 @@
           }],
           "mail": [{
             "value": newUserEmail
+          }],
+          "status": [{
+            "value": "1"
           }]
         };
-        fetch(`${host}/user/register?_format=hal_json`, {
-          method: "post",
+        fetch(`${host}/entity/user/register?_format=json`, {
+          method: "POST",
           body: JSON.stringify(userData),
           headers: {
-            "Content-Type": "application/hal+json",
+            "Content-Type": "application/json",
             "Accept": "application/json",
             "X-CSRF-Token": sessionToken.value
           }
