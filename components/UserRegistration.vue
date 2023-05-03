@@ -95,7 +95,7 @@
             "value": "1"
           }]
         };
-        fetch(`${host}/entity/user/register?_format=json`, {
+        fetch(`${host}/entity/user?_format=json`, {
           method: "POST",
           body: JSON.stringify(userData),
           headers: {
