@@ -95,12 +95,12 @@
             "value": "1"
           }]
         };
-        fetch(`${host}/entity/user?_format=json`, {
+        fetch(`${host}/user/register`, {
           method: "POST",
           body: JSON.stringify(userData),
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
+            "Accept": "*/*",
             "X-CSRF-Token": sessionToken.value
           }
         }).then(response => {
