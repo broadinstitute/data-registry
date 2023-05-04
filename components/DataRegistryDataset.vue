@@ -42,6 +42,7 @@
                             id="study"
                             placeholder="Study name e.g., TOPMed Sleep Apnea WGS"
                             @blur="leaveStudy"
+                            :initial-input="savedStudy"
                         />
                     </div>
                 </div>
@@ -298,7 +299,7 @@
                     </div>
                 </div>
                 <button type="button" class="btn btn-primary" @click="save">
-                    Save Dataset
+                    {{ props.existingDataset ? "Update Dataset" : "Save Dataset"}}
                 </button>
             </form>
         </div>
@@ -333,13 +334,15 @@ const sex = ref("");
 const globalSampleSize = ref("");
 const pubStatus = ref("");
 const description = ref("");
+const savedStudy = ref("");
 const pubId = ref(null);
 const publication = ref(null);
 
 const config = useRuntimeConfig();
 const study = useState("study");
-const phenotypeDatasets = useState("selectedPhenotypes");
+const phenotypeDatasets = useState("selectedPhenotypes", () => {});
 const studies = useState("studies", () => []);
+const phenotypes = useState("phenotypes", () => []);
 let configuredAxios;
 
 async function fetchExistingDataset(existingDataset) {
@@ -357,11 +360,41 @@ async function fetchExistingDataset(existingDataset) {
     geneticsDataType.value = ds.data_type;
     globalSampleSize.value = ds.global_sample_size;
     description.value = ds.description;
-
+    dataType.value = ds.data_source_type;
     institution.value = data.study.institution;
-    setTimeout(() => {
-        document.getElementById("study").value = data.study.name;
-    }, 500);
+    study.value = { value: data.study.id, label: data.study.name, institution: data.study.institution };
+    savedStudy.value = data.study.name;
+
+    let idx = 1;
+    data.phenotypes.map((p) => {
+        phenotypeDatasets.value['p'+idx++] = {'name': phenotypes.value[p.phenotype].description,
+            'dichotomous': p.dichotomous, 'sampleSize': p.sample_size, 'cases': p.cases,
+            'controls': p.controls};
+    });
+}
+
+async function getPhenotypes() {
+    const { data } = await $fetch(config.phenotypesUrl);
+    const mappedPhenotypes = {};
+    data.forEach((d) => (mappedPhenotypes[d.name] = d));
+    phenotypes.value = mappedPhenotypes;
+}
+
+async function fetchStudies() {
+    const data = await $fetch(`${config.apiBaseUrl}/api/studies`, {
+        headers: { "access-token": config.apiSecret },
+    });
+    studies.value = data.map((s) => {
+        return { label: s.name, value: s.id, institution: s.institution };
+    });
+}
+
+async function fetchInProperOrder() {
+    await fetchStudies()
+    await getPhenotypes()
+    if (props.existingDataset) {
+        await fetchExistingDataset(props.existingDataset)
+    }
 }
 
 onMounted(() => {
@@ -382,15 +415,12 @@ onMounted(() => {
         showNotification.value = true;
         throw new Error("Server error");
     });
-    if (props.existingDataset) {
-        fetchExistingDataset(props.existingDataset);
-    }
+    fetchInProperOrder()
 });
 
 // institution is saved with study, so if user selects an existing study use that
 //saved institution
 watch(study, (newVal, _) => {
-    console.log(`study buddy ${JSON.stringify(newVal)}`);
     if (institution.value === "" && newVal && newVal.institution) {
         institution.value = newVal.institution;
     }
@@ -472,7 +502,7 @@ async function savePhenotype(dataset_id, pKey) {
 
 async function saveDataset(study_id) {
     const shortened_study_id = study_id.replaceAll("-", "");
-    const opts = JSON.stringify({
+    const opts = {
         name: dsName.value,
         data_source_type: dataType.value,
         data_type: geneticsDataType.value,
@@ -489,8 +519,13 @@ async function saveDataset(study_id) {
         description: description.value,
         pub_id: pubId.value,
         publication: publication.value,
-    });
-    const { data } = await configuredAxios.post("/api/datasets", opts);
+    };
+    if (props.existingDataset) {
+        opts.id = props.existingDataset;
+        await configuredAxios.patch("/api/datasets", JSON.stringify(opts));
+        return props.existingDataset;
+    }
+    const { data } = await configuredAxios.post("/api/datasets", JSON.stringify(opts));
     return data.dataset_id;
 }
 

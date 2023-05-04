@@ -10,7 +10,6 @@
 //default to fetch data from the server, add form to edit/delete data
 //need to point to proper api endpoints
 
-import { ref, onMounted, onBeforeMount } from "vue";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -21,26 +20,6 @@ const phenotypeOptions = useState("phenotypeOptions", () => []);
 const studies = useState("studies", () => []);
 const config = useRuntimeConfig();
 
-onBeforeMount(() => {
-    getPhenotypes();
-    fetchStudies();
-});
-
-async function getPhenotypes() {
-    const { data } = await $fetch(config.phenotypesUrl);
-    const mappedPhenotypes = {};
-    data.forEach((d) => (mappedPhenotypes[d.description] = d));
-    phenotypes.value = mappedPhenotypes;
-}
-
-async function fetchStudies() {
-    const data = await $fetch(`${config.apiBaseUrl}/api/studies`, {
-        headers: { "access-token": config.apiSecret },
-    });
-    studies.value = data.map((s) => {
-        return { label: s.name, value: s.id, institution: s.institution };
-    });
-}
 
 async function fetchData({ params }) {
     if (params.id) {
