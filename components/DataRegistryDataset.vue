@@ -367,9 +367,9 @@ async function fetchExistingDataset(existingDataset) {
 
     let idx = 1;
     data.phenotypes.map((p) => {
-        phenotypeDatasets.value['p'+idx++] = {'name': phenotypes.value[p.phenotype].description,
+        phenotypeDatasets.value['p'+idx++] = {'name': phenotypes.value[p.phenotype].name,
             'dichotomous': p.dichotomous, 'sampleSize': p.sample_size, 'cases': p.cases,
-            'controls': p.controls};
+            'controls': p.controls, 'description': phenotypes.value[p.phenotype].description};
     });
 }
 
@@ -523,7 +523,7 @@ async function saveDataset(study_id) {
     if (props.existingDataset) {
         opts.id = props.existingDataset;
         await configuredAxios.patch("/api/datasets", JSON.stringify(opts));
-        return props.existingDataset;
+        return props.existingDataset.replaceAll('-', '');
     }
     const { data } = await configuredAxios.post("/api/datasets", JSON.stringify(opts));
     return data.dataset_id;

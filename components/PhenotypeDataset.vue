@@ -4,7 +4,7 @@
       <div class="label">Phenotype<sup>*</sup></div>
       <AutoCompleteDialog placeholder="Phenotype" :items="Object.values(phenotypes)" :filter-function="filterFunc"
                           :id="props.identifier"
-                          @blur="ptypeBlur" :item-display="i => i.description" :initial-input="selectedPhenotypes[props.identifier].name"/>
+                          @blur="ptypeBlur" :item-display="i => i.description" :initial-input="selectedPhenotypes[props.identifier].description"/>
       <div v-if="needsDichotomousInfo">
         <label for="dichotomousInfo" class="label">Dichotomous<sup>*</sup> &nbsp;</label><input type="checkbox" id="dichotomousInfo" v-model="selectedPhenotypes[props.identifier].dichotomous">
       </div>

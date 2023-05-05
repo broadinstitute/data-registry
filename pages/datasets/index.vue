@@ -11,10 +11,10 @@ import DataRegistryDatasetTable from "~/components/DataRegistryDatasetTable.vue"
 const config = useRuntimeConfig();
 const datasets = ref([]);
 onBeforeMount(() => {
-    fetchStudies();
+    fetchDataSets();
 });
 
-async function fetchStudies() {
+async function fetchDataSets() {
     datasets.value = await $fetch(`${config.apiBaseUrl}/api/datasets`, {
         headers: { "access-token": config.apiSecret },
     });
