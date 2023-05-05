@@ -90,26 +90,24 @@
           }],
           "mail": [{
             "value": newUserEmail
-          }],
-          "status": [{
-            "value": "1"
           }]
         };
+        // I think trying to post to ?_format=json gets me a 401 when it's anonymous.
         fetch(`${host}/user/register`, {
           method: "POST",
           body: JSON.stringify(userData),
           headers: {
             "Content-Type": "application/json",
-            "Accept": "*/*",
+            "Accept": "application/json",
             "X-CSRF-Token": sessionToken.value
           }
         }).then(response => {
           console.log(response);
+        })
+          .catch(error => console.log(error));
           newUser = "";
           newUserEmail = "";
           newUserPassword = "";
-        })
-          .catch(error => console.log(error));
     }
   </script>
   
