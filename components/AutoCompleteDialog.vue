@@ -40,6 +40,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  initialInput: {
+    type: String,
+    default: '',
+  },
   filterFunction: {
     type: Function,
     required: true
@@ -78,17 +82,23 @@ const props = defineProps({
 const emit = defineEmits(['blur'])
 const input = ref('');
 const inputVal = ref(null);
+const inputRef = ref(null);
+const initialInput = toRef(props, 'initialInput');
 
 const filteredItems = computed(() => props.filterFunction(input.value));
 const wrapperId = computed(() => `${props.id}-wrapper`);
 const isInputFocused = ref(false);
 const currentSelectionIndex = ref(0);
-const inputRef = ref(null);
 const currentSelection = computed(() => isListVisible.value && currentSelectionIndex.value < filteredItems.value.length ? filteredItems.value[currentSelectionIndex.value] : undefined);
 const isListVisible = computed(() => isInputFocused.value && input.value.length >= props.minInputLength && filteredItems.value.length > props.minItemLength);
 function onFocus() {
   isInputFocused.value = true;
 }
+
+watch(initialInput, (val) => {
+  input.value = val;
+});
+
 
 function onBlur() {
   isInputFocused.value = false;
