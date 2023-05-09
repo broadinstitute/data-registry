@@ -1,13 +1,6 @@
 <template>
     <div class="hello">
       <h1>{{ msg }}</h1>
-  
-      <h4>Post new content:</h4>
-      <div>
-          <label>Title: <input v-model="newTitle"/></label>
-          <label>Content: <textarea v-model="newContent"></textarea></label>
-          <button @click="postNew">Post</button>
-      </div>
       <h4>Create new user:</h4>
       <div>
           <label>Username:<input v-model="newUser"/></label>
@@ -15,10 +8,6 @@
           <label>Password: <input type="password" v-model="newUserPassword"/></label>
           <button @click="registerNewUser">Register</button>
       </div>
-      <h4>Here is the content of all posts:</h4>
-      <ul>
-        <li v-for="post in posts.value">Here is a post: {{post}}</li>
-      </ul>
     </div>
 </template>
   
@@ -27,12 +16,9 @@
   const host = "http://ec2-52-23-213-123.compute-1.amazonaws.com";
   const props = defineProps({msg: String});
   const sessionToken = ref("");
-  let newTitle = "";
-  let newContent = "";
   let newUser = "";
   let newUserEmail = "";
   let newUserPassword = "";
-  const posts = ref([]);
   onMounted(() => {
         axios.get(`${host}/session/token`)
         .then(response => {
@@ -40,48 +26,9 @@
           console.log(sessionToken.value);
           })
           .catch(error => console.log(error));
-        axios.get(`${host}/jsonapi/node/article`)
-          .then(response => {
-            posts.value = response.data;
-            console.log(response.data);
-            console.log(typeof(response.data));
-          })
-          .catch(error => console.log(error));
     });
-    function postNew(){
-        let formData = {
-          "data": {
-            type: "node--article",
-            attributes: {
-              title: newTitle,
-              body: {
-                value: newContent,
-                format: 'plain_text'
-              }
-            }
-          }
-        };
-        fetch(`${host}/jsonapi/node/article`, {
-          method: 'post',
-          body: JSON.stringify(formData),
-          headers: {
-            'Accept': 'application/vnd.api+json',
-            'Content-Type': 'application/vnd.api+json',
-            'Authorization': 'Basic ' + btoa('api:api'),
-          }
-        })
-          .then(response => console.log(response))
-          .catch(error => console.log(error));
-        newTitle = "";
-        newContent = "";
-    }
     function registerNewUser(){
-        let userData = {
-          "_links": {
-            "type": {
-              "href": `${host}/rest/type/user/user`
-            }
-          },
+      let userData = {
           "name": [{
             "value": newUser
           }],
@@ -92,14 +39,12 @@
             "value": newUserEmail
           }]
         };
-        // I think trying to post to ?_format=json gets me a 401 when it's anonymous.
-        fetch(`${host}/user/register`, {
+        fetch(`${host}/user/register?_format=json`, {
           method: "POST",
           body: JSON.stringify(userData),
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "X-CSRF-Token": sessionToken.value
           }
         }).then(response => {
           console.log(response);
