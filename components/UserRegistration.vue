@@ -12,21 +12,12 @@
 </template>
   
 <script setup>
-  import axios from 'axios';
   const host = "http://ec2-52-23-213-123.compute-1.amazonaws.com";
   const props = defineProps({msg: String});
   const sessionToken = ref("");
   let newUser = "";
   let newUserEmail = "";
   let newUserPassword = "";
-  onMounted(() => {
-        axios.get(`${host}/session/token`)
-        .then(response => {
-          sessionToken.value = response.data;
-          console.log(sessionToken.value);
-          })
-          .catch(error => console.log(error));
-    });
     function registerNewUser(){
       let userData = {
           "name": [{

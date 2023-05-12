@@ -45,13 +45,10 @@
           console.log(response);
         })
           .catch(error => console.log(error));
-          newUser = "";
-          newUserEmail = "";
-          newUserPassword = "";
   }
   function formatBasicAuth(userName, password) {
     let basicAuthCredential = userName + ":" + password;
-    let bace64 =  btoa(basicAuthCredential);
+    let bace64 =  window.btoa(basicAuthCredential);
     return 'Basic ' + bace64;
   }
   </script>
