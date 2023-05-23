@@ -19,13 +19,13 @@
                 <pre class="output">{{ JSON.stringify(currentFieldConfig) }}</pre>
             </div>
             <div class="col-md-8 col">
-                <RawRename></RawRename>
-				<Calculate></Calculate>
-                <Join></Join>
-				<JoinMulti></JoinMulti>
-				<ArrayToString></ArrayToString>
-				<ReplaceCharacters></ReplaceCharacters>
-				<ScoreColumns></ScoreColumns>
+                <RawRename v-if="dataConvertType=='raw'"></RawRename>
+				<Calculate v-else-if="dataConvertType=='calculate'"></Calculate>
+                <Join v-else-if="dataConvertType=='join'"></Join>
+				<JoinMulti v-else-if="dataConvertType=='join multi'"></JoinMulti>
+				<ArrayToString v-else-if="dataConvertType=='array to string'"></ArrayToString>
+				<ReplaceCharacters v-else-if="dataConvertType=='replace characters'"></ReplaceCharacters>
+				<ScoreColumns v-else-if="dataConvertType=='score columns'"></ScoreColumns>
 			</div>
 			<div class="col-md-1 col">
 				<button class="btn btn-primary btn-sm" type="button">
@@ -69,11 +69,16 @@
     import ReplaceCharacters from "@/components/configcomponents/dataconverters/ReplaceCharacters.vue";
     import ScoreColumns from "@/components/configcomponents/dataconverters/ScoreColumns.vue";
 
-    let dataConvertType = "array2string";
+    /* const selectedDataConvertType = ref("array to string");
+    const dataConvertType = computed(() => {
+        console.log(selectedDataConvertType.value);
+        return selectedDataConvertType.value;
+    }); */
+    const dataConvertType = ref("array to string");
     const dataConvertOptions = [
         {
             displayName: "Array to string *",
-            selectValue: "array2string" 
+            selectValue: "array to string" 
         },
         {
             displayName: "Calculate",
@@ -85,7 +90,7 @@
         },
         {
             displayName: "Join multi",
-            selectValue: "joinmulti"
+            selectValue: "join multi"
         },
         {
             displayName: "Raw (rename)",
@@ -93,11 +98,11 @@
         },
         {
             displayName: "Replace characters",
-            selectValue: "replace"
+            selectValue: "replace characters"
         },
         {
             displayName: "Score columns",
-            selectValue: "scorecolumns"
+            selectValue: "score columns"
         }
     ];
 
