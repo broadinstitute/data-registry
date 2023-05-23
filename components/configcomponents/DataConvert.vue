@@ -1,221 +1,193 @@
 <template>
     <div>
-<h5>
-												Data convert
-												<sup class="optional"
-													>Tutorial
-												</sup>
-											</h5>
+        <h5>Data convert
+			<sup class="optional">Tutorial</sup>
+		</h5>
+        <div class="row dr-builder-ui">
+            <div class="col-md-3 col">
+                <div class="label">Type</div>
+                <select class="form-control" v-model="dataConvertType">
+                    <option v-for="dcOption in dataConvertOptions" :value="dcOption.selectValue">
+                        {{ dcOption.displayName }}
+                    </option>
+                </select>
+                <pre />
+                <div class="label">
+                    New field name
+                </div>
+                <input
+                    type="text"
+                    class="
+                        form-control
+                        input-default
+                    "
+                    placeholder="name"
+                />
+            </div>
+            <div class="col-md-8 col">
+                <!-- raw -->
+                <div
+                    class="row"
+                    id="rawConfig"
+                >
+                    <div
+                        class="col-md-6 col"
+                    >
+                        <div class="label">
+                            Raw (rename) |
+                            Select field
+                        </div>
+                        <ul
+                            class="
+                                dr-byor-data-columns
+                            "
+                        >
+                            <li
+                                class="
+                                    form-check
+                                    form-check-inline
+                                "
+                            >
+                                <input
+                                    class="
+                                        form-check-input
+                                    "
+                                    type="radio"
+                                    value=""
+                                    id="flexCheckDefault"
+                                />
+                                <span
+                                    class="
+                                        form-check-label
+                                    "
+                                    for="flexCheckDefault"
+                                >
+                                    CHR
+                                </span>
+                            </li>
+                            <li
+                                class="
+                                    form-check
+                                    form-check-inline
+                                "
+                            >
+                                <input
+                                    class="
+                                        form-check-input
+                                    "
+                                    type="radio"
+                                    value=""
+                                    id="flexCheckDefault"
+                                />
+                                <span
+                                    class="
+                                        form-check-label
+                                    "
+                                    for="flexCheckDefault"
+                                >
+                                    POS</span
+                                >
+                            </li>
 
-											<div class="row dr-builder-ui">
-												<div class="col-md-3 col">
-													<div class="label">
-														Type
-													</div>
-													<select
-														class="form-control"
-													>
-														<option value="">
-															Array to string<sup
-																>*</sup
-															>
-														</option>
-														<option value="">
-															Calculate
-														</option>
-														<option value="">
-															Join
-														</option>
-														<option value="">
-															Join multi
-														</option>
-														<option value="">
-															Raw (rename)
-														</option>
-														<option value="">
-															Replace characters
-														</option>
-														<option value="">
-															Score columns
-														</option>
-													</select>
-													<pre />
-													<div class="label">
-														New field name
-													</div>
-													<input
-														type="text"
-														class="
-															form-control
-															input-default
-														"
-														placeholder="name"
-													/>
-												</div>
-												<div class="col-md-8 col">
-													<!-- raw -->
-													<div
-														class="row"
-														id="rawConfig"
-													>
-														<div
-															class="col-md-6 col"
-														>
-															<div class="label">
-																Raw (rename) |
-																Select field
-															</div>
-															<ul
-																class="
-																	dr-byor-data-columns
-																"
-															>
-																<li
-																	class="
-																		form-check
-																		form-check-inline
-																	"
-																>
-																	<input
-																		class="
-																			form-check-input
-																		"
-																		type="radio"
-																		value=""
-																		id="flexCheckDefault"
-																	/>
-																	<span
-																		class="
-																			form-check-label
-																		"
-																		for="flexCheckDefault"
-																	>
-																		CHR
-																	</span>
-																</li>
-																<li
-																	class="
-																		form-check
-																		form-check-inline
-																	"
-																>
-																	<input
-																		class="
-																			form-check-input
-																		"
-																		type="radio"
-																		value=""
-																		id="flexCheckDefault"
-																	/>
-																	<span
-																		class="
-																			form-check-label
-																		"
-																		for="flexCheckDefault"
-																	>
-																		POS</span
-																	>
-																</li>
-
-																<li
-																	class="
-																		form-check
-																		form-check-inline
-																	"
-																>
-																	<input
-																		class="
-																			form-check-input
-																		"
-																		type="radio"
-																		value=""
-																		id="flexCheckDefault"
-																	/>
-																	<span
-																		class="
-																			form-check-label
-																		"
-																		for="flexCheckDefault"
-																	>
-																		REF
-																	</span>
-																</li>
-																<li
-																	class="
-																		form-check
-																		form-check-inline
-																	"
-																>
-																	<input
-																		class="
-																			form-check-input
-																		"
-																		type="radio"
-																		value=""
-																		id="flexCheckDefault"
-																	/>
-																	<span
-																		class="
-																			form-check-label
-																		"
-																		for="flexCheckDefault"
-																	>
-																		ALT
-																	</span>
-																</li>
-																<li
-																	class="
-																		form-check
-																		form-check-inline
-																	"
-																>
-																	<input
-																		class="
-																			form-check-input
-																		"
-																		type="radio"
-																		value=""
-																		id="flexCheckDefault"
-																	/>
-																	<span
-																		class="
-																			form-check-label
-																		"
-																		for="flexCheckDefault"
-																	>
-																		RSID
-																	</span>
-																</li>
-																<li
-																	class="
-																		form-check
-																		form-check-inline
-																	"
-																>
-																	<input
-																		class="
-																			form-check-input
-																		"
-																		type="radio"
-																		value=""
-																		id="flexCheckDefault"
-																	/>
-																	<span
-																		class="
-																			form-check-label
-																		"
-																		for="flexCheckDefault"
-																	>
-																		PVAL
-																	</span>
-																</li>
-															</ul>
-														</div>
-														<div
-															class="col-md-6 col"
-														></div>
-													</div>
-													<!-- calculate -->
+                            <li
+                                class="
+                                    form-check
+                                    form-check-inline
+                                "
+                            >
+                                <input
+                                    class="
+                                        form-check-input
+                                    "
+                                    type="radio"
+                                    value=""
+                                    id="flexCheckDefault"
+                                />
+                                <span
+                                    class="
+                                        form-check-label
+                                    "
+                                    for="flexCheckDefault"
+                                >
+                                    REF
+                                </span>
+                            </li>
+                            <li
+                                class="
+                                    form-check
+                                    form-check-inline
+                                "
+                            >
+                                <input
+                                    class="
+                                        form-check-input
+                                    "
+                                    type="radio"
+                                    value=""
+                                    id="flexCheckDefault"
+                                />
+                                <span
+                                    class="
+                                        form-check-label
+                                    "
+                                    for="flexCheckDefault"
+                                >
+                                    ALT
+                                </span>
+                            </li>
+                            <li
+                                class="
+                                    form-check
+                                    form-check-inline
+                                "
+                            >
+                                <input
+                                    class="
+                                        form-check-input
+                                    "
+                                    type="radio"
+                                    value=""
+                                    id="flexCheckDefault"
+                                />
+                                <span
+                                    class="
+                                        form-check-label
+                                    "
+                                    for="flexCheckDefault"
+                                >
+                                    RSID
+                                </span>
+                            </li>
+                            <li
+                                class="
+                                    form-check
+                                    form-check-inline
+                                "
+                            >
+                                <input
+                                    class="
+                                        form-check-input
+                                    "
+                                    type="radio"
+                                    value=""
+                                    id="flexCheckDefault"
+                                />
+                                <span
+                                    class="
+                                        form-check-label
+                                    "
+                                    for="flexCheckDefault"
+                                >
+                                    PVAL
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div
+                        class="col-md-6 col"
+                    ></div>
+                </div>
+                <!-- calculate -->
 													<div
 														class="row"
 														id="calculateConfig"
@@ -1374,4 +1346,37 @@
     import RawRename from "@/components/configcomponents/dataconverters/RawRename.vue";
     import ReplaceCharacters from "@/components/configcomponents/dataconverters/ReplaceCharacters.vue";
     import ScoreColumns from "@/components/configcomponents/dataconverters/ScoreColumns.vue";
+
+    let dataConvertType = "array2string"
+    
+    const dataConvertOptions = [
+        {
+            displayName: "Array to string *",
+            selectValue: "array2string" 
+        },
+        {
+            displayName: "Calculate",
+            selectValue: "calculate",
+        },
+        {
+            displayName: "Join",
+            selectValue: "join"
+        },
+        {
+            displayName: "Join multi",
+            selectValue: "joinmulti"
+        },
+        {
+            displayName: "Raw (rename)",
+            selectValue: "raw"
+        },
+        {
+            displayName: "Replace characters",
+            selectValue: "replace"
+        },
+        {
+            displayName: "Score columns",
+            selectValue: "scorecolumns"
+        }
+    ];
 </script>
