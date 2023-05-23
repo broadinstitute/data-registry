@@ -45,7 +45,8 @@
 			<div class="dr-format-bubble" v-for="field, index in savedFieldConfigs">
 				<span class="name">{{ field["field name"] }}</span>
                 <span class="type">{{ field["type"] }}</span>
-                <a @click="editField(index)"><span class="edit">Edit</span></a>
+                <span class="editing" v-if="editingFieldIndex == index">Editing</span>
+                <a v-else @click="editField(index)"><span class="edit">Edit</span></a>
 		    </div>
         </div>
     </div>

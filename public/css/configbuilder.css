@@ -154,6 +154,17 @@ ul.dr-byor-data-columns.inline-list > li > label {
 	vertical-align: 1px;
 }
 
+.dr-format-bubble span.editing {
+	color: black;
+	background-color: white;
+	border-right: none;
+	border-radius: 8px;
+	font-size: 10px;
+	padding: 0 5px;
+	margin-right: 0;
+	vertical-align: 1px;
+}
+
 .dr-format-bubble span.edit:hover {
 	cursor: pointer;
 }
@@ -163,4 +174,7 @@ pre.output{
 	border-radius: 5px;
 	border: solid 1px #dddddd;
 	min-height: 150px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	word-wrap: break-word;
 }
