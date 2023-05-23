@@ -1,11 +1,5 @@
 <template>
 	<div class="front-page-body">
-		<!-- Header -->
-		<page-header
-			:disease-group="$parent.diseaseGroup"
-			:front-contents="$parent.frontContents"
-		></page-header>
-
 		<!-- Body -->
 		<div class="container-fluid mdkp-body">
 			<div class="card mdkp-card dataset-page-header">
@@ -2962,6 +2956,7 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 	</div>
 </template>
 <style scoped>
+@import "./mdkp.css";
 .dr-meta-info {
 	border-radius: 5px;
 	background-color: #eeeeee;
