@@ -26,39 +26,31 @@
 				<ReplaceCharacters></ReplaceCharacters>
 				<ScoreColumns></ScoreColumns>
 			</div>
-												<div class="col-md-1 col">
-													<button
-														class="
-															btn
-															btn-primary
-															btn-sm
-														"
-														type="button"
-													>
-														Save
-													</button>
-													<button
-														class="
-															btn
-															btn-warning
-															btn-sm
-														"
-														type="button"
-													>
-														Cancel
-													</button>
-													<button
-														class="
-															btn
-															btn-danger
-															btn-sm
-														"
-														type="button"
-													>
-														Delete
-													</button>
-												</div>
-											</div>
+			<div class="col-md-1 col">
+				<button class="btn btn-primary btn-sm" type="button">
+                    Save
+                </button>
+                <button class="btn btn-warning btn-sm" type="button">
+                    Cancel
+                </button>
+                <button class="btn btn-danger btn-sm" type="button">
+                    Delete
+                </button>
+			</div>
+		</div>
+    </div>
+    <div class="row">
+		<div class="col-md-12 col text-center dr-bubbles-wrapper">
+			<div class="dr-format-bubble">
+				<span class="name">Variant ID</span>
+                <span class="type">join multi</span>
+                <span class="edit">Edit</span>
+		    </div>
+			<div class="dr-format-bubble">
+				<span class="name">P-Value(-Log10)</span>
+                <span class="type">calculate</span><span class="edit">Edit</span>
+            </div>
+        </div>
     </div>
 </template>
 <style scoped>
