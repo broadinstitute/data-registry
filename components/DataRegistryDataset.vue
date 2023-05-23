@@ -451,27 +451,11 @@ async function saveStudy() {
     );
 }
 
-function credible_set_validation() {
-  //if a credible set name or file is provided, make sure to require the counterpart field
-  const credible_set_elements = document.getElementsByClassName('credible-set')
-  for (const element of credible_set_elements) {
-    element.required = false
-  }
-  for (const element of credible_set_elements) {
-    if (element.value !== '') {
-      const credible_set_inputs_for_pheno = document.querySelectorAll(
-          '[data-associated-phenotype="' + element.dataset.associatedPhenotype + '"]')
-      credible_set_inputs_for_pheno.forEach(input => input.required = true)
-    }
-  }
-}
-
 async function save() {
     const form = document.getElementById("inputForm");
-    credible_set_validation()
     if (!form.checkValidity()) {
-      form.classList.add("was-validated");
-      return;
+        form.classList.add("was-validated");
+        return;
     }
     processing.value = true;
     let dataset_id;
@@ -492,17 +476,14 @@ async function save() {
     }
     for (const phenotype of Object.keys(phenotypeDatasets.value)) {
         modalMsg.value = `Do not close this window, uploading data for ${phenotypeDatasets.value[phenotype].description}`;
-        const saved_phenotype_id = await savePhenotype(dataset_id, phenotype);
-        if(phenotypeDatasets.value[phenotype].credibleSetFile){
-            await saveCredibleSet(saved_phenotype_id, phenotype);
-        }
+        await savePhenotype(dataset_id, phenotype);
     }
     processing.value = false;
     serverSuccess.value = true;
     showNotification.value = true;
 }
 
-function getPhenotypeDataSetUploadUrl(dataset_id, pType) {
+function getUrl(dataset_id, pType) {
     let url = `/api/uploadfile/${dataset_id}/${pType.name}/${pType.dichotomous}/${pType.sampleSize}`;
     if (!pType.dichotomous) {
         return url;
@@ -510,23 +491,13 @@ function getPhenotypeDataSetUploadUrl(dataset_id, pType) {
     return url + `?controls=${pType.controls}&cases=${pType.cases}`;
 }
 
-async function saveCredibleSet(saved_phenotype_id, pKey) {
-  const formData = new FormData();
-  const pType = phenotypeDatasets.value[pKey];
-  formData.append("file", pType.credibleSetFile);
-  await configuredAxios.post(`/api/crediblesetupload/${saved_phenotype_id}/${pType.credibleSetName}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-}
-
 async function savePhenotype(dataset_id, pKey) {
     const formData = new FormData();
     const pType = phenotypeDatasets.value[pKey];
     formData.append("file", pType.file);
-    const {data} = await configuredAxios.post(getPhenotypeDataSetUploadUrl(dataset_id, pType), formData, {
+    await configuredAxios.post(getUrl(dataset_id, pType), formData, {
         headers: { "Content-Type": "multipart/form-data" },
     });
-    return data.phenotype_data_set_id;
 }
 
 async function saveDataset(study_id) {

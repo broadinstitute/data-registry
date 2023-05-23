@@ -34,22 +34,6 @@
           </div>
     </div>
   </div>
-    <div class="row">
-      <div class="col col-md-11 offset-md-1">
-        <div class="row dr-meta-info" style="margin-right: 10px; ">
-          <div class="col col-md-6">
-            <div class="label">Credible Set Name</div>
-            <input type="text" class="form-control input-default credible-set" placeholder="name" :data-associated-phenotype="props.identifier"
-                   v-model="selectedPhenotypes[props.identifier].credibleSetName">
-          </div>
-          <div class="col col-md-6">
-            <div class="label">Credible Set File</div>
-            <input type="file" class="form-control input-default credible-set" placeholder="file"
-                   :data-associated-phenotype="props.identifier" @change="credibleSetFileChange">
-          </div>
-        </div>
-      </div>
-    </div>
 </template>
 
 <script setup>
@@ -64,10 +48,6 @@ const dichotomous = computed(() => selectedPhenotypes.value[props.identifier] &&
 
 function fileChange(e){
   selectedPhenotypes.value[props.identifier].file = e.target.files[0]
-}
-
-function credibleSetFileChange(e){
-  selectedPhenotypes.value[props.identifier].credibleSetFile = e.target.files[0]
 }
 
 function ptypeBlur(event){
