@@ -6,7 +6,7 @@
         <div class="row dr-builder-ui">
             <div class="col-md-3 col">
                 <div class="label">Type</div>
-                <select class="form-control" v-model="dataConvertType">
+                <select class="form-control" v-model="dataConvertType" :disabled="editingFieldIndex >= 0">
                     <option v-for="dcOption in dataConvertOptions" :value="dcOption.selectValue">
                         {{ dcOption.displayName }}
                     </option>
@@ -42,15 +42,11 @@
     </div>
     <div class="row">
 		<div class="col-md-12 col text-center dr-bubbles-wrapper">
-			<div class="dr-format-bubble">
-				<span class="name">Variant ID</span>
-                <span class="type">join multi</span>
-                <span class="edit">Edit</span>
+			<div class="dr-format-bubble" v-for="field, index in savedFieldConfigs">
+				<span class="name">{{ field["field name"] }}</span>
+                <span class="type">{{ field["type"] }}</span>
+                <a @click="editField(index)"><span class="edit">Edit</span></a>
 		    </div>
-			<div class="dr-format-bubble">
-				<span class="name">P-Value(-Log10)</span>
-                <span class="type">calculate</span><span class="edit">Edit</span>
-            </div>
         </div>
     </div>
 </template>
@@ -69,11 +65,6 @@
     import ReplaceCharacters from "@/components/configcomponents/dataconverters/ReplaceCharacters.vue";
     import ScoreColumns from "@/components/configcomponents/dataconverters/ScoreColumns.vue";
 
-    /* const selectedDataConvertType = ref("array to string");
-    const dataConvertType = computed(() => {
-        console.log(selectedDataConvertType.value);
-        return selectedDataConvertType.value;
-    }); */
     const dataConvertType = ref("array to string");
     const dataConvertOptions = [
         {
@@ -106,7 +97,45 @@
         }
     ];
 
-    let newFieldName = "Enter new field name.";
-    let currentFieldConfig = {};
+    const newFieldName = ref("Enter new field name.");
+    const currentFieldConfig = reactive({});
+    // do we need to quote key names within the byor config? I think so
+    const savedFieldConfigs = reactive([
+        {
+            "type": "join multi",
+            "field name": "Coding sequence",
+            "fields to join": ["Chr", "Start", "End"],
+            "join by": [":","-"]
+        },
+        {
+            "type":"calculate",
+            "field name":"P-Value(-Log10)",
+            "raw field":"pValue",
+            "calculation type":"-log10"
+        }
+    ]);
+    const editingFieldIndex = ref(-1);
+    function editField(index){
+        editingFieldIndex.value = index;
+        // What if someone changes field type during editing? Gray out the selector and only un-gray upon saving?
+        let savedField = savedFieldConfigs[index];
+        currentFieldConfig.value = savedField;
+        newFieldName.value = savedField["field name"];
+        dataConvertType.value = savedField["type"];
+
+    }
+    function saveField(){
+        console.log("Saving field.");
+        if(editingFieldIndex == -1){
+            let newField = currentFieldConfig.value;
+            savedFieldConfigs.push(newField);
+        }
+    }
+    function cancelFieldEdit(){
+        console.log("Canceling field edit.");
+    }
+    function deleteField(){
+        console.log("Deleting field.");
+    }
 
 </script>
