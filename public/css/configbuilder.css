@@ -1,0 +1,159 @@
+.dr-meta-info {
+	border-radius: 5px;
+	background-color: #eeeeee;
+	padding: 15px 0 10px 0;
+	margin-bottom: 5px;
+}
+.dr-submit-section {
+	text-align: center;
+	border-top: solid 1px #dddddd;
+	padding-top: 15px;
+}
+.dr-data-section,
+.dr-credible-set-section,
+.dr-description-section {
+	padding-top: 15px;
+	margin-top: 15px;
+}
+
+.dr-data-update-section {
+	font-size: 14px;
+}
+
+.dr-data-section .row {
+	margin-bottom: 15px;
+}
+.dr-form .col {
+	margin-bottom: 10px;
+}
+
+.dr-form .col > div.label,
+.dataset-page-header .col > div.label {
+	font-weight: 700;
+	font-size: 14px;
+}
+
+.dr-data-point-label {
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.dr-form sup {
+	font-size: 12px;
+	color: #ff0000;
+}
+
+.dr-form sup.optional {
+	font-weight: 400 !important;
+	font-size: 12px;
+	color: #08954a !important;
+}
+
+.dr-form sup.optional.block {
+	display: block;
+	line-height: 120%;
+	margin-top: 0.7em;
+}
+
+.dr-sub-category {
+	background-color: #eeeeee;
+	border-radius: 5px;
+	border: solid 1px #ffffff;
+	padding-top: 5px;
+	margin-top: -15px;
+}
+
+.dr-builder-ui {
+	padding: 5px 15px;
+}
+
+.dr-builder-ui > div {
+	border: solid 1px #dddddd;
+	border-left: none;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	background-color: #eeeeee;
+}
+
+.dr-builder-ui > div:first-child {
+	border-left: solid 1px #dddddd;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+.dr-builder-ui > div:last-child {
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.dr-builder-ui > div:last-child > button {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+ul.dr-byor-data-columns {
+	list-style: none;
+	padding: 0;
+}
+ul.dr-byor-data-columns > li {
+	position: relative;
+	display: block;
+}
+ul.dr-byor-data-columns > li > label {
+	display: block;
+	position: absolute;
+	top: 0;
+	right: 0px;
+}
+
+ul.dr-byor-data-columns > li > label > select,
+ul.dr-byor-data-columns > li > label > input[type="text"] {
+	font-size: 12px;
+	padding: 0 5px;
+	height: 22px;
+}
+
+ul.dr-byor-data-columns.inline-list > li {
+	width: auto;
+	display: inline-block;
+	margin-right: 15px;
+}
+
+ul.dr-byor-data-columns.inline-list > li > label {
+	display: inline-block;
+	position: relative;
+}
+
+.dr-bubbles-wrapper {
+	margin-top: -15px;
+}
+
+.dr-format-bubble {
+	font-size: 12px;
+	padding: 3px 15px;
+	height: 22px;
+	border-radius: 12px;
+	background-color: cornflowerblue;
+	margin: 0 5px 5px 5px;
+	display: inline-block;
+}
+
+.dr-format-bubble span {
+	color: #ffffff;
+	display: inline-block;
+	margin: 0 3px;
+}
+
+.dr-format-bubble span.edit {
+	color: #ffffff;
+	background-color: #000000;
+	border-right: none;
+	border-radius: 8px;
+	font-size: 10px;
+	padding: 0 5px;
+	margin-right: 0;
+	vertical-align: 1px;
+}
+
+.dr-format-bubble span.edit:hover {
+	cursor: pointer;
+}
