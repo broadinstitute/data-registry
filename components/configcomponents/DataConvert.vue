@@ -11,11 +11,12 @@
                         {{ dcOption.displayName }}
                     </option>
                 </select>
-                <pre></pre> <!-- what went here? was this the output? compare to portal page-->
                 <div class="label">
                     New field name
                 </div>
                 <input type="text" class="form-control input-default" v-model="newFieldName"/>
+                <div class="label">Output</div>
+                <pre class="output">{{ JSON.stringify(currentFieldConfig) }}</pre>
             </div>
             <div class="col-md-8 col">
                 <RawRename></RawRename>
@@ -101,5 +102,6 @@
     ];
 
     let newFieldName = "Enter new field name.";
+    let currentFieldConfig = {};
 
 </script>

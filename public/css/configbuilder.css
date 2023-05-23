@@ -157,3 +157,10 @@ ul.dr-byor-data-columns.inline-list > li > label {
 .dr-format-bubble span.edit:hover {
 	cursor: pointer;
 }
+
+pre.output{
+	background-color: white;
+	border-radius: 5px;
+	border: solid 1px #dddddd;
+	min-height: 150px;
+}
