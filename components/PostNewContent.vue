@@ -5,9 +5,9 @@
           <label>Username:<input v-model="user"/></label>
           <label>Password: <input type="password" v-model="pass"/></label>
       </div>
-      <div>
+      <div id="contentform">
           <label>Title:<input v-model="newTitle"/></label>
-          <label>Body:<input type="textarea" v-model="newContent"/></label>
+          <label>Body:<textarea v-model="newContent"></textarea></label>
           <button @click="postNew">Post</button>
       </div>
     </div>
@@ -71,6 +71,12 @@
   }
   pre {
     text-align: left;
+  }
+  #contentform {
+    padding: 10px;
+  }
+  #contentform label{
+    display: block;
   }
   </style>
   
