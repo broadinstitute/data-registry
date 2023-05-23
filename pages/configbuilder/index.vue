@@ -3117,3 +3117,7 @@ ul.dr-byor-data-columns.inline-list > li > label {
 	cursor: pointer;
 }
 </style>
+<script setup>
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+</script>
