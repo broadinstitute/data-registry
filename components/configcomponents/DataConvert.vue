@@ -31,7 +31,7 @@
 				<button class="btn btn-primary btn-sm" type="button">
                     Save
                 </button>
-                <button class="btn btn-warning btn-sm" type="button">
+                <button class="btn btn-warning btn-sm" type="button" @click="cancelFieldEdit">
                     Cancel
                 </button>
                 <button class="btn btn-danger btn-sm" type="button">
@@ -66,7 +66,8 @@
     import ReplaceCharacters from "@/components/configcomponents/dataconverters/ReplaceCharacters.vue";
     import ScoreColumns from "@/components/configcomponents/dataconverters/ScoreColumns.vue";
 
-    const dataConvertType = ref("array to string");
+    const defaultType = "array to string";
+    const dataConvertType = ref(defaultType);
     const dataConvertOptions = [
         {
             displayName: "Array to string *",
@@ -98,8 +99,9 @@
         }
     ];
 
-    const newFieldName = ref("Enter new field name.");
-    const currentFieldConfig = reactive({});
+    const fieldNamePlaceholder = "Enter new field name."; 
+    const newFieldName = ref(fieldNamePlaceholder);
+    let currentFieldConfig = ref({});
     // do we need to quote key names within the byor config? I think so
     const savedFieldConfigs = reactive([
         {
@@ -117,8 +119,9 @@
     ]);
     const editingFieldIndex = ref(-1);
     function editField(index){
+        // You can't change a field type while editing. If you want to do that, you must delete and start over.
+        // Should clicking another field while edit is active serve as a cancel? or should we prevent it?
         editingFieldIndex.value = index;
-        // What if someone changes field type during editing? Gray out the selector and only un-gray upon saving?
         let savedField = savedFieldConfigs[index];
         currentFieldConfig.value = savedField;
         newFieldName.value = savedField["field name"];
@@ -134,6 +137,10 @@
     }
     function cancelFieldEdit(){
         console.log("Canceling field edit.");
+        editingFieldIndex.value = -1;
+        currentFieldConfig.value = {};
+        newFieldName.value = fieldNamePlaceholder;
+        dataConvertType.value = defaultType;
     }
     function deleteField(){
         console.log("Deleting field.");
