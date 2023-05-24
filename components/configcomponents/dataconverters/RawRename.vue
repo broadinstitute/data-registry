@@ -6,7 +6,8 @@
             </div>
             <ul class="dr-byor-data-columns">
 				<li v-for="rawField in rawFields" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="raw" :value="rawField" id="flexCheckDefault"/>
+					<input class="form-check-input" type="radio" name="raw" :value="rawField" 
+                        id="flexCheckDefault" v-model="selectedField"/>
 						<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
 				</li>													
 			</ul>
@@ -21,5 +22,17 @@
     @import "public/css/configbuilder.css";
 </style>
 <script setup>
-	const props = defineProps({rawFields: Array});
+	const props = defineProps({rawFields: Array, newFieldName: String});
+    const emit = defineEmits(['configUpdated']);
+    const selectedField = ref(null);
+    let rawRenameConfig = ref({
+        "type": "raw",
+        "field name": props.newFieldName,
+        "raw field": selectedField
+    });
+    watchEffect(()=> {
+        if (selectedField.value){
+            console.log(JSON.stringify(rawRenameConfig.value));
+        }
+    });
 </script>

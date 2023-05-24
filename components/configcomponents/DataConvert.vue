@@ -19,7 +19,8 @@
                 <pre class="output">{{ JSON.stringify(currentFieldConfig) }}</pre>
             </div>
             <div class="col-md-8 col">
-                <RawRename :raw-fields="rawFields" v-if="dataConvertType=='raw'"></RawRename>
+                <RawRename v-if="dataConvertType=='raw'" :raw-fields="rawFields" :new-field-name="newFieldName">
+                </RawRename>
 				<Calculate :raw-fields="rawFields" v-else-if="dataConvertType=='calculate'"></Calculate>
                 <Join :raw-fields="rawFields" v-else-if="dataConvertType=='join'"></Join>
 				<JoinMulti :raw-fields="rawFields" v-else-if="dataConvertType=='join multi'"></JoinMulti>
