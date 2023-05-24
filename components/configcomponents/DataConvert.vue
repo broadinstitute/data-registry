@@ -26,7 +26,9 @@
 				<Calculate :raw-fields="rawFields" v-else-if="dataConvertType=='calculate'"></Calculate>
                 <Join :raw-fields="rawFields" v-else-if="dataConvertType=='join'"></Join>
 				<JoinMulti :raw-fields="rawFields" v-else-if="dataConvertType=='join multi'"></JoinMulti>
-				<ArrayToString :raw-fields="rawFields" v-else-if="dataConvertType=='array to string'"></ArrayToString>
+				<ArrayToString v-else-if="dataConvertType=='array to string'" :raw-fields="rawFields"
+                    :new-field-name="newFieldName" @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                </ArrayToString>
 				<ReplaceCharacters :raw-fields="rawFields" v-else-if="dataConvertType=='replace characters'"></ReplaceCharacters>
 				<ScoreColumns :raw-fields="rawFields" v-else-if="dataConvertType=='score columns'"></ScoreColumns>
 			</div>
@@ -155,6 +157,7 @@
         if(editingFieldIndex.value == -1){
             savedFieldConfigs.value.push(newField);
         } else {
+            // why does the bubble show the new name before it is saved?
             savedFieldConfigs.value[editingFieldIndex.value] = newField;
         }
         doneEditing();

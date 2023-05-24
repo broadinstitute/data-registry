@@ -11,11 +11,10 @@
 						<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
 				</li>													
 			</ul>
-                    </div>
-                    <div
-                        class="col-md-6 col"
-                    ></div>
-                </div>
+        </div>
+        <div class="col-md-6 col">
+        </div>
+    </div>
 </template>
 <style scoped>
     @import "public/css/mdkp.css";
@@ -28,7 +27,7 @@
     const latestFieldName = computed(()=>{
         return props.newFieldName;
     });
-    let rawRenameConfig = ref({
+    const rawRenameConfig = ref({
         "type": "raw",
         "field name": latestFieldName,
         "raw field": selectedField
@@ -40,6 +39,7 @@
         console.log(readyToSave());
     });
     function readyToSave(){
-        return (!!rawRenameConfig.value["field name"] && !!rawRenameConfig.value["raw field"]);
+        return (!!rawRenameConfig.value["field name"] && !!rawRenameConfig.value["raw field"]
+            && rawRenameConfig.value["field name"].trim() != "");
     }
 </script>
