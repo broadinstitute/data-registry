@@ -154,9 +154,9 @@
             console.log("Field not ready to save");
             return;
         }
-        let newField = JSON.stringify(currentFieldConfig.value);
+        let newField = JSON.parse(JSON.stringify(currentFieldConfig.value));
         if(editingFieldIndex.value == -1){
-            savedFieldConfigs.value.push(JSON.parse(newField));
+            savedFieldConfigs.value.push(newField);
         } else {
             // why does the bubble show the new name before it is saved?
             savedFieldConfigs.value[editingFieldIndex.value] = newField;
