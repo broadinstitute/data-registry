@@ -37,5 +37,9 @@
         if (selectedField.value){
             emit('configChanged', rawRenameConfig.value);
         }
+        console.log(readyToSave());
     });
+    function readyToSave(){
+        return (!!rawRenameConfig.value["field name"] && !!rawRenameConfig.value["raw field"]);
+    }
 </script>
