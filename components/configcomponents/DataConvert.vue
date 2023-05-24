@@ -137,7 +137,7 @@
         // Should clicking another field while edit is active serve as a cancel? or should we prevent it?
         editingFieldIndex.value = index;
         let savedField = savedFieldConfigs[index];
-        currentFieldConfig.value = savedField;
+        updateConfig(savedField);
         newFieldName.value = savedField["field name"];
         dataConvertType.value = savedField["type"];
 
@@ -159,5 +159,10 @@
     function deleteField(){
         console.log("Deleting field.");
     }
+    watch(dataConvertType, ()=>{
+        if (editingFieldIndex.value == -1){
+            updateConfig({});
+        }
+    });
 
 </script>
