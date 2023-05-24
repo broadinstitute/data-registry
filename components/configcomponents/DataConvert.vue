@@ -7,6 +7,7 @@
             <div class="col-md-3 col">
                 <div class="label">Type</div>
                 <select class="form-control" v-model="dataConvertType" :disabled="editingFieldIndex >= 0">
+                    <option value="">Select a data convert type</option>
                     <option v-for="dcOption in dataConvertOptions" :value="dcOption.selectValue">
                         {{ dcOption.displayName }}
                     </option>
@@ -80,7 +81,7 @@
         "RSID",
         "PVAL"
     ];
-    const defaultType = "array to string";
+    const defaultType = "";
     const dataConvertType = ref(defaultType);
     const dataConvertOptions = [
         {
@@ -153,9 +154,9 @@
             console.log("Field not ready to save");
             return;
         }
-        let newField = currentFieldConfig.value;
+        let newField = JSON.stringify(currentFieldConfig.value);
         if(editingFieldIndex.value == -1){
-            savedFieldConfigs.value.push(newField);
+            savedFieldConfigs.value.push(JSON.parse(newField));
         } else {
             // why does the bubble show the new name before it is saved?
             savedFieldConfigs.value[editingFieldIndex.value] = newField;
