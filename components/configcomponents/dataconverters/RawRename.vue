@@ -23,7 +23,7 @@
 </style>
 <script setup>
 	const props = defineProps({rawFields: Array, newFieldName: String});
-    const emit = defineEmits(['configUpdated']);
+    const emit = defineEmits(['configChanged']);
     const selectedField = ref(null);
     const latestFieldName = computed(()=>{
         return props.newFieldName;
@@ -35,7 +35,7 @@
     });
     watchEffect(()=> {
         if (selectedField.value){
-            console.log(JSON.stringify(rawRenameConfig.value));
+            emit('configChanged', rawRenameConfig.value);
         }
     });
 </script>
