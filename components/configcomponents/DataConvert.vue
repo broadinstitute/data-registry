@@ -114,7 +114,7 @@
     const fieldNamePlaceholder = ""; 
     const newFieldName = ref(fieldNamePlaceholder);
     let readyToSave = false;
-    let currentFieldConfig = ref({});
+    const currentFieldConfig = ref({});
     // do we need to quote key names within the byor config? I think so
     const savedFieldConfigs = ref([
         {
