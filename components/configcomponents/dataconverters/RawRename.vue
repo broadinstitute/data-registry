@@ -25,9 +25,12 @@
 	const props = defineProps({rawFields: Array, newFieldName: String});
     const emit = defineEmits(['configUpdated']);
     const selectedField = ref(null);
+    const latestFieldName = computed(()=>{
+        return props.newFieldName;
+    });
     let rawRenameConfig = ref({
         "type": "raw",
-        "field name": props.newFieldName,
+        "field name": latestFieldName,
         "raw field": selectedField
     });
     watchEffect(()=> {
