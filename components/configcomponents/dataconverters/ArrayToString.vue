@@ -36,15 +36,14 @@
         "raw field": selectedField,
 		"separate by": separator
     });
-    watchEffect(()=> {
-        if (selectedField.value){
-            emit('configChanged', arrayRenameConfig.value, readyToSave());
-        }
-        console.log(readyToSave());
-    });
+    watch([latestFieldName, selectedField, separator], ()=>{
+        emit('configChanged', arrayRenameConfig.value, readyToSave());
+    })
     function readyToSave(){
 		//separator CAN be an empty string so we don't check that
-        return (!!arrayRenameConfig.value["field name"] && !!arrayRenameConfig.value["raw field"]
-		&& arrayRenameConfig.value["field name"].trim() != "");
+        return (!!arrayRenameConfig.value["field name"] 
+            && !!arrayRenameConfig.value["raw field"]
+		    && arrayRenameConfig.value["field name"].trim() != "");
     }
+
 </script>

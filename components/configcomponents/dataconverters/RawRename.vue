@@ -32,12 +32,9 @@
         "field name": latestFieldName,
         "raw field": selectedField
     });
-    watchEffect(()=> {
-        if (selectedField.value){
-            emit('configChanged', rawRenameConfig.value, readyToSave());
-        }
-        console.log(readyToSave());
-    });
+    watch([latestFieldName, selectedField], ()=>{
+        emit('configChanged', rawRenameConfig.value, readyToSave());
+    })
     function readyToSave(){
         return (!!rawRenameConfig.value["field name"] && !!rawRenameConfig.value["raw field"]
             && rawRenameConfig.value["field name"].trim() != "");
