@@ -1,124 +1,23 @@
 <template>
-    <div
-														class="row"
-														id="scoreColumnsConfig"
-													>
-														<div
-															class="col-md-6 col"
-														>
-															<div class="label">
-																Score columns
-																<sup
-																	class="
-																		optional
-																	"
-																	>Select type
-																	to calculate
-																	score
-																</sup>
-															</div>
-															<ul
-																class="
-																	dr-byor-data-columns
-																"
-															>
-																<li>
-																	CHR<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				Boolean
-																			</option>
-																		</select></label
-																	>
-																</li>
-																<li>
-																	POS<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				Boolean
-																			</option>
-																		</select></label
-																	>
-																</li>
-																<li>
-																	REF<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				Boolean
-																			</option>
-																		</select></label
-																	>
-																</li>
-																<li>
-																	ALT<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				Boolean
-																			</option>
-																		</select></label
-																	>
-																</li>
-																<li>
-																	RSID<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				Boolean
-																			</option>
-																		</select></label
-																	>
-																</li>
-																<li>
-																	PVAL<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				Boolean
-																			</option>
-																		</select></label
-																	>
-																</li>
-															</ul>
+    <div class="row" id="scoreColumnsConfig">
+		<div class="col-md-6 col">
+			<div class="label">
+				Score columns
+				<sup class="optional">
+					Select type to calculate score
+				</sup>
+			</div>
+			<ul class="dr-byor-data-columns">
+				<li v-for="rawField in rawFields">
+					{{ rawField }}
+					<label>
+						<select class="form-control">
+							<option>None</option>
+							<option>Boolean</option>
+						</select>
+					</label>
+				</li>
+			</ul>
 														</div>
 														<div
 															class="col-md-6 col"
@@ -162,3 +61,6 @@
     @import "public/css/mdkp.css";
     @import "public/css/configbuilder.css";
 </style>
+<script setup>
+	const props = defineProps({rawFields: Array});
+</script>

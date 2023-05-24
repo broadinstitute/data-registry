@@ -1,226 +1,29 @@
 <template>
-    <div
-														class="row"
-														id="joinMultiConfig"
-													>
-														<div
-															class="col-md-6 col"
-														>
-															<div class="label">
-																Join multi |
-																Select field(s)
-																<sup
-																	class="
-																		optional
-																	"
-																	>Set weight
-																	to select
-																</sup>
-															</div>
-															<ul
-																class="
-																	dr-byor-data-columns
-																"
-															>
-																<li>
-																	CHR<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				0
-																			</option>
-																			<option>
-																				1
-																			</option>
-																			<option>
-																				2
-																			</option>
-																			<option>
-																				3
-																			</option>
-																			<option>
-																				4
-																			</option>
-																			<option>
-																				5
-																			</option>
-																		</select></label
-																	>
-																</li>
-																<li>
-																	POS<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				0
-																			</option>
-																			<option>
-																				1
-																			</option>
-																			<option>
-																				2
-																			</option>
-																			<option>
-																				3
-																			</option>
-																			<option>
-																				4
-																			</option>
-																			<option>
-																				5
-																			</option>
-																		</select></label
-																	>
-																</li>
-																<li>
-																	REF<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				0
-																			</option>
-																			<option>
-																				1
-																			</option>
-																			<option>
-																				2
-																			</option>
-																			<option>
-																				3
-																			</option>
-																			<option>
-																				4
-																			</option>
-																			<option>
-																				5
-																			</option>
-																		</select></label
-																	>
-																</li>
-																<li>
-																	ALT<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				0
-																			</option>
-																			<option>
-																				1
-																			</option>
-																			<option>
-																				2
-																			</option>
-																			<option>
-																				3
-																			</option>
-																			<option>
-																				4
-																			</option>
-																			<option>
-																				5
-																			</option>
-																		</select></label
-																	>
-																</li>
-																<li>
-																	RSID<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				0
-																			</option>
-																			<option>
-																				1
-																			</option>
-																			<option>
-																				2
-																			</option>
-																			<option>
-																				3
-																			</option>
-																			<option>
-																				4
-																			</option>
-																			<option>
-																				5
-																			</option>
-																		</select></label
-																	>
-																</li>
-																<li>
-																	PVAL<label>
-																		<select
-																			class="
-																				form-control
-																			"
-																		>
-																			<option>
-																				None
-																			</option>
-																			<option>
-																				0
-																			</option>
-																			<option>
-																				1
-																			</option>
-																			<option>
-																				2
-																			</option>
-																			<option>
-																				3
-																			</option>
-																			<option>
-																				4
-																			</option>
-																			<option>
-																				5
-																			</option>
-																		</select></label
-																	>
-																</li>
-															</ul>
-														</div>
-														<div
-															class="col-md-6 col"
-														>
-															<div class="label">
-																Join by
-															</div>
-															<ul
-																class="
-																	dr-byor-data-columns
-																"
-															>
+    <div class="row" id="joinMultiConfig">
+		<div class="col-md-6 col">
+			<div class="label">
+				Join multi | Select field(s)
+			<sup class="optional">
+				Set weight to select
+			</sup>
+		</div>
+		<ul class="dr-byor-data-columns">
+			<li v-for="rawField in rawFields">
+				{{ rawField }}
+				<label>
+					<select class="form-control">
+						<option>None</option>
+						<option v-for="rawField, index in rawFields">{{ index }}</option>
+					</select>
+				</label>
+			</li>
+		</ul>
+	</div>
+	<div class="col-md-6 col">
+		<div class="label">
+			Join by
+		</div>
+		<ul class="dr-byor-data-columns">
 																<li>
 																	CHR<label
 																		><input
@@ -261,3 +64,6 @@
     @import "public/css/mdkp.css";
     @import "public/css/configbuilder.css";
 </style>
+<script setup>
+	const props = defineProps({rawFields: Array});
+</script>

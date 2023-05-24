@@ -19,13 +19,13 @@
                 <pre class="output">{{ JSON.stringify(currentFieldConfig) }}</pre>
             </div>
             <div class="col-md-8 col">
-                <RawRename v-if="dataConvertType=='raw'"></RawRename>
-				<Calculate v-else-if="dataConvertType=='calculate'"></Calculate>
-                <Join v-else-if="dataConvertType=='join'"></Join>
-				<JoinMulti v-else-if="dataConvertType=='join multi'"></JoinMulti>
-				<ArrayToString v-else-if="dataConvertType=='array to string'"></ArrayToString>
-				<ReplaceCharacters v-else-if="dataConvertType=='replace characters'"></ReplaceCharacters>
-				<ScoreColumns v-else-if="dataConvertType=='score columns'"></ScoreColumns>
+                <RawRename :raw-fields="rawFields" v-if="dataConvertType=='raw'"></RawRename>
+				<Calculate :raw-fields="rawFields" v-else-if="dataConvertType=='calculate'"></Calculate>
+                <Join :raw-fields="rawFields" v-else-if="dataConvertType=='join'"></Join>
+				<JoinMulti :raw-fields="rawFields" v-else-if="dataConvertType=='join multi'"></JoinMulti>
+				<ArrayToString :raw-fields="rawFields" v-else-if="dataConvertType=='array to string'"></ArrayToString>
+				<ReplaceCharacters :raw-fields="rawFields" v-else-if="dataConvertType=='replace characters'"></ReplaceCharacters>
+				<ScoreColumns :raw-fields="rawFields" v-else-if="dataConvertType=='score columns'"></ScoreColumns>
 			</div>
 			<div class="col-md-1 col">
 				<button class="btn btn-primary btn-sm" type="button">
@@ -66,6 +66,15 @@
     import ReplaceCharacters from "@/components/configcomponents/dataconverters/ReplaceCharacters.vue";
     import ScoreColumns from "@/components/configcomponents/dataconverters/ScoreColumns.vue";
 
+
+    const rawFields = [
+        "CHR",
+        "POS",
+        "REF",
+        "ALT",
+        "RSID",
+        "PVAL"
+    ];
     const defaultType = "array to string";
     const dataConvertType = ref(defaultType);
     const dataConvertOptions = [
