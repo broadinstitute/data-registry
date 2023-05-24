@@ -14,6 +14,8 @@
 </template>
   
 <script setup>
+  import "bootstrap/dist/css/bootstrap.min.css";
+  import "bootstrap-icons/font/bootstrap-icons.css";
   const host = "http://ec2-52-23-213-123.compute-1.amazonaws.com";
   const props = defineProps({msg: String});
   const sessionToken = ref("");
