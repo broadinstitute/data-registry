@@ -35,7 +35,7 @@
     });
     watchEffect(()=> {
         if (selectedField.value){
-            emit('configChanged', rawRenameConfig.value);
+            emit('configChanged', rawRenameConfig.value, readyToSave());
         }
         console.log(readyToSave());
     });

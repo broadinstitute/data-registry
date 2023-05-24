@@ -11,8 +11,9 @@
                         {{ dcOption.displayName }}
                     </option>
                 </select>
-                <div class="label">
+                <div class="label dr-form">
                     New field name
+                        <sup>required</sup>
                 </div>
                 <input type="text" class="form-control input-default" v-model="newFieldName"/>
                 <div class="label">Output</div>
@@ -20,7 +21,7 @@
             </div>
             <div class="col-md-8 col">
                 <RawRename v-if="dataConvertType=='raw'" :raw-fields="rawFields" :new-field-name="newFieldName" 
-                    @config-changed="newConfig => updateConfig(newConfig)">
+                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
                 </RawRename>
 				<Calculate :raw-fields="rawFields" v-else-if="dataConvertType=='calculate'"></Calculate>
                 <Join :raw-fields="rawFields" v-else-if="dataConvertType=='join'"></Join>
@@ -30,13 +31,13 @@
 				<ScoreColumns :raw-fields="rawFields" v-else-if="dataConvertType=='score columns'"></ScoreColumns>
 			</div>
 			<div class="col-md-1 col">
-				<button class="btn btn-primary btn-sm" type="button">
+				<button class="btn btn-primary btn-sm" type="button" @click="saveField">
                     Save
                 </button>
                 <button class="btn btn-warning btn-sm" type="button" @click="cancelFieldEdit">
                     Cancel
                 </button>
-                <button class="btn btn-danger btn-sm" type="button">
+                <button class="btn btn-danger btn-sm" type="button" @click="deleteField">
                     Delete
                 </button>
 			</div>
@@ -110,11 +111,12 @@
         }
     ];
 
-    const fieldNamePlaceholder = "Enter new field name."; 
+    const fieldNamePlaceholder = ""; 
     const newFieldName = ref(fieldNamePlaceholder);
+    let readyToSave = false;
     let currentFieldConfig = ref({});
     // do we need to quote key names within the byor config? I think so
-    const savedFieldConfigs = reactive([
+    const savedFieldConfigs = ref([
         {
             "type": "join multi",
             "field name": "Coding sequence",
@@ -129,35 +131,53 @@
         }
     ]);
     const editingFieldIndex = ref(-1);
-    function updateConfig(newConfig){
+
+    function updateConfig(newConfig, ready=false){
         currentFieldConfig.value = newConfig;
+        readyToSave = ready;
     }
     function editField(index){
         // You can't change a field type while editing. If you want to do that, you must delete and start over.
         // Should clicking another field while edit is active serve as a cancel? or should we prevent it?
         editingFieldIndex.value = index;
-        let savedField = savedFieldConfigs[index];
+        let savedField = savedFieldConfigs.value[index];
         updateConfig(savedField);
         newFieldName.value = savedField["field name"];
         dataConvertType.value = savedField["type"];
 
     }
     function saveField(){
-        console.log("Saving field.");
-        if(editingFieldIndex == -1){
-            let newField = currentFieldConfig.value;
-            savedFieldConfigs.push(newField);
+        if (!readyToSave){
+            console.log("Field not ready to save");
+            return;
         }
+        let newField = currentFieldConfig.value;
+        if(editingFieldIndex.value == -1){
+            savedFieldConfigs.value.push(newField);
+        } else {
+            savedFieldConfigs.value[editingFieldIndex.value] = newField;
+        }
+        doneEditing();
     }
-    function cancelFieldEdit(){
-        console.log("Canceling field edit.");
+    function doneEditing(){
         editingFieldIndex.value = -1;
         updateConfig({});
         newFieldName.value = fieldNamePlaceholder;
         dataConvertType.value = defaultType;
     }
+    function cancelFieldEdit(){
+        doneEditing();
+    }
     function deleteField(){
-        console.log("Deleting field.");
+        if (editingFieldIndex.value == -1){
+            doneEditing();
+            return;
+        }
+        //If deleting a field already under editing
+        let beginning = savedFieldConfigs.value.slice(0, editingFieldIndex.value);
+        let end = savedFieldConfigs.value.slice(editingFieldIndex.value+1);
+        savedFieldConfigs.value = beginning.concat(end);
+        doneEditing();
     }
     watch(dataConvertType, ()=>{
         if (editingFieldIndex.value == -1){
