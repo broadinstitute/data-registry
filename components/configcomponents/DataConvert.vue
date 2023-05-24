@@ -20,7 +20,7 @@
             </div>
             <div class="col-md-8 col">
                 <RawRename v-if="dataConvertType=='raw'" :raw-fields="rawFields" :new-field-name="newFieldName" 
-                    @config-changed="(newConfig) => currentFieldConfig = newConfig">
+                    @config-changed="newConfig => updateConfig(newConfig)">
                 </RawRename>
 				<Calculate :raw-fields="rawFields" v-else-if="dataConvertType=='calculate'"></Calculate>
                 <Join :raw-fields="rawFields" v-else-if="dataConvertType=='join'"></Join>
@@ -129,6 +129,9 @@
         }
     ]);
     const editingFieldIndex = ref(-1);
+    function updateConfig(newConfig){
+        currentFieldConfig.value = newConfig;
+    }
     function editField(index){
         // You can't change a field type while editing. If you want to do that, you must delete and start over.
         // Should clicking another field while edit is active serve as a cancel? or should we prevent it?
@@ -149,7 +152,7 @@
     function cancelFieldEdit(){
         console.log("Canceling field edit.");
         editingFieldIndex.value = -1;
-        currentFieldConfig.value = {};
+        updateConfig({});
         newFieldName.value = fieldNamePlaceholder;
         dataConvertType.value = defaultType;
     }
