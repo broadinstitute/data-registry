@@ -21,11 +21,16 @@
                 <pre class="output">{{ currentConfigString }}</pre>
             </div>
             <div class="col-md-8 col">
-                <RawRename v-if="dataConvertType=='raw'" :raw-fields="rawFields" :new-field-name="newFieldName"
+                <RawRename 
+                    v-if="dataConvertType=='raw'" :raw-fields="rawFields" :new-field-name="newFieldName"
                     :load-config="currentConfigString" 
                     @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
                 </RawRename>
-				<Calculate :raw-fields="rawFields" v-else-if="dataConvertType=='calculate'"></Calculate>
+				<Calculate 
+                    v-else-if="dataConvertType=='calculate'" :raw-fields="rawFields" 
+                    :new-field-name="newFieldName" :load-config="currentConfigString"
+                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                </Calculate>
                 <Join :raw-fields="rawFields" v-else-if="dataConvertType=='join'"></Join>
 				<JoinMulti :raw-fields="rawFields" v-else-if="dataConvertType=='join multi'"></JoinMulti>
 				<ArrayToString v-else-if="dataConvertType=='array to string'" :raw-fields="rawFields"
@@ -132,7 +137,7 @@
         {
             "type":"calculate",
             "field name":"P-Value(-Log10)",
-            "raw field":"pValue",
+            "raw field":"PVAL",
             "calculation type":"-log10"
         }
     ]);
