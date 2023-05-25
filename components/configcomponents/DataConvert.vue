@@ -46,7 +46,11 @@
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
                 </ArrayToString>
-				<ReplaceCharacters :raw-fields="rawFields" v-else-if="dataConvertType=='replace characters'"></ReplaceCharacters>
+				<ReplaceCharacters 
+                    v-else-if="dataConvertType=='replace characters'" :raw-fields="rawFields"
+                    :new-field-name="newFieldName" :load-config="currentConfigString"
+                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                </ReplaceCharacters>
 				<ScoreColumns :raw-fields="rawFields" v-else-if="dataConvertType=='score columns'"></ScoreColumns>
 			</div>
 			<div class="col-md-1 col">
@@ -140,8 +144,8 @@
         {
             "type": "join multi",
             "field name": "Coding sequence",
-            "fields to join": ["Chr", "Start", "End"],
-            "join by": [":","-"]
+            "fields to join": ["CHR", "POS", "REF", "ALT"],
+            "join by": [":",":","/"]
         },
         {
             "type":"calculate",
