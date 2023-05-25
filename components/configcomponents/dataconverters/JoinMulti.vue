@@ -11,13 +11,18 @@
 					<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
 			</li>
 		</ul>
+		<button @click="()=>selectedFields=[]">Clear selection</button>
 	</div>
 	<div class="col-md-4 col">
 		<div class="label">
 			Selected fields
 		</div>
 		<ul class="dr-byor-data-columns">
-			<li v-for="field in selectedFields">{{ field }}</li>
+			<li v-for="field, index in selectedFields">
+				{{ field }}
+				<button v-if="index > 0" @click="moveUp(index)">move up</button>
+				<button v-if="index < selectedFields.length - 1" @click="moveDown(index)">move down</button>
+			</li>
 		</ul>
 	</div>
 	<div class="col-md-4 col">
@@ -68,4 +73,24 @@
 <script setup>
 	const props = defineProps({rawFields: Array});
 	const selectedFields = ref([]);
+	function moveUp(index){
+		let beginning = selectedFields.value.slice(0, index-1);
+		let risingItem = selectedFields.value[index];
+		let fallingItem = selectedFields.value[index-1]
+		let end = selectedFields.value.slice(index + 1);
+		beginning.push(risingItem);
+		beginning.push(fallingItem);
+		selectedFields.value = beginning.concat(end);
+	}
+	function moveDown(index){
+		let beginning = selectedFields.value.slice(0, index);
+		let risingItem = selectedFields.value[index+1];
+		let fallingItem = selectedFields.value[index]
+		let end = selectedFields.value.slice(index + 2);
+		beginning.push(risingItem);
+		beginning.push(fallingItem);
+		selectedFields.value = beginning.concat(end);
+	}
+	
+
 </script>
