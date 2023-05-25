@@ -82,8 +82,24 @@
     @import "public/css/configbuilder.css";
 </style>
 <script setup>
-	const props = defineProps({rawFields: Array});
+	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
+	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
+	const joinBy = ref([]);
+	const latestFieldName = computed(()=>{
+        return props.newFieldName;
+    });
+	if (props.loadConfig != "{}"){
+        let oldConfig = JSON.parse(props.loadConfig);
+        selectedFields.value = oldConfig["fields to join"];
+		joinBy.value = oldConfig["join by"];
+    }
+	const joinMultiConfig = ref({
+        "type": "join multi",
+        "field name": latestFieldName,
+		"fields to join": selectedFields,
+		"join by": joinBy
+    });
 	function moveUp(index){
 		let beginning = selectedFields.value.slice(0, index-1);
 		let risingItem = selectedFields.value[index];
@@ -102,6 +118,13 @@
 		beginning.push(fallingItem);
 		selectedFields.value = beginning.concat(end);
 	}
-	
+	watch([latestFieldName, selectedFields, joinBy], ()=>{
+        emit('configChanged', joinMultiConfig.value, readyToSave());
+    })
+    function readyToSave(){
+        return (!!joinMultiConfig.value["field name"] 
+			&& joinMultiConfig.value["fields to join"].length >= 2
+            && joinMultiConfig.value["field name"].trim() != "");
+    }
 
 </script>
