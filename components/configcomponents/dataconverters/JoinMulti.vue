@@ -1,25 +1,26 @@
 <template>
     <div class="row" id="joinMultiConfig">
-		<div class="col-md-6 col">
+		<div class="col-md-4 col">
 			<div class="label">
 				Join multi | Select field(s)
-			<sup class="optional">
-				Set weight to select
-			</sup>
 		</div>
 		<ul class="dr-byor-data-columns">
-			<li v-for="rawField in rawFields">
-				{{ rawField }}
-				<label>
-					<select class="form-control">
-						<option>None</option>
-						<option v-for="rawField, index in rawFields">{{ index }}</option>
-					</select>
-				</label>
+			<li v-for="rawField in rawFields" class="form-check form-check-inline">
+					<input class="form-check-input" type="checkbox" :value="rawField" 
+                        id="flexCheckDefault" v-model="selectedFields"/>
+					<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
 			</li>
 		</ul>
 	</div>
-	<div class="col-md-6 col">
+	<div class="col-md-4 col">
+		<div class="label">
+			Selected fields
+		</div>
+		<ul class="dr-byor-data-columns">
+			<li v-for="field in selectedFields">{{ field }}</li>
+		</ul>
+	</div>
+	<div class="col-md-4 col">
 		<div class="label">
 			Join by
 		</div>
@@ -66,4 +67,5 @@
 </style>
 <script setup>
 	const props = defineProps({rawFields: Array});
+	const selectedFields = ref([]);
 </script>
