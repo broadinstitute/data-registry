@@ -23,8 +23,8 @@
 					<div class="arrow-button-holder">
 						<input :disabled="index == selectedFields.length - 1" 
 							type="text" class="form-control input-default arrow-field"
-							:value="joinBy[field]"
-							@change="(event)=>getInput(field, event.target.value)"/>
+							:value="joinBy[index]"
+							@change="(event)=>getInput(index, event.target.value)"/>
 					</div>
 					<div class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button"
@@ -51,7 +51,10 @@
 	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
-	const joinBy = ref({});
+	const joinBy = ref([]);
+	for(let i = 0; i < selectedFields.length - 1; i++){
+		joinBy.value.push("");
+	}
 	const latestFieldName = computed(()=>{
         return props.newFieldName;
     });
@@ -64,7 +67,7 @@
         "type": "join multi",
         "field name": latestFieldName,
 		"fields to join": selectedFields,
-		"join by": "coming soon"
+		"join by": joinBy
     });
 	function moveUp(index){
 		let beginning = selectedFields.value.slice(0, index-1);
@@ -84,10 +87,8 @@
 		beginning.push(fallingItem);
 		selectedFields.value = beginning.concat(end);
 	}
-	function getInput(field, input){
-		console.log(field, input);
-		joinBy.value[field] = input;
-		console.log(JSON.stringify(joinBy.value));
+	function getInput(index, input){
+		joinBy.value[index] = input;
 	}
 	watch([latestFieldName, selectedFields, joinBy], ()=>{
         emit('configChanged', joinMultiConfig.value, readyToSave());
