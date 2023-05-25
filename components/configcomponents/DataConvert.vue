@@ -31,9 +31,14 @@
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
                 </Calculate>
-                <Join :raw-fields="rawFields" v-else-if="dataConvertType=='join'"></Join>
+                <Join 
+                    v-else-if="dataConvertType=='join'" :raw-fields="rawFields"
+                    :new-field-name="newFieldName" :load-config="currentConfigString"
+                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                </Join>
 				<JoinMulti :raw-fields="rawFields" v-else-if="dataConvertType=='join multi'"></JoinMulti>
-				<ArrayToString v-else-if="dataConvertType=='array to string'" :raw-fields="rawFields"
+				<ArrayToString 
+                    v-else-if="dataConvertType=='array to string'" :raw-fields="rawFields"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
                 </ArrayToString>

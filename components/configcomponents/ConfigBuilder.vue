@@ -234,39 +234,6 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 											</div>
 											<!-- data convert -->
 											<DataConvert></DataConvert>
-											<div class="row">
-												<div
-													class="
-														col-md-12 col
-														text-center
-														dr-bubbles-wrapper
-													"
-												>
-													<div
-														class="dr-format-bubble"
-													>
-														<span class="name"
-															>Variant ID</span
-														><span class="type"
-															>join multi</span
-														><span class="edit"
-															>Edit</span
-														>
-													</div>
-													<div
-														class="dr-format-bubble"
-													>
-														<span class="name"
-															>P-Value
-															(-Log10)</span
-														><span class="type"
-															>calculate</span
-														><span class="edit"
-															>Edit</span
-														>
-													</div>
-												</div>
-											</div>
 											<!-- column formatting -->
 											<h5>
 												Column formatting
