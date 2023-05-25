@@ -178,3 +178,15 @@ pre.output{
 	white-space: pre-wrap;
 	word-wrap: break-word;
 }
+
+.arrow-button-list {
+	margin: 5px !important;
+}
+div.arrow-button-holder{
+	float: right;
+}
+.arrow-button {
+	font-size: small !important;
+	padding: 0px 3px 0px 3px !important;
+	margin-left: 3px;
+}

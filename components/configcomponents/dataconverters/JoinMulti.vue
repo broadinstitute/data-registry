@@ -11,17 +11,28 @@
 					<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
 			</li>
 		</ul>
-		<button @click="()=>selectedFields=[]">Clear selection</button>
+		<button @click="()=>selectedFields=[]" class="btn btn-primary">Clear selection</button>
 	</div>
 	<div class="col-md-4 col">
 		<div class="label">
 			Selected fields
 		</div>
 		<ul class="dr-byor-data-columns">
-			<li v-for="field, index in selectedFields">
+			<li v-for="field, index in selectedFields" class="arrow-button-list">
 				{{ field }}
-				<button v-if="index > 0" @click="moveUp(index)">move up</button>
-				<button v-if="index < selectedFields.length - 1" @click="moveDown(index)">move down</button>
+				<div class="arrow-button-holder">
+					<button class="btn btn-primary arrow-button"
+					:disabled="index == selectedFields.length - 1" @click="moveDown(index)">
+					&darr;
+					</button>
+				</div>
+				<div class="arrow-button-holder">
+					<button class="btn btn-primary arrow-button" :disabled="index == 0"
+						@click="moveUp(index)">
+						&uarr;
+					</button>
+				</div>
+				
 			</li>
 		</ul>
 	</div>
