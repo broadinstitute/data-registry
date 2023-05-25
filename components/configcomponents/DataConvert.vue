@@ -18,17 +18,19 @@
                 </div>
                 <input type="text" class="form-control input-default" v-model="newFieldName"/>
                 <div class="label">Output</div>
-                <pre class="output">{{ JSON.stringify(currentFieldConfig) }}</pre>
+                <pre class="output">{{ currentConfigString }}</pre>
             </div>
             <div class="col-md-8 col">
-                <RawRename v-if="dataConvertType=='raw'" :raw-fields="rawFields" :new-field-name="newFieldName" 
+                <RawRename v-if="dataConvertType=='raw'" :raw-fields="rawFields" :new-field-name="newFieldName"
+                    :load-config="currentConfigString" 
                     @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
                 </RawRename>
 				<Calculate :raw-fields="rawFields" v-else-if="dataConvertType=='calculate'"></Calculate>
                 <Join :raw-fields="rawFields" v-else-if="dataConvertType=='join'"></Join>
 				<JoinMulti :raw-fields="rawFields" v-else-if="dataConvertType=='join multi'"></JoinMulti>
 				<ArrayToString v-else-if="dataConvertType=='array to string'" :raw-fields="rawFields"
-                    :new-field-name="newFieldName" @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    :new-field-name="newFieldName" :load-config="currentConfigString"
+                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
                 </ArrayToString>
 				<ReplaceCharacters :raw-fields="rawFields" v-else-if="dataConvertType=='replace characters'"></ReplaceCharacters>
 				<ScoreColumns :raw-fields="rawFields" v-else-if="dataConvertType=='score columns'"></ScoreColumns>
@@ -118,6 +120,7 @@
     const newFieldName = ref(fieldNamePlaceholder);
     let readyToSave = false;
     const currentFieldConfig = ref({});
+    const currentConfigString = computed(() => JSON.stringify(currentFieldConfig.value));
     // do we need to quote key names within the byor config? I think so
     const savedFieldConfigs = ref([
         {

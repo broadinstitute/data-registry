@@ -23,13 +23,19 @@
     @import "public/css/configbuilder.css";
 </style>
 <script setup>
-	const props = defineProps({rawFields: Array, newFieldName: String});
+	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
     const emit = defineEmits(['configChanged']);
     const selectedField = ref(null);
     const latestFieldName = computed(()=>{
         return props.newFieldName;
     });
+
 	const separator = ref("");
+	if (props.loadConfig != "{}"){
+        let oldConfig = JSON.parse(props.loadConfig);
+        selectedField.value = oldConfig["raw field"];
+		separator.value = oldConfig["separate by"];
+    }
     const arrayRenameConfig = ref({
         "type": "array to string",
         "field name": latestFieldName,
