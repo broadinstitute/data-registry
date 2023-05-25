@@ -3,79 +3,45 @@
 		<div class="col-md-4 col">
 			<div class="label">
 				Join multi | Select field(s)
+			</div>
+			<ul class="dr-byor-data-columns">
+				<li v-for="rawField in rawFields" class="form-check form-check-inline">
+						<input class="form-check-input" type="checkbox" :value="rawField" 
+							id="flexCheckDefault" v-model="selectedFields"/>
+						<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
+				</li>
+			</ul>
+			<button @click="()=>selectedFields=[]" class="btn btn-primary">Clear selection</button>
 		</div>
-		<ul class="dr-byor-data-columns">
-			<li v-for="rawField in rawFields" class="form-check form-check-inline">
-					<input class="form-check-input" type="checkbox" :value="rawField" 
-                        id="flexCheckDefault" v-model="selectedFields"/>
-					<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
-			</li>
-		</ul>
-		<button @click="()=>selectedFields=[]" class="btn btn-primary">Clear selection</button>
+		<div class="col-md-4 col">
+			<div class="label">
+				Selected fields | Join by
+			</div>
+			<ul class="dr-byor-data-columns">
+				<li v-for="field, index in selectedFields" class="arrow-button-list">
+					{{ field }}
+					<div class="arrow-button-holder">
+						<input :disabled="index == selectedFields.length - 1" 
+							type="text" class="form-control input-default arrow-field"
+							:value="joinBy[field]"
+							@change="(event)=>getInput(field, event.target.value)"/>
+					</div>
+					<div class="arrow-button-holder">
+						<button class="btn btn-primary arrow-button"
+						:disabled="index == selectedFields.length - 1" @click="moveDown(index)">
+						&darr;
+						</button>
+					</div>
+					<div class="arrow-button-holder">
+						<button class="btn btn-primary arrow-button" :disabled="index == 0"
+							@click="moveUp(index)">
+							&uarr;
+						</button>
+					</div>
+				</li>
+			</ul>
+		</div>
 	</div>
-	<div class="col-md-4 col">
-		<div class="label">
-			Selected fields
-		</div>
-		<ul class="dr-byor-data-columns">
-			<li v-for="field, index in selectedFields" class="arrow-button-list">
-				{{ field }}
-				<div class="arrow-button-holder">
-					<button class="btn btn-primary arrow-button"
-					:disabled="index == selectedFields.length - 1" @click="moveDown(index)">
-					&darr;
-					</button>
-				</div>
-				<div class="arrow-button-holder">
-					<button class="btn btn-primary arrow-button" :disabled="index == 0"
-						@click="moveUp(index)">
-						&uarr;
-					</button>
-				</div>
-				
-			</li>
-		</ul>
-	</div>
-	<div class="col-md-4 col">
-		<div class="label">
-			Join by
-		</div>
-		<ul class="dr-byor-data-columns">
-																<li>
-																	CHR<label
-																		><input
-																			type="text"
-																			class="
-																				form-control
-																				input-default
-																			"
-																		/>
-																	</label>
-																</li>
-																<li>
-																	POS<label>
-																		<input
-																			type="text"
-																			class="
-																				form-control
-																				input-default
-																			"
-																	/></label>
-																</li>
-																<li>
-																	REF<label>
-																		<input
-																			type="text"
-																			class="
-																				form-control
-																				input-default
-																			"
-																	/></label>
-																</li>
-																<li>ALT</li>
-															</ul>
-														</div>
-													</div>
 </template>
 <style scoped>
     @import "public/css/mdkp.css";
@@ -85,7 +51,7 @@
 	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
-	const joinBy = ref([]);
+	const joinBy = ref({});
 	const latestFieldName = computed(()=>{
         return props.newFieldName;
     });
@@ -98,7 +64,7 @@
         "type": "join multi",
         "field name": latestFieldName,
 		"fields to join": selectedFields,
-		"join by": joinBy
+		"join by": "coming soon"
     });
 	function moveUp(index){
 		let beginning = selectedFields.value.slice(0, index-1);
@@ -117,6 +83,11 @@
 		beginning.push(risingItem);
 		beginning.push(fallingItem);
 		selectedFields.value = beginning.concat(end);
+	}
+	function getInput(field, input){
+		console.log(field, input);
+		joinBy.value[field] = input;
+		console.log(JSON.stringify(joinBy.value));
 	}
 	watch([latestFieldName, selectedFields, joinBy], ()=>{
         emit('configChanged', joinMultiConfig.value, readyToSave());
