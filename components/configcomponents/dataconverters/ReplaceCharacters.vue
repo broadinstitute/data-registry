@@ -12,29 +12,30 @@
 				</li>													
 			</ul>
 		</div>
-		<div class="col-md-2 col">
-			<div class="label">
-				Replace
-			</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="entry, index in replaceChars">
+		<div class="col-md-4 col">
+			<table>
+					<tr>
+						<th>Replace</th>
+						<th>With</th>
+					</tr>
+				<tr v-for="entry, index in replaceChars">
+					<td>
 						<input type="text" class="form-control input-default"
 							:value="entry['from']"
 							@change="(event)=>updateFrom(index, event.target.value)"/>
-				</li>
-			</ul>
-		</div>
-		<div class="col-md-2 col">
-			<div class="label">
-				With
-			</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="entry, index in replaceChars">
+					</td>
+					<td>
 						<input type="text" class="form-control input-default"
 							:value="entry['to']"
 							@change="(event)=>updateTo(index, event.target.value)"/>
-				</li>
-			</ul>
+					</td>
+					<td>
+						<button class="btn btn-secondary replace-chars-button delete-button"
+							v-if="index != 0" @click="deleteEntry(index)">&times;
+						</button>
+					</td>
+				</tr>
+			</table>
 			<button class="btn btn-primary" @click="addEntry()">Add</button>
 		</div>
 	</div>
@@ -74,17 +75,38 @@
 			"to": ""
 		});
 	}
+	function deleteEntry(index){
+		let beginning = replaceChars.value.slice(0,index);
+		let end = replaceChars.value.slice(index+1);
+		replaceChars.value = beginning.concat(end);
+	}
 	function updateFrom(index, value){
 		replaceChars.value[index]["from"] = value;
+		emitConfig()
 	}
 	function updateTo(index, value){
 		replaceChars.value[index]["to"] = value;
+		emitConfig();
 	}
     watch([latestFieldName, selectedField, replaceChars], ()=>{
+		emitConfig();
+    });
+	function emitConfig(){
+
         emit('configChanged', replaceCharConfig.value, readyToSave());
-    })
+	}
     function readyToSave(){
-        return (!!replaceCharConfig.value["field name"] && !!replaceCharConfig.value["raw field"]
-            && replaceCharConfig.value["field name"].trim() != "");
+		let emptyEntries = false;
+		replaceCharConfig.value["replace"].forEach(entry => {
+			console.log(JSON.stringify(entry));
+			if(entry["from"] == ""){
+				console.log("don't save this!!");
+				emptyEntries = true;
+			}
+		});
+        return (!!replaceCharConfig.value["field name"] 
+			&& !!replaceCharConfig.value["raw field"]
+            && replaceCharConfig.value["field name"].trim() != ""
+			&& !emptyEntries);
     }
 </script>

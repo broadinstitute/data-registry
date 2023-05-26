@@ -183,17 +183,19 @@ pre.output{
 	margin: 5px !important;
 }
 
-.arrow-button {
+.arrow-button, .replace-chars-button {
 	font-size: small !important;
 	padding: 0px 3px 0px 3px !important;
 }
 .arrow-button-up {
 	margin-left: 10px;
 }
-.arrow-button-down {
 
-}
 .arrow-field {
 	padding: 0px 3px 0px 3px !important;
 	margin-left: 10px;
+}
+.delete-button {
+	background-color: #ff0000 !important;
+	border: none;
 }
