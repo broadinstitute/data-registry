@@ -1,7 +1,7 @@
 <template>
   <ul>
-    <li v-for="(value, key, index) in phenotypeDatasets">
-      <PhenotypeDataset :dataset-data-type="props.datasetDataType" :key="index" :identifier="key"/>
+    <li v-for="(phenotypeDataset, index) in props.phenotypeDatasets">
+      <PhenotypeDataset :dataset-data-type="props.datasetDataType" :key="index" :phenotypeDataset="phenotypeDataset" :identifier="index"/>
     </li>
   </ul>
   <div style="display: inline; margin-top: -25px">
@@ -10,12 +10,10 @@
 </template>
 
 <script setup>
-  const phenotypeDatasets = useState("selectedPhenotypes", () => {return {'p1':{}}})
-  const props = defineProps({datasetDataType: String})
+  const props = defineProps({datasetDataType: String, phenotypeDatasets: Array})
+  const emit = defineEmits(['add-phenotype-dataset'])
 
   function addPhenotype(){
-    let keys = Object.keys(phenotypeDatasets.value)
-    const newIdx = keys.length + 1
-    phenotypeDatasets.value['p'+newIdx] = {}
+    emit('add-phenotype-dataset');
   }
 </script>

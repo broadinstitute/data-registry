@@ -182,9 +182,14 @@
                         </div>
                         <div class="row dr-data-section">
                             <div class="col-md-12"><h4>Data</h4></div>
-                            <PhenotypeDatasetList
-                                :dataset-data-type="dataType"
-                            />
+                          <ul>
+                            <li v-for="(phenotypeDataset, index) in phenotypeDatasets">
+                              <PhenotypeDataset :dataset-data-type="dataType" :key="index" :phenotypeDataset="phenotypeDataset" :identifier="index" @remove-phenotype-dataset="(e) => phenotypeDatasets.splice(e.id, 1)"/>
+                            </li>
+                          </ul>
+                          <div style="display: inline; margin-top: -25px">
+                            <a href="#" @click.prevent="phenotypeDatasets.push({})">Add Additional Phenotype</a>
+                          </div>
                         </div>
                     </div>
                     <div class="col-md-3 dr-meta-info">
@@ -340,7 +345,7 @@ const publication = ref(null);
 
 const config = useRuntimeConfig();
 const study = useState("study");
-const phenotypeDatasets = useState("selectedPhenotypes", () => {});
+const phenotypeDatasets = useState("selectedPhenotypes", () => [{}]);
 const studies = useState("studies", () => []);
 const phenotypes = useState("phenotypes", () => []);
 let configuredAxios;
@@ -365,24 +370,31 @@ async function fetchExistingDataset(existingDataset) {
     study.value = { value: data.study.id, label: data.study.name, institution: data.study.institution };
     savedStudy.value = data.study.name;
 
-    let idx = 1;
+    phenotypeDatasets.value = [];
+    const credibleSets = {}
+    data.credible_sets.map(cs => {
+      if (!credibleSets[cs.phenotype_data_set_id])
+        credibleSets[cs.phenotype_data_set_id] = [];
+      credibleSets[cs.phenotype_data_set_id].push({ "name": cs.name, "id": cs.id })
+    });
     data.phenotypes.map((p) => {
-        phenotypeDatasets.value['p'+idx++] = {'name': phenotypes.value[p.phenotype].name,
+        phenotypeDatasets.value.push({'name': phenotypes.value[p.phenotype] ? phenotypes.value[p.phenotype].name : p.phenotype,
             'dichotomous': p.dichotomous, 'sampleSize': p.sample_size, 'cases': p.cases,
-            'controls': p.controls, 'description': phenotypes.value[p.phenotype].description};
+            'controls': p.controls, 'credibleSets': credibleSets[p.id],
+          'description': phenotypes.value[p.phenotype] ? phenotypes.value[p.phenotype].description : p.phenotype});
     });
 }
 
 async function getPhenotypes() {
-    const { data } = await $fetch(config.phenotypesUrl);
+    const { data } = await $fetch(config.public['phenotypesUrl']);
     const mappedPhenotypes = {};
     data.forEach((d) => (mappedPhenotypes[d.name] = d));
     phenotypes.value = mappedPhenotypes;
 }
 
 async function fetchStudies() {
-    const data = await $fetch(`${config.apiBaseUrl}/api/studies`, {
-        headers: { "access-token": config.apiSecret },
+    const data = await $fetch(`${config.public['apiBaseUrl']}/api/studies`, {
+        headers: { "access-token": config.public['apiSecret'] },
     });
     studies.value = data.map((s) => {
         return { label: s.name, value: s.id, institution: s.institution };
@@ -402,9 +414,9 @@ onMounted(() => {
     //save the typing the base url, common, headers, add error handler to show banner
     //at top of the page in the event of a failure
     configuredAxios = axios.create({
-        baseURL: config.apiBaseUrl,
+        baseURL: config.public['apiBaseUrl'],
         headers: {
-            "access-token": config.apiSecret,
+            "access-token": config.public['apiSecret'],
             "Content-Type": "application/json",
         },
     });
@@ -490,7 +502,7 @@ async function save() {
         study.value = newStudy;
         dataset_id = await saveDataset(data.study_id);
     }
-    for (const phenotype of Object.keys(phenotypeDatasets.value)) {
+    for (const phenotype of phenotypeDatasets.value) {
         modalMsg.value = `Do not close this window, uploading data for ${phenotypeDatasets.value[phenotype].description}`;
         const saved_phenotype_id = await savePhenotype(dataset_id, phenotype);
         if(phenotypeDatasets.value[phenotype].credibleSetFile){

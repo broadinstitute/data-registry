@@ -15,8 +15,8 @@ onBeforeMount(() => {
 });
 
 async function fetchDataSets() {
-    datasets.value = await $fetch(`${config.apiBaseUrl}/api/datasets`, {
-        headers: { "access-token": config.apiSecret },
+    datasets.value = await $fetch(`${config.public['apiBaseUrl']}/api/datasets`, {
+        headers: { "access-token": config.public['apiSecret'] },
     });
 }
 </script>
