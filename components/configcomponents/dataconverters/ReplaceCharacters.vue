@@ -60,6 +60,7 @@
     if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
+		replaceChars.value = oldConfig["replace"];
     }
     const replaceCharConfig = ref({
         "type": "replace characters",
