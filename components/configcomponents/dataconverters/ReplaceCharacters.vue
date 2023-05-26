@@ -31,7 +31,7 @@
 					</td>
 					<td>
 						<button class="btn btn-secondary replace-chars-button delete-button"
-							v-if="index != 0" @click="deleteEntry(index)">&times;
+							v-if="replaceChars.length > 1" @click="deleteEntry(index)">&times;
 						</button>
 					</td>
 				</tr>
