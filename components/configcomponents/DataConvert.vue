@@ -51,7 +51,11 @@
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
                 </ReplaceCharacters>
-				<ScoreColumns :raw-fields="rawFields" v-else-if="dataConvertType=='score columns'"></ScoreColumns>
+				<ScoreColumns 
+                    v-else-if="dataConvertType=='score columns'" :raw-fields="rawFields"
+                    :new-field-name="newFieldName" :load-config="currentConfigString"
+                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                </ScoreColumns>
 			</div>
 			<div class="col-md-1 col">
 				<button class="btn btn-primary btn-sm" type="button" @click="saveField">
