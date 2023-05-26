@@ -313,10 +313,11 @@
 </template>
 
 <script setup>
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import axios from "axios";
-import Modal from "~/components/Modal.vue";
+import 'bootstrap-icons/font/bootstrap-icons.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import Modal from '~/components/Modal.vue'
+import useAxios from '~/composables/useAxios'
+
 
 const props = defineProps({ existingDataset: String });
 const datasetName = ref(null);
@@ -348,7 +349,15 @@ const study = useState("study");
 const phenotypeDatasets = useState("selectedPhenotypes", () => [{'credibleSets': [{}]}]);
 const studies = useState("studies", () => []);
 const phenotypes = useState("phenotypes", () => []);
-let configuredAxios;
+
+const configuredAxios = useAxios(config,undefined, (error) => {
+  console.log(JSON.stringify(error));
+  processing.value = false;
+  errorMessage.value = error.response.data.message;
+  serverSuccess.value = false;
+  showNotification.value = true;
+  throw new Error("Server error");
+});
 
 async function fetchExistingDataset(existingDataset) {
     const { data } = await configuredAxios.get(
@@ -411,22 +420,6 @@ async function fetchInProperOrder() {
 
 onMounted(() => {
     datasetName.value.focus();
-    //save the typing the base url, common, headers, add error handler to show banner
-    //at top of the page in the event of a failure
-    configuredAxios = axios.create({
-        baseURL: config.public['apiBaseUrl'],
-        headers: {
-            "access-token": config.public['apiSecret'],
-            "Content-Type": "application/json",
-        },
-    });
-    configuredAxios.interceptors.response.use(undefined, (error) => {
-        processing.value = false;
-        errorMessage.value = error.response.data.message;
-        serverSuccess.value = false;
-        showNotification.value = true;
-        throw new Error("Server error");
-    });
     fetchInProperOrder()
 });
 
@@ -506,7 +499,9 @@ async function save() {
         modalMsg.value = `Do not close this window, uploading data for ${phenotype.description}`;
         const saved_phenotype_id = await savePhenotype(dataset_id, phenotype);
         for(const cs of phenotype.credibleSets){
-            await saveCredibleSet(saved_phenotype_id, cs);
+            if(cs.name && cs.name !== ''){
+              await saveCredibleSet(saved_phenotype_id, cs);
+            }
         }
     }
     processing.value = false;

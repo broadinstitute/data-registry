@@ -11,12 +11,12 @@
                 <th scope="col">Samples</th>
                 <th scope="col">Status</th>
                 <th scope="col">Submitter</th>
-
                 <th scope="col">Uploaded</th>
+                <th>&nbsp;</th>
             </tr>
         </thead>
         <tbody class="table-group-divider">
-            <tr v-for="dataset in props.dataSets" :key="dataset.id">
+            <tr v-for="dataset in datasets" :key="dataset.id">
                 <td @click="route.push({ path: `/datasets/${dataset.id}` })">
                     {{ dataset.name }}
                 </td>
@@ -42,17 +42,37 @@
                             : ""
                     }}
                 </td>
+                <td>
+                    <i @click="deleteDataSet(dataset.id)"  class="bi bi-trash"></i>
+                </td>
             </tr>
         </tbody>
     </table>
 </template>
 
 <script setup>
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-const props = defineProps({ dataSets: Array });
 const route = useRouter();
+const config = useRuntimeConfig();
+const datasets = ref([])
 
+onMounted(() => {
+  fetchDataSets()
+})
+
+
+async function deleteDataSet(id){
+  await $fetch(`${config.public['apiBaseUrl']}/api/datasets/${id}`, {
+    method: 'DELETE',
+    headers: { "access-token": config.public['apiSecret'] }
+  })
+  datasets.value = datasets.value.filter((dataset) => dataset.id !== id)
+}
+
+async function fetchDataSets() {
+  datasets.value = await $fetch(`${config.public['apiBaseUrl']}/api/datasets`, {
+    headers: { "access-token": config.public['apiSecret'] },
+  });
+}
 function formatSex(gender) {
     if (!gender) return "";
     else {

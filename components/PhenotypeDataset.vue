@@ -48,10 +48,14 @@
                        :data-associated-phenotype="`${props.identifier}-${idx}`" @change="credibleSetFileChange">
               </div>
             </div>
-
           </div>
 
         </div>
+      <div class="row">
+        <div class="col col-md-11 offset-md-1" style="margin-top: -22px; padding: 0px">
+          <a href="#" @click.prevent="phenotypeDataset.credibleSets.push({})">Add Credible Set</a>
+        </div>
+      </div>
 </template>
 
 <script setup>
