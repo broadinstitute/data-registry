@@ -7,11 +7,12 @@
 			<ul class="dr-byor-data-columns">
 				<li v-for="rawField in rawFields" class="form-check form-check-inline">
 						<input class="form-check-input" type="checkbox" :value="rawField" 
-							id="flexCheckDefault" v-model="selectedFields"/>
+							id="flexCheckDefault" v-model="selectedFields"
+							@change="(event)=>removeJoinEntry(event.target.value)"/>
 						<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
 				</li>
 			</ul>
-			<button @click="()=>selectedFields=[]" class="btn btn-primary">Clear selection</button>
+			<button @click="()=>clearAll()" class="btn btn-primary">Clear selection</button>
 		</div>
 		<div class="col-md-4 col">
 			<div class="label">
@@ -51,6 +52,7 @@
 	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
+	const selectedFieldsLength = computed(()=> selectedFields.length);
 	const joinBy = ref([]);
 	const latestFieldName = computed(()=>{
         return props.newFieldName;
@@ -88,7 +90,17 @@
 		joinBy.value[index] = input;
 		emitConfig();
 	}
-	
+	function removeJoinEntry(boxChecked){
+		if (!boxChecked){
+			joinBy.value.pop();
+			emitConfig();
+		}
+	}
+	function clearAll(){
+		selectedFields.value = [];
+		joinBy.value = [];
+		emitConfig();
+	}
 	watch([latestFieldName, selectedFields, joinBy], ()=>{
         emitConfig();
     })
