@@ -188,7 +188,7 @@
                             </li>
                           </ul>
                           <div style="display: inline; margin-top: -25px">
-                            <a href="#" @click.prevent="phenotypeDatasets.push({})">Add Additional Phenotype</a>
+                            <a href="#" @click.prevent="phenotypeDatasets.push({'credibleSets': [{}]})">Add Additional Phenotype</a>
                           </div>
                         </div>
                     </div>
@@ -345,7 +345,7 @@ const publication = ref(null);
 
 const config = useRuntimeConfig();
 const study = useState("study");
-const phenotypeDatasets = useState("selectedPhenotypes", () => [{}]);
+const phenotypeDatasets = useState("selectedPhenotypes", () => [{'credibleSets': [{}]}]);
 const studies = useState("studies", () => []);
 const phenotypes = useState("phenotypes", () => []);
 let configuredAxios;
@@ -380,7 +380,7 @@ async function fetchExistingDataset(existingDataset) {
     data.phenotypes.map((p) => {
         phenotypeDatasets.value.push({'name': phenotypes.value[p.phenotype] ? phenotypes.value[p.phenotype].name : p.phenotype,
             'dichotomous': p.dichotomous, 'sampleSize': p.sample_size, 'cases': p.cases,
-            'controls': p.controls, 'credibleSets': credibleSets[p.id],
+            'controls': p.controls, 'credibleSets': credibleSets[p.id] || [{}],
           'description': phenotypes.value[p.phenotype] ? phenotypes.value[p.phenotype].description : p.phenotype});
     });
 }
@@ -503,10 +503,10 @@ async function save() {
         dataset_id = await saveDataset(data.study_id);
     }
     for (const phenotype of phenotypeDatasets.value) {
-        modalMsg.value = `Do not close this window, uploading data for ${phenotypeDatasets.value[phenotype].description}`;
+        modalMsg.value = `Do not close this window, uploading data for ${phenotype.description}`;
         const saved_phenotype_id = await savePhenotype(dataset_id, phenotype);
-        if(phenotypeDatasets.value[phenotype].credibleSetFile){
-            await saveCredibleSet(saved_phenotype_id, phenotype);
+        for(const cs of phenotype.credibleSets){
+            await saveCredibleSet(saved_phenotype_id, cs);
         }
     }
     processing.value = false;
@@ -522,18 +522,16 @@ function getPhenotypeDataSetUploadUrl(dataset_id, pType) {
     return url + `?controls=${pType.controls}&cases=${pType.cases}`;
 }
 
-async function saveCredibleSet(saved_phenotype_id, pKey) {
+async function saveCredibleSet(saved_phenotype_id, cs) {
   const formData = new FormData();
-  const pType = phenotypeDatasets.value[pKey];
-  formData.append("file", pType.credibleSetFile);
-  await configuredAxios.post(`/api/crediblesetupload/${saved_phenotype_id}/${pType.credibleSetName}`, formData, {
+  formData.append("file", cs.credibleSetFile);
+  await configuredAxios.post(`/api/crediblesetupload/${saved_phenotype_id}/${cs.name}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 }
 
-async function savePhenotype(dataset_id, pKey) {
+async function savePhenotype(dataset_id, pType) {
     const formData = new FormData();
-    const pType = phenotypeDatasets.value[pKey];
     formData.append("file", pType.file);
     const {data} = await configuredAxios.post(getPhenotypeDataSetUploadUrl(dataset_id, pType), formData, {
         headers: { "Content-Type": "multipart/form-data" },

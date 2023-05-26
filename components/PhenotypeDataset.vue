@@ -34,22 +34,24 @@
           </div>
     </div>
   </div>
-    <div class="row">
-      <div class="col col-md-11 offset-md-1">
-        <div class="row dr-meta-info" style="margin-right: 10px; ">
-          <div class="col col-md-6">
-            <div class="label">Credible Set Name</div>
-            <input type="text" class="form-control input-default credible-set" placeholder="name" :data-associated-phenotype="props.identifier"
-                   v-model="phenotypeDataset.credibleSetName">
+        <div class="row" v-for="(cs, idx) in phenotypeDataset.credibleSets">
+          <div class="col col-md-11 offset-md-1">
+            <div class="row dr-meta-info" style="margin-right: 10px;">
+              <div class="col col-md-6">
+                <div class="label">Credible Set Name</div>
+                <input type="text" class="form-control input-default credible-set" placeholder="name" :data-associated-phenotype="`${props.identifier}-${idx}`"
+                       v-model="cs.name">
+              </div>
+              <div class="col col-md-6">
+                <div class="label">Credible Set File</div>
+                <input type="file" class="form-control input-default credible-set" placeholder="file"
+                       :data-associated-phenotype="`${props.identifier}-${idx}`" @change="credibleSetFileChange">
+              </div>
+            </div>
+
           </div>
-          <div class="col col-md-6">
-            <div class="label">Credible Set File</div>
-            <input type="file" class="form-control input-default credible-set" placeholder="file"
-                   :data-associated-phenotype="props.identifier" @change="credibleSetFileChange">
-          </div>
+
         </div>
-      </div>
-    </div>
 </template>
 
 <script setup>
@@ -66,7 +68,8 @@ function fileChange(e){
 }
 
 function credibleSetFileChange(e){
-  selectedPhenotypes.value[props.identifier].credibleSetFile = e.target.files[0]
+  const cs_idx = parseInt(e.target.getAttribute("data-associated-phenotype").split("-")[1])
+  phenotypeDataset.value.credibleSets[cs_idx]["credibleSetFile"] = e.target.files[0]
 }
 
 function ptypeBlur(event){
