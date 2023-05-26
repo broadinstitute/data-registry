@@ -8,7 +8,7 @@
 				<li v-for="rawField in rawFields" class="form-check form-check-inline">
 						<input class="form-check-input" type="checkbox" :value="rawField" 
 							id="flexCheckDefault" v-model="selectedFields"
-							@change="(event)=>removeJoinEntry(event.target.value)"/>
+							@change="(event)=>removeJoinEntry(event)"/>
 						<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
 				</li>
 			</ul>
@@ -90,8 +90,11 @@
 		joinBy.value[index] = input;
 		emitConfig();
 	}
-	function removeJoinEntry(boxChecked){
-		if (!boxChecked){
+	function removeJoinEntry(event){
+		// Trims the list of joins when an item is deselected.
+		let box = event.target.value;
+		let boxes = event.target._modelValue;
+		if(!boxes.includes(box)){
 			joinBy.value.pop();
 			emitConfig();
 		}
@@ -110,7 +113,6 @@
     function readyToSave(){
 		let fieldsLength = joinMultiConfig.value["fields to join"].length;
 		let joinLength = joinMultiConfig.value["join by"].length;
-		console.log(fieldsLength, joinLength);
         return (!!joinMultiConfig.value["field name"] 
 			&& joinMultiConfig.value["fields to join"].length >= 2
 			&& joinLength == fieldsLength - 1
