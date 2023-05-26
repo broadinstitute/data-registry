@@ -182,13 +182,16 @@ pre.output{
 .arrow-button-list {
 	margin: 5px !important;
 }
-div.arrow-button-holder{
-	float: right;
-}
+
 .arrow-button {
 	font-size: small !important;
 	padding: 0px 3px 0px 3px !important;
-	margin-right: 3px;
+}
+.arrow-button-up {
+	margin-left: 10px;
+}
+.arrow-button-down {
+
 }
 .arrow-field {
 	padding: 0px 3px 0px 3px !important;

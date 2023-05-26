@@ -17,29 +17,29 @@
 			<div class="label">
 				Selected fields | Join by
 			</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="field, index in selectedFields" class="arrow-button-list">
+			<tbody class="dr-byor-data-columns">
+				<tr v-for="field, index in selectedFields" class="arrow-button-list">
 					{{ field }}
-					<div class="arrow-button-holder">
-						<input :disabled="index == selectedFields.length - 1" 
-							type="text" class="form-control input-default arrow-field"
-							:value="joinBy[index]"
-							@change="(event)=>getInput(index, event.target.value)"/>
-					</div>
-					<div class="arrow-button-holder">
+					<td class="arrow-button-holder">
+						<button class="btn btn-primary arrow-button arrow-button-up" 
+							:disabled="index == 0" @click="moveUp(index)">
+							&uarr;
+						</button>
+					</td>
+					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button"
 						:disabled="index == selectedFields.length - 1" @click="moveDown(index)">
 						&darr;
 						</button>
-					</div>
-					<div class="arrow-button-holder">
-						<button class="btn btn-primary arrow-button" :disabled="index == 0"
-							@click="moveUp(index)">
-							&uarr;
-						</button>
-					</div>
-				</li>
-			</ul>
+					</td>
+					<td class="arrow-button-holder">
+						<input v-if="index != selectedFields.length - 1" 
+							type="text" class="form-control input-default arrow-field"
+							:value="!!joinBy[index]? joinBy[index] : ''"
+							@change="(event)=>getInput(index, event.target.value)"/>
+					</td>
+				</tr>
+			</tbody>
 		</div>
 	</div>
 </template>
@@ -52,9 +52,6 @@
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
 	const joinBy = ref([]);
-	for(let i = 0; i < selectedFields.length - 1; i++){
-		joinBy.value.push("");
-	}
 	const latestFieldName = computed(()=>{
         return props.newFieldName;
     });
@@ -89,13 +86,22 @@
 	}
 	function getInput(index, input){
 		joinBy.value[index] = input;
+		emitConfig();
 	}
+	
 	watch([latestFieldName, selectedFields, joinBy], ()=>{
-        emit('configChanged', joinMultiConfig.value, readyToSave());
+        emitConfig();
     })
+	function emitConfig(){
+		emit('configChanged', joinMultiConfig.value, readyToSave());
+	}
     function readyToSave(){
+		let fieldsLength = joinMultiConfig.value["fields to join"].length;
+		let joinLength = joinMultiConfig.value["join by"].length;
+		console.log(fieldsLength, joinLength);
         return (!!joinMultiConfig.value["field name"] 
 			&& joinMultiConfig.value["fields to join"].length >= 2
+			&& joinLength == fieldsLength - 1
             && joinMultiConfig.value["field name"].trim() != "");
     }
 
