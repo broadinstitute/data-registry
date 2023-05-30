@@ -636,73 +636,7 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 													</div>
 												</div>
 											</div>
-											<!-- top rows -->
-											<h5>
-												Top rows
-												<sup class="optional"
-													>Tutorial
-												</sup>
-											</h5>
-											<div class="row dr-builder-ui">
-												<div class="col-md-12 col">
-													<div class="label">
-														Set order
-													</div>
-													<ul
-														class="
-															dr-byor-data-columns
-															inline-list
-														"
-													>
-														<li>
-															<label
-																class="
-																	form-inline
-																"
-																>Variant ID:
-																<select
-																	class="
-																		form-control
-																	"
-																>
-																	<option>
-																		None
-																	</option>
-																	<option>
-																		0
-																	</option>
-																	<option>
-																		1
-																	</option>
-																</select></label
-															>
-														</li>
-														<li>
-															<label
-																class="
-																	form-inline
-																"
-																>P-Value:
-																<select
-																	class="
-																		form-control
-																	"
-																>
-																	<option>
-																		None
-																	</option>
-																	<option>
-																		0
-																	</option>
-																	<option>
-																		1
-																	</option>
-																</select></label
-															>
-														</li>
-													</ul>
-												</div>
-											</div>
+											<TopRows :raw-fields="rawFields"></TopRows>
 											<!-- features -->
 											<h5>
 												Features
@@ -1573,6 +1507,7 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 	import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
 	import DataConvert from "@/components/configcomponents/DataConvert.vue";
+	import TopRows from "@/components/configcomponents/TopRows.vue";
 
 /* 	computed property outputObject generates output
 	another computed property outputString stringifies and displays it
