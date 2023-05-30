@@ -199,3 +199,9 @@ pre.output{
 	background-color: #ff0000 !important;
 	border: none;
 }
+
+.failed-save{
+	color: #ff0000;
+	font-size: smaller;
+	text-align: right;
+}

@@ -56,6 +56,8 @@
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
                 </ScoreColumns>
+
+                <div class="failed-save" v-if="showMsg">{{ failedSaveMsg }}</div>
 			</div>
 			<div class="col-md-1 col">
 				<button class="btn btn-primary btn-sm" type="button" @click="saveField">
@@ -141,6 +143,8 @@
     const fieldNamePlaceholder = ""; 
     const newFieldName = ref(fieldNamePlaceholder);
     let readyToSave = false;
+    const showMsg = ref(false);
+    let failedSaveMsg = "";
     const currentFieldConfig = ref({});
     const currentConfigString = computed(() => JSON.stringify(currentFieldConfig.value));
     // do we need to quote key names within the byor config? I think so
@@ -160,9 +164,13 @@
     ]);
     const editingFieldIndex = ref(-1);
 
-    function updateConfig(newConfig, ready=false){
+    function updateConfig(newConfig, ready=false, msg="Field not ready to save."){
         currentFieldConfig.value = newConfig;
         readyToSave = ready;
+        if (ready){
+            showMsg.value = false;
+        }
+        failedSaveMsg = ready ? "" : msg;
     }
     function editField(index){
         // You can't change a field type while editing. If you want to do that, you must delete and start over.
@@ -176,9 +184,10 @@
     }
     function saveField(){
         if (!readyToSave){
-            console.log("Field not ready to save");
+            showMsg.value = true;
             return;
         }
+        showMsg.value = false;
         let newField = JSON.parse(JSON.stringify(currentFieldConfig.value));
         if(editingFieldIndex.value == -1){
             savedFieldConfigs.value.push(newField);
