@@ -8,7 +8,7 @@
 				<li v-for="rawField in rawFields" class="form-check form-check-inline">
 						<input class="form-check-input" type="checkbox" :value="rawField" 
 							id="flexCheckDefault" v-model="selectedFields"
-							@change="(event)=>addNewEntry(event)"/>
+							@change="(event)=>addRemoveEntry(event)"/>
 						<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
 				</li>
 			</ul>
@@ -60,28 +60,37 @@
 		"fields to score": selectedFields,
 		"score by": scores
     });
-	
-	function addNewEntry(event){
-		// Adds to the score object when a new item is selected
-		let stockEntry = { 
-			"type": "boolean", 
-			"value to score": { 
-				"yes": 1, 
-				"no": 0
-			}
-		};
+
+	function addRemoveEntry(event){
 		let box = event.target.value;
 		let boxes = event.target._modelValue;
 		if(boxes.includes(box)){
-			console.log(`should be adding ${box}`);
-			scores.value[box] = stockEntry;
-			console.log(JSON.stringify(scores.value));
-			emitConfig();
+			addNewEntry(box);
+		} else {
+			removeEntry(box);
 		}
 	}
 	
+	function removeEntry(field){
+		delete scores.value[field];
+		emitConfig();
+	}
+
+	function addNewEntry(field, yesVal=1, noVal=0){
+		// Adds to the score object when a new item is selected
+		let newEntry = { 
+			"type": "boolean", 
+			"value to score": { 
+				"yes": yesVal, 
+				"no": noVal
+			}
+		};
+		scores.value[field] = newEntry;
+		emitConfig();
+	}
+	
 	function updateScore(field, yesOrNo, value){
-		scores.value[field]["value to score"][yesOrNo] = value;
+		scores.value[field]["value to score"][yesOrNo] = parseInt(value);
 	}
 
 	function clearAll(){
