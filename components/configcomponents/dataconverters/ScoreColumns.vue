@@ -24,12 +24,14 @@
 				<tr v-for="field in selectedFields">
 					<td>{{ field }}</td>
 					<td>
-						<input type="number" class="form-control input-default"
-						@change="(event)=>updateScore(field, 'yes', event.target.value)">
+						<input type="number" class="form-control input-default" 
+							:value="!!scores[field] ? scores[field]['value to score']['yes'] : 1"
+							@change="(event)=>updateScore(field, 'yes', event.target.value)">
 					</td>
 					<td>
 						<input type="number" class="form-control input-default"
-						@change="(event)=>updateScore(field, 'no', event.target.value)">
+						:value="!!scores[field] ? scores[field]['value to score']['no'] : 0"
+							@change="(event)=>updateScore(field, 'no', event.target.value)">
 						
 					</td>
 				</tr>
@@ -50,12 +52,20 @@
         return props.newFieldName;
     });
 	if (props.loadConfig != "{}"){
+		console.log(props.loadConfig);
         let oldConfig = JSON.parse(props.loadConfig);
-        selectedFields.value = oldConfig["fields to score"];
+		let fields = oldConfig["fields to score"];
+		console.log(JSON.stringify(fields));
+        selectedFields.value = fields;
+		fields.forEach(field => {
+			let yesVal = oldConfig['score by'][field]['value to score']['yes'];
+			let noVal = oldConfig['score by'][field]['value to score']['no'];
+			addNewEntry(field, yesVal, noVal);
+		});
 		
     }
 	const scoreColumnsConfig = ref({
-        "type": "join multi",
+        "type": "score columns",
         "field name": latestFieldName,
 		"fields to score": selectedFields,
 		"score by": scores
@@ -69,11 +79,11 @@
 		} else {
 			removeEntry(box);
 		}
+		emitConfig();
 	}
 	
 	function removeEntry(field){
 		delete scores.value[field];
-		emitConfig();
 	}
 
 	function addNewEntry(field, yesVal=1, noVal=0){
@@ -86,7 +96,6 @@
 			}
 		};
 		scores.value[field] = newEntry;
-		emitConfig();
 	}
 	
 	function updateScore(field, yesOrNo, value){
