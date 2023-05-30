@@ -52,10 +52,8 @@
         return props.newFieldName;
     });
 	if (props.loadConfig != "{}"){
-		console.log(props.loadConfig);
         let oldConfig = JSON.parse(props.loadConfig);
 		let fields = oldConfig["fields to score"];
-		console.log(JSON.stringify(fields));
         selectedFields.value = fields;
 		fields.forEach(field => {
 			let yesVal = oldConfig['score by'][field]['value to score']['yes'];
@@ -99,7 +97,14 @@
 	}
 	
 	function updateScore(field, yesOrNo, value){
-		scores.value[field]["value to score"][yesOrNo] = parseInt(value);
+		if (value == "" || value == null){
+			// Force emit a value of false for ready to save
+			emit('configChanged', scoreColumnsConfig.value, false);
+		} else {
+			scores.value[field]["value to score"][yesOrNo] = parseInt(value);
+			emitConfig();
+		}
+		
 	}
 
 	function clearAll(){
@@ -114,6 +119,11 @@
 		emit('configChanged', scoreColumnsConfig.value, readyToSave());
 	}
     function readyToSave(){
+		scoreColumnsConfig.value["fields to score"].forEach(field => {
+			if (!scoreColumnsConfig.value["score by"][field]){
+				return false;
+			}
+		});
         return (!!scoreColumnsConfig.value["field name"] 
 			&& scoreColumnsConfig.value["fields to score"].length >= 1
             && scoreColumnsConfig.value["field name"].trim() != "");
