@@ -99,14 +99,8 @@
     import ScoreColumns from "@/components/configcomponents/dataconverters/ScoreColumns.vue";
 
 
-    const rawFields = [
-        "CHR",
-        "POS",
-        "REF",
-        "ALT",
-        "RSID",
-        "PVAL"
-    ];
+    const props = defineProps({rawFields: Array});
+    const rawFields = props.rawFields;
     const defaultType = "";
     const dataConvertType = ref(defaultType);
     const dataConvertOptions = [

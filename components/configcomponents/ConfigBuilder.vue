@@ -1,5 +1,4 @@
 <template>
-	<ArrayToString></ArrayToString>
 	<div class="front-page-body">
 		<!-- Body -->
 		<div class="container-fluid mdkp-body">
@@ -233,7 +232,7 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 												</div>
 											</div>
 											<!-- data convert -->
-											<DataConvert></DataConvert>
+											<DataConvert :raw-fields="rawFields"></DataConvert>
 											<!-- column formatting -->
 											<h5>
 												Column formatting
@@ -1575,8 +1574,17 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 	import "bootstrap-icons/font/bootstrap-icons.css";
 	import DataConvert from "@/components/configcomponents/DataConvert.vue";
 
-	// computed property outputObject generates output
-	// another computed property outputString stringifies and displays it
-	// outputObject makes sense of all the little config items stored in various formats
-	// so that the string does not have to be the source of truth during editing
+/* 	computed property outputObject generates output
+	another computed property outputString stringifies and displays it
+	outputObject makes sense of all the little config items stored in various formats
+	so that the string does not have to be the source of truth during editing */
+
+	const rawFields = [
+        "CHR",
+        "POS",
+        "REF",
+        "ALT",
+        "RSID",
+        "PVAL"
+    ];
 </script>
