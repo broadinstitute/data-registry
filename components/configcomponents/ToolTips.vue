@@ -33,7 +33,7 @@
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const availableFields = computed(()=> props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
-    const fieldNameNew = computed(() => props.fieldNameUpdate[1])
+    const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
     const toolTipConfig = ref({});
     function updateToolTips(field, text){
         if (text == ""){

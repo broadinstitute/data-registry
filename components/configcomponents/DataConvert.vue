@@ -179,18 +179,29 @@
     function saveField(){
         let newFieldString = JSON.stringify(currentFieldConfig.value);
         let newField = JSON.parse(newFieldString);
+        let newName = newField["field name"];
         if (!readyToSave){
+            failedSaveMsg = "Field not ready to save".
             showMsg.value = true;
             console.log(newFieldString);
             return;
         }
+        // Check for duplicates
+        for (let i = 0; i < savedFieldConfigs.value.length; i++){
+            let existingFieldName = savedFieldConfigs.value[i]["field name"];
+            if (i != editingFieldIndex.value && existingFieldName == newName){
+                failedSaveMsg = "Select a unique field name.";
+                showMsg.value = true;
+                return;
+            }
+        }
+        // If we make it this far, the new field is unique and we can use it.
         showMsg.value = false;
         if(editingFieldIndex.value == -1){
             savedFieldConfigs.value.push(newField);
         } else {
             // why does the bubble show the new name before it is saved?
-            let oldName = savedFieldConfigs.value[editingFieldIndex.value]["field name"];
-            let newName = newField["field name"];
+            let oldName = savedFieldConfigs.value[editingFieldIndex.value]["field name"];            
             savedFieldConfigs.value[editingFieldIndex.value] = newField;
             if(oldName != newName){
                 emit("fieldNameChanged", oldName, newName);

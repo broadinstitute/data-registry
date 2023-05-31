@@ -159,8 +159,8 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 							</h4>
 							<div class="row">
 								<div class="col-md-12 col">
-									<b-tabs>
-										<b-tab title="Data points">
+									<div>
+										<div title="Data points">
 											<pre />
 											<sup class="optional block"
 												>Please add labels for data
@@ -173,8 +173,8 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 												class="form-control"
 											>
 											</textarea>
-										</b-tab>
-										<b-tab title="Api parameters">
+										</div>
+										<div title="Api parameters">
 											<pre />
 											<sup class="optional block"
 												>Please add labels for the API
@@ -194,8 +194,8 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 												class="form-control"
 											>
 											</textarea>
-										</b-tab>
-									</b-tabs>
+										</div>
+									</div>
 								</div>
 							</div>
 
@@ -207,8 +207,8 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 							</h4>
 							<div class="row">
 								<div class="col-md-12 col">
-									<b-tabs>
-										<b-tab title="Builder">
+									<div>
+										<div title="Builder">
 											<pre />
 											<div class="row">
 												<div
@@ -690,15 +690,15 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 													</select>
 												</div>
 											</div>
-										</b-tab>
-										<b-tab title="Manual build">
+										</div>
+										<div title="Manual build">
 											<pre />
 											<textarea
 												rows="6"
 												class="form-control">'{\r\n\'top rows\':[]\r\n\'}'
 											</textarea>
-										</b-tab>
-									</b-tabs>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -712,8 +712,8 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 					</h4>
 					<div class="row">
 						<div class="col-md-12 col">
-							<b-tabs>
-								<b-tab title="Builder">
+							<div>
+								<div title="Builder">
 									<pre />
 									<div class="row dr-builder-ui">
 										<div class="col-md-4 col">
@@ -858,17 +858,17 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 												</label>
 											</div>
 										</div>
-									</div></b-tab
+									</div></div
 								>
-								<b-tab title="Manual build">
+								<div title="Manual build">
 									<pre />
 									<textarea
 										rows="6"
 										class="form-control"
 										>'{\r\n\'key field\':,\r\n\'fields group data key\':[],\r\n\'fields to compare\':[]\r\n}'
 									</textarea>
-								</b-tab>
-							</b-tabs>
+								</div>
+							</div>
 						</div>
 					</div>
 
@@ -879,8 +879,8 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 					</h5>
 					<div class="row">
 						<div class="col-md-12 col">
-							<b-tabs>
-								<b-tab title="Builder">
+							<div>
+								<div title="Builder">
 									<pre />
 									<div class="row">
 										<div class="col-md-7">
@@ -1041,12 +1041,12 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 											</div>
 										</div>
 									</div>
-								</b-tab>
-								<b-tab title="Manual build">
+								</div>
+								<div title="Manual build">
 									<textarea rows="6" class="form-control">
 									</textarea>
-								</b-tab>
-							</b-tabs>
+								</div>
+							</div>
 						</div>
 					</div>
 
