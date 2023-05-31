@@ -54,6 +54,16 @@
     const props = defineProps({fields: Array});
     const availableFields = computed(()=> props.fields);
     const selectedFields = ref([]);
+    watch (availableFields, (newFields, oldFields)=> {
+        if (newFields.length < oldFields.length){
+            oldFields.forEach((oldField)=>{
+                if (!newFields.includes(oldField)){
+                    selectedFields.value = 
+                        selectedFields.value.filter(field => field != oldField);
+                }
+            });
+        }
+    })
     function moveUp(index){
 		let beginning = selectedFields.value.slice(0, index-1);
 		let risingItem = selectedFields.value[index];

@@ -770,62 +770,7 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 													</div>
 												</div>
 											</div>
-											<!-- tool tips -->
-											<h5>
-												Tool tips
-												<sup class="optional"
-													>Tutorial
-												</sup>
-											</h5>
-											<div class="row dr-builder-ui">
-												<div class="col-md-12 col">
-													<div class="label">
-														Tool tips
-													</div>
-													<div class="row">
-														<div
-															class="col-md-2 col"
-														>
-															Variant ID
-														</div>
-														<div
-															class="
-																col-md-10 col
-															"
-														>
-															<input
-																type="text"
-																class="
-																	form-control
-																	input-default
-																"
-																placeholder="tool tip"
-															/>
-														</div>
-													</div>
-													<div class="row">
-														<div
-															class="col-md-2 col"
-														>
-															P-Value
-														</div>
-														<div
-															class="
-																col-md-10 col
-															"
-														>
-															<input
-																type="text"
-																class="
-																	form-control
-																	input-default
-																"
-																placeholder="tool tip"
-															/>
-														</div>
-													</div>
-												</div>
-											</div>
+											<ToolTips :fields="convertedFields"></ToolTips>
 											<!-- Locus field / star column -->
 											<h5>
 												Locus field / star column
@@ -1510,6 +1455,7 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 	import "bootstrap-icons/font/bootstrap-icons.css";
 	import DataConvert from "@/components/configcomponents/DataConvert.vue";
 	import TopRows from "@/components/configcomponents/TopRows.vue";
+	import ToolTips from "@/components/configcomponents/ToolTips.vue";
 
 /* 	computed property outputObject generates output
 	another computed property outputString stringifies and displays it
