@@ -40,4 +40,13 @@
             toolTipConfig.value[field] = text;
         }
     }
+    watch (availableFields, (newFields, oldFields)=> {
+        if (newFields.length < oldFields.length){
+            oldFields.forEach((oldField)=>{
+                if (!newFields.includes(oldField)){
+                    delete toolTipConfig.value[oldField];
+                }
+            });
+        }
+    });
 </script>

@@ -233,7 +233,8 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 											</div>
 											<!-- data convert -->
 											<DataConvert :raw-fields="rawFields" 
-												@dc-changed="(configs, fields) => updateDataConvert(configs, fields)">
+												@dc-changed="(configs, fields) => updateDataConvert(configs, fields)"
+												@field-name-changed="(oldName, newName) => changeFieldName(oldName, newName)">
 											</DataConvert>
 											<!-- column formatting -->
 											<h5>
@@ -638,7 +639,7 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 													</div>
 												</div>
 											</div>
-											<TopRows :fields="convertedFields"></TopRows>
+											<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"></TopRows>
 											<!-- features -->
 											<h5>
 												Features
@@ -1471,9 +1472,13 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
         "PVAL"
     ];
 	const convertedFields = ref([]);
+	const nameChange = ref([null, null]);
 	const config = ref({});
 	function updateDataConvert(configs, fields){
 		config.value["data convert"] = configs;
 		convertedFields.value = fields;
+	}
+	function changeFieldName(oldName, newName){
+		nameChange.value = [oldName, newName];
 	}
 </script>

@@ -100,7 +100,7 @@
 
 
     const props = defineProps({rawFields: Array});
-    const emit = defineEmits(['dcChanged']);
+    const emit = defineEmits(["dcChanged", "fieldNameChanged"]);
     const rawFields = computed(()=> props.rawFields);
     const defaultType = "";
     const dataConvertType = ref(defaultType);
@@ -188,7 +188,12 @@
             savedFieldConfigs.value.push(newField);
         } else {
             // why does the bubble show the new name before it is saved?
+            let oldName = savedFieldConfigs.value[editingFieldIndex.value]["field name"];
+            let newName = newField["field name"];
             savedFieldConfigs.value[editingFieldIndex.value] = newField;
+            if(oldName != newName){
+                emit("fieldNameChanged", oldName, newName);
+            }
         }
         doneEditing();
     }
