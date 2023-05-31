@@ -30,8 +30,10 @@
 <script setup>
     import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
-    const props = defineProps({fields: Array});
+    const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const availableFields = computed(()=> props.fields);
+    const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
+    const fieldNameNew = computed(() => props.fieldNameUpdate[1])
     const toolTipConfig = ref({});
     function updateToolTips(field, text){
         if (text == ""){
@@ -47,6 +49,15 @@
                     delete toolTipConfig.value[oldField];
                 }
             });
+        }
+    });
+    watch(fieldNameOld, () => {
+        // Field names are already updated within the list of available fields.
+        // We need to update it in the list of selected fields.
+        if (!!toolTipConfig.value[fieldNameOld.value]){
+            let toolTip = toolTipConfig.value[fieldNameOld.value];
+            delete toolTipConfig.value[fieldNameOld.value];
+            toolTipConfig.value[fieldNameNew.value] = toolTip;
         }
     });
 </script>

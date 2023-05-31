@@ -73,8 +73,6 @@
             let index = selectedFields.value.indexOf(fieldNameOld.value);
             selectedFields.value[index] = fieldNameNew.value;
         }
-        console.log(fieldNameOld.value);
-        console.log(fieldNameNew.value);
     });
     function moveUp(index){
 		let beginning = selectedFields.value.slice(0, index-1);

@@ -771,7 +771,7 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 													</div>
 												</div>
 											</div>
-											<ToolTips :fields="convertedFields"></ToolTips>
+											<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"></ToolTips>
 											<!-- Locus field / star column -->
 											<h5>
 												Locus field / star column
