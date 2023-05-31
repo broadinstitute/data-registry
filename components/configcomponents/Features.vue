@@ -63,9 +63,17 @@
         <div class="row">
             <div class="col-md-12 col text-center dr-bubbles-wrapper">
 				<div v-for="feature, index in allFeaturesConfig.features" class="dr-format-bubble">
+                    <button class="btn btn-secondary move-prev-next" :disabled="editingFeatureIndex != -1" 
+                        @click="movePrev(index)">
+                            &leftarrow;
+                    </button>
                     <span class="name">{{ feature }}</span>
                     <span class="editing" v-if="editingFeatureIndex == index">Editing</span>
                     <a v-else @click="editFeature(index)"><span class="edit">Edit</span></a>
+                    <button class="btn btn-secondary move-prev-next" :disabled="editingFeatureIndex != -1"
+                        @click="moveNext(index)">
+                            &rightarrow;
+                    </button>
                 </div>
             </div>
         </div>
@@ -109,6 +117,12 @@ import { all } from "axios";
 		beginning.push(fallingItem);
 		currentSelectedFields.value = beginning.concat(end);
 	}
+    function movePrev(index){
+        console.log(`Move prev: ${allFeaturesConfig.value["features"][index]}`);
+    }
+    function moveNext(index){
+        console.log(`Move next: ${allFeaturesConfig.value["features"][index]}`);
+    }
     function saveFeature(){
         let trimmedName = currentFeatureName.value.trim();
         if (trimmedName.length > 0 && currentSelectedFields.value.length > 0){

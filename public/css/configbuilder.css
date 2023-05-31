@@ -205,3 +205,17 @@ pre.output{
 	font-size: smaller;
 	text-align: right;
 }
+.move-prev-next{
+	padding: 0px 3px 0px 3px;
+	margin: 0px 5px 0px 5px;
+	font-size: 12px;
+	font-weight: bold;
+	height: 18px;
+	vertical-align: top !important;
+	background-color: cornflowerblue;
+	color: #000;
+	border: none;
+}
+.move-prev-next:disabled{
+	color: cornflowerblue;
+}
