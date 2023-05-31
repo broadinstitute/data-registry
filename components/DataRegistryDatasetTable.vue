@@ -17,8 +17,8 @@
         </thead>
         <tbody class="table-group-divider">
             <tr v-for="dataset in datasets" :key="dataset.id">
-                <td @click="route.push({ path: `/datasets/${dataset.id}` })">
-                    {{ dataset.name }}
+                <td>
+                   <a class="link-primary" @click="route.push({ path: `/datasets/${dataset.id}` })">{{ dataset.name }}</a>
                 </td>
                 <td>
                     {{
@@ -43,7 +43,9 @@
                     }}
                 </td>
                 <td>
-                    <i @click="deleteDataSet(dataset.id)"  class="bi bi-trash"></i>
+                    <i @click="route.push({ path: `/datasets/${dataset.id}` })" class="bi bi-pencil" style="cursor: pointer;"></i>
+                    &nbsp;
+                    <i @click="deleteDataSet(dataset.id)" class="bi bi-trash" style="cursor: pointer; color: red;"></i>
                 </td>
             </tr>
         </tbody>
