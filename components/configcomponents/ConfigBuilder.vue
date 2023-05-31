@@ -641,136 +641,7 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 											</div>
 											<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"></TopRows>
 											<!-- features -->
-											<h5>
-												Features
-												<sup class="optional"
-													>Tutorial
-												</sup>
-											</h5>
-											<div class="row dr-builder-ui">
-												<div class="col-md-3 col">
-													<div class="label">
-														Feature name
-													</div>
-													<input
-														type="text"
-														class="
-															form-control
-															input-default
-														"
-														placeholder="name"
-													/>
-												</div>
-												<div class="col-md-8 col">
-													<div class="label">
-														Set columns order
-													</div>
-													<ul
-														class="
-															dr-byor-data-columns
-															inline-list
-														"
-													>
-														<li>
-															<label
-																class="
-																	form-inline
-																"
-																>Variant ID:
-																<select
-																	class="
-																		form-control
-																	"
-																>
-																	<option>
-																		None
-																	</option>
-																	<option>
-																		0
-																	</option>
-																	<option>
-																		1
-																	</option>
-																</select></label
-															>
-														</li>
-														<li>
-															<label
-																class="
-																	form-inline
-																"
-																>P-Value:
-																<select
-																	class="
-																		form-control
-																	"
-																>
-																	<option>
-																		None
-																	</option>
-																	<option>
-																		0
-																	</option>
-																	<option>
-																		1
-																	</option>
-																</select></label
-															>
-														</li>
-													</ul>
-												</div>
-												<div class="col-md-1 col">
-													<button
-														class="
-															btn
-															btn-primary
-															btn-sm
-														"
-														type="button"
-													>
-														Save
-													</button>
-													<button
-														class="
-															btn
-															btn-warning
-															btn-sm
-														"
-														type="button"
-													>
-														Cancel
-													</button>
-													<button
-														class="
-															btn
-															btn-danger
-															btn-sm
-														"
-														type="button"
-													>
-														Delete
-													</button>
-												</div>
-											</div>
-											<div class="row">
-												<div
-													class="
-														col-md-12 col
-														text-center
-														dr-bubbles-wrapper
-													"
-												>
-													<div
-														class="dr-format-bubble"
-													>
-														<span class="name"
-															>Feature 1</span
-														><span class="edit"
-															>Edit</span
-														>
-													</div>
-												</div>
-											</div>
+											<Features :fields="convertedFields" :fieldNameUpdate="nameChange"></Features>
 											<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"></ToolTips>
 											<!-- Locus field / star column -->
 											<h5>
@@ -1442,9 +1313,6 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 				</div>
 			</div>
 		</div>
-
-		<!-- Footer-->
-		<page-footer :disease-group="$parent.diseaseGroup"></page-footer>
 	</div>
 </template>
 <style scoped>
@@ -1457,6 +1325,7 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 	import DataConvert from "@/components/configcomponents/DataConvert.vue";
 	import TopRows from "@/components/configcomponents/TopRows.vue";
 	import ToolTips from "@/components/configcomponents/ToolTips.vue";
+	import Features from "@/components/configcomponents/Features.vue"
 
 /* 	computed property outputObject generates output
 	another computed property outputString stringifies and displays it

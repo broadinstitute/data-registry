@@ -40,7 +40,7 @@
 					</td>
 				</tr>
 			</tbody>
-		</div>
+		    </div>
         </div>
     
 </template>
