@@ -61,8 +61,8 @@
         </div>
         <div class="row">
             <div class="col-md-12 col text-center dr-bubbles-wrapper">
-				<div class="dr-format-bubble">
-                    <span class="name">Feature 1</span>
+				<div v-for="feature, index in allFeaturesConfig.features" class="dr-format-bubble">
+                    <span class="name">{{ feature }}</span>
                     <span class="edit">Edit</span>
                 </div>
             </div>
@@ -106,18 +106,21 @@
 		currentSelectedFields.value = beginning.concat(end);
 	}
     function saveFeature(){
-        if (currentFeatureName.value.length > 0 && currentSelectedFields.value.length > 0){
+        let trimmedName = currentFeatureName.value.trim();
+        if (trimmedName.length > 0 && currentSelectedFields.value.length > 0){
             console.log("Is this thing on?");
-            allFeaturesConfig.value["features"].push(currentFeatureName.value);
-            allFeaturesConfig.value[currentFeatureName.value] = currentSelectedFields.value;
+            allFeaturesConfig.value["features"].push(trimmedName);
+            allFeaturesConfig.value[trimmedName] = currentSelectedFields.value;
             doneEditing();
             return;
-        } else if (currentFeatureName.value == ""){
-            saveErrorMsg.value = "Enter feature name."
+        } else if (trimmedName == ""){
+            saveErrorMsg.value = "Enter feature name.";
             return;
         } else if (currentSelectedFields.value.length == 0){
-            saveErrorMsg.value = "Select some fields."
+            saveErrorMsg.value = "Select some fields.";
             return;
+        } else if (allFeaturesConfig.value["features"].includes(trimmedName)){
+            saveErrorMsg.value = "Select a unique feature name.";
         }
     }
     function doneEditing(){
