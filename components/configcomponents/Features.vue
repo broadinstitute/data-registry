@@ -11,6 +11,7 @@
             <input type="text" class="form-control input-default" v-model="currentFeatureName"/>
             <div class="label">Output</div>
             <pre class="output">{{ singleFeatureConfigString }}</pre>
+            <!--pre class="output">{{ allFeaturesConfigString }}</pre-->
         </div>
         <div class="col-md-3 col">
                 <div class="label">
@@ -51,7 +52,7 @@
                 <button class="btn btn-primary btn-sm" type="button" @click="saveFeature()">
                     Save
                 </button>
-                <button class="btn btn-warning btn-sm" type="button" @click="cancelEdit()">
+                <button class="btn btn-warning btn-sm" type="button" @click="doneEditing()">
                     Cancel
                 </button>
                 <button class="btn btn-danger btn-sm" type="button" @click="deleteFeature()">
@@ -63,7 +64,8 @@
             <div class="col-md-12 col text-center dr-bubbles-wrapper">
 				<div v-for="feature, index in allFeaturesConfig.features" class="dr-format-bubble">
                     <span class="name">{{ feature }}</span>
-                    <span class="edit">Edit</span>
+                    <span class="editing" v-if="editingFeatureIndex == index">Editing</span>
+                    <a v-else @click="editFeature(index)"><span class="edit">Edit</span></a>
                 </div>
             </div>
         </div>
@@ -75,6 +77,7 @@
 <script setup>
     import "bootstrap/dist/css/bootstrap.min.css";
     import "bootstrap-icons/font/bootstrap-icons.css";
+import { all } from "axios";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const availableFields = computed(()=> props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
@@ -87,6 +90,7 @@
         "features": []
     });
     const singleFeatureConfigString = computed(()=> `"${currentFeatureName.value}": ${JSON.stringify(currentSelectedFields.value)}`);
+    const allFeaturesConfigString = computed(()=> JSON.stringify(allFeaturesConfig.value));
     function moveUp(index){
 		let beginning = currentSelectedFields.value.slice(0, index-1);
 		let risingItem = currentSelectedFields.value[index];
@@ -109,8 +113,16 @@
         let trimmedName = currentFeatureName.value.trim();
         if (trimmedName.length > 0 && currentSelectedFields.value.length > 0){
             console.log("Is this thing on?");
-            allFeaturesConfig.value["features"].push(trimmedName);
-            allFeaturesConfig.value[trimmedName] = currentSelectedFields.value;
+            if (editingFeatureIndex.value == -1){
+                allFeaturesConfig.value["features"].push(trimmedName);
+                allFeaturesConfig.value[trimmedName] = currentSelectedFields.value;
+            } else {
+                let oldName = allFeaturesConfig.value["features"][editingFeatureIndex.value];
+                let fieldsList = allFeaturesConfig.value[oldName];
+                allFeaturesConfig.value["features"][editingFeatureIndex.value] = trimmedName;
+                allFeaturesConfig.value[trimmedName] = fieldsList;
+                delete allFeaturesConfig.value[oldName];
+            }
             doneEditing();
             return;
         } else if (trimmedName == ""){
@@ -122,6 +134,26 @@
         } else if (allFeaturesConfig.value["features"].includes(trimmedName)){
             saveErrorMsg.value = "Select a unique feature name.";
         }
+    }
+    function editFeature(index){
+        if (editingFeatureIndex.value != -1){
+            saveErrorMsg.value = "Already editing another feature. Save or cancel to continue";
+            return;
+        }
+        editingFeatureIndex.value = index;
+        currentFeatureName.value = allFeaturesConfig.value["features"][index];
+        currentSelectedFields.value = allFeaturesConfig.value[currentFeatureName.value];
+        saveErrorMsg.value = "";
+    }
+    function deleteFeature(){
+        if (editingFeatureIndex.value != -1) {
+            let featureToDelete = allFeaturesConfig.value["features"][editingFeatureIndex.value];
+            allFeaturesConfig.value["features"] = 
+                allFeaturesConfig.value["features"].filter(feature => feature != featureToDelete);
+            delete allFeaturesConfig.value[featureToDelete];
+            editingFeatureIndex.value = null;
+        }
+        doneEditing();
     }
     function doneEditing(){
         saveErrorMsg.value = "";
