@@ -126,6 +126,14 @@ import { all } from "axios";
     function saveFeature(){
         let trimmedName = currentFeatureName.value.trim();
         if (trimmedName.length > 0 && currentSelectedFields.value.length > 0){
+            // Check for duplicates
+            for (let i = 0; i < allFeaturesConfig.value["features"].length; i++){
+                let existingFeature = allFeaturesConfig.value["features"][i];
+                if (i != editingFeatureIndex.value && existingFeature == trimmedName){
+                    saveErrorMsg.value = "Select a unique feature name.";
+                    return;
+                }
+            }
             console.log("Is this thing on?");
             if (editingFeatureIndex.value == -1){
                 allFeaturesConfig.value["features"].push(trimmedName);
@@ -145,8 +153,6 @@ import { all } from "axios";
         } else if (currentSelectedFields.value.length == 0){
             saveErrorMsg.value = "Select some fields.";
             return;
-        } else if (allFeaturesConfig.value["features"].includes(trimmedName)){
-            saveErrorMsg.value = "Select a unique feature name.";
         }
     }
     function editFeature(index){
@@ -155,8 +161,9 @@ import { all } from "axios";
             return;
         }
         editingFeatureIndex.value = index;
+        let prevName = allFeaturesConfig.value["features"][index];
         currentFeatureName.value = allFeaturesConfig.value["features"][index];
-        currentSelectedFields.value = allFeaturesConfig.value[currentFeatureName.value];
+        currentSelectedFields.value = allFeaturesConfig.value[prevName];
         saveErrorMsg.value = "";
     }
     function deleteFeature(){
