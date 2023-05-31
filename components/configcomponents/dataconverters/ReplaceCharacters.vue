@@ -68,7 +68,7 @@
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
 		replaceChars.value = oldConfig["replace"];
-		emitConfig();
+		
     }
 	function addEntry(){
 		replaceChars.value.push({

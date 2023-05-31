@@ -66,7 +66,7 @@
 			let noVal = oldConfig['score by'][field]['value to score']['no'];
 			addNewEntry(field, yesVal, noVal);
 		});
-		emitConfig();
+		
     }
 	function addRemoveEntry(event){
 		let box = event.target.value;

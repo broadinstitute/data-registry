@@ -40,7 +40,7 @@
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
 		separator.value = oldConfig["separate by"];
-		emitConfig();
+		
     }
     watch([latestFieldName, selectedField, separator], ()=>{
         emitConfig();

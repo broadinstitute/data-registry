@@ -69,7 +69,7 @@
         let oldConfig = JSON.parse(props.loadConfig);
         selectedFields.value = oldConfig["fields to join"];
 		joinBy.value = oldConfig["join by"];
-		emitConfig();
+		
     }
 	function moveUp(index){
 		let beginning = selectedFields.value.slice(0, index-1);

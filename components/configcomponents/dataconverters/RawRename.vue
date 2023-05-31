@@ -35,7 +35,7 @@
     if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
-        emitConfig();
+        
     }
     watch([latestFieldName, selectedField], ()=>{
         emitConfig();

@@ -142,7 +142,6 @@
     let failedSaveMsg = "";
     const currentFieldConfig = ref({});
     const currentConfigString = computed(() => JSON.stringify(currentFieldConfig.value));
-    // do we need to quote key names within the byor config? I think so
     const savedFieldConfigs = ref([
         {
             "type": "join multi",
@@ -170,11 +169,16 @@
     function editField(index){
         // You can't change a field type while editing. If you want to do that, you must delete and start over.
         // Should clicking another field while edit is active serve as a cancel? or should we prevent it?
+        if (editingFieldIndex.value != -1){
+            failedSaveMsg = "Already editing another field. Save or cancel to continue";
+            showMsg.value = true;
+            return;
+        }
         editingFieldIndex.value = index;
         let savedField = savedFieldConfigs.value[index];
         newFieldName.value = savedField["field name"];
         dataConvertType.value = savedField["type"];
-        updateConfig(savedField);
+        updateConfig(savedField, true);
     }
     function saveField(){
         let newFieldString = JSON.stringify(currentFieldConfig.value);
@@ -215,6 +219,7 @@
         newFieldName.value = fieldNamePlaceholder;
         dataConvertType.value = defaultType;
         emitDataConvert();
+        showMsg.value = false;
     }
     function cancelFieldEdit(){
         doneEditing();

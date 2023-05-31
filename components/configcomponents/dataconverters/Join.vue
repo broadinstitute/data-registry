@@ -57,7 +57,7 @@
         firstField.value = oldConfig["fields to join"][0];
 		secondField.value = oldConfig["fields to join"][1];
 		joinBy.value = oldConfig["join by"]
-		emitConfig();
+		
     }
     watch([latestFieldName, fieldsToJoin, joinBy], ()=>{
         emitConfig();

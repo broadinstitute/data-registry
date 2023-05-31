@@ -44,7 +44,7 @@
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
 		calcType.value = oldConfig["calculation type"];
-		emitConfig();
+		
     }
     watch([latestFieldName, selectedField, calcType], ()=>{
         emitConfig();
