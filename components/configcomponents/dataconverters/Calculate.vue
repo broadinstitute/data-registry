@@ -34,19 +34,20 @@
     const latestFieldName = computed(()=>{
         return props.newFieldName;
     });
-    if (props.loadConfig != "{}"){
-        let oldConfig = JSON.parse(props.loadConfig);
-        selectedField.value = oldConfig["raw field"];
-		calcType.value = oldConfig["calculation type"];
-    }
-    const calcConfig = ref({
+	const calcConfig = ref({
         "type": "calculate",
         "field name": latestFieldName,
         "raw field": selectedField,
 		"calculation type": calcType
     });
+    if (props.loadConfig != "{}"){
+        let oldConfig = JSON.parse(props.loadConfig);
+        selectedField.value = oldConfig["raw field"];
+		calcType.value = oldConfig["calculation type"];
+		emitConfig();
+    }
     watch([latestFieldName, selectedField, calcType], ()=>{
-        emit('configChanged', calcConfig.value, readyToSave());
+        emitConfig();
     })
     function readyToSave(){
         return (!!calcConfig.value["field name"] 
@@ -54,4 +55,7 @@
             && calcConfig.value["field name"].trim() != ""
 			&& !!calcConfig.value["calculation type"]);
     }
+	function emitConfig(){
+		emit('configChanged', calcConfig.value, readyToSave());
+	}
 </script>

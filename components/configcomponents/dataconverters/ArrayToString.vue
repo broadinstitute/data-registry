@@ -29,27 +29,29 @@
     const latestFieldName = computed(()=>{
         return props.newFieldName;
     });
-
 	const separator = ref("");
-	if (props.loadConfig != "{}"){
-        let oldConfig = JSON.parse(props.loadConfig);
-        selectedField.value = oldConfig["raw field"];
-		separator.value = oldConfig["separate by"];
-    }
-    const arrayRenameConfig = ref({
+	const arrayRenameConfig = ref({
         "type": "array to string",
         "field name": latestFieldName,
         "raw field": selectedField,
 		"separate by": separator
     });
+	if (props.loadConfig != "{}"){
+        let oldConfig = JSON.parse(props.loadConfig);
+        selectedField.value = oldConfig["raw field"];
+		separator.value = oldConfig["separate by"];
+		emitConfig();
+    }
     watch([latestFieldName, selectedField, separator], ()=>{
-        emit('configChanged', arrayRenameConfig.value, readyToSave());
-    })
+        emitConfig();
+    });
     function readyToSave(){
 		//separator CAN be an empty string so we don't check that
         return (!!arrayRenameConfig.value["field name"] 
             && !!arrayRenameConfig.value["raw field"]
 		    && arrayRenameConfig.value["field name"].trim() != "");
     }
-
+	function emitConfig(){
+		emit('configChanged', arrayRenameConfig.value, readyToSave());
+	}
 </script>

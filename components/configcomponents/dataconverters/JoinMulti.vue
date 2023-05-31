@@ -56,17 +56,21 @@
 	const latestFieldName = computed(()=>{
         return props.newFieldName;
     });
-	if (props.loadConfig != "{}"){
-        let oldConfig = JSON.parse(props.loadConfig);
-        selectedFields.value = oldConfig["fields to join"];
-		joinBy.value = oldConfig["join by"];
-    }
 	const joinMultiConfig = ref({
         "type": "join multi",
         "field name": latestFieldName,
 		"fields to join": selectedFields,
 		"join by": joinBy
     });
+	function emitConfig(){
+		emit('configChanged', joinMultiConfig.value, readyToSave());
+	}
+	if (props.loadConfig != "{}"){
+        let oldConfig = JSON.parse(props.loadConfig);
+        selectedFields.value = oldConfig["fields to join"];
+		joinBy.value = oldConfig["join by"];
+		emitConfig();
+    }
 	function moveUp(index){
 		let beginning = selectedFields.value.slice(0, index-1);
 		let risingItem = selectedFields.value[index];
@@ -103,12 +107,7 @@
 		joinBy.value = [];
 		emitConfig();
 	}
-	watch([latestFieldName, selectedFields, joinBy], ()=>{
-        emitConfig();
-    })
-	function emitConfig(){
-		emit('configChanged', joinMultiConfig.value, readyToSave());
-	}
+	
     function readyToSave(){
 		let fieldsLength = joinMultiConfig.value["fields to join"].length;
 		let joinLength = joinMultiConfig.value["join by"].length;
@@ -117,5 +116,7 @@
 			&& joinLength == fieldsLength - 1
             && joinMultiConfig.value["field name"].trim() != "");
     }
-
+	watch([latestFieldName, selectedFields, joinBy], ()=>{
+        emitConfig();
+    });
 </script>

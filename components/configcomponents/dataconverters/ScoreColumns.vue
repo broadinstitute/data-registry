@@ -51,6 +51,12 @@
 	const latestFieldName = computed(()=>{
         return props.newFieldName;
     });
+	const scoreColumnsConfig = ref({
+        "type": "score columns",
+        "field name": latestFieldName,
+		"fields to score": selectedFields,
+		"score by": scores
+    });
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
 		let fields = oldConfig["fields to score"];
@@ -60,15 +66,8 @@
 			let noVal = oldConfig['score by'][field]['value to score']['no'];
 			addNewEntry(field, yesVal, noVal);
 		});
-		
+		emitConfig();
     }
-	const scoreColumnsConfig = ref({
-        "type": "score columns",
-        "field name": latestFieldName,
-		"fields to score": selectedFields,
-		"score by": scores
-    });
-
 	function addRemoveEntry(event){
 		let box = event.target.value;
 		let boxes = event.target._modelValue;
@@ -79,11 +78,9 @@
 		}
 		emitConfig();
 	}
-	
 	function removeEntry(field){
 		delete scores.value[field];
 	}
-
 	function addNewEntry(field, yesVal=1, noVal=0){
 		// Adds to the score object when a new item is selected
 		let newEntry = { 
@@ -95,7 +92,6 @@
 		};
 		scores.value[field] = newEntry;
 	}
-	
 	function updateScore(field, yesOrNo, value){
 		if (value == "" || value == null){
 			// Force emit a value of false for ready to save
@@ -106,7 +102,6 @@
 		}
 		
 	}
-
 	function clearAll(){
 		selectedFields.value = [];
 		scores.value= {};
@@ -128,5 +123,4 @@
 			&& scoreColumnsConfig.value["fields to score"].length >= 1
             && scoreColumnsConfig.value["field name"].trim() != "");
     }
-
 </script>

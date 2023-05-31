@@ -46,20 +46,21 @@
     const latestFieldName = computed(()=>{
         return props.newFieldName;
     });
-    if (props.loadConfig != "{}"){
-        let oldConfig = JSON.parse(props.loadConfig);
-        firstField.value = oldConfig["fields to join"][0];
-		secondField.value = oldConfig["fields to join"][1];
-		joinBy.value = oldConfig["join by"]
-    }
-    const joinConfig = ref({
+	const joinConfig = ref({
         "type": "join",
         "field name": latestFieldName,
 		"fields to join": fieldsToJoin,
 		"join by": joinBy
     });
+    if (props.loadConfig != "{}"){
+        let oldConfig = JSON.parse(props.loadConfig);
+        firstField.value = oldConfig["fields to join"][0];
+		secondField.value = oldConfig["fields to join"][1];
+		joinBy.value = oldConfig["join by"]
+		emitConfig();
+    }
     watch([latestFieldName, fieldsToJoin, joinBy], ()=>{
-        emit('configChanged', joinConfig.value, readyToSave());
+        emitConfig();
     })
     function readyToSave(){
         return (!!joinConfig.value["field name"] 
@@ -67,4 +68,7 @@
 			&& !!joinConfig.value["fields to join"][1]
             && joinConfig.value["field name"].trim() != "");
     }
+	function emitConfig(){
+		emit('configChanged', joinConfig.value, readyToSave());
+	}
 </script>

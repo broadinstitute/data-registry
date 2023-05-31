@@ -27,20 +27,24 @@
     const latestFieldName = computed(()=>{
         return props.newFieldName;
     });
-    if (props.loadConfig != "{}"){
-        let oldConfig = JSON.parse(props.loadConfig);
-        selectedField.value = oldConfig["raw field"];
-    }
     const rawRenameConfig = ref({
         "type": "raw",
         "field name": latestFieldName,
         "raw field": selectedField
     });
+    if (props.loadConfig != "{}"){
+        let oldConfig = JSON.parse(props.loadConfig);
+        selectedField.value = oldConfig["raw field"];
+        emitConfig();
+    }
     watch([latestFieldName, selectedField], ()=>{
-        emit('configChanged', rawRenameConfig.value, readyToSave());
+        emitConfig();
     })
     function readyToSave(){
         return (!!rawRenameConfig.value["field name"] && !!rawRenameConfig.value["raw field"]
             && rawRenameConfig.value["field name"].trim() != "");
+    }
+    function emitConfig(){
+        emit('configChanged', rawRenameConfig.value, readyToSave());
     }
 </script>

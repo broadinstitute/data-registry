@@ -172,18 +172,19 @@
         // Should clicking another field while edit is active serve as a cancel? or should we prevent it?
         editingFieldIndex.value = index;
         let savedField = savedFieldConfigs.value[index];
-        updateConfig(savedField);
         newFieldName.value = savedField["field name"];
         dataConvertType.value = savedField["type"];
-
+        updateConfig(savedField);
     }
     function saveField(){
+        let newFieldString = JSON.stringify(currentFieldConfig.value);
+        let newField = JSON.parse(newFieldString);
         if (!readyToSave){
             showMsg.value = true;
+            console.log(newFieldString);
             return;
         }
         showMsg.value = false;
-        let newField = JSON.parse(JSON.stringify(currentFieldConfig.value));
         if(editingFieldIndex.value == -1){
             savedFieldConfigs.value.push(newField);
         } else {

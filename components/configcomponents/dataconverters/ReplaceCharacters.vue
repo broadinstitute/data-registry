@@ -58,17 +58,18 @@
 			"to": ""
 		}
 	]);
-    if (props.loadConfig != "{}"){
-        let oldConfig = JSON.parse(props.loadConfig);
-        selectedField.value = oldConfig["raw field"];
-		replaceChars.value = oldConfig["replace"];
-    }
-    const replaceCharConfig = ref({
+	const replaceCharConfig = ref({
         "type": "replace characters",
         "field name": latestFieldName,
         "raw field": selectedField,
 		"replace": replaceChars
     });
+    if (props.loadConfig != "{}"){
+        let oldConfig = JSON.parse(props.loadConfig);
+        selectedField.value = oldConfig["raw field"];
+		replaceChars.value = oldConfig["replace"];
+		emitConfig();
+    }
 	function addEntry(){
 		replaceChars.value.push({
 			"from": "",
