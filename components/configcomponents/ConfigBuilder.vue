@@ -232,7 +232,9 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 												</div>
 											</div>
 											<!-- data convert -->
-											<DataConvert :raw-fields="rawFields"></DataConvert>
+											<DataConvert :raw-fields="rawFields" 
+												@dc-changed="(configs, fields) => updateDataConvert(configs, fields)">
+											</DataConvert>
 											<!-- column formatting -->
 											<h5>
 												Column formatting
@@ -636,7 +638,7 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 													</div>
 												</div>
 											</div>
-											<TopRows :raw-fields="rawFields"></TopRows>
+											<TopRows :fields="convertedFields"></TopRows>
 											<!-- features -->
 											<h5>
 												Features
@@ -1522,4 +1524,10 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
         "RSID",
         "PVAL"
     ];
+	const convertedFields = ref([]);
+	const config = ref({});
+	function updateDataConvert(configs, fields){
+		config.value["data convert"] = configs;
+		convertedFields.value = fields;
+	}
 </script>

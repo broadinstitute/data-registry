@@ -98,9 +98,7 @@
     function readyToSave(){
 		let emptyEntries = false;
 		replaceCharConfig.value["replace"].forEach(entry => {
-			console.log(JSON.stringify(entry));
 			if(entry["from"] == ""){
-				console.log("don't save this!!");
 				emptyEntries = true;
 			}
 		});

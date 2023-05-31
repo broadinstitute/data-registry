@@ -100,7 +100,8 @@
 
 
     const props = defineProps({rawFields: Array});
-    const rawFields = props.rawFields;
+    const emit = defineEmits(['dcChanged']);
+    const rawFields = computed(()=> props.rawFields);
     const defaultType = "";
     const dataConvertType = ref(defaultType);
     const dataConvertOptions = [
@@ -196,6 +197,7 @@
         updateConfig({});
         newFieldName.value = fieldNamePlaceholder;
         dataConvertType.value = defaultType;
+        emitDataConvert();
     }
     function cancelFieldEdit(){
         doneEditing();
@@ -211,10 +213,17 @@
         savedFieldConfigs.value = beginning.concat(end);
         doneEditing();
     }
+    function emitDataConvert(){
+        let savedFields = [];
+        savedFieldConfigs.value.forEach(
+            field => savedFields.push(field["field name"])
+        );
+        emit("dcChanged", savedFieldConfigs, savedFields);
+    }
     watch(dataConvertType, ()=>{
         if (editingFieldIndex.value == -1){
             updateConfig({});
         }
     });
-
+    // To get the placeholder data out there. Will remove
 </script>

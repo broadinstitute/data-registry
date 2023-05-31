@@ -52,7 +52,6 @@
 	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
-	const selectedFieldsLength = computed(()=> selectedFields.length);
 	const joinBy = ref([]);
 	const latestFieldName = computed(()=>{
         return props.newFieldName;

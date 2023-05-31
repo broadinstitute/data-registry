@@ -12,10 +12,10 @@
                     Select rows
                 </div>
                 <ul class="dr-byor-data-columns">
-                    <li v-for="rawField in rawFields" class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" :value="rawField" 
+                    <li v-for="field in availableFields" class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" :value="field" 
                                 id="flexCheckDefault" v-model="selectedFields"/>
-                            <span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
+                            <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
                     </li>
                 </ul>
             </div>
@@ -51,8 +51,8 @@
 <script setup>
     import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
-    const props = defineProps({rawFields: Array});
-    const rawFields = computed(()=> props.rawFields);
+    const props = defineProps({fields: Array});
+    const availableFields = computed(()=> props.fields);
     const selectedFields = ref([]);
     function moveUp(index){
 		let beginning = selectedFields.value.slice(0, index-1);
