@@ -97,7 +97,7 @@ function onFocus() {
 
 watch(initialInput, (val) => {
   input.value = val;
-});
+}, {immediate: true});
 
 
 function onBlur() {
