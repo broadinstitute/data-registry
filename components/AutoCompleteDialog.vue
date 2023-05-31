@@ -17,6 +17,7 @@
         @keydown.enter.prevent="selectCurrentSelection"
         @keydown.esc.prevent="onEscape"
         autocomplete="off"
+        :disabled="disabled"
     />
     <div v-if="isListVisible" class="simple-typeahead-list">
       <div class="simple-typeahead-list-header"></div>
@@ -39,6 +40,10 @@ const props = defineProps({
   id: {
     type: String,
     required: true,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
   initialInput: {
     type: String,

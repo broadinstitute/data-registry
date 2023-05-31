@@ -8,7 +8,13 @@
         <div class="card-body dr-form">
             <form class="needs-validation" id="inputForm" novalidate>
                 <div class="row dr-status-section">
-                    <div class="col-md-6 col">
+                    <div class="col-md-2 col" v-if="updateMode">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" @click="toggleEdit">
+                        <label class="form-check-label label" for="flexSwitchCheckDefault">Allow Edits</label>
+                      </div>
+                    </div>
+                    <div :class="firstRowClass">
                         <div class="label">Dataset name<sup>*</sup></div>
                         <input
                             ref="datasetName"
@@ -17,15 +23,17 @@
                             placeholder="Dataset name e.g., Cade2021_SleepApnea_EU_Female"
                             v-model="dsName"
                             required
+                            :disabled="isReadOnly"
                         />
                     </div>
 
-                    <div class="col-md-6 col">
+                    <div :class="firstRowClass">
                         <div class="label">Status<sup>*</sup></div>
                         <select
                             class="form-select"
                             v-model="pubStatus"
                             required
+                            :disabled="isReadOnly"
                         >
                             <option value="pre">Pre-publication</option>
                             <option value="open">Open access</option>
@@ -43,6 +51,7 @@
                             placeholder="Study name e.g., TOPMed Sleep Apnea WGS"
                             @blur="leaveStudy"
                             :initial-input="savedStudy"
+                            :disabled="isReadOnly"
                         />
                     </div>
                 </div>
@@ -59,6 +68,7 @@
                                     class="form-select"
                                     v-model="dataType"
                                     required
+                                    :disabled="isReadOnly"
                                 >
                                     <option value="file">File</option>
                                     <option value="remote">
@@ -72,6 +82,7 @@
                                     class="form-select"
                                     v-model="geneticsDataType"
                                     required
+                                    :disabled="isReadOnly"
                                 >
                                     <option value="gwas">GWAS</option>
                                     <option value="exomchip">Exome chip</option>
@@ -92,6 +103,7 @@
                                     class="form-select"
                                     v-model="genomeBuild"
                                     required
+                                    :disabled="isReadOnly"
                                 >
                                     <option value="hg19">hg19 (GRCh37)</option>
                                     <option value="hg19">GRCh38</option>
@@ -105,6 +117,7 @@
                                     class="form-select"
                                     v-model="ancestry"
                                     required
+                                    :disabled="isReadOnly"
                                 >
                                     <option value="ABA">
                                         Aboriginal Australian
@@ -153,6 +166,7 @@
                                     class="form-select"
                                     v-model="sex"
                                     required
+                                    :disabled="isReadOnly"
                                 >
                                     <option value="mixed">Mixed</option>
                                     <option value="male">Male</option>
@@ -172,6 +186,7 @@
                                     min="0"
                                     v-model="globalSampleSize"
                                     required
+                                    :disabled="isReadOnly"
                                 />
                             </div>
                             <div class="col-md-6 col" style="font-size: 14px">
@@ -184,10 +199,13 @@
                             <div class="col-md-12"><h4>Data</h4></div>
                           <ul>
                             <li v-for="(phenotypeDataset, index) in phenotypeDatasets">
-                              <PhenotypeDataset :dataset-data-type="dataType" :key="index" :phenotypeDataset="phenotypeDataset" :identifier="index" @remove-phenotype-dataset="(e) => phenotypeDatasets.splice(e.id, 1)"/>
+                              <PhenotypeDataset :dataset-data-type="dataType" :key="index"
+                                                :phenotypeDataset="phenotypeDataset" :identifier="index"
+                                                @remove-phenotype-dataset="(e) => phenotypeDatasets.splice(e.id, 1)"
+                                                :disabled="isReadOnly"/>
                             </li>
                           </ul>
-                          <div style="display: inline; margin-top: -25px">
+                          <div style="display: inline; margin-top: -25px" v-if="!isReadOnly">
                             <a href="#" @click.prevent="phenotypeDatasets.push({'credibleSets': [{}]})">Add Additional Phenotype</a>
                           </div>
                         </div>
@@ -201,6 +219,7 @@
                                 placeholder="Data submitter"
                                 v-model="dataSubmitter"
                                 required
+                                :disabled="isReadOnly"
                             />
                         </div>
                         <div class="col-md-12 col">
@@ -213,6 +232,7 @@
                                 placeholder="submitter@email"
                                 v-model="dataSubmitterEmail"
                                 required
+                                :disabled="isReadOnly"
                             />
                         </div>
                         <div class="col-md-12 col">
@@ -222,6 +242,7 @@
                                 class="form-control input-default"
                                 placeholder="Data contributor"
                                 v-model="dataContributor"
+                                :disabled="isReadOnly"
                             />
                         </div>
                         <div class="col-md-12 col">
@@ -231,6 +252,7 @@
                                 class="form-control input-default"
                                 placeholder="contributor@email"
                                 v-model="dataContributorEmail"
+                                :disabled="isReadOnly"
                             />
                         </div>
                         <div class="col-md-12 col">
@@ -241,6 +263,7 @@
                                 placeholder="Institution"
                                 v-model="institution"
                                 required
+                                :disabled="isReadOnly"
                             />
                         </div>
                     </div>
@@ -262,6 +285,7 @@
                                         class="form-control input-default"
                                         placeholder="(e.g. 28300000, 10.1038/ng.3830, or PMC5968830)"
                                         v-model="pubId"
+                                        :disabled="isReadOnly"
                                     />
                                     <button
                                         type="button"
@@ -272,7 +296,7 @@
                                         "
                                         title="Fetch data from PubMed"
                                         @click="getPubMedInfo"
-                                        :disabled="!pubId"
+                                        :disabled="!pubId || isReadOnly"
                                     >
                                         <i class="bi-cloud-arrow-down"></i>
                                     </button>
@@ -287,6 +311,7 @@
                                     class="form-control input-default"
                                     placeholder="Publication"
                                     v-model="publication"
+                                    :disabled="isReadOnly"
                                 />
                             </div>
                         </div>
@@ -298,13 +323,14 @@
                                     rows="4"
                                     class="form-control"
                                     required
+                                    :disabled="isReadOnly"
                                 ></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary" @click="save">
-                    {{ props.existingDataset ? "Update Dataset" : "Save Dataset"}}
+                <button type="button" class="btn btn-primary" @click="save" v-if="!isReadOnly">
+                    {{ updateMode? "Update Dataset" : "Save Dataset"}}
                 </button>
             </form>
         </div>
@@ -346,6 +372,8 @@ const publication = ref(null);
 
 const config = useRuntimeConfig();
 const study = useState("study");
+const updateMode = ref(!!props.existingDataset);
+const isReadOnly = ref(updateMode.value);
 const phenotypeDatasets = useState("selectedPhenotypes", () => [{'credibleSets': [{}]}]);
 const studies = useState("studies", () => []);
 const phenotypes = useState("phenotypes", () => []);
@@ -358,6 +386,10 @@ const configuredAxios = useAxios(config,undefined, (error) => {
   showNotification.value = true;
   throw new Error("Server error");
 });
+
+const firstRowClass = computed(() => {
+  return updateMode.value ? 'col col-md-5' : 'col col-md-6'
+})
 
 async function fetchExistingDataset(existingDataset) {
     const { data } = await configuredAxios.get(
@@ -413,13 +445,15 @@ async function fetchStudies() {
 async function fetchInProperOrder() {
     await fetchStudies()
     await getPhenotypes()
-    if (props.existingDataset) {
+    if (updateMode.value) {
         await fetchExistingDataset(props.existingDataset)
     }
 }
 
 onMounted(() => {
-    datasetName.value.focus();
+    if(!updateMode.value){
+      datasetName.value.focus();
+    }
     fetchInProperOrder()
 });
 
@@ -554,13 +588,17 @@ async function saveDataset(study_id) {
         pub_id: pubId.value,
         publication: publication.value,
     };
-    if (props.existingDataset) {
+    if (updateMode.value) {
         opts.id = props.existingDataset;
         await configuredAxios.patch("/api/datasets", JSON.stringify(opts));
         return props.existingDataset.replaceAll('-', '');
     }
     const { data } = await configuredAxios.post("/api/datasets", JSON.stringify(opts));
     return data.dataset_id;
+}
+
+function toggleEdit(){
+  isReadOnly.value = !isReadOnly.value
 }
 
 //retrieve the study information from the PUBMED
