@@ -63,15 +63,15 @@
         <div class="row">
             <div class="col-md-12 col text-center dr-bubbles-wrapper">
 				<div v-for="feature, index in allFeaturesConfig.features" class="dr-format-bubble">
-                    <button class="btn btn-secondary move-prev-next" :disabled="editingFeatureIndex != -1" 
-                        @click="movePrev(index)">
+                    <button class="btn btn-secondary move-prev-next" @click="movePrev(index)"
+                        :disabled="editingFeatureIndex != -1 || index == 0" >
                             &leftarrow;
                     </button>
                     <span class="name">{{ feature }}</span>
                     <span class="editing" v-if="editingFeatureIndex == index">Editing</span>
                     <a v-else @click="editFeature(index)"><span class="edit">Edit</span></a>
-                    <button class="btn btn-secondary move-prev-next" :disabled="editingFeatureIndex != -1"
-                        @click="moveNext(index)">
+                    <button class="btn btn-secondary move-prev-next" @click="moveNext(index)" 
+                        :disabled="editingFeatureIndex != -1 || index == allFeaturesConfig.features.length - 1">
                             &rightarrow;
                     </button>
                 </div>
@@ -118,10 +118,19 @@ import { all } from "axios";
 		currentSelectedFields.value = beginning.concat(end);
 	}
     function movePrev(index){
-        console.log(`Move prev: ${allFeaturesConfig.value["features"][index]}`);
+        let list = allFeaturesConfig.value["features"];
+        let beginning = list.slice(0, index - 1);
+        beginning.push(list[index]);
+        beginning.push(list[index - 1]);
+        allFeaturesConfig.value["features"] = beginning.concat(list.slice(index + 1));
     }
     function moveNext(index){
-        console.log(`Move next: ${allFeaturesConfig.value["features"][index]}`);
+        let list = allFeaturesConfig.value["features"];
+        let beginning = list.slice(0, index);
+        beginning.push(list[index + 1]);
+        beginning.push(list[index]);
+        allFeaturesConfig.value["features"] = beginning.concat(list.slice(index + 2));
+        
     }
     function saveFeature(){
         let trimmedName = currentFeatureName.value.trim();
