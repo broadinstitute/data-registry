@@ -10,7 +10,7 @@
                 <div class="row dr-status-section">
                     <div class="col-md-2 col" v-if="updateMode">
                       <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" @click="toggleEdit">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" @click="toggleEdit" :checked="!isReadOnly">
                         <label class="form-check-label label" for="flexSwitchCheckDefault">Allow Edits</label>
                       </div>
                     </div>
@@ -373,7 +373,7 @@ const publication = ref(null);
 const config = useRuntimeConfig();
 const study = useState("study");
 const updateMode = ref(!!props.existingDataset);
-const isReadOnly = ref(updateMode.value);
+const isReadOnly = ref(!updateMode.value || !new URLSearchParams(window.location.search).get("edit"));
 const phenotypeDatasets = useState("selectedPhenotypes", () => [{'credibleSets': [{}]}]);
 const studies = useState("studies", () => []);
 const phenotypes = useState("phenotypes", () => []);

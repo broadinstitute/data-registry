@@ -43,7 +43,7 @@
                     }}
                 </td>
                 <td>
-                    <i @click="route.push({ path: `/datasets/${dataset.id}` })" class="bi bi-pencil" style="cursor: pointer;"></i>
+                    <nuxt-link :to="`/datasets/${dataset.id}?edit=true`"><i class="bi bi-pencil" style="cursor: pointer;"></i></nuxt-link>
                     &nbsp;
                     <i @click="deleteDataSet(dataset.id)" class="bi bi-trash" style="cursor: pointer; color: red;"></i>
                 </td>
