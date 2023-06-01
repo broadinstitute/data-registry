@@ -210,4 +210,16 @@ import { all } from "axios";
             }
         }
     });
+    watch(availableFields, (newFields, oldFields) => {       
+        console.log(`Old fields: ${JSON.stringify(oldFields)}`);
+        console.log(`New fields: ${JSON.stringify(newFields)}`);
+        if (newFields.length < oldFields.length){
+            oldFields.forEach(oldField => {
+                if (!newFields.includes(oldField)){
+                    currentSelectedFields.value = 
+                        currentSelectedFields.value.filter(field => field != oldField);
+                }
+            });
+        }
+    });
 </script>
