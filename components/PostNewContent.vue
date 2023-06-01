@@ -16,7 +16,7 @@
 <script setup>
   import "bootstrap/dist/css/bootstrap.min.css";
   import "bootstrap-icons/font/bootstrap-icons.css";
-  const host = "http://ec2-52-23-213-123.compute-1.amazonaws.com";
+  const config = useRuntimeConfig();
   const user = ref("");
   const pass = ref("");
   const newTitle = ref("");
@@ -33,7 +33,7 @@
             "value": newContent.value
           }]
         };
-        fetch(`${host}/node?_format=json`, {
+        fetch(`${config.public.apiBaseUrl}/node?_format=json`, {
           method: "POST",
           body: JSON.stringify(newArticleData),
           headers: {

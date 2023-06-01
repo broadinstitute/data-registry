@@ -14,7 +14,7 @@
 <script setup>
   import "bootstrap/dist/css/bootstrap.min.css";
   import "bootstrap-icons/font/bootstrap-icons.css";
-  const host = "http://ec2-52-23-213-123.compute-1.amazonaws.com";
+  const config = useRuntimeConfig();
   const newUser = ref("");
   const newUserEmail = ref("");
   const newUserPassword = ref("");
@@ -30,7 +30,7 @@
             "value": newUserEmail.value
           }]
         };
-        fetch(`${host}/user/register?_format=json`, {
+        fetch(`${config.public.apiBaseUrl}/user/register?_format=json`, {
           method: "POST",
           body: JSON.stringify(userData),
           headers: {
