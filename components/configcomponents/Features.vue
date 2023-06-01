@@ -202,6 +202,12 @@ import { all } from "axios";
                 }
                 allFeaturesConfig.value[feature] = featureCopy;
             }
-        })
+        });
+        for (let i = 0; i < currentSelectedFields.value.length; i++){
+            console.log(currentSelectedFields.value[i]);
+            if(currentSelectedFields.value[i] == fieldNameOld.value){
+                currentSelectedFields.value[i] = fieldNameNew.value;
+            }
+        }
     });
 </script>
