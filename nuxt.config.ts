@@ -15,7 +15,7 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             apiSecret: "",
-            apiBaseUrl: "",
+            apiBaseUrl: "http://ec2-52-23-213-123.compute-1.amazonaws.com",
             phenotypesUrl: "",
         },
     },
