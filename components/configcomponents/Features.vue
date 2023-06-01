@@ -214,12 +214,28 @@ import { all } from "axios";
         console.log(`Old fields: ${JSON.stringify(oldFields)}`);
         console.log(`New fields: ${JSON.stringify(newFields)}`);
         if (newFields.length < oldFields.length){
+            // Removing deleted fields from any existing features or selected fields
             oldFields.forEach(oldField => {
                 if (!newFields.includes(oldField)){
                     currentSelectedFields.value = 
                         currentSelectedFields.value.filter(field => field != oldField);
+                    for (let i = 0; i < allFeaturesConfig.value["features"].length; i++){
+                        let featureName = allFeaturesConfig.value["features"][i];
+                        let featureCopy = allFeaturesConfig.value[featureName];
+                        if (featureCopy.includes(oldField)){
+                            allFeaturesConfig.value[featureName] = featureCopy.filter(field => field != oldField);
+                        }
+                    }
                 }
             });
+            // Cleanup in case any features are now empty
+            allFeaturesConfig.value["features"].forEach(feature => {
+                if(allFeaturesConfig.value[feature].length == 0){
+                    delete allFeaturesConfig.value[feature];
+                    allFeaturesConfig.value["features"] = 
+                        allFeaturesConfig.value["features"].filter(item => item != feature);
+                }
+            })
         }
     });
 </script>
