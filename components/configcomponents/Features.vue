@@ -11,7 +11,7 @@
             <input type="text" class="form-control input-default" v-model="currentFeatureName"/>
             <div class="label">Output</div>
             <pre class="output">{{ singleFeatureConfigString }}</pre>
-            <!--pre class="output">{{ allFeaturesConfigString }}</pre-->
+            <pre class="output">{{ allFeaturesConfigString }}</pre>
         </div>
         <div class="col-md-3 col">
                 <div class="label">
@@ -143,16 +143,16 @@ import { all } from "axios";
                     return;
                 }
             }
-            console.log("Is this thing on?");
             if (editingFeatureIndex.value == -1){
                 allFeaturesConfig.value["features"].push(trimmedName);
                 allFeaturesConfig.value[trimmedName] = currentSelectedFields.value;
             } else {
                 let oldName = allFeaturesConfig.value["features"][editingFeatureIndex.value];
-                let fieldsList = allFeaturesConfig.value[oldName];
                 allFeaturesConfig.value["features"][editingFeatureIndex.value] = trimmedName;
-                allFeaturesConfig.value[trimmedName] = fieldsList;
-                delete allFeaturesConfig.value[oldName];
+                allFeaturesConfig.value[trimmedName] = currentSelectedFields.value;
+                if (oldName != trimmedName){
+                    delete allFeaturesConfig.value[oldName];
+                }
             }
             doneEditing();
             return;
@@ -191,4 +191,17 @@ import { all } from "axios";
         currentSelectedFields.value = [];
         editingFeatureIndex.value = -1;
     }
+    watch(fieldNameOld, ()=> {
+        allFeaturesConfig.value["features"].forEach(feature => {
+            let featureCopy = allFeaturesConfig.value[feature];
+            if (featureCopy.includes(fieldNameOld.value)){
+                for(let i = 0; i < featureCopy.length; i++){
+                    if (featureCopy[i] == fieldNameOld.value){
+                        featureCopy[i] = fieldNameNew.value;
+                    }
+                }
+                allFeaturesConfig.value[feature] = featureCopy;
+            }
+        })
+    });
 </script>

@@ -185,7 +185,7 @@
         let newField = JSON.parse(newFieldString);
         let newName = newField["field name"];
         if (!readyToSave){
-            failedSaveMsg = "Field not ready to save".
+            failedSaveMsg = "Field not ready to save";
             showMsg.value = true;
             console.log(newFieldString);
             return;
