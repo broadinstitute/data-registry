@@ -15,7 +15,7 @@ export default defineNuxtConfig({
         public: {
             apiSecret: "",
             apiBaseUrl: "",
-            apiDrupalUrl: process.env.NUXT_PUBLIC_API_DRUPAL_URL,
+            apiDrupalUrl: "",
             phenotypesUrl: "",
         },
     },
