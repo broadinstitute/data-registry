@@ -33,7 +33,7 @@
             "value": newContent.value
           }]
         };
-        fetch(`${config.public.apiBaseUrl}/node?_format=json`, {
+        fetch(`${config.public.apiDrupalUrl}/node?_format=json`, {
           method: "POST",
           body: JSON.stringify(newArticleData),
           headers: {
