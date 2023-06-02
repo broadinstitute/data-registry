@@ -4,7 +4,7 @@
       <div class="label">Phenotype<sup>*</sup></div>
       <AutoCompleteDialog placeholder="Phenotype" :items="Object.values(phenotypes)" :filter-function="filterFunc"
                           :id="`pheno-${props.identifier}`"
-                          @blur="ptypeBlur" :item-display="i => i.description" :initial-input="phenotypeDataset.description"/>
+                          @blur="ptypeBlur" :item-display="i => i.description" :initial-input="phenotypeDataset.description" :disabled="props.disabled"/>
       <div v-if="needsDichotomousInfo">
         <label for="dichotomousInfo" class="label">Dichotomous<sup>*</sup> &nbsp;</label><input type="checkbox" id="dichotomousInfo" v-model="phenotypeDataset.dichotomous">
       </div>
@@ -12,24 +12,24 @@
     <div class="col col-md-2">
       <div class="label">Sample Size<sup>*</sup></div>
       <input type="number" v-model="phenotypeDataset.sampleSize" placeholder="Sample Size"
-             class="form-control input-default" min="0" required>
+             class="form-control input-default" min="0" required :disabled="props.disabled">
     </div>
     <div v-if="dichotomous" class="col col-md-2">
       <div class="label">Cases<sup>*</sup></div>
       <input type="number" v-model="phenotypeDataset.cases" placeholder="Cases" class="form-control input-default"
-             min="0" required>
+             min="0" required :disabled="props.disabled">
     </div>
     <div v-if="dichotomous" class="col col-md-2">
       <div class="label">Controls<sup>*</sup></div>
       <input type="number" v-model="phenotypeDataset.controls" placeholder="Controls" class="form-control input-default"
-             min="0" required>
+             min="0" required :disabled="props.disabled">
     </div>
     <div :class="pTypeClass">
           <div class="label">Data<sup>*</sup></div>
           <div class="input-group" style="align-items: baseline">
-          <input v-if="datasetDataType === 'file'" type="file" class="form-control input-default" @change="fileChange" required>
+          <input v-if="datasetDataType === 'file'" type="file" class="form-control input-default" @change="fileChange" required :disabled="props.disabled">
           <input v-else-if="datasetDataType === 'remote'" type="text" class="form-control input-default" v-model="url"
-                 placeholder="Path to remote file location" required>
+                 placeholder="Path to remote file location" required :disabled="props.disabled">
           <span v-if="props.identifier !== 0" style="margin-left: 4px"><a @click.prevent="deletePhenotype" href="#" style="color: inherit"><i class="bi bi-trash"></i></a></span>
           </div>
     </div>
@@ -40,27 +40,27 @@
               <div class="col col-md-6">
                 <div class="label">Credible Set Name</div>
                 <input type="text" class="form-control input-default credible-set" placeholder="name" :data-associated-phenotype="`${props.identifier}-${idx}`"
-                       v-model="cs.name">
+                       v-model="cs.name" :disabled="props.disabled">
               </div>
               <div class="col col-md-6">
                 <div class="label">Credible Set File</div>
                 <input type="file" class="form-control input-default credible-set" placeholder="file"
-                       :data-associated-phenotype="`${props.identifier}-${idx}`" @change="credibleSetFileChange">
+                       :data-associated-phenotype="`${props.identifier}-${idx}`" @change="credibleSetFileChange" :disabled="props.disabled">
               </div>
             </div>
           </div>
 
         </div>
-      <div class="row">
+      <div class="row" v-if="!props.disabled">
         <div class="col col-md-11 offset-md-1" style="margin-top: -22px; padding: 0px">
-          <a href="#" @click.prevent="phenotypeDataset.credibleSets.push({})">Add Credible Set</a>
+          <a href="#" @click.prevent="phenotypeDataset.credibleSets.push({})" >Add Credible Set</a>
         </div>
       </div>
 </template>
 
 <script setup>
 
-const props = defineProps({datasetDataType: String, phenotypeDataset: Object, identifier: Number})
+const props = defineProps({datasetDataType: String, phenotypeDataset: Object, identifier: Number, disabled: Boolean})
 const phenotypes = useState("phenotypes", () => []);
 const phenotypeDataset = toRef(props, "phenotypeDataset")
 const needsDichotomousInfo = ref(false)

@@ -1,6 +1,6 @@
 <template>
     <div class="hello">
-      <h1>{{ msg }}</h1>
+      <h1>User Registration</h1>
       <h4>Create new user:</h4>
       <div>
           <label>Username:<input v-model="newUser"/></label>
@@ -12,25 +12,25 @@
 </template>
   
 <script setup>
-  const host = "http://ec2-52-23-213-123.compute-1.amazonaws.com";
-  const props = defineProps({msg: String});
-  const sessionToken = ref("");
-  let newUser = "";
-  let newUserEmail = "";
-  let newUserPassword = "";
+  import "bootstrap/dist/css/bootstrap.min.css";
+  import "bootstrap-icons/font/bootstrap-icons.css";
+  const config = useRuntimeConfig();
+  const newUser = ref("");
+  const newUserEmail = ref("");
+  const newUserPassword = ref("");
     function registerNewUser(){
       let userData = {
           "name": [{
-            "value": newUser
+            "value": newUser.value
           }],
           "pass": [{
-            "value": newUserPassword
+            "value": newUserPassword.value
           }],
           "mail": [{
-            "value": newUserEmail
+            "value": newUserEmail.value
           }]
         };
-        fetch(`${host}/user/register?_format=json`, {
+        fetch(`${config.public.apiDrupalUrl}/user/register?_format=json`, {
           method: "POST",
           body: JSON.stringify(userData),
           headers: {
@@ -41,9 +41,9 @@
           console.log(response);
         })
           .catch(error => console.log(error));
-          newUser = "";
-          newUserEmail = "";
-          newUserPassword = "";
+          newUser.value = "";
+          newUserEmail.value = "";
+          newUserPassword.value = "";
     }
   </script>
   

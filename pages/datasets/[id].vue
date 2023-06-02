@@ -1,11 +1,13 @@
 <template>
     <div class="container-fluid">
-        <DataRegistryDataset :existing-dataset="route.params.id" />
+        <DataRegistryDataset
+            :existing-dataset="route.params.id"
+            :edit-mode="route.query.edit === 'true'"
+        />
     </div>
 </template>
 
 <script setup>
-
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 

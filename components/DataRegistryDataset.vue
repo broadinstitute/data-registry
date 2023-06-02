@@ -8,7 +8,24 @@
         <div class="card-body dr-form">
             <form class="needs-validation" id="inputForm" novalidate>
                 <div class="row dr-status-section">
-                    <div class="col-md-6 col">
+                    <div class="col-md-2 col" v-if="updateMode">
+                        <div class="form-check form-switch">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                role="switch"
+                                id="flexSwitchCheckDefault"
+                                @click="toggleEdit"
+                                :checked="!isReadOnly"
+                            />
+                            <label
+                                class="form-check-label label"
+                                for="flexSwitchCheckDefault"
+                                >Allow Edits</label
+                            >
+                        </div>
+                    </div>
+                    <div :class="firstRowClass">
                         <div class="label">Dataset name<sup>*</sup></div>
                         <input
                             ref="datasetName"
@@ -17,15 +34,17 @@
                             placeholder="Dataset name e.g., Cade2021_SleepApnea_EU_Female"
                             v-model="dsName"
                             required
+                            :disabled="isReadOnly"
                         />
                     </div>
 
-                    <div class="col-md-6 col">
+                    <div :class="firstRowClass">
                         <div class="label">Status<sup>*</sup></div>
                         <select
                             class="form-select"
                             v-model="pubStatus"
                             required
+                            :disabled="isReadOnly"
                         >
                             <option value="pre">Pre-publication</option>
                             <option value="open">Open access</option>
@@ -43,6 +62,7 @@
                             placeholder="Study name e.g., TOPMed Sleep Apnea WGS"
                             @blur="leaveStudy"
                             :initial-input="savedStudy"
+                            :disabled="isReadOnly"
                         />
                     </div>
                 </div>
@@ -59,6 +79,7 @@
                                     class="form-select"
                                     v-model="dataType"
                                     required
+                                    :disabled="isReadOnly"
                                 >
                                     <option value="file">File</option>
                                     <option value="remote">
@@ -72,6 +93,7 @@
                                     class="form-select"
                                     v-model="geneticsDataType"
                                     required
+                                    :disabled="isReadOnly"
                                 >
                                     <option value="gwas">GWAS</option>
                                     <option value="exomchip">Exome chip</option>
@@ -92,6 +114,7 @@
                                     class="form-select"
                                     v-model="genomeBuild"
                                     required
+                                    :disabled="isReadOnly"
                                 >
                                     <option value="hg19">hg19 (GRCh37)</option>
                                     <option value="hg19">GRCh38</option>
@@ -105,6 +128,7 @@
                                     class="form-select"
                                     v-model="ancestry"
                                     required
+                                    :disabled="isReadOnly"
                                 >
                                     <option value="ABA">
                                         Aboriginal Australian
@@ -153,6 +177,7 @@
                                     class="form-select"
                                     v-model="sex"
                                     required
+                                    :disabled="isReadOnly"
                                 >
                                     <option value="mixed">Mixed</option>
                                     <option value="male">Male</option>
@@ -172,6 +197,7 @@
                                     min="0"
                                     v-model="globalSampleSize"
                                     required
+                                    :disabled="isReadOnly"
                                 />
                             </div>
                             <div class="col-md-6 col" style="font-size: 14px">
@@ -182,14 +208,42 @@
                         </div>
                         <div class="row dr-data-section">
                             <div class="col-md-12"><h4>Data</h4></div>
-                          <ul>
-                            <li v-for="(phenotypeDataset, index) in phenotypeDatasets">
-                              <PhenotypeDataset :dataset-data-type="dataType" :key="index" :phenotypeDataset="phenotypeDataset" :identifier="index" @remove-phenotype-dataset="(e) => phenotypeDatasets.splice(e.id, 1)"/>
-                            </li>
-                          </ul>
-                          <div style="display: inline; margin-top: -25px">
-                            <a href="#" @click.prevent="phenotypeDatasets.push({'credibleSets': [{}]})">Add Additional Phenotype</a>
-                          </div>
+                            <ul>
+                                <li
+                                    v-for="(
+                                        phenotypeDataset, index
+                                    ) in phenotypeDatasets"
+                                >
+                                    <PhenotypeDataset
+                                        :dataset-data-type="dataType"
+                                        :key="index"
+                                        :phenotypeDataset="phenotypeDataset"
+                                        :identifier="index"
+                                        @remove-phenotype-dataset="
+                                            (e) =>
+                                                phenotypeDatasets.splice(
+                                                    e.id,
+                                                    1,
+                                                )
+                                        "
+                                        :disabled="isReadOnly"
+                                    />
+                                </li>
+                            </ul>
+                            <div
+                                style="display: inline; margin-top: -25px"
+                                v-if="!isReadOnly"
+                            >
+                                <a
+                                    href="#"
+                                    @click.prevent="
+                                        phenotypeDatasets.push({
+                                            credibleSets: [{}],
+                                        })
+                                    "
+                                    >Add Additional Phenotype</a
+                                >
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3 dr-meta-info">
@@ -201,6 +255,7 @@
                                 placeholder="Data submitter"
                                 v-model="dataSubmitter"
                                 required
+                                :disabled="isReadOnly"
                             />
                         </div>
                         <div class="col-md-12 col">
@@ -213,6 +268,7 @@
                                 placeholder="submitter@email"
                                 v-model="dataSubmitterEmail"
                                 required
+                                :disabled="isReadOnly"
                             />
                         </div>
                         <div class="col-md-12 col">
@@ -222,6 +278,7 @@
                                 class="form-control input-default"
                                 placeholder="Data contributor"
                                 v-model="dataContributor"
+                                :disabled="isReadOnly"
                             />
                         </div>
                         <div class="col-md-12 col">
@@ -231,6 +288,7 @@
                                 class="form-control input-default"
                                 placeholder="contributor@email"
                                 v-model="dataContributorEmail"
+                                :disabled="isReadOnly"
                             />
                         </div>
                         <div class="col-md-12 col">
@@ -241,6 +299,7 @@
                                 placeholder="Institution"
                                 v-model="institution"
                                 required
+                                :disabled="isReadOnly"
                             />
                         </div>
                     </div>
@@ -262,6 +321,7 @@
                                         class="form-control input-default"
                                         placeholder="(e.g. 28300000, 10.1038/ng.3830, or PMC5968830)"
                                         v-model="pubId"
+                                        :disabled="isReadOnly"
                                     />
                                     <button
                                         type="button"
@@ -272,7 +332,7 @@
                                         "
                                         title="Fetch data from PubMed"
                                         @click="getPubMedInfo"
-                                        :disabled="!pubId"
+                                        :disabled="!pubId || isReadOnly"
                                     >
                                         <i class="bi-cloud-arrow-down"></i>
                                     </button>
@@ -287,6 +347,7 @@
                                     class="form-control input-default"
                                     placeholder="Publication"
                                     v-model="publication"
+                                    :disabled="isReadOnly"
                                 />
                             </div>
                         </div>
@@ -298,13 +359,19 @@
                                     rows="4"
                                     class="form-control"
                                     required
+                                    :disabled="isReadOnly"
                                 ></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary" @click="save">
-                    {{ props.existingDataset ? "Update Dataset" : "Save Dataset"}}
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    @click="save"
+                    v-if="!isReadOnly"
+                >
+                    {{ updateMode ? "Update Dataset" : "Save Dataset" }}
                 </button>
             </form>
         </div>
@@ -313,13 +380,15 @@
 </template>
 
 <script setup>
-import 'bootstrap-icons/font/bootstrap-icons.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import Modal from '~/components/Modal.vue'
-import useAxios from '~/composables/useAxios'
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Modal from "~/components/Modal.vue";
+import useAxios from "~/composables/useAxios";
 
-
-const props = defineProps({ existingDataset: String });
+const props = defineProps({
+    existingDataset: String,
+    editMode: { type: Boolean, default: false },
+});
 const datasetName = ref(null);
 const processing = ref(false);
 const modalMsg = ref("Do not close this window, saving data...");
@@ -346,17 +415,25 @@ const publication = ref(null);
 
 const config = useRuntimeConfig();
 const study = useState("study");
-const phenotypeDatasets = useState("selectedPhenotypes", () => [{'credibleSets': [{}]}]);
+const updateMode = ref(!!props.existingDataset);
+const isReadOnly = ref(!updateMode.value || !props.editMode);
+const phenotypeDatasets = useState("selectedPhenotypes", () => [
+    { credibleSets: [{}] },
+]);
 const studies = useState("studies", () => []);
 const phenotypes = useState("phenotypes", () => []);
 
-const configuredAxios = useAxios(config,undefined, (error) => {
-  console.log(JSON.stringify(error));
-  processing.value = false;
-  errorMessage.value = error.response.data.message;
-  serverSuccess.value = false;
-  showNotification.value = true;
-  throw new Error("Server error");
+const configuredAxios = useAxios(config, undefined, (error) => {
+    console.log(JSON.stringify(error));
+    processing.value = false;
+    errorMessage.value = error.response.data.message;
+    serverSuccess.value = false;
+    showNotification.value = true;
+    throw new Error("Server error");
+});
+
+const firstRowClass = computed(() => {
+    return updateMode.value ? "col col-md-5" : "col col-md-6";
 });
 
 async function fetchExistingDataset(existingDataset) {
@@ -376,34 +453,50 @@ async function fetchExistingDataset(existingDataset) {
     description.value = ds.description;
     dataType.value = ds.data_source_type;
     institution.value = data.study.institution;
-    study.value = { value: data.study.id, label: data.study.name, institution: data.study.institution };
+    study.value = {
+        value: data.study.id,
+        label: data.study.name,
+        institution: data.study.institution,
+    };
     savedStudy.value = data.study.name;
 
     phenotypeDatasets.value = [];
-    const credibleSets = {}
-    data.credible_sets.map(cs => {
-      if (!credibleSets[cs.phenotype_data_set_id])
-        credibleSets[cs.phenotype_data_set_id] = [];
-      credibleSets[cs.phenotype_data_set_id].push({ "name": cs.name, "id": cs.id })
+    const credibleSets = {};
+    data.credible_sets.map((cs) => {
+        if (!credibleSets[cs.phenotype_data_set_id])
+            credibleSets[cs.phenotype_data_set_id] = [];
+        credibleSets[cs.phenotype_data_set_id].push({
+            name: cs.name,
+            id: cs.id,
+        });
     });
     data.phenotypes.map((p) => {
-        phenotypeDatasets.value.push({'name': phenotypes.value[p.phenotype] ? phenotypes.value[p.phenotype].name : p.phenotype,
-            'dichotomous': p.dichotomous, 'sampleSize': p.sample_size, 'cases': p.cases,
-            'controls': p.controls, 'credibleSets': credibleSets[p.id] || [{}],
-          'description': phenotypes.value[p.phenotype] ? phenotypes.value[p.phenotype].description : p.phenotype});
+        phenotypeDatasets.value.push({
+            name: phenotypes.value[p.phenotype]
+                ? phenotypes.value[p.phenotype].name
+                : p.phenotype,
+            dichotomous: p.dichotomous,
+            sampleSize: p.sample_size,
+            cases: p.cases,
+            controls: p.controls,
+            credibleSets: credibleSets[p.id] || [{}],
+            description: phenotypes.value[p.phenotype]
+                ? phenotypes.value[p.phenotype].description
+                : p.phenotype,
+        });
     });
 }
 
 async function getPhenotypes() {
-    const { data } = await $fetch(config.public['phenotypesUrl']);
+    const { data } = await $fetch(config.public["phenotypesUrl"]);
     const mappedPhenotypes = {};
     data.forEach((d) => (mappedPhenotypes[d.name] = d));
     phenotypes.value = mappedPhenotypes;
 }
 
 async function fetchStudies() {
-    const data = await $fetch(`${config.public['apiBaseUrl']}/api/studies`, {
-        headers: { "access-token": config.public['apiSecret'] },
+    const data = await $fetch(`${config.public["apiBaseUrl"]}/api/studies`, {
+        headers: { "access-token": config.public["apiSecret"] },
     });
     studies.value = data.map((s) => {
         return { label: s.name, value: s.id, institution: s.institution };
@@ -411,16 +504,22 @@ async function fetchStudies() {
 }
 
 async function fetchInProperOrder() {
-    await fetchStudies()
-    await getPhenotypes()
-    if (props.existingDataset) {
-        await fetchExistingDataset(props.existingDataset)
+    await fetchStudies();
+    await getPhenotypes();
+    if (updateMode.value) {
+        console.log("fetching existing dataset", updateMode.value);
+        await fetchExistingDataset(props.existingDataset);
     }
 }
 
 onMounted(() => {
-    datasetName.value.focus();
-    fetchInProperOrder()
+    if (!updateMode.value) {
+        datasetName.value.focus();
+    }
+    console.log("mounted", updateMode.value);
+    console.log("mode", props.editMode);
+    //console.log("mode value", viewMode.value);
+    fetchInProperOrder();
 });
 
 // institution is saved with study, so if user selects an existing study use that
@@ -457,26 +556,32 @@ async function saveStudy() {
 }
 
 function credible_set_validation() {
-  //if a credible set name or file is provided, make sure to require the counterpart field
-  const credible_set_elements = document.getElementsByClassName('credible-set')
-  for (const element of credible_set_elements) {
-    element.required = false
-  }
-  for (const element of credible_set_elements) {
-    if (element.value !== '') {
-      const credible_set_inputs_for_pheno = document.querySelectorAll(
-          '[data-associated-phenotype="' + element.dataset.associatedPhenotype + '"]')
-      credible_set_inputs_for_pheno.forEach(input => input.required = true)
+    //if a credible set name or file is provided, make sure to require the counterpart field
+    const credible_set_elements =
+        document.getElementsByClassName("credible-set");
+    for (const element of credible_set_elements) {
+        element.required = false;
     }
-  }
+    for (const element of credible_set_elements) {
+        if (element.value !== "") {
+            const credible_set_inputs_for_pheno = document.querySelectorAll(
+                '[data-associated-phenotype="' +
+                    element.dataset.associatedPhenotype +
+                    '"]',
+            );
+            credible_set_inputs_for_pheno.forEach(
+                (input) => (input.required = true),
+            );
+        }
+    }
 }
 
 async function save() {
     const form = document.getElementById("inputForm");
-    credible_set_validation()
+    credible_set_validation();
     if (!form.checkValidity()) {
-      form.classList.add("was-validated");
-      return;
+        form.classList.add("was-validated");
+        return;
     }
     processing.value = true;
     let dataset_id;
@@ -498,9 +603,9 @@ async function save() {
     for (const phenotype of phenotypeDatasets.value) {
         modalMsg.value = `Do not close this window, uploading data for ${phenotype.description}`;
         const saved_phenotype_id = await savePhenotype(dataset_id, phenotype);
-        for(const cs of phenotype.credibleSets){
-            if(cs.name && cs.name !== ''){
-              await saveCredibleSet(saved_phenotype_id, cs);
+        for (const cs of phenotype.credibleSets) {
+            if (cs.name && cs.name !== "") {
+                await saveCredibleSet(saved_phenotype_id, cs);
             }
         }
     }
@@ -518,19 +623,27 @@ function getPhenotypeDataSetUploadUrl(dataset_id, pType) {
 }
 
 async function saveCredibleSet(saved_phenotype_id, cs) {
-  const formData = new FormData();
-  formData.append("file", cs.credibleSetFile);
-  await configuredAxios.post(`/api/crediblesetupload/${saved_phenotype_id}/${cs.name}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+    const formData = new FormData();
+    formData.append("file", cs.credibleSetFile);
+    await configuredAxios.post(
+        `/api/crediblesetupload/${saved_phenotype_id}/${cs.name}`,
+        formData,
+        {
+            headers: { "Content-Type": "multipart/form-data" },
+        },
+    );
 }
 
 async function savePhenotype(dataset_id, pType) {
     const formData = new FormData();
     formData.append("file", pType.file);
-    const {data} = await configuredAxios.post(getPhenotypeDataSetUploadUrl(dataset_id, pType), formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-    });
+    const { data } = await configuredAxios.post(
+        getPhenotypeDataSetUploadUrl(dataset_id, pType),
+        formData,
+        {
+            headers: { "Content-Type": "multipart/form-data" },
+        },
+    );
     return data.phenotype_data_set_id;
 }
 
@@ -554,13 +667,20 @@ async function saveDataset(study_id) {
         pub_id: pubId.value,
         publication: publication.value,
     };
-    if (props.existingDataset) {
+    if (updateMode.value) {
         opts.id = props.existingDataset;
         await configuredAxios.patch("/api/datasets", JSON.stringify(opts));
-        return props.existingDataset.replaceAll('-', '');
+        return props.existingDataset.replaceAll("-", "");
     }
-    const { data } = await configuredAxios.post("/api/datasets", JSON.stringify(opts));
+    const { data } = await configuredAxios.post(
+        "/api/datasets",
+        JSON.stringify(opts),
+    );
     return data.dataset_id;
+}
+
+function toggleEdit() {
+    isReadOnly.value = !isReadOnly.value;
 }
 
 //retrieve the study information from the PUBMED

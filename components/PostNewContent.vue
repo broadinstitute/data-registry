@@ -14,32 +14,32 @@
 </template>
   
 <script setup>
-  const host = "http://ec2-52-23-213-123.compute-1.amazonaws.com";
-  const props = defineProps({msg: String});
-  const sessionToken = ref("");
-  let user = "";
-  let pass = "";
-  let newTitle = "";
-  let newContent = "";
+  import "bootstrap/dist/css/bootstrap.min.css";
+  import "bootstrap-icons/font/bootstrap-icons.css";
+  const config = useRuntimeConfig();
+  const user = ref("");
+  const pass = ref("");
+  const newTitle = ref("");
+  const newContent = ref("");
   function postNew(){
         let newArticleData = {
           "type": [{
             "target_id": "article"
           }],
           "title": [{
-            "value": newTitle
+            "value": newTitle.value
           }],
           "body": [{
-            "value": newContent
+            "value": newContent.value
           }]
         };
-        fetch(`${host}/node?_format=json`, {
+        fetch(`${config.public.apiDrupalUrl}/node?_format=json`, {
           method: "POST",
           body: JSON.stringify(newArticleData),
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": formatBasicAuth(user, pass)
+            "Authorization": formatBasicAuth(user.value, pass.value)
           }
         }).then(response => {
           console.log(response);
