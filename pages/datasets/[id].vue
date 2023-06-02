@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <DataRegistryDataset
             :existing-dataset="route.params.id"
-            :edit-mode="route.query.edit === 'true' ? true : false"
+            :edit-mode="route.query.edit === 'true'"
         />
     </div>
 </template>
