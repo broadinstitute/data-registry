@@ -17,8 +17,8 @@
         </thead>
         <tbody class="table-group-divider">
             <tr v-for="dataset in datasets" :key="dataset.id">
-                <td @click="route.push({ path: `/datasets/${dataset.id}` })">
-                    {{ dataset.name }}
+                <td>
+                   <a class="link-primary" @click="route.push({ path: `/datasets/${dataset.id}` })">{{ dataset.name }}</a>
                 </td>
                 <td>
                     {{
@@ -43,7 +43,9 @@
                     }}
                 </td>
                 <td>
-                    <i @click="deleteDataSet(dataset.id)"  class="bi bi-trash"></i>
+                    <nuxt-link :to="`/datasets/${dataset.id}?edit=true`"><i class="bi bi-pencil" style="cursor: pointer;"></i></nuxt-link>
+                    &nbsp;
+                    <i @click="deleteDataSet(dataset.id)" class="bi bi-trash" style="cursor: pointer; color: red;"></i>
                 </td>
             </tr>
         </tbody>
