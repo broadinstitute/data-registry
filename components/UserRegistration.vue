@@ -30,7 +30,7 @@
             "value": newUserEmail.value
           }]
         };
-        fetch(`${config.public.apiBaseUrl}/user/register?_format=json`, {
+        fetch(`${config.public.apiDrupalUrl}/user/register?_format=json`, {
           method: "POST",
           body: JSON.stringify(userData),
           headers: {
