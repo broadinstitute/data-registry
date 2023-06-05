@@ -34,6 +34,14 @@
 			</div>
 			<DataComparison></DataComparison>
 		</div>
+		<div class="card-body dr-form">
+			<h4>Data table format output</h4>
+			<div class="row dr-builder-ui">
+				<div class="col-md-12">
+					<pre class="output">{{ dataTableFormatString}}</pre>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 <style scoped>
@@ -55,14 +63,14 @@
 	another computed property outputString stringifies and displays it
 	outputObject makes sense of all the little config items stored in various formats
 	so that the string does not have to be the source of truth during editing */
-
+	const dataTableFormat = ref({});
+	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
 	const rawFields = ref([]);
 	const convertedFields = ref([]);
 	const nameChange = ref([null, null]);
-	const config = ref({});
 	const pastedData = ref("");
 	function updateDataConvert(configs, fields){
-		config.value["data convert"] = configs;
+		dataTableFormat.value["data convert"] = configs;
 		convertedFields.value = fields;
 	}
 	function changeFieldName(oldName, newName){

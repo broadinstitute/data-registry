@@ -23,163 +23,26 @@
             </div>
 		<div class="col-md-3 col">
 			<div class="label">
-				Set formatting order
+				Select formatting options
 			</div>
 			<ul class="dr-byor-data-columns">
-				<li>Link<label>
-					<select class="
-																		form-control
-																	"
-																>
-																	<option>
-																		None
-																	</option>
-																	<option>
-																		0
-																	</option>
-																	<option>
-																		1
-																	</option>
-																	<option>
-																		2
-																	</option>
-																	<option>
-																		3
-																	</option>
-																</select></label
-															>
-														</li>
-														<li>
-															Rander background
-															%<label>
-																<select
-																	class="
-																		form-control
-																	"
-																>
-																	<option>
-																		None
-																	</option>
-																	<option>
-																		0
-																	</option>
-																	<option>
-																		1
-																	</option>
-																	<option>
-																		2
-																	</option>
-																	<option>
-																		3
-																	</option>
-																</select></label
-															>
-														</li>
-														<li>
-															Rander background %
-															(negative)<label>
-																<select
-																	class="
-																		form-control
-																	"
-																>
-																	<option>
-																		None
-																	</option>
-																	<option>
-																		0
-																	</option>
-																	<option>
-																		1
-																	</option>
-																	<option>
-																		2
-																	</option>
-																	<option>
-																		3
-																	</option>
-																</select></label
-															>
-														</li>
-														<li>
-															Scientific
-															notation<label>
-																<select
-																	class="
-																		form-control
-																	"
-																>
-																	<option>
-																		None
-																	</option>
-																	<option>
-																		0
-																	</option>
-																	<option>
-																		1
-																	</option>
-																	<option>
-																		2
-																	</option>
-																	<option>
-																		3
-																	</option>
-																</select></label
-															>
-														</li>
-														<li>
-															Fixed after decimal
-															point<label>
-																<select
-																	class="
-																		form-control
-																	"
-																>
-																	<option>
-																		None
-																	</option>
-																	<option>
-																		0
-																	</option>
-																	<option>
-																		1
-																	</option>
-																	<option>
-																		2
-																	</option>
-																	<option>
-																		3
-																	</option>
-																</select></label
-															>
-														</li>
-													</ul>
+				<li v-for="formatOption in formatOptions" class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" :value="formatOption.option" 
+                                id="flexCheckDefault" v-model="selectedOptions"/>
+                            <span class="form-check-label" for="flexCheckDefault">{{ formatOption.display }}</span>
+                    </li>
+			</ul>
 		</div>
-		<div class="col-md-3 col">
-													<div class="label">
-														Link
-													</div>
-													<div id="linkFormat">
-														<div
-															class="form-inline"
-														>
-															<span
-																>Link to:
-															</span>
-
-															<input
-																type="text"
-																class="
-																	form-control
-																	form-control-sm
-																	input-default
-																"
-																style="
-																	width: 80%;
-																	margin-left: 5px;
-																"
-															/>
-														</div>
+		<div class="col-md-3 col">	
+			<div v-if="selectedOptions.includes('link')" id="linkFormat">
+				<div class="label">
+					Link
+				</div>
+				<div class="form-inline">
+					<span>Link to:</span>
+					<input type="text" class="form-control form-control-sm input-default" 
+						style="width: 80%; margin-left: 5px;"/>
+				</div>
 														<div
 															class="form-inline"
 														>
@@ -249,30 +112,18 @@
 																"
 															/>
 														</div>
-													</div>
-													<pre />
-													<div class="label">
-														Render background %
-													</div>
-													<div class="form-inline">
-														<span
-															>Percent if no
-															value:
-														</span>
-
-														<input
-															type="text"
-															class="
-																form-control
-																form-control-sm
-																input-default
-															"
-															style="
-																width: 50%;
-																margin-left: 5px;
-															"
-														/>
-													</div>
+			</div>
+			<div v-if="selectedOptions.includes('render background percent')">
+				<div class="label">
+				Render background %
+			</div>
+			<div class="form-inline">
+				<span>Percent if no value:</span>
+				<input type="text" class="form-control form-control-sm input-default"
+					style="width: 50%; margin-left: 5px;"/>
+			</div>
+			</div>
+			
 													<pre />
 													<div class="label">
 														Fixed after decimal
@@ -302,8 +153,8 @@
 															<option>9</option>
 														</select>
 													</div>
-												</div>
-												<div class="col-md-1 col">
+		</div>
+		<div class="col-md-1 col">
 													<button
 														class="
 															btn
@@ -334,42 +185,22 @@
 													>
 														Delete
 													</button>
-												</div>
-											</div>
-											<div class="row">
-												<div
-													class="
-														col-md-12 col
-														text-center
-														dr-bubbles-wrapper
-													"
-												>
-													<div
-														class="dr-format-bubble"
-													>
-														<span class="name"
-															>Variant ID</span
-														><span class="type"
-															>link</span
-														><span class="edit"
-															>Edit</span
-														>
-													</div>
-													<div
-														class="dr-format-bubble"
-													>
-														<span class="name"
-															>P-Value </span
-														><span class="type"
-															>Sceintific
-															notation, render
-															background %</span
-														><span class="edit"
-															>Edit</span
-														>
-													</div>
-												</div>
-											</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12 col text-center dr-bubbles-wrapper">
+			<div class="dr-format-bubble">
+				<span class="name">Variant ID</span>
+				<span class="type">link</span>
+				<span class="edit">Edit</span>
+			</div>
+			<div class="dr-format-bubble">
+				<span class="name">P-Value </span>
+				<span class="type">Sceintific notation, render background %</span>
+				<span class="edit">Edit</span>
+			</div>
+		</div>
+	</div>
 </template>
 <style scoped>
     @import "public/css/mdkp.css";
@@ -382,4 +213,41 @@
     const availableFields = computed(()=> props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
     const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
+	const formatOptions = [
+		{
+			option: "link",
+			display: "Link"
+		},
+		{
+			option: "js math",
+			display: "JavaScript math"
+		},
+		{
+			option: "scientific notation",
+			display: "Scientific notation"
+		},
+		{
+			option: "fixed",
+			display: "Fixed decimal (2-10 places)"
+		},
+		{
+			option: "direction triangle",
+			display: "Direction triangle"
+		},
+		{
+			option: "render background percent",
+			display: "Render background %"
+		}];
+	const selectedColumn = ref(null);
+	const selectedOptions = ref([]);
+	const singleColumnConfig = ref({
+		"type": []
+	});
+	const singleColumnConfigString = computed(()=> `"${selectedColumn.value}": ${JSON.stringify(singleColumnConfig.value)}`);
+	const allColumnsConfig = ref({});
+	const allColumnsConfigString = computed(() => JSON.stringify(allColumnsConfig.value));
+	// make sure clicking a bubble is the same as clicking edit
+	watch(selectedOptions, ()=>{
+		singleColumnConfig.value["type"] = selectedOptions.value;
+	});
 </script>
