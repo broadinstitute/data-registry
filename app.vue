@@ -1,5 +1,7 @@
 <template>
     <div class="container-fluid">
-        <NuxtPage />
+        <NuxtLayout>
+            <NuxtPage />
+        </NuxtLayout>
     </div>
 </template>
