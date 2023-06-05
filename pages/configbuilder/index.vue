@@ -1,8 +1,10 @@
 <template>
     <div>
-        <ConfigBuilder></ConfigBuilder>
+        <NuxtLayout>
+            <ConfigBuilder />
+        </NuxtLayout>
     </div>
 </template>
 <script setup>
-    import ConfigBuilder from "@/components/configcomponents/ConfigBuilder.vue";
+import ConfigBuilder from "@/components/configcomponents/ConfigBuilder.vue";
 </script>
