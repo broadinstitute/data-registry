@@ -142,20 +142,7 @@
     let failedSaveMsg = "";
     const currentFieldConfig = ref({});
     const currentConfigString = computed(() => JSON.stringify(currentFieldConfig.value));
-    const savedFieldConfigs = ref([
-        {
-            "type": "join multi",
-            "field name": "Coding sequence",
-            "fields to join": ["CHR", "POS", "REF", "ALT"],
-            "join by": [":",":","/"]
-        },
-        {
-            "type":"calculate",
-            "field name":"P-Value(-Log10)",
-            "raw field":"PVAL",
-            "calculation type":"-log10"
-        }
-    ]);
+    const savedFieldConfigs = ref([]);
     const editingFieldIndex = ref(-1);
 
     function updateConfig(newConfig, ready=false, msg="Field not ready to save."){
