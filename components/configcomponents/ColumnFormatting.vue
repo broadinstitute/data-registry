@@ -1,55 +1,30 @@
 <template>
-<h5>
-												Column formatting
-												<sup class="optional"
-													>Tutorial
-												</sup>
-											</h5>
-
-											<div class="row dr-builder-ui">
-												<div class="col-md-2 col">
-													<div class="label">
-														Select column
-													</div>
-													<div class="form-check">
-														<input
-															class="
-																form-check-input
-															"
-															type="radio"
-															value=""
-														/>
-														<label
-															class="
-																form-check-label
-															"
-															for=""
-														>
-															Variant ID
-														</label>
-													</div>
-													<div class="form-check">
-														<input
-															class="
-																form-check-input
-															"
-															type="radio"
-															value=""
-														/>
-														<label
-															class="
-																form-check-label
-															"
-															for=""
-														>
-															P-Value
-														</label>
-													</div>
-												</div>
-												<div class="col-md-4 col">
-													<div class="label">
-														Set formatting order
-													</div>
+	<h5>
+		Column formatting
+		<sup class="optional">Tutorial</sup>
+	</h5>
+	<div class="row dr-builder-ui">
+		<div class="col-md-3 col">
+            <div class="label">Output</div>
+            <pre class="output">{{ singleColumnConfigString }}</pre>
+            <pre class="output">{{ allColumnsConfigString }}</pre>
+        </div>
+		<div class="col-md-2 col">
+                <div class="label">
+                    Select column
+                </div>
+                <ul class="dr-byor-data-columns">
+                    <li v-for="field in availableFields" class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="column" :value="field" 
+                                id="flexCheckDefault" v-model="selectedColumn"/>
+                            <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
+                    </li>
+                </ul>
+            </div>
+		<div class="col-md-3 col">
+			<div class="label">
+				Set formatting order
+			</div>
 													<ul
 														class="
 															dr-byor-data-columns
@@ -185,8 +160,8 @@
 															>
 														</li>
 													</ul>
-												</div>
-												<div class="col-md-5 col">
+		</div>
+												<div class="col-md-3 col">
 													<div class="label">
 														Link
 													</div>
@@ -409,4 +384,8 @@
 <script setup>
     import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
+	const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const availableFields = computed(()=> props.fields);
+    const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
+    const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
 </script>

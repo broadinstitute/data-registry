@@ -223,19 +223,14 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 														header row) in csv
 														format here
 													</div>
-													<textarea
-														rows="3"
-														class="form-control">
-													'CHR,POS,REF,ALT,RSID,PVAL\r\n1,721290,G,C,rs12565286,3.8345e-02\r\n1,976963,A,G,rs150359724,4.3785e-03\r\n1,1120431,G,A,rs1320571,2.3373e-02\r\n'
-														
-													</textarea>
+													<textarea rows="3" class="form-control" v-model="pastedData"></textarea>
 												</div>
 											</div>
 											<DataConvert :raw-fields="rawFields" 
 												@dc-changed="(configs, fields) => updateDataConvert(configs, fields)"
 												@field-name-changed="(oldName, newName) => changeFieldName(oldName, newName)">
 											</DataConvert>
-											<ColumnFormatting></ColumnFormatting>
+											<ColumnFormatting :fields="convertedFields"></ColumnFormatting>
 											<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"></TopRows>
 											<Features :fields="convertedFields" :fieldNameUpdate="nameChange"></Features>
 											<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"></ToolTips>
@@ -929,17 +924,11 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 	outputObject makes sense of all the little config items stored in various formats
 	so that the string does not have to be the source of truth during editing */
 
-	const rawFields = [
-        "CHR",
-        "POS",
-        "REF",
-        "ALT",
-        "RSID",
-        "PVAL"
-    ];
+	const rawFields = ref([]);
 	const convertedFields = ref([]);
 	const nameChange = ref([null, null]);
 	const config = ref({});
+	const pastedData = ref("");
 	function updateDataConvert(configs, fields){
 		config.value["data convert"] = configs;
 		convertedFields.value = fields;
@@ -947,4 +936,12 @@ data_point1.csv,data_point2.csv,data_point3.csv,data_point4.csv</textarea
 	function changeFieldName(oldName, newName){
 		nameChange.value = [oldName, newName];
 	}
+	function getRawFields (){
+		let topLine = pastedData.value.split("\n")[0];
+		rawFields.value = topLine.split(",");
+	}
+	watch(pastedData, ()=>{
+		pastedData.value = pastedData.value.trim();
+		getRawFields();
+	});
 </script>
