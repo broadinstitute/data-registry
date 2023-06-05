@@ -1,8 +1,6 @@
 <template>
     <div class="container-fluid">
-        <NuxtLayout>
-            <DataRegistryDatasetTable />
-        </NuxtLayout>
+        <DataRegistryDatasetTable />
     </div>
 </template>
 

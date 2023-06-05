@@ -1,8 +1,6 @@
 <template>
     <div>
-        <NuxtLayout>
-            <ConfigBuilder />
-        </NuxtLayout>
+        <ConfigBuilder />
     </div>
 </template>
 <script setup>
