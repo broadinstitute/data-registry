@@ -25,15 +25,9 @@
 			<div class="label">
 				Set formatting order
 			</div>
-													<ul
-														class="
-															dr-byor-data-columns
-														"
-													>
-														<li>
-															Link<label>
-																<select
-																	class="
+			<ul class="dr-byor-data-columns">
+				<li>Link<label>
+					<select class="
 																		form-control
 																	"
 																>
@@ -161,7 +155,7 @@
 														</li>
 													</ul>
 		</div>
-												<div class="col-md-3 col">
+		<div class="col-md-3 col">
 													<div class="label">
 														Link
 													</div>
