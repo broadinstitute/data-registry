@@ -211,7 +211,17 @@ import { all } from "axios";
 			allColumnsConfig.value[fieldNameNew.value] = updatedFieldConfig;
 		}
 		
-	})
+	});
+	watch(availableFields, (newFields, oldFields) => {
+		oldFields.forEach(oldField => {
+			if(!newFields.includes(oldField)){
+				delete allColumnsConfig.value[oldField];
+				if (selectedColumn.value == oldField){
+					clearAll();
+				}
+			}
+		});
+	});
 	function clearAll(){
 		selectedColumn.value = null;
 		selectedOptions.value = [];
