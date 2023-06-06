@@ -255,6 +255,11 @@ import { all } from "axios";
 			console.log("Select some options.");
 			return;
 		}
+		if (selectedOptions.value.includes("render background percent") && 
+			selectedOptions.value.includes("render background percent negative")){
+				console.log("Select 'render background %' as either positive or negative, not both.");
+				return;
+			}
 		let columnConfig = JSON.parse(JSON.stringify(singleColumnConfig.value));
 		allColumnsConfig.value[selectedColumn.value] = columnConfig;
 		clearAll();
@@ -285,5 +290,24 @@ import { all } from "axios";
 			}
 		}
 		selectedOptions.value = loadConfig["type"];
+		let configKeys = Object.keys(loadConfig);
+		if (configKeys.includes("link to")){
+			linkTo.value = loadConfig["link to"]; 
+		}
+		if (configKeys.includes("new tab")){
+			newTab.value = loadConfig["new tab"] == "true" ? true : false;
+		}
+		if (configKeys.includes("link type")){
+			asButton.value = loadConfig["link type"] == "button";
+		}
+		if (configKeys.includes("link label")){
+			buttonLabel.value = loadConfig["link label"];
+		}
+		if (configKeys.includes("method")){
+			mathMethod.value = loadConfig["method"];
+		}
+		if (configKeys.includes("percent if empty")){
+			percentNoValue.value = loadConfig["percent if empty"];
+		}
 	}
 </script>
