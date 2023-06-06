@@ -16,7 +16,8 @@
                 <ul class="dr-byor-data-columns">
                     <li v-for="field in availableFields" class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="column" :value="field" 
-                                id="flexCheckDefault" v-model="selectedColumn"/>
+                                id="flexCheckDefault" :disabled="savedColumns.includes(selectedColumn)" 
+								v-model="selectedColumn"/>
                             <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
                     </li>
                 </ul>
@@ -137,7 +138,8 @@
                     <span class="name">{{ column }}</span> |
 					<span class="type">{{ allColumnsConfig[column]['type'][0] }}</span>
                     <span class="editing" v-if="selectedColumn == column">Editing</span>
-                    <a v-else @click="editColumn(column)"><span class="edit">Edit</span></a>
+                    <a v-else-if="selectedColumn == null" @click="editColumn(column)"><span class="edit">Edit</span></a>
+                    <a v-else @click="warnEditingAlready()"><span class="edit">Edit</span></a>
                 </div>
 		</div>
 	</div>
@@ -185,6 +187,11 @@ import { all } from "axios";
 	// make sure clicking a bubble is the same as clicking edit
 	watch([selectedOptions, fixedPlaces, mathMethod, linkTo, newTab, asButton, buttonLabel, percentNoValue], ()=>{
 		updateFormat();
+	});
+	watch(selectedColumn, ()=> {
+		if(selectedColumn.value != null && savedColumns.value.includes(selectedColumn.value)){
+			editColumn(selectedColumn.value);
+		}
 	});
 	function clearAll(){
 		selectedColumn.value = null;
@@ -250,6 +257,7 @@ import { all } from "axios";
 	function saveColumn(){
 		if (selectedColumn.value == null){
 			console.log("Select a column.");
+			return;
 		}
 		if (selectedOptions.value.length == 0){
 			console.log("Select some options.");
@@ -272,11 +280,7 @@ import { all } from "axios";
 		clearAll();
 		// EMIT CONFIG GOES HERE
 	}
-	function editColumn(column){
-		if (savedColumns.value.includes(selectedColumn.value)){
-			console.log("Already editing another column. Save or cancel to proceed.");
-			return;
-		}
+	function editColumn(column, oldColumn=null){
 		let loadConfig = JSON.parse(JSON.stringify(allColumnsConfig.value[column]));
 		clearAll();
 		selectedColumn.value = column;
@@ -309,5 +313,8 @@ import { all } from "axios";
 		if (configKeys.includes("percent if empty")){
 			percentNoValue.value = loadConfig["percent if empty"];
 		}
+	}
+	function warnEditingAlready(){
+		console.log("Already editing another column. Save or cancel to proceed.");
 	}
 </script>
