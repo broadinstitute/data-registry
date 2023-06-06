@@ -18,7 +18,11 @@
         <tbody class="table-group-divider">
             <tr v-for="dataset in datasets" :key="dataset.id">
                 <td>
-                   <a class="link-primary" @click="route.push({ path: `/datasets/${dataset.id}` })">{{ dataset.name }}</a>
+                    <a
+                        class="link-primary"
+                        @click="route.push({ path: `/datasets/${dataset.id}` })"
+                        >{{ dataset.name }}</a
+                    >
                 </td>
                 <td>
                     {{
@@ -43,9 +47,15 @@
                     }}
                 </td>
                 <td>
-                    <nuxt-link :to="`/datasets/${dataset.id}?edit=true`"><i class="bi bi-pencil" style="cursor: pointer;"></i></nuxt-link>
+                    <nuxt-link :to="`/datasets/${dataset.id}?edit=true`"
+                        ><i class="bi bi-pencil" style="cursor: pointer"></i
+                    ></nuxt-link>
                     &nbsp;
-                    <i @click="deleteDataSet(dataset.id)" class="bi bi-trash" style="cursor: pointer; color: red;"></i>
+                    <i
+                        @click="deleteDataSet(dataset.id)"
+                        class="bi bi-trash"
+                        style="cursor: pointer; color: red"
+                    ></i>
                 </td>
             </tr>
         </tbody>
@@ -55,25 +65,27 @@
 <script setup>
 const route = useRouter();
 const config = useRuntimeConfig();
-const datasets = ref([])
+const datasets = ref([]);
 
 onMounted(() => {
-  fetchDataSets()
-})
+    fetchDataSets();
+});
 
-
-async function deleteDataSet(id){
-  await $fetch(`${config.public['apiBaseUrl']}/api/datasets/${id}`, {
-    method: 'DELETE',
-    headers: { "access-token": config.public['apiSecret'] }
-  })
-  datasets.value = datasets.value.filter((dataset) => dataset.id !== id)
+async function deleteDataSet(id) {
+    await $fetch(`${config.public["apiBaseUrl"]}/api/datasets/${id}`, {
+        method: "DELETE",
+        headers: { "access-token": config.public["apiSecret"] },
+    });
+    datasets.value = datasets.value.filter((dataset) => dataset.id !== id);
 }
 
 async function fetchDataSets() {
-  datasets.value = await $fetch(`${config.public['apiBaseUrl']}/api/datasets`, {
-    headers: { "access-token": config.public['apiSecret'] },
-  });
+    datasets.value = await $fetch(
+        `${config.public["apiBaseUrl"]}/api/datasets`,
+        {
+            headers: { "access-token": config.public["apiSecret"] },
+        },
+    );
 }
 function formatSex(gender) {
     if (!gender) return "";
