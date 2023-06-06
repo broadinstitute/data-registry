@@ -227,7 +227,7 @@
         savedFieldConfigs.value.forEach(
             field => savedFields.push(field["field name"])
         );
-        emit("dcChanged", savedFieldConfigs, savedFields);
+        emit("dcChanged", savedFieldConfigs.value, savedFields);
     }
     watch(dataConvertType, ()=>{
         if (editingFieldIndex.value == -1){

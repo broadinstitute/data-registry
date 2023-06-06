@@ -72,16 +72,20 @@
 	const nameChange = ref([null, null]);
 	const pastedData = ref("");
 	function updateDataConvert(configs, fields){
-		dataTableFormat.value["data convert"] = configs;
+		if (Object.keys(configs).length == 0){
+			delete dataTableFormat.value["data convert"];
+		} else {
+			dataTableFormat.value["data convert"] = configs;
+		}
 		convertedFields.value = fields;
 	}
 	function updateColumnFormatting(config){
-		console.log(JSON.stringify(Object.keys(config)));
 		if (Object.keys(config).length == 0){
 			delete dataTableFormat.value["column formatting"];
-		} else {
-			dataTableFormat.value["column formatting"] = config;
+			return;
 		}
+		dataTableFormat.value["column formatting"] = config;
+		
 	}
 	function changeFieldName(oldName, newName){
 		nameChange.value = [oldName, newName];
