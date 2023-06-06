@@ -8,7 +8,10 @@
         <div class="card-body dr-form">
             <form class="needs-validation" id="inputForm" novalidate>
                 <div class="row dr-status-section">
-                    <div class="col-md-2 col" v-if="updateMode">
+                    <div
+                        class="col-md-2 col"
+                        v-if="props.existingDataset && !props.editMode"
+                    >
                         <div class="form-check form-switch">
                             <input
                                 class="form-check-input"
@@ -384,7 +387,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Modal from "~/components/Modal.vue";
 import useAxios from "~/composables/useAxios";
-
+const route = useRoute();
 const props = defineProps({
     existingDataset: String,
     editMode: { type: Boolean, default: false },
@@ -415,8 +418,8 @@ const publication = ref(null);
 
 const config = useRuntimeConfig();
 const study = useState("study");
-const updateMode = ref(!!props.existingDataset);
-const isReadOnly = ref(!updateMode.value || !props.editMode);
+const updateMode = ref(props.existingDataset && props.editMode);
+const isReadOnly = ref(!updateMode.value && route.name !== "datasets-new");
 const phenotypeDatasets = useState("selectedPhenotypes", () => [
     { credibleSets: [{}] },
 ]);
@@ -506,8 +509,8 @@ async function fetchStudies() {
 async function fetchInProperOrder() {
     await fetchStudies();
     await getPhenotypes();
-    if (updateMode.value) {
-        console.log("fetching existing dataset", updateMode.value);
+    if (props.existingDataset) {
+        console.log("fetching existing dataset", props.existingDataset);
         await fetchExistingDataset(props.existingDataset);
     }
 }
@@ -516,9 +519,6 @@ onMounted(() => {
     if (!updateMode.value) {
         datasetName.value.focus();
     }
-    console.log("mounted", updateMode.value);
-    console.log("mode", props.editMode);
-    //console.log("mode value", viewMode.value);
     fetchInProperOrder();
 });
 
