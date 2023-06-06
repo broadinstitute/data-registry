@@ -8,7 +8,10 @@
         <div class="card-body dr-form">
             <form class="needs-validation" id="inputForm" novalidate>
                 <div class="row dr-status-section">
-                    <div class="col-md-2 col" v-if="updateMode">
+                    <div
+                        class="col-md-2 col"
+                        v-if="props.existingDataset && !props.editMode"
+                    >
                         <div class="form-check form-switch">
                             <input
                                 class="form-check-input"
