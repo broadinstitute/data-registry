@@ -133,16 +133,12 @@
 	</div>
 	<div class="row">
 		<div class="col-md-12 col text-center dr-bubbles-wrapper">
-			<div class="dr-format-bubble">
-				<span class="name">Variant ID</span>
-				<span class="type">link</span>
-				<span class="edit">Edit</span>
-			</div>
-			<div class="dr-format-bubble">
-				<span class="name">P-Value </span>
-				<span class="type">Sceintific notation, render background %</span>
-				<span class="edit">Edit</span>
-			</div>
+			<div v-for="column in savedColumns" class="dr-format-bubble">
+                    <span class="name">{{ column }}</span> |
+					<span class="type">{{ allColumnsConfig[column]['type'][0] }}</span>
+                    <span class="editing" v-if="selectedColumn == column">Editing</span>
+                    <a v-else @click="editColumn(column)"><span class="edit">Edit</span></a>
+                </div>
 		</div>
 	</div>
 </template>
@@ -153,6 +149,7 @@
 <script setup>
     import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
+import { all } from "axios";
 	const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const availableFields = computed(()=> props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
@@ -184,6 +181,7 @@
 	const singleColumnConfigString = computed(()=> `"${selectedColumn.value}": ${JSON.stringify(singleColumnConfig.value)}`);
 	const allColumnsConfig = ref({});
 	const allColumnsConfigString = computed(() => JSON.stringify(allColumnsConfig.value));
+	const savedColumns = computed(() => Object.keys(allColumnsConfig.value));
 	// make sure clicking a bubble is the same as clicking edit
 	watch([selectedOptions, fixedPlaces, mathMethod, linkTo, newTab, asButton, buttonLabel, percentNoValue], ()=>{
 		updateFormat();
@@ -250,15 +248,42 @@
 		}
 	}
 	function saveColumn(){
-		console.log(JSON.stringify(singleColumnConfig.value));
+		if (selectedColumn.value == null){
+			console.log("Select a column.");
+		}
+		if (selectedOptions.value.length == 0){
+			console.log("Select some options.");
+			return;
+		}
 		let columnConfig = JSON.parse(JSON.stringify(singleColumnConfig.value));
 		allColumnsConfig.value[selectedColumn.value] = columnConfig;
-		clearAll()
+		clearAll();
+		// EMIT CONFIG GOES HERE
 	}
 	function deleteColumn(){
 		if (selectedColumn.value != null){
 			delete allColumnsConfig.value[selectedColumn.value];
 		}
 		clearAll();
+		// EMIT CONFIG GOES HERE
+	}
+	function editColumn(column){
+		if (savedColumns.value.includes(selectedColumn.value)){
+			console.log("Already editing another column. Save or cancel to proceed.");
+			return;
+		}
+		let loadConfig = JSON.parse(JSON.stringify(allColumnsConfig.value[column]));
+		clearAll();
+		selectedColumn.value = column;
+		singleColumnConfig.value = loadConfig;
+		for (let i = 0; i < loadConfig["type"].length; i++){
+			let item = loadConfig["type"][i]
+			let splitItem = item.split(" ");
+			if (splitItem[0] == "fixed"){
+				fixedPlaces.value = parseInt(splitItem[1]);
+				loadConfig["type"][i] = "fixed";
+			}
+		}
+		selectedOptions.value = loadConfig["type"];
 	}
 </script>
