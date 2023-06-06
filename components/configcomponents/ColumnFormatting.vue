@@ -152,8 +152,8 @@
 <script setup>
     import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
-import { all } from "axios";
 	const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const emit = defineEmits(["colFormatChanged"]);
     const availableFields = computed(()=> props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
     const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
@@ -283,6 +283,9 @@ import { all } from "axios";
 		}
 		saveErrorMsg.value = "";
 	}
+	function emitFormat(){
+		emit("colFormatChanged", allColumnsConfig);
+	}
 	function saveColumn(){
 		if (selectedColumn.value == null){
 			saveErrorMsg.value = "Select a column.";
@@ -300,14 +303,14 @@ import { all } from "axios";
 		let columnConfig = JSON.parse(JSON.stringify(singleColumnConfig.value));
 		allColumnsConfig.value[selectedColumn.value] = columnConfig;
 		clearAll();
-		// EMIT CONFIG GOES HERE
+		emitFormat();
 	}
 	function deleteColumn(){
 		if (selectedColumn.value != null){
 			delete allColumnsConfig.value[selectedColumn.value];
 		}
 		clearAll();
-		// EMIT CONFIG GOES HERE
+		emitFormat();
 	}
 	function editColumn(column, oldColumn=null){
 		let loadConfig = JSON.parse(JSON.stringify(allColumnsConfig.value[column]));

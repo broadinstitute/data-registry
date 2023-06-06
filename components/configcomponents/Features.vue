@@ -85,7 +85,6 @@
 <script setup>
     import "bootstrap/dist/css/bootstrap.min.css";
     import "bootstrap-icons/font/bootstrap-icons.css";
-import { all } from "axios";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const availableFields = computed(()=> props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);

@@ -22,7 +22,9 @@
 									@dc-changed="(configs, fields) => updateDataConvert(configs, fields)"
 									@field-name-changed="(oldName, newName) => changeFieldName(oldName, newName)">
 								</DataConvert>
-								<ColumnFormatting :fields="convertedFields" :fieldNameUpdate="nameChange"></ColumnFormatting>
+								<ColumnFormatting :fields="convertedFields" :fieldNameUpdate="nameChange"
+									@col-format-changed="(config) => updateColumnFormatting(config)">
+								</ColumnFormatting>
 								<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"></TopRows>
 								<Features :fields="convertedFields" :fieldNameUpdate="nameChange"></Features>
 								<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"></ToolTips>
@@ -72,6 +74,9 @@
 	function updateDataConvert(configs, fields){
 		dataTableFormat.value["data convert"] = configs;
 		convertedFields.value = fields;
+	}
+	function updateColumnFormatting(config){
+		dataTableFormat.value["column formatting"] = config;
 	}
 	function changeFieldName(oldName, newName){
 		nameChange.value = [oldName, newName];
