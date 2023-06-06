@@ -76,7 +76,12 @@
 		convertedFields.value = fields;
 	}
 	function updateColumnFormatting(config){
-		dataTableFormat.value["column formatting"] = config;
+		console.log(JSON.stringify(Object.keys(config)));
+		if (Object.keys(config).length == 0){
+			delete dataTableFormat.value["column formatting"];
+		} else {
+			dataTableFormat.value["column formatting"] = config;
+		}
 	}
 	function changeFieldName(oldName, newName){
 		nameChange.value = [oldName, newName];

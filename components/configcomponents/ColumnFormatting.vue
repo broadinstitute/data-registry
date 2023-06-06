@@ -220,6 +220,7 @@
 			}
 		});
 	});
+	watch(allColumnsConfigString, () => emitFormat());
 	function clearAll(){
 		selectedColumn.value = null;
 		selectedOptions.value = [];
@@ -284,7 +285,7 @@
 		saveErrorMsg.value = "";
 	}
 	function emitFormat(){
-		emit("colFormatChanged", allColumnsConfig);
+		emit("colFormatChanged", allColumnsConfig.value);
 	}
 	function saveColumn(){
 		if (selectedColumn.value == null){
@@ -303,14 +304,12 @@
 		let columnConfig = JSON.parse(JSON.stringify(singleColumnConfig.value));
 		allColumnsConfig.value[selectedColumn.value] = columnConfig;
 		clearAll();
-		emitFormat();
 	}
 	function deleteColumn(){
 		if (selectedColumn.value != null){
 			delete allColumnsConfig.value[selectedColumn.value];
 		}
 		clearAll();
-		emitFormat();
 	}
 	function editColumn(column, oldColumn=null){
 		let loadConfig = JSON.parse(JSON.stringify(allColumnsConfig.value[column]));
