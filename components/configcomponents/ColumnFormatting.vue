@@ -63,98 +63,59 @@
 				<div class="form-inline">
 					<span>Link to:</span>
 					<input type="text" class="form-control form-control-sm input-default" 
-						style="width: 80%; margin-left: 5px;"/>
+						style="width: 80%; margin-left: 5px;" v-model="linkTo"/>
 				</div>
-														<div
-															class="form-inline"
-														>
-															<div
-																class="
-																	form-check
-																"
-																style="
-																	margin-right: 10px;
-																"
-															>
-																<input
-																	class="
-																		form-check-input
-																	"
-																	type="checkbox"
-																	value=""
-																/>
-																<label
-																	class="
-																		form-check-label
-																	"
-																	for=""
-																>
-																	New tab
-																</label>
-															</div>
-															<div
-																class="
-																	form-check
-																"
-															>
-																<input
-																	class="
-																		form-check-input
-																	"
-																	type="checkbox"
-																	value=""
-																/>
-																<label
-																	class="
-																		form-check-label
-																	"
-																	for=""
-																>
-																	As button
-																</label>
-															</div>
-														</div>
-														<div
-															class="form-inline"
-														>
-															<span
-																>Button label:
-															</span>
-
-															<input
-																type="text"
-																class="
-																	form-control
-																	form-control-sm
-																	input-default
-																"
-																style="
-																	width: 80%;
-																	margin-left: 5px;
-																"
-															/>
-														</div>
+				<div class="form-inline">
+					<div class="form-check" style="margin-right: 10px;">
+						<label class="form-check-label">
+							<input class="form-check-input" type="checkbox" v-model="newTab"/>
+							New tab
+						</label>
+					</div>
+					<div class="form-check">
+						<label class="form-check-label">
+							<input class="form-check-input" type="checkbox" v-model="asButton"/>
+							As button
+						</label>
+					</div>
+				</div>
+				<div class="form-inline" v-if="asButton">
+					<span>Button label:</span>
+					<input type="text" class="form-control form-control-sm input-default"
+						style="width: 80%; margin-left: 5px;" v-model="buttonLabel"/>
+				</div>
 			</div>
-			<div v-if="selectedOptions.includes('render background percent')">
+			<div v-if="selectedOptions.includes('render background percent') || 
+					selectedOptions.includes('render background percent negative')">
 				<div class="label">
 					Render background %
 				</div>
 				<div class="form-inline">
 					<span>Percent if no value:</span>
-					<input type="text" class="form-control form-control-sm input-default"
-						style="width: 50%; margin-left: 5px;"/>
+					<input type="number" class="form-control form-control-sm input-default"
+						style="width: 50%; margin-left: 5px;" v-model="percentNoValue"/>
 				</div>
 			</div>
 			<div v-if="selectedOptions.includes('fixed')">
 				<div class="label">
 				Fixed after decimal point
-			</div>
+				</div>
 				<div class="form-inline">
 					<span>Place </span>
 					<select class="form-control form-control-sm" v-model="fixedPlaces"
 							style=" width: 50%; margin-left: 5px;">
 						<option v-for="i in 9">{{ i + 1 }}</option>
 					</select>
+				</div>
+			</div>
+			<div v-if="selectedOptions.includes('js math')">
+				<div class="label">
+				JavaScript math
+				</div>
+				<div class="form-inline">
+					<span>Method </span>
+					<input type="text" class="form-control form-control-sm input-default"
+						v-model="mathMethod" style="width: 50%; margin-left: 5px;"/>
 				</div>
 			</div>
 		</div>
@@ -229,6 +190,12 @@
 	const selectedColumn = ref(null);
 	const selectedOptions = ref([]);
 	const fixedPlaces = ref(2);
+	const mathMethod = ref("");
+	const linkTo = ref("");
+	const newTab = ref(true);
+	const asButton = ref(false);
+	const buttonLabel = ref("");
+	const percentNoValue = ref(0);
 	const selectedOptionsMod = computed(()=> selectedOptions.value.map(
 			item => item == "fixed" ? `fixed ${fixedPlaces.value}` : item
 		));
@@ -239,9 +206,20 @@
 	const allColumnsConfig = ref({});
 	const allColumnsConfigString = computed(() => JSON.stringify(allColumnsConfig.value));
 	// make sure clicking a bubble is the same as clicking edit
-	watch([selectedOptions, fixedPlaces], ()=>{
-		singleColumnConfig.value["type"] = selectedOptionsMod.value;
+	watch([selectedOptions, fixedPlaces, mathMethod, linkTo, newTab, asButton, buttonLabel, percentNoValue], ()=>{
+		updateFormat();
 	});
+	function clearAll(){
+		selectedColumn.value = null;
+		selectedOptions.value = [];
+		fixedPlaces.value = 2;
+		mathMethod.value = "";
+		linkTo.value = "";
+		newTab.value = true;
+		asButton.value = false;
+		buttonLabel.value = "";
+		percentNoValue.value = 0;
+	}
 	function moveUp(index){
 		let beginning = selectedOptions.value.slice(0, index-1);
 		let risingItem = selectedOptions.value[index];
@@ -259,5 +237,37 @@
 		beginning.push(risingItem);
 		beginning.push(fallingItem);
 		selectedOptions.value = beginning.concat(end);
+	}
+	function updateFormat(){
+		singleColumnConfig.value["type"] = selectedOptionsMod.value;
+		if (selectedOptions.value.includes("link")){
+			linkTo.value = linkTo.value.trim();
+			singleColumnConfig.value["link to"] = linkTo.value;
+			singleColumnConfig.value["new tab"] = `${newTab.value}`;
+			if (asButton.value){
+				singleColumnConfig.value["link type"] = "button";
+				singleColumnConfig.value["link label"] = buttonLabel.value;
+			} else {
+				delete singleColumnConfig.value["link type"];
+				delete singleColumnConfig.value["link label"];
+			}
+		} else {
+			delete singleColumnConfig.value["link to"];
+			delete singleColumnConfig.value["new tab"];
+			delete singleColumnConfig.value["link type"];
+			delete singleColumnConfig.value["link label"];
+		}
+		if (selectedOptions.value.includes("js math")){
+			singleColumnConfig.value["method"] = mathMethod.value;
+		} else {
+			delete singleColumnConfig.value["method"]
+		}
+		if (selectedOptions.value.includes("render background percent") 
+			|| selectedOptions.value.includes("render background percent negative")){
+				singleColumnConfig.value["percent if empty"] = 
+					typeof percentNoValue.value == "number" ? percentNoValue.value : 0;
+		} else {
+			delete singleColumnConfig.value["percent if empty"];
+		}
 	}
 </script>
