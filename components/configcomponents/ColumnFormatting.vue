@@ -21,7 +21,7 @@
                             <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
                     </li>
                 </ul>
-            </div>
+        </div>
 		<div class="col-md-2 col">
 			<div class="label">
 				Select formatting options
@@ -36,7 +36,7 @@
 		</div>
 		<div class="col-md-2 col">
 			<div class="label">
-				Selected options | Change formatting order
+				Selected options | Change format order
 			</div>
 			<tbody class="dr-byor-data-columns">
 				<tr v-for="option, index in selectedOptions" class="arrow-button-list">
@@ -119,6 +119,7 @@
 						v-model="mathMethod" style="width: 50%; margin-left: 5px;"/>
 				</div>
 			</div>
+			<div class="failed-save">{{ saveErrorMsg }}</div>
 		</div>
 		<div class="col-md-1 col">
 			<button class="btn btn-primary btn-sm" type="button" @click="saveColumn()">
@@ -175,17 +176,14 @@ import { all } from "axios";
 	const buttonLabel = ref("");
 	const percentNoValue = ref(0);
 	const selectedOptionsMod = computed(()=> selectedOptions.value.map(
-			item => item == "fixed" ? `fixed ${fixedPlaces.value}` : item
-		));
-	const singleColumnConfig = ref({
-		"type": []
-	});
+			item => item == "fixed" ? `fixed ${fixedPlaces.value}` : item));
+	const singleColumnConfig = ref({"type": []});
 	const singleColumnConfigString = computed(() => 
 		`"${selectedColumn.value}": ${JSON.stringify(singleColumnConfig.value)}`);
 	const allColumnsConfig = ref({});
 	const allColumnsConfigString = computed(() => JSON.stringify(allColumnsConfig.value));
 	const savedColumns = computed(() => Object.keys(allColumnsConfig.value));
-	// make sure clicking a bubble is the same as clicking edit
+    const saveErrorMsg =ref("");
 	watch([selectedOptions, 
 			fixedPlaces, 
 			mathMethod, 
@@ -232,6 +230,7 @@ import { all } from "axios";
 		asButton.value = false;
 		buttonLabel.value = "";
 		percentNoValue.value = 0;
+		saveErrorMsg.value = "";
 	}
 	function moveUp(index){
 		let beginning = selectedOptions.value.slice(0, index-1);
@@ -282,19 +281,20 @@ import { all } from "axios";
 		} else {
 			delete singleColumnConfig.value["percent if empty"];
 		}
+		saveErrorMsg.value = "";
 	}
 	function saveColumn(){
 		if (selectedColumn.value == null){
-			console.log("Select a column.");
+			saveErrorMsg.value = "Select a column.";
 			return;
 		}
 		if (selectedOptions.value.length == 0){
-			console.log("Select some options.");
+			saveErrorMsg.value = "Select some options.";
 			return;
 		}
 		if (selectedOptions.value.includes("render background percent") && 
 			selectedOptions.value.includes("render background percent negative")){
-				console.log("Select 'render background %' as either positive or negative, not both.");
+				saveErrorMsg.value = "Select 'render background %' as either positive or negative, not both.";
 				return;
 			}
 		let columnConfig = JSON.parse(JSON.stringify(singleColumnConfig.value));
@@ -344,6 +344,6 @@ import { all } from "axios";
 		}
 	}
 	function warnEditingAlready(){
-		console.log("Already editing another column. Save or cancel to proceed.");
+		saveErrorMsg.value = "Already editing another column. Save or cancel to proceed.";
 	}
 </script>
