@@ -180,12 +180,20 @@ import { all } from "axios";
 	const singleColumnConfig = ref({
 		"type": []
 	});
-	const singleColumnConfigString = computed(()=> `"${selectedColumn.value}": ${JSON.stringify(singleColumnConfig.value)}`);
+	const singleColumnConfigString = computed(() => 
+		`"${selectedColumn.value}": ${JSON.stringify(singleColumnConfig.value)}`);
 	const allColumnsConfig = ref({});
 	const allColumnsConfigString = computed(() => JSON.stringify(allColumnsConfig.value));
 	const savedColumns = computed(() => Object.keys(allColumnsConfig.value));
 	// make sure clicking a bubble is the same as clicking edit
-	watch([selectedOptions, fixedPlaces, mathMethod, linkTo, newTab, asButton, buttonLabel, percentNoValue], ()=>{
+	watch([selectedOptions, 
+			fixedPlaces, 
+			mathMethod, 
+			linkTo, 
+			newTab, 
+			asButton, 
+			buttonLabel, 
+			percentNoValue], ()=>{
 		updateFormat();
 	});
 	watch(selectedColumn, ()=> {
@@ -193,6 +201,17 @@ import { all } from "axios";
 			editColumn(selectedColumn.value);
 		}
 	});
+	watch(fieldNameOld, () => {
+		if (selectedColumn.value == fieldNameOld.value){
+			selectedColumn.value = fieldNameNew.value;
+		}
+		if (!!allColumnsConfig.value[fieldNameOld.value]){
+			let updatedFieldConfig = JSON.parse(JSON.stringify(allColumnsConfig.value[fieldNameOld.value]));	
+			delete allColumnsConfig.value[fieldNameOld.value];
+			allColumnsConfig.value[fieldNameNew.value] = updatedFieldConfig;
+		}
+		
+	})
 	function clearAll(){
 		selectedColumn.value = null;
 		selectedOptions.value = [];

@@ -22,7 +22,7 @@
 									@dc-changed="(configs, fields) => updateDataConvert(configs, fields)"
 									@field-name-changed="(oldName, newName) => changeFieldName(oldName, newName)">
 								</DataConvert>
-								<ColumnFormatting :fields="convertedFields"></ColumnFormatting>
+								<ColumnFormatting :fields="convertedFields" :fieldNameUpdate="nameChange"></ColumnFormatting>
 								<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"></TopRows>
 								<Features :fields="convertedFields" :fieldNameUpdate="nameChange"></Features>
 								<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"></ToolTips>
