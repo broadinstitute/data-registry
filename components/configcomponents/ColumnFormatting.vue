@@ -120,36 +120,15 @@
 			</div>
 		</div>
 		<div class="col-md-1 col">
-													<button
-														class="
-															btn
-															btn-primary
-															btn-sm
-														"
-														type="button"
-													>
-														Save
-													</button>
-													<button
-														class="
-															btn
-															btn-warning
-															btn-sm
-														"
-														type="button"
-													>
-														Cancel
-													</button>
-													<button
-														class="
-															btn
-															btn-danger
-															btn-sm
-														"
-														type="button"
-													>
-														Delete
-													</button>
+			<button class="btn btn-primary btn-sm" type="button" @click="saveColumn()">
+				Save
+			</button>
+			<button class="btn btn-warning btn-sm" type="button" @click="clearAll()">
+				Cancel
+			</button>
+			<button class="btn btn-danger btn-sm" type="button" @click="deleteColumn()">
+				Delete
+			</button>
 		</div>
 	</div>
 	<div class="row">
@@ -269,5 +248,17 @@
 		} else {
 			delete singleColumnConfig.value["percent if empty"];
 		}
+	}
+	function saveColumn(){
+		console.log(JSON.stringify(singleColumnConfig.value));
+		let columnConfig = JSON.parse(JSON.stringify(singleColumnConfig.value));
+		allColumnsConfig.value[selectedColumn.value] = columnConfig;
+		clearAll()
+	}
+	function deleteColumn(){
+		if (selectedColumn.value != null){
+			delete allColumnsConfig.value[selectedColumn.value];
+		}
+		clearAll();
 	}
 </script>
