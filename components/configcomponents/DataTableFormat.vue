@@ -28,8 +28,11 @@
 								<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"
 									@top-rows-changed="(fields) => updateTopRows(fields)">
 								</TopRows>
-								<Features :fields="convertedFields" :fieldNameUpdate="nameChange"></Features>
-								<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"></ToolTips>
+								<Features :fields="convertedFields" :fieldNameUpdate="nameChange"
+									@features-changed="(updatedFeatures) => updateFeatures(updatedFeatures)">
+								</Features>
+								<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"
+									@tool-tips-changed="(updatedToolTips) => updateToolTips(updatedToolTips)"></ToolTips>
 								<LocusFieldStarColumn></LocusFieldStarColumn>		
 							</div>
 						</div>
@@ -69,32 +72,56 @@
 	so that the string does not have to be the source of truth during editing */
 	const dataTableFormat = ref({});
 	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
+	const dataConvert = ref([]);
 	const rawFields = ref([]);
 	const convertedFields = ref([]);
+	const topRows = ref([]);
+	const toolTips = ref({});
 	const nameChange = ref([null, null]);
 	const pastedData = ref("");
-	function updateDataConvert(configs, fields){
-		if (Object.keys(configs).length == 0){
-			delete dataTableFormat.value["data convert"];
-		} else {
-			dataTableFormat.value["data convert"] = configs;
+	const featureConfig = ref({ "features": [] });
+	const columnFormatting = ref({});
+	function outputDataTableFormat(){
+		let format = {};
+		if (dataConvert.value.length > 0){
+			format["data convert"] = dataConvert.value;
 		}
+		if (Object.keys(columnFormatting.value).length > 0){
+			format["column formatting"] = columnFormatting.value;
+		}
+		if (topRows.value.length > 0){
+			format["top rows"] = topRows.value;
+		}
+		if (featureConfig.value["features"].length > 0){
+			let featureKeys = Object.keys(featureConfig.value);
+			featureKeys.forEach(featureKey => 
+				format[featureKey] = featureConfig.value[featureKey]);
+		}
+		if (Object.keys(toolTips.value).length = 0){
+			format["tool tips"] = toolTips.value;
+		}
+		dataTableFormat.value = format;
+	}
+	function updateDataConvert(configs, fields){
+		dataConvert.value = configs;
 		convertedFields.value = fields;
+		outputDataTableFormat();
 	}
 	function updateTopRows(fields){
-		if (fields.length == 0){
-			delete dataTableFormat.value["top rows"];
-		} else {
-			dataTableFormat.value["top rows"] = fields;
-		}
+		topRows.value = fields;
+		outputDataTableFormat();
+	}
+	function updateFeatures(updatedFeatures){
+		featureConfig.value = updatedFeatures;
+		outputDataTableFormat();
 	}
 	function updateColumnFormatting(config){
-		if (Object.keys(config).length == 0){
-			delete dataTableFormat.value["column formatting"];
-			return;
-		}
-		dataTableFormat.value["column formatting"] = config;
-		
+		columnFormatting.value = config;
+		outputDataTableFormat();
+	}
+	function updateToolTips(updatedToolTips){
+		toolTips.value = updatedToolTips;
+		outputDataTableFormat();
 	}
 	function changeFieldName(oldName, newName){
 		nameChange.value = [oldName, newName];

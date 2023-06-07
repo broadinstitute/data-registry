@@ -86,6 +86,7 @@
     import "bootstrap/dist/css/bootstrap.min.css";
     import "bootstrap-icons/font/bootstrap-icons.css";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const emit = defineEmits(["featuresChanged"]);
     const availableFields = computed(()=> props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
     const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
@@ -122,6 +123,7 @@
         beginning.push(list[index]);
         beginning.push(list[index - 1]);
         allFeaturesConfig.value["features"] = beginning.concat(list.slice(index + 1));
+        emitFeatures();
     }
     function moveNext(index){
         let list = allFeaturesConfig.value["features"];
@@ -129,7 +131,7 @@
         beginning.push(list[index + 1]);
         beginning.push(list[index]);
         allFeaturesConfig.value["features"] = beginning.concat(list.slice(index + 2));
-        
+        emitFeatures();
     }
     function saveFeature(){
         let trimmedName = currentFeatureName.value.trim();
@@ -154,6 +156,7 @@
                 }
             }
             doneEditing();
+            emitFeatures();
             return;
         } else if (trimmedName == ""){
             saveErrorMsg.value = "Enter feature name.";
@@ -183,6 +186,7 @@
             editingFeatureIndex.value = null;
         }
         doneEditing();
+        emitFeatures();
     }
     function doneEditing(){
         saveErrorMsg.value = "";
@@ -208,10 +212,9 @@
                 currentSelectedFields.value[i] = fieldNameNew.value;
             }
         }
+        emitFeatures();
     });
-    watch(availableFields, (newFields, oldFields) => {       
-        console.log(`Old fields: ${JSON.stringify(oldFields)}`);
-        console.log(`New fields: ${JSON.stringify(newFields)}`);
+    watch(availableFields, (newFields, oldFields) => {
         if (newFields.length < oldFields.length){
             // Removing deleted fields from any existing features or selected fields
             oldFields.forEach(oldField => {
@@ -236,5 +239,9 @@
                 }
             })
         }
+        emitFeatures();
     });
+    function emitFeatures(){
+        emit("featuresChanged", allFeaturesConfig.value);
+    }
 </script>

@@ -31,6 +31,7 @@
     import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const emit = defineEmits(["toolTipsChanged"]);
     const availableFields = computed(()=> props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
     const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
@@ -41,6 +42,7 @@
         } else {
             toolTipConfig.value[field] = text;
         }
+        emitToolTips();
     }
     watch (availableFields, (newFields, oldFields)=> {
         if (newFields.length < oldFields.length){
@@ -49,6 +51,7 @@
                     delete toolTipConfig.value[oldField];
                 }
             });
+            emitToolTips();
         }
     });
     watch(fieldNameOld, () => {
@@ -58,6 +61,10 @@
             let toolTip = toolTipConfig.value[fieldNameOld.value];
             delete toolTipConfig.value[fieldNameOld.value];
             toolTipConfig.value[fieldNameNew.value] = toolTip;
+            emitToolTips();
         }
     });
+    function emitToolTips(){
+        emit("toolTipsChanged", toolTipConfig.value);
+    }
 </script>
