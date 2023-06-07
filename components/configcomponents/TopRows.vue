@@ -52,6 +52,7 @@
     import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const emit = defineEmits(["topRowsChanged"]);
     const availableFields = computed(()=> props.fields);
     const selectedFields = ref([]);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
@@ -92,4 +93,5 @@
 		beginning.push(fallingItem);
 		selectedFields.value = beginning.concat(end);
 	}
+    watch(selectedFields, () => emit("topRowsChanged", selectedFields.value));
 </script>

@@ -25,7 +25,9 @@
 								<ColumnFormatting :fields="convertedFields" :fieldNameUpdate="nameChange"
 									@col-format-changed="(config) => updateColumnFormatting(config)">
 								</ColumnFormatting>
-								<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"></TopRows>
+								<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"
+									@top-rows-changed="(fields) => updateTopRows(fields)">
+								</TopRows>
 								<Features :fields="convertedFields" :fieldNameUpdate="nameChange"></Features>
 								<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"></ToolTips>
 								<LocusFieldStarColumn></LocusFieldStarColumn>		
@@ -78,6 +80,13 @@
 			dataTableFormat.value["data convert"] = configs;
 		}
 		convertedFields.value = fields;
+	}
+	function updateTopRows(fields){
+		if (fields.length == 0){
+			delete dataTableFormat.value["top rows"];
+		} else {
+			dataTableFormat.value["top rows"] = fields;
+		}
 	}
 	function updateColumnFormatting(config){
 		if (Object.keys(config).length == 0){
