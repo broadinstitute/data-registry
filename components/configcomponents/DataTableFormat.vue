@@ -97,7 +97,8 @@
 			featureKeys.forEach(featureKey => 
 				format[featureKey] = featureConfig.value[featureKey]);
 		}
-		if (Object.keys(toolTips.value).length = 0){
+		let toolTipCount = Object.keys(toolTips.value).length;
+		if (toolTipCount > 0){
 			format["tool tips"] = toolTips.value;
 		}
 		dataTableFormat.value = format;
