@@ -97,6 +97,15 @@
     const allFeaturesConfig = ref({
         "features": []
     });
+    const offLimitsNames = [
+        "data convert",
+        "column formatting",
+        "top rows",
+        "features",
+        "tool tips",
+        "locus field",
+        "star column"
+    ]
     const singleFeatureConfigString = computed(()=> `"${currentFeatureName.value}": ${JSON.stringify(currentSelectedFields.value)}`);
     const allFeaturesConfigString = computed(()=> JSON.stringify(allFeaturesConfig.value));
     function moveUp(index){
@@ -135,6 +144,10 @@
     }
     function saveFeature(){
         let trimmedName = currentFeatureName.value.trim();
+        if (offLimitsNames.includes(trimmedName)){
+            saveErrorMsg.value = `${trimmedName} is a reserved keyword. Choose a different name.`;
+            return;
+        }
         if (trimmedName.length > 0 && currentSelectedFields.value.length > 0){
             // Check for duplicates
             for (let i = 0; i < allFeaturesConfig.value["features"].length; i++){
