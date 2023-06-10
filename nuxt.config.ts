@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     ssr: false,
-    css: ["bootstrap", "~/assets/css/styles.css"],
+    css: ["bootstrap/dist/css/bootstrap.css", "bootstrap-icons/font/bootstrap-icons.css", "assets/css/styles.css"],
     vite: {
         server: {
             // specify a know port, so we can use it in docker invocations

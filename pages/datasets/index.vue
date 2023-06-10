@@ -7,16 +7,12 @@
                     <button type="button" class="btn btn-primary">
                         <i class="bi bi-plus"></i>
                         Add New Dataset
-                    </button></nuxt-link
-                >
+                    </button>
+                </nuxt-link>
             </div>
         </div>
     </div>
 </template>
 
-<script setup>
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-</script>
 
 <style></style>
