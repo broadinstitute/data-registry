@@ -4,7 +4,7 @@
       <div class="label">Phenotype<sup>*</sup></div>
       <AutoCompleteDialog placeholder="Phenotype" :items="Object.values(phenotypes)" :filter-function="filterFunc"
                           :id="`pheno-${props.identifier}`"
-                          @blur="ptypeBlur" :item-display="i => i.description" :initial-input="phenotypeDataset.description" :disabled="props.disabled"/>
+                          @blur="ptypeBlur" :item-display="i => i.description" :initial-input="phenotypeDataset.description" :disabled="isControlDisabled()"/>
       <div v-if="needsDichotomousInfo">
         <label for="dichotomousInfo" class="label">Dichotomous<sup>*</sup> &nbsp;</label><input type="checkbox" id="dichotomousInfo" v-model="phenotypeDataset.dichotomous">
       </div>
@@ -12,25 +12,24 @@
     <div class="col col-md-2">
       <div class="label">Sample Size<sup>*</sup></div>
       <input type="number" v-model="phenotypeDataset.sampleSize" placeholder="Sample Size"
-             class="form-control input-default" min="0" required :disabled="props.disabled">
+             class="form-control input-default" min="0" required :disabled="isControlDisabled()">
     </div>
     <div v-if="dichotomous" class="col col-md-2">
       <div class="label">Cases<sup>*</sup></div>
       <input type="number" v-model="phenotypeDataset.cases" placeholder="Cases" class="form-control input-default"
-             min="0" required :disabled="props.disabled">
+             min="0" required :disabled="isControlDisabled()">
     </div>
     <div v-if="dichotomous" class="col col-md-2">
       <div class="label">Controls<sup>*</sup></div>
       <input type="number" v-model="phenotypeDataset.controls" placeholder="Controls" class="form-control input-default"
-             min="0" required :disabled="props.disabled">
+             min="0" required :disabled="isControlDisabled()">
     </div>
     <div :class="pTypeClass">
           <div class="label">Data<sup>*</sup></div>
           <div class="input-group" style="align-items: baseline">
-          <input v-if="datasetDataType === 'file'" type="file" class="form-control input-default" @change="fileChange" required :disabled="props.disabled">
-          <input v-else-if="datasetDataType === 'remote'" type="text" class="form-control input-default" v-model="url"
-                 placeholder="Path to remote file location" required :disabled="props.disabled">
-          <span v-if="props.identifier !== 0" style="margin-left: 4px"><a @click.prevent="deletePhenotype" href="#" style="color: inherit"><i class="bi bi-trash"></i></a></span>
+          <input v-if="!phenotypeDataset.id" type="file" class="form-control input-default" @change="fileChange" required :disabled="props.disabled">
+          <input type="text" class="form-control input-default" v-else disabled="disabled" :value="phenotypeDataset.fileName">
+          <span style="margin-left: 4px"><a @click.prevent="deletePhenotype" href="#" style="color: inherit"><i class="bi bi-trash"></i></a></span>
           </div>
     </div>
   </div>
@@ -40,18 +39,19 @@
               <div class="col col-md-6">
                 <div class="label">Credible Set Name</div>
                 <input type="text" class="form-control input-default credible-set" placeholder="name" :data-associated-phenotype="`${props.identifier}-${idx}`"
-                       v-model="cs.name" :disabled="props.disabled">
+                       v-model="cs.name" :disabled="isControlDisabled()">
               </div>
               <div class="col col-md-6">
                 <div class="label">Credible Set File</div>
-                <input type="file" class="form-control input-default credible-set" placeholder="file"
+                <input v-if="!phenotypeDataset.id" type="file" class="form-control input-default credible-set" placeholder="file"
                        :data-associated-phenotype="`${props.identifier}-${idx}`" @change="credibleSetFileChange" :disabled="props.disabled">
+                <input type="text" class="form-control input-default" v-else disabled="disabled" :value="cs.fileName">
               </div>
             </div>
           </div>
 
         </div>
-      <div class="row" v-if="!props.disabled">
+      <div class="row" v-if="!isControlDisabled()">
         <div class="col col-md-11 offset-md-1" style="margin-top: -22px; padding: 0px">
           <a href="#" @click.prevent="phenotypeDataset.credibleSets.push({})" >Add Credible Set</a>
         </div>
@@ -69,11 +69,13 @@ const emit = defineEmits(['remove-phenotype-dataset'])
 
 function fileChange(e){
   phenotypeDataset.value.file = e.target.files[0]
+  phenotypeDataset.value.fileName = e.target.files[0].name
 }
 
 function credibleSetFileChange(e){
   const cs_idx = parseInt(e.target.getAttribute("data-associated-phenotype").split("-")[1])
   phenotypeDataset.value.credibleSets[cs_idx]["credibleSetFile"] = e.target.files[0]
+  phenotypeDataset.value.credibleSets[cs_idx]["fileName"] = e.target.files[0].name
 }
 
 function ptypeBlur(event){
@@ -82,8 +84,9 @@ function ptypeBlur(event){
     if(!event.value){
       return;
     }
-    phenotypeDataset.value = {"name": event.value, "dichotomous": false,
-      "description": event.value};
+    phenotypeDataset.value.name = event.value
+    phenotypeDataset.value.dichotomous = false
+    phenotypeDataset.value.description = event.value
     needsDichotomousInfo.value = true;
   } else {
     phenotypeDataset.value.name = event.value.name;
@@ -109,6 +112,10 @@ function filterFunc(q){
 const pTypeClass = computed(() => {
   return dichotomous.value ? 'col col-md-3' : 'col col-md-5'
 })
+
+function isControlDisabled(){
+  return props.disabled || !!phenotypeDataset.value.id
+}
 
 function deletePhenotype(){
   emit('remove-phenotype-dataset', {id: props.identifier})

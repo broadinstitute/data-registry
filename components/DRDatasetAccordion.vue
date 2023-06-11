@@ -3,10 +3,9 @@
   const props = defineProps({
     dsId: {
       type: String,
-      required: true,
     },
   })
-
+  const datasetId = useState("dsId", props.dsId)
 </script>
 
 <template>
@@ -19,7 +18,7 @@
       </h2>
       <div id="drmetadata" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#dsAccordion">
         <div class="accordion-body">
-          <DRMetaData :dataset-id="dsId"/>
+          <DRMetaData :dataset-id="datasetId"/>
         </div>
       </div>
     </div>
@@ -31,7 +30,7 @@
       </h2>
       <div id="drfiles" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#dsAccordion">
         <div class="accordion-body">
-          <DRFiles data-type="file" :is-read-only="false" :dataset-id="dsId"/>
+          <DRFiles data-type="file" :is-read-only="false" :dataset-id="datasetId"/>
         </div>
       </div>
     </div>

@@ -39,8 +39,12 @@
   const publication = ref(null);
 
 
-  onMounted(() => {
-    fetchStudies()
+  onMounted(async () => {
+    await fetchStudies()
+    if (props.datasetId) {
+      console.log("datasetId: " + props.datasetId)
+      await fetchExistingDataset(props.datasetId)
+    }
   })
 
 
@@ -59,6 +63,32 @@
       description.value = data.abstract;
       publication.value = data.title;
     }
+  }
+
+  async function fetchExistingDataset(existingDataset) {
+    const { data } = await configuredAxios.get(
+        `/api/datasets/${existingDataset}`,
+    );
+    const ds = data.dataset;
+    dsName.value = ds.name;
+    genomeBuild.value = ds.genome_build;
+    dataSubmitter.value = ds.data_submitter;
+    dataSubmitterEmail.value = ds.data_submitter_email;
+    ancestry.value = ds.ancestry;
+    sex.value = ds.sex;
+    pubStatus.value = ds.status;
+    geneticsDataType.value = ds.data_type;
+    globalSampleSize.value = ds.global_sample_size;
+    description.value = ds.description;
+    dataType.value = ds.data_source_type;
+    institution.value = data.study.institution;
+    study.value = {
+      value: data.study.id,
+      label: data.study.name,
+      institution: data.study.institution,
+    };
+    savedStudy.value = data.study.name;
+
   }
 
   async function save(){
@@ -110,11 +140,12 @@
       pub_id: pubId.value,
       publication: publication.value,
     }
-    // if (updateMode.value) {
-    //   opts.id = props.existingDataset;
-    //   await configuredAxios.patch("/api/datasets", JSON.stringify(opts));
-    //   return props.existingDataset.replaceAll("-", "");
-    // }
+    if (dsId.value) {
+      opts.id = dsId.value;
+      await configuredAxios.patch("/api/datasets", JSON.stringify(opts));
+      return dsId.value.replaceAll("-", "");
+    }
+
     const { data } = await configuredAxios.post("/api/datasets", JSON.stringify(opts))
     console.log(data)
     return data.dataset_id;
