@@ -181,7 +181,7 @@
       :message="errorMessage"
       :success="serverSuccess"
   />
-  <div>
+  <div class="dr-form">
   <div v-if="datasetId">
       <div class="row dr-data-section">
         <form class="needs-validation" novalidate id="filesForm">

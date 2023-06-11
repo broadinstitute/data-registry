@@ -424,7 +424,7 @@
       </div>
     </div>
     <button type="button" class="btn btn-primary" @click="save" v-if="!isReadOnly">
-      Save Dataset
+      {{  props.datasetId ? "Update" : "Save"}} Dataset
     </button>
   </form>
   <Modal :status-message="modalMsg" v-if="processing" />
