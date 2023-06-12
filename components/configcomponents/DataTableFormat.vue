@@ -33,7 +33,9 @@
 								</Features>
 								<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"
 									@tool-tips-changed="(updatedToolTips) => updateToolTips(updatedToolTips)"></ToolTips>
-								<LocusFieldStarColumn></LocusFieldStarColumn>		
+								<LocusFieldStarColumn :fields="convertedFields" :fieldNameUpdate="nameChange"
+									@locus-star-changed="(updatedLocusStar) => updateLocusStar(updatedLocusStar)">
+								</LocusFieldStarColumn>		
 							</div>
 						</div>
 					</div>
@@ -80,6 +82,8 @@
 	const nameChange = ref([null, null]);
 	const pastedData = ref("");
 	const featureConfig = ref({ "features": [] });
+	const locus = ref("");
+	const star = ref("");
 	const columnFormatting = ref({});
 	function outputDataTableFormat(){
 		let format = {};
@@ -100,6 +104,12 @@
 		let toolTipCount = Object.keys(toolTips.value).length;
 		if (toolTipCount > 0){
 			format["tool tips"] = toolTips.value;
+		}
+		if (locus.value != ""){
+			format["locus field"] = locus.value;
+		}
+		if (star.value != ""){
+			format["star column"] = star.value;
 		}
 		dataTableFormat.value = format;
 	}
@@ -122,6 +132,11 @@
 	}
 	function updateToolTips(updatedToolTips){
 		toolTips.value = updatedToolTips;
+		outputDataTableFormat();
+	}
+	function updateLocusStar(updatedLocusStar){
+		locus.value = updatedLocusStar[0];
+		star.value = updatedLocusStar[1];
 		outputDataTableFormat();
 	}
 	function changeFieldName(oldName, newName){
