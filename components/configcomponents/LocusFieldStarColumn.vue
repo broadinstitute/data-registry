@@ -3,11 +3,11 @@
 		<sup class="optional">Tutorial</sup>
 	</h5>
 	<div class="row dr-builder-ui">
-		<div class=" col-md-3 col text-center">
+		<div class=" col-md-6 col text-center">
 			<div class="label">
 				Locus field
 			</div>
-			<select class="form-control" v-model="locus" @change="emitLocusStar()">
+			<select class="form-control" v-model="locus">
 				<option value="">None</option>
 				<option v-for="field in availableFields" :value="field">{{field}}</option>
 			</select>
@@ -16,7 +16,7 @@
 				<div class="label">
 					Star column
 				</div>
-				<select class="form-control" v-model="star" @change="emitLocusStar()">
+				<select class="form-control" v-model="star">
 				<option value="">None</option>
 				<option v-for="field in availableFields" :value="field">{{field}}</option>
 			</select>
@@ -33,8 +33,30 @@
 	const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["locusStarChanged"]);
 	const availableFields = computed(()=> props.fields);
+	const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
+    const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
 	const locus = ref("");
 	const star = ref("");
+	watch (availableFields, () => {
+		console.log(JSON.stringify(availableFields.value));
+		console.log(locus.value);
+        if (!availableFields.value.includes(locus.value)){
+			locus.value = "";
+			console.log("Fixed missing locus");
+		}
+		if (!availableFields.value.includes(star.value)){
+			star.value = "";
+		}
+    });
+	watch(fieldNameOld, () => {
+        if (locus.value == fieldNameOld.value){
+			locus.value = fieldNameNew.value;
+		}
+		if (star.value == fieldNameOld.value){
+			star.value = fieldNameNew.value;
+		}
+    });
+	watch([locus, star], () => { emitLocusStar() });
 	function emitLocusStar (){
 		emit("locusStarChanged", [locus.value, star.value]);
 	}
