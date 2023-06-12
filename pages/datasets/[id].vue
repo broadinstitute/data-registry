@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DRDatasetAccordion :dsId="dsId" />
+    <DRDatasetAccordion :dsId="dsId" :edit-mode="route.query.edit === 'true'"/>
   </div>
 </template>
 

@@ -10,10 +10,15 @@
     datasetId: {
       type: String,
       required: false,
+    },
+    editMode: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   })
 
-  const isReadOnly = ref(false)
+  const isReadOnly = ref(!props.editMode && !!props.datasetId)
   const studies = useState("studies", () => [])
   const study = useState("study")
   const dsId = useState("dsId")
@@ -185,15 +190,17 @@
       :success="serverSuccess"
   />
   <form class="needs-validation dr-form" id="mdForm" novalidate>
-    <div class="col-md-12"><h4>Dataset Metadata</h4></div>
+    <div class="row">
+      <div class="col-md-8"><h4>Dataset Metadata</h4></div>
+      <div class="col-md-4 float-end">
+        <div class="form-check form-switch float-end">
+          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+                 @click="() => isReadOnly = !isReadOnly" :checked="!isReadOnly"/>
+          <label class="form-check-label label" for="flexSwitchCheckDefault">Allow Edits</label>
+        </div>
+      </div>
+    </div>
     <div class="row dr-status-section">
-<!--      <div class="col-md-2 col" v-if="props.existingDataset && !props.editMode">-->
-<!--        <div class="form-check form-switch">-->
-<!--          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"-->
-<!--              @click="toggleEdit" :checked="!isReadOnly"/>-->
-<!--          <label class="form-check-label label" for="flexSwitchCheckDefault">Allow Edits</label>-->
-<!--        </div>-->
-<!--      </div>-->
       <div class="col col-6">
         <div class="label">Dataset name<sup>*</sup></div>
         <input ref="datasetName" type="text" class="form-control input-default"

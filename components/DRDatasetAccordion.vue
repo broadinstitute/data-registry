@@ -4,6 +4,10 @@
     dsId: {
       type: String,
     },
+    editMode: {
+      type: Boolean,
+      default: false,
+    },
   })
   const datasetId = useState("dsId", props.dsId)
 </script>
@@ -18,7 +22,7 @@
       </h2>
       <div id="drmetadata" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#dsAccordion">
         <div class="accordion-body">
-          <DRMetaData :dataset-id="datasetId"/>
+          <DRMetaData :dataset-id="datasetId" :edit-mode="props.editMode"/>
         </div>
       </div>
     </div>
