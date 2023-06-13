@@ -52,6 +52,7 @@
 		"fields to join": fieldsToJoin,
 		"join by": joinBy
     });
+	let readySaveMsg = "";
     if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         firstField.value = oldConfig["fields to join"][0];
@@ -63,12 +64,18 @@
         emitConfig();
     })
     function readyToSave(){
-        return (!!joinConfig.value["field name"] 
-			&& !!joinConfig.value["fields to join"][0]
-			&& !!joinConfig.value["fields to join"][1]
-            && joinConfig.value["field name"].trim() != "");
+		if(!joinConfig.value["field name"] || joinConfig.value["field name"].trim() == ""){
+			readySaveMsg = "Enter a field name.";
+            return false;
+		}
+		if (!joinConfig.value["fields to join"][0] || !joinConfig.value["fields to join"][1]){
+			readySaveMsg = "Select two fields to join.";
+			return false;
+		}
+		readySaveMsg = "";
+        return true;
     }
 	function emitConfig(){
-		emit('configChanged', joinConfig.value, readyToSave());
+		emit('configChanged', joinConfig.value, readyToSave(), readySaveMsg);
 	}
 </script>
