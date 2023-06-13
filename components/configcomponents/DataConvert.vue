@@ -44,7 +44,7 @@
 				<ArrayToString 
                     v-else-if="dataConvertType=='array to string'" :raw-fields="rawFields"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ArrayToString>
 				<ReplaceCharacters 
                     v-else-if="dataConvertType=='replace characters'" :raw-fields="rawFields"

@@ -36,6 +36,7 @@
         "raw field": selectedField,
 		"separate by": separator
     });
+	let readySaveMsg = "";
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
@@ -47,11 +48,18 @@
     });
     function readyToSave(){
 		//separator CAN be an empty string so we don't check that
-        return (!!arrayRenameConfig.value["field name"] 
-            && !!arrayRenameConfig.value["raw field"]
-		    && arrayRenameConfig.value["field name"].trim() != "");
+		if (!arrayRenameConfig.value["field name"] || arrayRenameConfig.value["field name"].trim() == ""){
+			readySaveMsg = "Enter a field name.";
+            return false;
+		}
+		if (!arrayRenameConfig.value["raw field"]){
+			readySaveMsg = "Select a raw field.";
+            return false;
+		}
+		readySaveMsg = "";
+        return true;
     }
 	function emitConfig(){
-		emit('configChanged', arrayRenameConfig.value, readyToSave());
+		emit('configChanged', arrayRenameConfig.value, readyToSave(), readySaveMsg);
 	}
 </script>
