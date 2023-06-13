@@ -54,7 +54,7 @@
 				<ScoreColumns 
                     v-else-if="dataConvertType=='score columns'" :raw-fields="rawFields"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ScoreColumns>
 
                 <div class="failed-save" v-if="showMsg">{{ failedSaveMsg }}</div>
