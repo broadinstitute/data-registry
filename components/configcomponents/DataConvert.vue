@@ -39,7 +39,7 @@
 				<JoinMulti 
                     v-else-if="dataConvertType=='join multi'" :raw-fields="rawFields"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </JoinMulti>
 				<ArrayToString 
                     v-else-if="dataConvertType=='array to string'" :raw-fields="rawFields"

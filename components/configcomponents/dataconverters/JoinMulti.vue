@@ -62,8 +62,9 @@
 		"fields to join": selectedFields,
 		"join by": joinBy
     });
+	let readySaveMsg = "";
 	function emitConfig(){
-		emit('configChanged', joinMultiConfig.value, readyToSave());
+		emit('configChanged', joinMultiConfig.value, readyToSave(), readySaveMsg);
 	}
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
@@ -111,10 +112,20 @@
     function readyToSave(){
 		let fieldsLength = joinMultiConfig.value["fields to join"].length;
 		let joinLength = joinMultiConfig.value["join by"].length;
-        return (!!joinMultiConfig.value["field name"] 
-			&& joinMultiConfig.value["fields to join"].length >= 2
-			&& joinLength == fieldsLength - 1
-            && joinMultiConfig.value["field name"].trim() != "");
+		if (!joinMultiConfig.value["field name"] || joinMultiConfig.value["field name"].trim() == ""){
+			readySaveMsg = "Enter a field name.";
+            return false;
+		}
+		if (joinMultiConfig.value["fields to join"].length < 2){
+			readySaveMsg = "Select some fields to join.";
+			return false;
+		}
+		if (joinLength != fieldsLength - 1){
+			readySaveMsg = "Specify join separators.";
+			return false;
+		}
+		readySaveMsg = "";
+        return true;
     }
 	watch([latestFieldName, selectedFields, joinBy], ()=>{
         emitConfig();
