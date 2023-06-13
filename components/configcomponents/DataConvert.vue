@@ -29,7 +29,7 @@
 				<Calculate 
                     v-else-if="dataConvertType=='calculate'" :raw-fields="rawFields" 
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </Calculate>
                 <Join 
                     v-else-if="dataConvertType=='join'" :raw-fields="rawFields"
@@ -228,6 +228,7 @@
         emit("dcChanged", savedFieldConfigs.value, savedFields);
     }
     watch(dataConvertType, ()=>{
+        showMsg.value = false;
         if (editingFieldIndex.value == -1){
             updateConfig({});
         }
