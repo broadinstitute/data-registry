@@ -244,10 +244,7 @@
         let oldFieldsSorted = JSON.parse(JSON.stringify(oldFields));
         oldFieldsSorted.sort();
         if (JSON.stringify(newFieldsSorted) != JSON.stringify(oldFieldsSorted)){
-            console.log("Field names have changed. Wipe the slate clean.");
             clearDataConvert();
-        } else {
-            console.log("Keep the same field names.");
         }
     });
     function clearDataConvert(){
