@@ -62,7 +62,7 @@ function mapCredibleSets(){
     })
   })
   if(result.length === 0){
-    result.push({credibleSets: []})
+    result.push({credibleSets: [{}]})
   }
   return result
 }
@@ -86,10 +86,7 @@ export const useDatasetStore = defineStore('DatasetStore', {
   },
   getters: {
     savedDataSets: (state) => {
-      return state.combinedPhenotypesAndCredibleSets;
-    },
-    getDataset: (state) => (index) => {
-      return state.combinedPhenotypesAndCredibleSets[index]
+      return state.combinedPhenotypesAndCredibleSets
     }
   },
   actions: {
@@ -138,7 +135,6 @@ export const useDatasetStore = defineStore('DatasetStore', {
         this.processing = false
         this.showNotification = true
         this.isServerSuccess = true
-        this.addPhenoBlankDataset()
         return data
       }
     },

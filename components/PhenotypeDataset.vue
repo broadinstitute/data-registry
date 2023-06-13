@@ -53,7 +53,7 @@
         </div>
       <div class="row" v-if="!isControlDisabled()">
         <div class="col col-md-11 offset-md-1" style="margin-top: -22px; padding: 0px">
-          <a href="#" @click.prevent="phenotypeDataset.credibleSets.push({})" >Add Credible Set</a>
+          <a href="#" @click.prevent="phenotypeDataset.credibleSets.push({})">Add Credible Set</a>
         </div>
       </div>
 </template>
