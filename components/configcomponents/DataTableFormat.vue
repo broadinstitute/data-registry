@@ -132,8 +132,13 @@
 		<div class="card-body dr-form">
 			<h4>Data table format output</h4>
 			<div class="row dr-builder-ui">
-				<div class="col-md-12">
+				<div class="col-md-11">
 					<pre class="output">{{ dataTableFormatString}}</pre>
+				</div>
+				<div class="col-md-1">
+					<button class="btn btn-primary btn-sm" type="button" @click="copyConfig">
+                    	Copy configuration
+                	</button>
 				</div>
 			</div>
 		</div>
@@ -237,4 +242,7 @@
 		pastedData.value = pastedData.value.trim();
 		getRawFields();
 	});
+	function copyConfig(){
+		navigator.clipboard.writeText(dataTableFormatString.value);
+	}
 </script>
