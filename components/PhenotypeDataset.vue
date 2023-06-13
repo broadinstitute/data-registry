@@ -60,8 +60,12 @@
 
 <script setup>
 
+import { useDatasetStore } from '~/stores/DatasetStore'
+
+
+const store = useDatasetStore()
 const props = defineProps({datasetDataType: String, phenotypeDataset: Object, identifier: Number, disabled: Boolean})
-const phenotypes = useState("phenotypes", () => []);
+const phenotypes = store.phenotypes
 const phenotypeDataset = toRef(props, "phenotypeDataset")
 const needsDichotomousInfo = ref(false)
 const dichotomous = computed(() => phenotypeDataset.value && phenotypeDataset.value.dichotomous)
@@ -97,7 +101,7 @@ function ptypeBlur(event){
 }
 
 function filterFunc(q){
-  return Object.values(phenotypes.value).filter((p) => {
+  return Object.values(phenotypes).filter((p) => {
     if(q.length < 2) return false;
     const words = q.split(" ")
     let matches = 0;

@@ -1,7 +1,8 @@
 <script setup>
-  import Modal from '~/components/Modal.vue'
+import { useDatasetStore } from '~/stores/DatasetStore'
 
-  const props = defineProps({
+
+const props = defineProps({
     readOnly : {
       type: Boolean,
       required: false,
@@ -17,13 +18,11 @@
       default: false
     }
   })
-
+  const store = useDatasetStore()
   const isReadOnly = ref(!props.editMode && !!props.datasetId)
-  const studies = useState("studies", () => [])
-  const study = useState("study")
+  const study = ref(null)
   const dsId = useState("dsId")
   const config = useRuntimeConfig()
-  const { modalMsg, processing, errorMessage, serverSuccess, showNotification } = useModal()
   const datasetName = ref(null);
   const dataType = ref("file");
   const geneticsDataType = ref("");
@@ -45,35 +44,21 @@
 
 
   onMounted(async () => {
-    await fetchStudies()
     if (props.datasetId) {
-      console.log("datasetId: " + props.datasetId)
-      await fetchExistingDataset(props.datasetId)
+      await loadDataset(props.datasetId)
     }
   })
 
-
-  const configuredAxios = useAxios(config, undefined, (error) => {
-    console.log(JSON.stringify(error))
-    processing.value = false
-    errorMessage.value = error.message
-    serverSuccess.value = false
-    showNotification.value = true
-    throw new Error("Server error")
-  });
-
   async function getPubMedInfo() {
-    const { data } = await configuredAxios.get(`/api/publications?pub_id=${pubId.value.trim()}`)
+    const data = await store.fetchPubInfo(pubId.value)
     if (data) {
-      description.value = data.abstract;
-      publication.value = data.title;
+      description.value = data.abstract
+      publication.value = data.title
     }
   }
 
-  async function fetchExistingDataset(existingDataset) {
-    const { data } = await configuredAxios.get(
-        `/api/datasets/${existingDataset}`,
-    );
+  async function loadDataset(existingDataset) {
+    const data = await store.fetchExistingDataset(existingDataset)
     const ds = data.dataset;
     dsName.value = ds.name;
     genomeBuild.value = ds.genome_build;
@@ -103,7 +88,7 @@
     if (typeof study.value === "object") {
       dsId.value = await saveDataset(study.value.value)
     } else {
-      const { data } = await saveStudy()
+      const data = await store.saveStudy({ name: study.value, institution: institution.value })
       //handle the case where we add a new study and dataset and then add another dataset
       //to that study without a full page refresh
       const newStudy = {
@@ -111,18 +96,11 @@
         value: data.study_id,
         institution: institution.value,
       };
-      studies.value.push(newStudy)
+      store.addStudy(newStudy)
       study.value = newStudy
       dsId.value = await saveDataset(data.study_id)
     }
-    processing.value = false;
-    serverSuccess.value = true;
-    showNotification.value = true;
-  }
 
-  async function saveStudy() {
-    return await configuredAxios.post("/api/studies",
-        JSON.stringify({ name: study.value, institution: institution.value }))
   }
 
   async function saveDataset(study_id) {
@@ -147,18 +125,15 @@
     }
     if (dsId.value) {
       opts.id = dsId.value;
-      await configuredAxios.patch("/api/datasets", JSON.stringify(opts));
-      return dsId.value.replaceAll("-", "");
     }
 
-    const { data } = await configuredAxios.post("/api/datasets", JSON.stringify(opts))
-    console.log(data)
+    const data = await store.saveDataset(opts)
     return data.dataset_id;
   }
 
 
   function leaveStudy(event) {
-    const matches = studies.value.filter((s) => s.label === event.value)
+    const matches = store.studies.filter((s) => s.label === event.value)
     if (matches.length === 0) {
       study.value = event.value
     } else {
@@ -167,32 +142,19 @@
   }
 
   function filterStudies(q) {
-    return studies.value.filter((s) => {
+    return store.studies.filter((s) => {
       if (q.length < 2) return false
       return s.label.toLowerCase().includes(q.toLowerCase())
     });
   }
 
-  async function fetchStudies() {
-    const data = await $fetch(`${config.public["apiBaseUrl"]}/api/studies`, {
-      headers: { "access-token": config.public["apiSecret"] },
-    })
-    studies.value = data.map((s) => {
-      return { label: s.name, value: s.id, institution: s.institution }
-    })
-  }
 </script>
 
 <template>
-  <ServerNotification
-      :show-notification="showNotification"
-      :message="errorMessage"
-      :success="serverSuccess"
-  />
   <form class="needs-validation dr-form" id="mdForm" novalidate>
     <div class="row">
       <div class="col-md-8"><h4>Dataset Metadata</h4></div>
-      <div class="col-md-4 float-end">
+      <div class="col-md-4 float-end" v-if="props.datasetId">
         <div class="form-check form-switch float-end">
           <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
                  @click="() => isReadOnly = !isReadOnly" :checked="!isReadOnly"/>
@@ -219,7 +181,7 @@
     <div class="row dr-status-section">
       <div class="col-md-12 col">
         <div class="label">Study<sup>*</sup></div>
-        <AutoCompleteDialog :items="studies" :filter-function="filterStudies" :item-display="(s) => s.label"
+        <AutoCompleteDialog :items="store.studies" :filter-function="filterStudies" :item-display="(s) => s.label"
             id="study" placeholder="Study name e.g., TOPMed Sleep Apnea WGS" @blur="leaveStudy"
             :initial-input="savedStudy" :disabled="isReadOnly"/>
       </div>
@@ -434,7 +396,6 @@
       {{  props.datasetId ? "Update" : "Save"}} Dataset
     </button>
   </form>
-  <Modal :status-message="modalMsg" v-if="processing" />
 </template>
 
 <style scoped>

@@ -1,5 +1,6 @@
 <script setup>
   import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+  import { useDatasetStore } from '~/stores/DatasetStore'
   const props = defineProps({
     dsId: {
       type: String,
@@ -10,9 +11,17 @@
     },
   })
   const datasetId = useState("dsId", props.dsId)
+  const store = useDatasetStore()
+  store.fetchPhenotypes()
+  store.fetchStudies()
 </script>
 
 <template>
+  <ServerNotification
+      :show-notification="store.showNotification"
+      :message="store.errorMessage"
+      :success="store.isServerSuccess"
+  />
   <div class="accordion" id="dsAccordion">
     <div class="accordion-item">
       <h2 class="accordion-header" id="headingOne">

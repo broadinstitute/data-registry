@@ -19,6 +19,6 @@ export default defineNuxtConfig({
             phenotypesUrl: "",
         },
     },
-    modules: ["@nuxt/devtools"],
+    modules: ["@nuxt/devtools", "@pinia/nuxt"],
     telemetry: false,
 });
