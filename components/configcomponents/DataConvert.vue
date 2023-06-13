@@ -139,7 +139,7 @@
     const newFieldName = ref(fieldNamePlaceholder);
     let readyToSave = false;
     const showMsg = ref(false);
-    let failedSaveMsg = "";
+    let failedSaveMsg = "Field not ready to save";
     const currentFieldConfig = ref({});
     const currentConfigString = computed(() => JSON.stringify(currentFieldConfig.value));
     const savedFieldConfigs = ref([]);
@@ -172,9 +172,7 @@
         let newField = JSON.parse(newFieldString);
         let newName = newField["field name"];
         if (!readyToSave){
-            failedSaveMsg = "Field not ready to save";
             showMsg.value = true;
-            console.log(newFieldString);
             return;
         }
         // Check for duplicates
