@@ -61,6 +61,9 @@ function mapCredibleSets(){
         : p.phenotype,
     })
   })
+  if(result.length === 0){
+    result.push({credibleSets: []})
+  }
   return result
 }
 
@@ -112,9 +115,6 @@ export const useDatasetStore = defineStore('DatasetStore', {
       return data
     },
     async fetchExistingDataset(dsId) {
-      if (this.phenotypes === {}) {
-        await this.fetchPhenotypes()
-      }
       const { data } = await configuredAxios.get(`/api/datasets/${dsId}`)
       this.savedPhenotypes = data.phenotypes
       this.savedCredibleSets = data.credible_sets
@@ -138,6 +138,7 @@ export const useDatasetStore = defineStore('DatasetStore', {
         this.processing = false
         this.showNotification = true
         this.isServerSuccess = true
+        this.addPhenoBlankDataset()
         return data
       }
     },
@@ -178,9 +179,6 @@ export const useDatasetStore = defineStore('DatasetStore', {
     },
     removePhenoDataset(index) {
       this.combinedPhenotypesAndCredibleSets.splice(index, 1)
-    },
-    addPhenoDataset(index, pds){
-      this.combinedPhenotypesAndCredibleSets.splice(index, 0, pds)
     }
   }
 })
