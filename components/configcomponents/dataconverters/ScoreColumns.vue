@@ -119,6 +119,10 @@
 			readySaveMsg = "Enter a field name.";
             return false;
 		}
+		if (scoreColumnsConfig.value["field name"].includes(",")){
+			readySaveMsg = "Commas may not be used in field names.";
+			return false;
+		}
 		if (scoreColumnsConfig.value["fields to score"].length < 1){
 			readySaveMsg = "Select fields to score.";
 			return false;
