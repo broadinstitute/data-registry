@@ -49,7 +49,7 @@
 				<ReplaceCharacters 
                     v-else-if="dataConvertType=='replace characters'" :raw-fields="rawFields"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ReplaceCharacters>
 				<ScoreColumns 
                     v-else-if="dataConvertType=='score columns'" :raw-fields="rawFields"

@@ -64,6 +64,7 @@
         "raw field": selectedField,
 		"replace": replaceChars
     });
+	let readySaveMsg = "";
     if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
@@ -93,19 +94,28 @@
 		emitConfig();
     });
 	function emitConfig(){
-
-        emit('configChanged', replaceCharConfig.value, readyToSave());
+        emit('configChanged', replaceCharConfig.value, readyToSave(), readySaveMsg);
 	}
     function readyToSave(){
+		if (!replaceCharConfig.value["field name"] || replaceCharConfig.value["field name"].trim() == ""){
+			readySaveMsg = "Enter a field name.";
+            return false;
+		}
+		if(!replaceCharConfig.value["raw field"]){
+			readySaveMsg = "Select a raw field.";
+            return false;
+		}
 		let emptyEntries = false;
 		replaceCharConfig.value["replace"].forEach(entry => {
 			if(entry["from"] == ""){
 				emptyEntries = true;
 			}
 		});
-        return (!!replaceCharConfig.value["field name"] 
-			&& !!replaceCharConfig.value["raw field"]
-            && replaceCharConfig.value["field name"].trim() != ""
-			&& !emptyEntries);
+		if (emptyEntries){
+			readySaveMsg = "Fill in all 'from' entries.";
+			return;
+		}
+		readySaveMsg = "";
+        return true;
     }
 </script>
