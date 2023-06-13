@@ -1,5 +1,6 @@
 <script setup>
   import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+  import Modal from '~/components/Modal.vue'
   import { useDatasetStore } from '~/stores/DatasetStore'
   const props = defineProps({
     dsId: {
@@ -12,8 +13,6 @@
   })
   const datasetId = useState("dsId", props.dsId)
   const store = useDatasetStore()
-  store.fetchPhenotypes()
-  store.fetchStudies()
 </script>
 
 <template>
@@ -48,6 +47,7 @@
       </div>
     </div>
   </div>
+  <Modal :status-message="store.modalMsg" v-if="store.processing" />
 </template>
 
 <style scoped>

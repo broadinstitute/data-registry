@@ -20,7 +20,6 @@ const props = defineProps({
   const config = useRuntimeConfig()
   const store = useDatasetStore()
 
-
   function credible_set_validation() {
     //if a credible set name or file is provided, make sure to require the counterpart field
     const credible_set_elements = document.getElementsByClassName("credible-set")
@@ -35,72 +34,22 @@ const props = defineProps({
             '"]',
         )
         credible_set_inputs_for_pheno.forEach(
-            (input) => (input.required = true),
-        )
+            (input) => (input.required = true))
       }
     }
-  }
-
-  async function saveCredibleSet(saved_phenotype_id, cs) {
-    const formData = new FormData();
-    formData.append("file", cs.credibleSetFile);
-    await configuredAxios.post(
-        `/api/crediblesetupload/${saved_phenotype_id}/${cs.name}`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        },
-    );
-  }
-
-
-  function getPhenotypeDataSetUploadUrl(dataset_id, pType) {
-    let url = `/api/uploadfile/${dataset_id}/${pType.name}/${pType.dichotomous}/${pType.sampleSize}`;
-    if (!pType.dichotomous) {
-      return url;
-    }
-    return url + `?controls=${pType.controls}&cases=${pType.cases}`;
-  }
-
-  async function savePhenotype(dataset_id, pType) {
-    const formData = new FormData();
-    formData.append("file", pType.file);
-    const { data } = await configuredAxios.post(
-        getPhenotypeDataSetUploadUrl(dataset_id, pType),
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        },
-    );
-    return data.phenotype_data_set_id;
   }
 
   async function save(){
     if(!useFormValidation("filesForm", credible_set_validation)){
       return
     }
-    processing.value = true
-    for (const phenotype of store.savedDataSets) {
-      if(phenotype.id) {
-        continue
-      }
-      modalMsg.value = `Uploading data for ${phenotype.description}`;
-      const saved_phenotype_id = await savePhenotype(props.datasetId.replaceAll('-', ''), phenotype);
-      phenotype.id = saved_phenotype_id
-      for (const cs of phenotype.credibleSets) {
-        if (cs.name && cs.name !== "") {
-          await saveCredibleSet(saved_phenotype_id, cs);
-        }
-      }
-    }
+    await store.uploadFiles(props.datasetId)
   }
-
 
   async function removePhenotypeDataset(e) {
     const pheno = store.savedDataSets[e.id]
     if(pheno.id){
-      //make api call to delete
-      await configuredAxios.delete(`${config.public["apiBaseUrl"]}/api/phenotypes/${pheno.id}`)
+      await store.deletePhenotypeDataSet(pheno.id)
     }
     if(store.savedDataSets.length === 1){
       store.resetPhenoDatasets()
@@ -125,7 +74,7 @@ const props = defineProps({
             </li>
           </ul>
           <div style="display: inline; margin-top: -25px" v-if="!isReadOnly">
-            <a href="#" @click.prevent="store.addPhenoDataset()">Add Additional Phenotype</a>
+            <a href="#" @click.prevent="store.addPhenoBlankDataset()">Add Additional Phenotype</a>
           </div>
         </form>
       </div>

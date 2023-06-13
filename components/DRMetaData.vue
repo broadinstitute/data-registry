@@ -44,6 +44,8 @@ const props = defineProps({
 
 
   onMounted(async () => {
+    await store.fetchStudies()
+    await store.fetchPhenotypes()
     if (props.datasetId) {
       await loadDataset(props.datasetId)
     }
