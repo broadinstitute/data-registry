@@ -101,18 +101,30 @@
 			readySaveMsg = "Enter a field name.";
             return false;
 		}
+		if (replaceCharConfig.value["field name"].includes(",")){
+			readySaveMsg = "Commas may not be used in field names.";
+			return false;
+		}
 		if(!replaceCharConfig.value["raw field"]){
 			readySaveMsg = "Select a raw field.";
             return false;
 		}
 		let emptyEntries = false;
+		let foundCommas = false;
 		replaceCharConfig.value["replace"].forEach(entry => {
 			if(entry["from"] == ""){
 				emptyEntries = true;
 			}
+			if(entry["to"].includes(",")){
+				foundCommas = true;
+			}
 		});
 		if (emptyEntries){
-			readySaveMsg = "Fill in all 'from' entries.";
+			readySaveMsg = "Fill in all 'Replace' entries.";
+			return;
+		}
+		if (foundCommas){
+			readySaveMsg = "Commas may not be used in character replacements.";
 			return;
 		}
 		readySaveMsg = "";
