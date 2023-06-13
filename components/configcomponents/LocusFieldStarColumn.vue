@@ -1,6 +1,10 @@
 <template>
     <h5>Locus field / star column
-		<sup class="optional">Tutorial</sup>
+		<sup class="optional">
+            <a href="https://hugeampkpncms.org/node/71" target="_blank">
+                Tutorial
+            </a>
+        </sup>
 	</h5>
 	<div class="row dr-builder-ui">
 		<div class=" col-md-6 col text-center">

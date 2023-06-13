@@ -41,7 +41,6 @@
 					</div>
 				</div>
 			</div>
-			<DataComparison></DataComparison>
 		</div>
 		<div class="card-body dr-form">
 			<h4>Data table format output</h4>

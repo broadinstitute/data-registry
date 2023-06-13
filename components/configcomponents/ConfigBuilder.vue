@@ -7,7 +7,7 @@
 					<div class="col-md-8">
 						<h2>BYOR Configuration Builder</h2>
 					</div>
-					<div class="col-md-4 col filter-col-md">
+					<!-- <div class="col-md-4 col filter-col-md">
 						<div class="label">Edit configuration</div>
 						<div class="row">
 							<div class="col-md-7">
@@ -20,10 +20,10 @@
 								</button>
 							</div>
 						</div>
-					</div>
+					</div> -->
 				</div>
 			</div>
-			<div class="card mdkp-card">
+			<!-- <div class="card mdkp-card">
 				<div class="card-body dr-form">
 					<div class="row dr-data-update-section">
 						<div class="col-md-12 col filter-col-md">
@@ -142,8 +142,9 @@
 						</div>
 					</div>
 				</div>
-			</div>
+			</div> -->
 			<DataTableFormat></DataTableFormat>
+			<!-- <DataComparison></DataComparison>
   			<div class="card mdkp-card">
 				<div class="card-body dr-form">
 					<h4>
@@ -584,7 +585,7 @@
 						</div>
 					</div>
 				</div>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </template>
@@ -596,4 +597,5 @@
 	import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
 	import DataTableFormat from "@/components/configcomponents/DataTableFormat.vue";
+	import DataComparison from "@/components/configcomponents/DataComparison.vue";
 </script>
