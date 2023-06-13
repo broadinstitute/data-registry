@@ -42,11 +42,8 @@
 	const locus = ref("");
 	const star = ref("");
 	watch (availableFields, () => {
-		console.log(JSON.stringify(availableFields.value));
-		console.log(locus.value);
         if (!availableFields.value.includes(locus.value)){
 			locus.value = "";
-			console.log("Fixed missing locus");
 		}
 		if (!availableFields.value.includes(star.value)){
 			star.value = "";

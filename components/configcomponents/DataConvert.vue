@@ -238,5 +238,27 @@
             updateConfig({});
         }
     });
-    // To get the placeholder data out there. Will remove
+    watch(rawFields, (newFields, oldFields) => {
+        let newFieldsSorted = JSON.parse(JSON.stringify(newFields));
+        newFieldsSorted.sort();
+        let oldFieldsSorted = JSON.parse(JSON.stringify(oldFields));
+        oldFieldsSorted.sort();
+        if (JSON.stringify(newFieldsSorted) != JSON.stringify(oldFieldsSorted)){
+            console.log("Field names have changed. Wipe the slate clean.");
+            clearDataConvert();
+        } else {
+            console.log("Keep the same field names.");
+        }
+    });
+    function clearDataConvert(){
+        dataConvertType.value = defaultType;
+        newFieldName.value = fieldNamePlaceholder;
+        readyToSave = false;
+        showMsg.value = false;
+        currentFieldConfig.value = {};
+        savedFieldConfigs.value = [];
+        editingFieldIndex.value = -1;
+        emitDataConvert();
+
+    }
 </script>
