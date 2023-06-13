@@ -68,6 +68,14 @@
 			readySaveMsg = "Enter a field name.";
             return false;
 		}
+		if (joinConfig.value["field name"].includes(",")){
+			readySaveMsg = "Commas may not be used in field names.";
+			return false;
+		}
+		if (joinConfig.value["join by"].includes(",")){
+			readySaveMsg = "Commas may not be used in field joins.";
+			return false;
+		}
 		if (!joinConfig.value["fields to join"][0] || !joinConfig.value["fields to join"][1]){
 			readySaveMsg = "Select two fields to join.";
 			return false;
