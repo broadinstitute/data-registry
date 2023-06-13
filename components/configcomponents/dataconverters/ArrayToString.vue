@@ -52,6 +52,14 @@
 			readySaveMsg = "Enter a field name.";
             return false;
 		}
+		if (arrayRenameConfig.value["field name"].includes(",")){
+			readySaveMsg = "Commas may not be used in field names.";
+			return false;
+		}
+		if (arrayRenameConfig.value["separate by"].includes(",")){
+			readySaveMsg = "Commas may not be used in separator.";
+			return false;
+		}
 		if (!arrayRenameConfig.value["raw field"]){
 			readySaveMsg = "Select a raw field.";
             return false;
