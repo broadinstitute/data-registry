@@ -24,7 +24,7 @@
                 <RawRename 
                     v-if="dataConvertType=='raw'" :raw-fields="rawFields" :new-field-name="newFieldName"
                     :load-config="currentConfigString" 
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </RawRename>
 				<Calculate 
                     v-else-if="dataConvertType=='calculate'" :raw-fields="rawFields" 

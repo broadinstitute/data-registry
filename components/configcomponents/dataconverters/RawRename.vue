@@ -32,6 +32,7 @@
         "field name": latestFieldName,
         "raw field": selectedField
     });
+    let readySaveMsg = "";
     if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
@@ -41,10 +42,19 @@
         emitConfig();
     })
     function readyToSave(){
-        return (!!rawRenameConfig.value["field name"] && !!rawRenameConfig.value["raw field"]
-            && rawRenameConfig.value["field name"].trim() != "");
+        if (!rawRenameConfig.value["field name"] || 
+                rawRenameConfig.value["field name"].trim() == ""){
+            readySaveMsg = "Enter a field name.";
+            return false;
+        }
+        if (!rawRenameConfig.value["raw field"]){
+            readySaveMsg = "Select a raw field.";
+            return false;
+        }
+        readySaveMsg = "";
+        return true;
     }
     function emitConfig(){
-        emit('configChanged', rawRenameConfig.value, readyToSave());
+        emit('configChanged', rawRenameConfig.value, readyToSave(), readySaveMsg);
     }
 </script>
