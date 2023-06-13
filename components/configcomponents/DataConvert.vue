@@ -1,7 +1,7 @@
 <template>
     <div>
-        <a href="https://hugeampkpncms.org/node/42" target="_blank">
-            Data Convert Tutorial
+        <a href="https://hugeampkpncms.org/node/42" target="_blank" class="tutorial-link">
+            Data Convert tutorial
         </a>
         <div class="row dr-builder-ui">
             <div class="col-md-3 col">

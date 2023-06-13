@@ -1,6 +1,6 @@
 <template>
-	<a href="https://hugeampkpncms.org/node/47" target="_blank">
-            Column formatting tutorial
+	<a href="https://hugeampkpncms.org/node/47" target="_blank" class="tutorial-link">
+        Column formatting tutorial
     </a>
 	<div class="row dr-builder-ui">
 		<!-- <div class="col-md-3 col">

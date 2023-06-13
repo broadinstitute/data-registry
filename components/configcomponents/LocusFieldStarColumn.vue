@@ -1,11 +1,10 @@
 <template>
-    <h5>Locus field / star column
-		<sup class="optional">
-            <a href="https://hugeampkpncms.org/node/71" target="_blank">
-                Tutorial
-            </a>
-        </sup>
-	</h5>
+	<a href="https://hugeampkpncms.org/node/71" target="_blank" class="tutorial-link">
+		Locus field tutorial
+	</a> |
+	<a href="https://hugeampkpncms.org/node/114" target="_blank" class="tutorial-link">
+		Star column tutorial
+	</a>
 	<div class="row dr-builder-ui">
 		<div class=" col-md-6 col text-center">
 			<div class="label">

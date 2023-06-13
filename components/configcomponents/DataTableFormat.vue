@@ -22,7 +22,7 @@
 									<div class="accordion-item">
 										<h5 class="accordion-header" id="dataConvertHeading">
 											<button class="accordion-button" type="button" data-bs-toggle="collapse"
-												data-bs-target="#dataconvertbody" aria-expanded="true" 
+												data-bs-target="#dataconvertbody" aria-expanded="true"
 												aria-controls="dataconvertbody">
 													Data convert
 											</button>
@@ -39,7 +39,7 @@
 									</div>
 									<div class="accordion-item">
 										<h5 class="accordion-header" id="columnFormattingHeading">
-											<button class="accordion-button" type="button" data-bs-toggle="collapse"
+											<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
 												data-bs-target="#columnformattingbody" aria-expanded="false"
 												aria-controls="columnformattingbody">
 													Column formatting
@@ -56,7 +56,7 @@
 									</div>
 									<div class="accordion-item">
 										<h2 class="accordion-header" id="topRowsHeading">
-											<button class="accordion-button" type="button" data-bs-toggle="collapse"
+											<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
 												data-bs-target="#toprowsbody" aria-expanded="false"
 												aria-controls="toprowsbody">
 													Top rows
@@ -73,7 +73,7 @@
 									</div>
 									<div class="accordion-item">
 										<h2 class="accordion-header" id="featuresHeading">
-											<button class="accordion-button" type="button" data-bs-toggle="collapse"
+											<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
 												data-bs-target="#featuresbody" aria-expanded="false"
 												aria-controls="featuresbody">
 													Features
@@ -90,7 +90,7 @@
 									</div>
 									<div class="accordion-item">
 										<h2 class="accordion-header" id="toolTipsHeading">
-											<button class="accordion-button" type="button" data-bs-toggle="collapse"
+											<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
 												data-bs-target="#tooltipsbody" aria-expanded="false"
 												aria-controls="tooltipsbody">
 													Tool tips
@@ -107,7 +107,7 @@
 									</div>
 									<div class="accordion-item">
 										<h2 class="accordion-header" id="locusStarHeading">
-											<button class="accordion-button" type="button" data-bs-toggle="collapse"
+											<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
 												data-bs-target="#locusstarbody" aria-expanded="false"
 												aria-controls="locusstarbody">
 													Locus field / star column

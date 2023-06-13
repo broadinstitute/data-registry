@@ -1,12 +1,7 @@
 <template>
-    <h5>
-        Features
-        <sup class="optional">
-            <a href="https://hugeampkpncms.org/node/45" target="_blank">
-                Tutorial
-            </a>
-        </sup>
-    </h5>
+    <a href="https://hugeampkpncms.org/node/45" target="_blank" class="tutorial-link">
+        Features tutorial
+    </a>
     <div class="row dr-builder-ui">
         <div class="col-md-3 col">
             <div class="label">
