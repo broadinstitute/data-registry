@@ -55,6 +55,10 @@
 			readySaveMsg = "Enter a field name.";
             return false;
 		}
+		if (calcConfig.value["field name"].includes(",")){
+			readySaveMsg = "Commas may not be used in field names.";
+			return false;
+		}
 		if (!calcConfig.value["raw field"]){
 			readySaveMsg = "Select a raw field.";
             return false;
