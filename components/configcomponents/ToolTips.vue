@@ -8,11 +8,11 @@
         </sup>
     </h5>
     <div class="row dr-builder-ui">
-        <div class="col-md-3 col">
-                <div class="label">Output</div>
-                <pre class="output">{{ JSON.stringify(toolTipConfig) }}</pre>
-            </div>
-        <div class="col-md-9 col">
+        <!-- <div class="col-md-3 col">
+            <div class="label">Output</div>
+            <pre class="output">{{ JSON.stringify(toolTipConfig) }}</pre>
+        </div> -->
+        <div class="col-md-12 col">
             <div class="label">
                 Tool tips
             </div>

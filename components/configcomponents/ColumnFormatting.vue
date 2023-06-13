@@ -8,11 +8,11 @@
         </sup>
 	</h5>
 	<div class="row dr-builder-ui">
-		<div class="col-md-3 col">
+		<!-- <div class="col-md-3 col">
             <div class="label">Output</div>
             <pre class="output">{{ singleColumnConfigString }}</pre>
             <pre class="output">{{ allColumnsConfigString }}</pre>
-        </div>
+        </div> -->
 		<div class="col-md-2 col">
                 <div class="label">
                     Select column
@@ -26,7 +26,7 @@
                     </li>
                 </ul>
         </div>
-		<div class="col-md-2 col">
+		<div class="col-md-3 col">
 			<div class="label">
 				Select formatting options
 			</div>
@@ -38,7 +38,7 @@
                     </li>
 			</ul>
 		</div>
-		<div class="col-md-2 col">
+		<div class="col-md-3 col">
 			<div class="label">
 				Selected options | Change format order
 			</div>
@@ -60,7 +60,7 @@
 				</tr>
 			</tbody>
 		</div>
-		<div class="col-md-2 col">	
+		<div class="col-md-3 col">	
 			<div v-if="selectedOptions.includes('link')" id="linkFormat">
 				<div class="label">
 					Link
