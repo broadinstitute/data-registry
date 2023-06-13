@@ -18,24 +18,111 @@
 										<textarea rows="3" class="form-control" v-model="pastedData"></textarea>
 									</div>
 								</div>
-								<DataConvert :raw-fields="rawFields" 
-									@dc-changed="(configs, fields) => updateDataConvert(configs, fields)"
-									@field-name-changed="(oldName, newName) => changeFieldName(oldName, newName)">
-								</DataConvert>
-								<ColumnFormatting :fields="convertedFields" :fieldNameUpdate="nameChange"
-									@col-format-changed="(config) => updateColumnFormatting(config)">
-								</ColumnFormatting>
-								<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"
-									@top-rows-changed="(fields) => updateTopRows(fields)">
-								</TopRows>
-								<Features :fields="convertedFields" :fieldNameUpdate="nameChange"
-									@features-changed="(updatedFeatures) => updateFeatures(updatedFeatures)">
-								</Features>
-								<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"
-									@tool-tips-changed="(updatedToolTips) => updateToolTips(updatedToolTips)"></ToolTips>
-								<LocusFieldStarColumn :fields="convertedFields" :fieldNameUpdate="nameChange"
-									@locus-star-changed="(updatedLocusStar) => updateLocusStar(updatedLocusStar)">
-								</LocusFieldStarColumn>		
+								<div class="accordion" id="dataTableAccordion">
+									<div class="accordion-item">
+										<h5 class="accordion-header" id="dataConvertHeading">
+											<button class="accordion-button" type="button" data-bs-toggle="collapse"
+												data-bs-target="#dataconvertbody" aria-expanded="true" 
+												aria-controls="dataconvertbody">
+													Data convert
+											</button>
+										</h5>
+										<div id="dataconvertbody" class="accordion-collapse collapse show"
+											aria-labelledby="dataConvertHeading" data-bs-parent="#dataTableAccordion">
+											<div class="accordion-body">
+												<DataConvert :raw-fields="rawFields" 
+													@dc-changed="(configs, fields) => updateDataConvert(configs, fields)"
+													@field-name-changed="(oldName, newName) => changeFieldName(oldName, newName)">
+												</DataConvert>
+											</div>
+										</div>
+									</div>
+									<div class="accordion-item">
+										<h5 class="accordion-header" id="columnFormattingHeading">
+											<button class="accordion-button" type="button" data-bs-toggle="collapse"
+												data-bs-target="#columnformattingbody" aria-expanded="false"
+												aria-controls="columnformattingbody">
+													Column formatting
+											</button>
+										</h5>
+										<div id="columnformattingbody" class="accordion-collapse collapse"
+											aria-labelledby="columnFormattingHeading" data-bs-parent="#dataTableAccordion">
+											<div class="accordion-body">
+												<ColumnFormatting :fields="convertedFields" :fieldNameUpdate="nameChange"
+													@col-format-changed="(config) => updateColumnFormatting(config)">
+												</ColumnFormatting>
+											</div>
+										</div>
+									</div>
+									<div class="accordion-item">
+										<h2 class="accordion-header" id="topRowsHeading">
+											<button class="accordion-button" type="button" data-bs-toggle="collapse"
+												data-bs-target="#toprowsbody" aria-expanded="false"
+												aria-controls="toprowsbody">
+													Top rows
+											</button>
+										</h2>
+										<div id="toprowsbody" class="accordion-collapse collapse"
+											aria-labelledby="topRowsHeading" data-bs-parent="#dataTableAccordion">
+											<div class="accordion-body">
+												<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"
+													@top-rows-changed="(fields) => updateTopRows(fields)">
+												</TopRows>
+											</div>
+										</div>
+									</div>
+									<div class="accordion-item">
+										<h2 class="accordion-header" id="featuresHeading">
+											<button class="accordion-button" type="button" data-bs-toggle="collapse"
+												data-bs-target="#featuresbody" aria-expanded="false"
+												aria-controls="featuresbody">
+													Features
+											</button>
+										</h2>
+										<div id="featuresbody" class="accordion-collapse collapse"
+											aria-labelledby="featuresHeading" data-bs-parent="#dataTableAccordion">
+											<div class="accordion-body">
+												<Features :fields="convertedFields" :fieldNameUpdate="nameChange"
+													@features-changed="(updatedFeatures) => updateFeatures(updatedFeatures)">
+												</Features>
+											</div>
+										</div>
+									</div>
+									<div class="accordion-item">
+										<h2 class="accordion-header" id="toolTipsHeading">
+											<button class="accordion-button" type="button" data-bs-toggle="collapse"
+												data-bs-target="#tooltipsbody" aria-expanded="false"
+												aria-controls="tooltipsbody">
+													Tool tips
+											</button>
+										</h2>
+										<div id="tooltipsbody" class="accordion-collapse collapse"
+											aria-labelledby="toolTipsHeading" data-bs-parent="#dataTableAccordion">
+											<div class="accordion-body">
+												<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"
+													@tool-tips-changed="(updatedToolTips) => updateToolTips(updatedToolTips)">
+												</ToolTips>
+											</div>
+										</div>
+									</div>
+									<div class="accordion-item">
+										<h2 class="accordion-header" id="locusStarHeading">
+											<button class="accordion-button" type="button" data-bs-toggle="collapse"
+												data-bs-target="#locusstarbody" aria-expanded="false"
+												aria-controls="locusstarbody">
+													Locus field / star column
+											</button>
+										</h2>
+										<div id="locusstarbody" class="accordion-collapse collapse"
+											aria-labelledby="locusStarHeading" data-bs-parent="#dataTableAccordion">
+											<div class="accordion-body">
+												<LocusFieldStarColumn :fields="convertedFields" :fieldNameUpdate="nameChange"
+													@locus-star-changed="(updatedLocusStar) => updateLocusStar(updatedLocusStar)">
+												</LocusFieldStarColumn>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -59,6 +146,7 @@
 <script setup>
 	import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
+	import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 	import DataConvert from "@/components/configcomponents/DataConvert.vue";
 	import TopRows from "@/components/configcomponents/TopRows.vue";
 	import ToolTips from "@/components/configcomponents/ToolTips.vue";

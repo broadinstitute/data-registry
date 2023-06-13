@@ -1,12 +1,8 @@
 <template>
     <div>
-        <h5>Data convert
-			<sup class="optional">
-                <a href="https://hugeampkpncms.org/node/42" target="_blank">
-                    Tutorial
-                </a>
-            </sup>
-		</h5>
+        <a href="https://hugeampkpncms.org/node/42" target="_blank">
+            Data Convert Tutorial
+        </a>
         <div class="row dr-builder-ui">
             <div class="col-md-3 col">
                 <div class="label">Type</div>

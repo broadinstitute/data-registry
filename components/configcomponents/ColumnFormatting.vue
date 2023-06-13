@@ -1,12 +1,7 @@
 <template>
-	<h5>
-		Column formatting
-		<sup class="optional">
-            <a href="https://hugeampkpncms.org/node/47" target="_blank">
-            Tutorial
-            </a>
-        </sup>
-	</h5>
+	<a href="https://hugeampkpncms.org/node/47" target="_blank">
+            Column formatting tutorial
+    </a>
 	<div class="row dr-builder-ui">
 		<!-- <div class="col-md-3 col">
             <div class="label">Output</div>
