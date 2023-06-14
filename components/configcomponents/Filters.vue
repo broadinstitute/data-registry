@@ -35,19 +35,18 @@
 											Label
 										</div>
 										<input type="text" class="form-control input-default" v-model="filterLabel"/>
-										<label>
-											<input type="checkbox" v-model="labelInBubble"/>
-											Label in bubble
-										</label>
+										<input class="form-check-input" type="checkbox" 
+                                			id="flexCheckDefault" v-model="labelInBubble"/>
+                            			<span class="form-check-label" for="flexCheckDefault"> Label in bubble</span>
 									</div>
 									<div class="col-md-3 col">
 										<button class="btn btn-primary btn-sm" type="button" @click="saveFilter()">
 											Save
 										</button>
-										<button class="btn btn-warning btn-sm" type="button">
+										<button class="btn btn-warning btn-sm" type="button" @click="cancelFilterEdit()">
 											Cancel
 										</button>
-										<button class="btn btn-danger btn-sm" type="button">
+										<button class="btn btn-danger btn-sm" type="button" @click="deleteFilter()">
 											Delete
 										</button>
 										<div class="failed-save">{{ message }}</div>
@@ -60,7 +59,24 @@
 										<div class="label">
 											Filter order
 										</div>
-										<ul class="dr-byor-data-columns">
+										<tbody class="dr-byor-data-columns">
+											<tr v-for="filter, index in allFilters" class="arrow-button-list">
+												{{ filter.label }}
+												<td class="arrow-button-holder">
+													<button class="btn btn-primary arrow-button arrow-button-up" 
+														:disabled="index == 0" @click="moveUp(index)">
+															&uarr;
+													</button>
+												</td>
+												<td class="arrow-button-holder">
+													<button class="btn btn-primary arrow-button"
+													:disabled="index == allFilters.length - 1" @click="moveDown(index)">
+														&darr;
+													</button>
+												</td>
+											</tr>
+										</tbody>
+										<!--ul class="dr-byor-data-columns">
 											<li>Variant ID (<a>Edit</a>)
 												<label>
 													<select class="form-control">
@@ -77,16 +93,16 @@
 													</select>
 												</label>
 											</li>
-										</ul>
+										</ul-->
 									</div>
 									<div class="col-md-6 col">
 										<div class="label">
 											Filter width
 										</div>
-										<select class="form-control">
-											<option>Midium (default)</option>
-											<option>Small</option>
-											<option>Large</option>
+										<select class="form-control" v-model="filterWidth">
+											<option value="small">Small</option>
+											<option value="medium">Medium (default)</option>
+											<option value="large">Large</option>
 										</select>
 									</div>
 								</div>
@@ -113,10 +129,12 @@ import { all } from "axios";
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
     const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
 	const message = ref("");
+	const editingFilterIndex = ref(-1);
 	const selectedField = ref(null);
 	const selectedFilterType = ref(null);
 	const labelInBubble = ref(false);
 	const filterLabel = ref("");
+	const filterWidth = ref("medium");
 	const singleFilterConfig = ref({
 		"field": null,
 		"label": "",
@@ -137,6 +155,11 @@ import { all } from "axios";
 		if (selectedField.value == fieldNameOld.value){
 			selectedField.value = fieldNameNew.value;
 		}
+		allFilters.value.forEach(item => {
+			if(item.field == fieldNameOld.value){
+				item.field = fieldNameNew.value;
+			}
+		});
 	});
 	watch(selectedField, () => singleFilterConfig.value["field"] = selectedField.value);
 	watch(filterLabel, () => singleFilterConfig.value["label"] = filterLabel.value.trim());
@@ -166,5 +189,35 @@ import { all } from "axios";
 		selectedFilterType.value = null;
 		labelInBubble.value = false;
 		filterLabel.value = "";
+	}
+	function cancelFilterEdit(){
+		if (editingFilterIndex.value == -1){
+			clearAll();
+			return;
+		}
+	}
+	function deleteFilter(){
+		if (editingFilterIndex.value == -1){
+			clearAll();
+			return;
+		}
+	}
+	function moveUp(index){
+		let beginning = allFilters.value.slice(0, index-1);
+		let risingItem = allFilters.value[index];
+		let fallingItem = allFilters.value[index-1]
+		let end = allFilters.value.slice(index + 1);
+		beginning.push(risingItem);
+		beginning.push(fallingItem);
+		allFilters.value = beginning.concat(end);
+	}
+	function moveDown(index){
+		let beginning = allFilters.value.slice(0, index);
+		let risingItem = allFilters.value[index+1];
+		let fallingItem = allFilters.value[index]
+		let end = allFilters.value.slice(index + 2);
+		beginning.push(risingItem);
+		beginning.push(fallingItem);
+		allFilters.value = beginning.concat(end);
 	}
 </script>
