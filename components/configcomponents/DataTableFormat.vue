@@ -164,6 +164,7 @@
 	another computed property outputString stringifies and displays it
 	outputObject makes sense of all the little config items stored in various formats
 	so that the string does not have to be the source of truth during editing */
+	const emit = defineEmits(["fieldsUpdated", "fieldRenamed"]);
 	const dataTableFormat = ref({});
 	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
 	const dataConvert = ref([]);
@@ -233,6 +234,7 @@
 	}
 	function changeFieldName(oldName, newName){
 		nameChange.value = [oldName, newName];
+		emit("fieldRenamed", nameChange.value);
 	}
 	function getRawFields (){
 		let topLine = pastedData.value.split("\n")[0];
@@ -245,4 +247,9 @@
 	function copyConfig(){
 		navigator.clipboard.writeText(dataTableFormatString.value);
 	}
+	watch(convertedFields, (newFields, oldFields) => {
+		if (JSON.stringify(newFields) != JSON.stringify(oldFields)){
+			emit("fieldsUpdated", convertedFields.value);
+		}
+	});
 </script>

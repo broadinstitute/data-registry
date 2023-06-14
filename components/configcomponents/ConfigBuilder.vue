@@ -143,188 +143,15 @@
 					</div>
 				</div>
 			</div> -->
-			<DataTableFormat></DataTableFormat>
-			<!-- <DataComparison></DataComparison>
+			<DataTableFormat 
+				@fieldsUpdated="(updatedFields) => processFields(updatedFields)"
+				@fieldRenamed="(latestRename) => processFieldRename(latestRename)">
+			</DataTableFormat>
+			<!--DataComparison></DataComparison-->
   			<div class="card mdkp-card">
 				<div class="card-body dr-form">
-					<h4>
-						Filters
-						<sup class="optional">Tutorial </sup>
-					</h4>
-					<div class="row">
-						<div class="col-md-12 col">
-							<div>
-								<div title="Builder">
-									<pre />
-									<div class="row">
-										<div class="col-md-7">
-											<div class="row dr-builder-ui">
-												<div class="col-md-3 col">
-													<div class="label">
-														Select field
-													</div>
-													<select
-														class="form-control"
-													>
-														<option>
-															variant ID
-														</option>
-														<option>P-Value</option>
-													</select>
-												</div>
-												<div class="col-md-3 col">
-													<div class="label">
-														Filter type
-													</div>
-
-													<select
-														class="form-control"
-													>
-														<option>Search</option>
-														<option>
-															Search greater than
-														</option>
-														<option>
-															Search lower than
-														</option>
-														<option>
-															Search or
-														</option>
-														<option>
-															Search and
-														</option>
-														<option>
-															Dropdown
-														</option>
-													</select>
-												</div>
-												<div class="col-md-3 col">
-													<div class="label">
-														Label
-													</div>
-
-													<input
-														type="text"
-														class="
-															form-control
-															input-default
-														"
-													/>
-												</div>
-												<div class="col-md-3 col">
-													<button
-														class="
-															btn
-															btn-primary
-															btn-sm
-														"
-														type="button"
-													>
-														Save
-													</button>
-													<button
-														class="
-															btn
-															btn-warning
-															btn-sm
-														"
-														type="button"
-													>
-														Cancel
-													</button>
-													<button
-														class="
-															btn
-															btn-danger
-															btn-sm
-														"
-														type="button"
-													>
-														Delete
-													</button>
-												</div>
-											</div>
-										</div>
-										<div class="col-md-5">
-											<div class="row dr-builder-ui">
-												<div class="col-md-6 col">
-													<div class="label">
-														Filter order
-													</div>
-
-													<ul
-														class="
-															dr-byor-data-columns
-														"
-													>
-														<li>
-															Variant ID (<a
-																href="javascript:;"
-																>Edit</a
-															>)<label>
-																<select
-																	class="
-																		form-control
-																	"
-																>
-																	<option>
-																		0
-																	</option>
-																	<option>
-																		1
-																	</option>
-																</select></label
-															>
-														</li>
-														<li>
-															P-Value (<a
-																href="javascript:;"
-																>Edit</a
-															>)<label>
-																<select
-																	class="
-																		form-control
-																	"
-																>
-																	<option>
-																		0
-																	</option>
-																	<option>
-																		1
-																	</option>
-																</select></label
-															>
-														</li>
-													</ul>
-												</div>
-												<div class="col-md-6 col">
-													<div class="label">
-														Filter width
-													</div>
-
-													<select
-														class="form-control"
-													>
-														<option>
-															Midium (default)
-														</option>
-														<option>Small</option>
-														<option>Large</option>
-													</select>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div title="Manual build">
-									<textarea rows="6" class="form-control">
-									</textarea>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="row dr-description-section">
+					<Filters :fields="fieldsList" :fieldNameUpdate="fieldRename"></Filters>
+					<!-- <div class="row dr-description-section">
 						<div class="col-md-12">
 							<h4>Visulizer</h4>
 							<div class="row">
@@ -573,7 +400,7 @@
 								class="form-control input-default"
 							/>
 						</div>
-					</div>
+					</div> -->
 				</div>
 
 				<div class="card-body">
@@ -585,7 +412,7 @@
 						</div>
 					</div>
 				</div>
-			</div> -->
+			</div>
 		</div>
 	</div>
 </template>
@@ -598,4 +425,13 @@
 	import "bootstrap-icons/font/bootstrap-icons.css";
 	import DataTableFormat from "@/components/configcomponents/DataTableFormat.vue";
 	import DataComparison from "@/components/configcomponents/DataComparison.vue";
+	import Filters from "@/components/configcomponents/Filters.vue";
+	const fieldsList = ref([]);
+	const fieldRename = ref([null, null]);
+	function processFields(updatedFields){
+		fieldsList.value = updatedFields;
+	}
+	function processFieldRename(latestRename){
+		fieldRename.value = latestRename;
+	}
 </script>
