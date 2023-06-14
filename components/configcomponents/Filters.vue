@@ -21,45 +21,38 @@
 												{{field}}
 											</option>
 										</select>
-												</div>
-												<div class="col-md-3 col">
-													<div class="label">
-														Filter type
-													</div>
+									</div>
+									<div class="col-md-3 col">
+										<div class="label">
+											Filter type
+										</div>
 
-													<select
-														class="form-control"
-													>
-														<option>Search</option>
-														<option>
-															Search greater than
-														</option>
-														<option>
-															Search lower than
-														</option>
-														<option>
-															Search or
-														</option>
-														<option>
-															Search and
-														</option>
-														<option>
-															Dropdown
-														</option>
-													</select>
-												</div>
-												<div class="col-md-3 col">
-													<div class="label">
-														Label
-													</div>
-
-													<input
-														type="text"
-														class="
-															form-control
-															input-default
-														"
-													/>
+										<select
+											class="form-control"
+										>
+											<option>Search</option>
+											<option>
+												Search greater than
+											</option>
+											<option>
+												Search lower than
+											</option>
+											<option>
+												Search or
+											</option>
+											<option>
+												Search and
+											</option>
+											<option>
+												Dropdown
+											</option>
+										</select>
+									</div>
+									<div class="col-md-3 col">
+										<div class="label">
+											Label
+										</div>
+										<input type="text" class="form-control input-default" v-model="filterLabel"/>
 												</div>
 												<div class="col-md-3 col">
 													<button
@@ -167,6 +160,7 @@
 									</div>
 								</div>
 								<div class="label">Output</div>
+								<pre>{{ JSON.stringify(singleFilterConfig)}}</pre>
 							</div>
 						</div>
 					</div>
@@ -183,10 +177,20 @@
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
     const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
 	const selectedField = ref(null);
+	const filterLabel = ref("");
+	const blankFilterConfig = {
+		"field": "",
+		"label": "",
+		"type": "",
+		"label in bubble": "false"
+	}
+	const singleFilterConfig = ref(blankFilterConfig);
     watch(availableFields, () => console.log(JSON.stringify(availableFields.value)));
     watch(fieldNameOld, () => {
 		if (selectedField.value == fieldNameOld.value){
 			selectedField.value = fieldNameNew.value;
 		}
 	});
+	watch(selectedField, () => singleFilterConfig.value["field"] = selectedField.value);
+	watch(filterLabel, () => singleFilterConfig.value["label"] = filterLabel.value);
 </script>
