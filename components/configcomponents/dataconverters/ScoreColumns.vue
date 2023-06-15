@@ -57,6 +57,7 @@
 		"fields to score": selectedFields,
 		"score by": scores
     });
+	let readySaveMsg = "";
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
 		let fields = oldConfig["fields to score"];
@@ -95,7 +96,7 @@
 	function updateScore(field, yesOrNo, value){
 		if (value == "" || value == null){
 			// Force emit a value of false for ready to save
-			emit('configChanged', scoreColumnsConfig.value, false);
+			emit('configChanged', scoreColumnsConfig.value, false, "Specify values for score calculation.");
 		} else {
 			scores.value[field]["value to score"][yesOrNo] = parseInt(value);
 			emitConfig();
@@ -111,16 +112,28 @@
         emitConfig();
     })
 	function emitConfig(){
-		emit('configChanged', scoreColumnsConfig.value, readyToSave());
+		emit('configChanged', scoreColumnsConfig.value, readyToSave(), readySaveMsg);
 	}
     function readyToSave(){
+		if (!scoreColumnsConfig.value["field name"] || scoreColumnsConfig.value["field name"].trim() == ""){
+			readySaveMsg = "Enter a field name.";
+            return false;
+		}
+		if (scoreColumnsConfig.value["field name"].includes(",")){
+			readySaveMsg = "Commas may not be used in field names.";
+			return false;
+		}
+		if (scoreColumnsConfig.value["fields to score"].length < 1){
+			readySaveMsg = "Select fields to score.";
+			return false;
+		}
 		scoreColumnsConfig.value["fields to score"].forEach(field => {
 			if (!scoreColumnsConfig.value["score by"][field]){
+				readySaveMsg = "Specify values for score calculation.";
 				return false;
 			}
 		});
-        return (!!scoreColumnsConfig.value["field name"] 
-			&& scoreColumnsConfig.value["fields to score"].length >= 1
-            && scoreColumnsConfig.value["field name"].trim() != "");
+		readySaveMsg = "";
+        return true;
     }
 </script>

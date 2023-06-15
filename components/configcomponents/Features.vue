@@ -1,17 +1,16 @@
 <template>
-    <h5>
-        Features
-        <sup class="optional">Tutorial</sup>
-    </h5>
+    <a href="https://hugeampkpncms.org/node/45" target="_blank" class="tutorial-link">
+        Features tutorial
+    </a>
     <div class="row dr-builder-ui">
         <div class="col-md-3 col">
             <div class="label">
                 Feature name
             </div>
             <input type="text" class="form-control input-default" v-model="currentFeatureName"/>
-            <div class="label">Output</div>
+            <!-- <div class="label">Output</div>
             <pre class="output">{{ singleFeatureConfigString }}</pre>
-            <pre class="output">{{ allFeaturesConfigString }}</pre>
+            <pre class="output">{{ allFeaturesConfigString }}</pre> -->
         </div>
         <div class="col-md-3 col">
                 <div class="label">
@@ -85,8 +84,8 @@
 <script setup>
     import "bootstrap/dist/css/bootstrap.min.css";
     import "bootstrap-icons/font/bootstrap-icons.css";
-import { all } from "axios";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const emit = defineEmits(["featuresChanged"]);
     const availableFields = computed(()=> props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
     const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
@@ -97,6 +96,15 @@ import { all } from "axios";
     const allFeaturesConfig = ref({
         "features": []
     });
+    const offLimitsNames = [
+        "data convert",
+        "column formatting",
+        "top rows",
+        "features",
+        "tool tips",
+        "locus field",
+        "star column"
+    ]
     const singleFeatureConfigString = computed(()=> `"${currentFeatureName.value}": ${JSON.stringify(currentSelectedFields.value)}`);
     const allFeaturesConfigString = computed(()=> JSON.stringify(allFeaturesConfig.value));
     function moveUp(index){
@@ -123,6 +131,7 @@ import { all } from "axios";
         beginning.push(list[index]);
         beginning.push(list[index - 1]);
         allFeaturesConfig.value["features"] = beginning.concat(list.slice(index + 1));
+        emitFeatures();
     }
     function moveNext(index){
         let list = allFeaturesConfig.value["features"];
@@ -130,10 +139,14 @@ import { all } from "axios";
         beginning.push(list[index + 1]);
         beginning.push(list[index]);
         allFeaturesConfig.value["features"] = beginning.concat(list.slice(index + 2));
-        
+        emitFeatures();
     }
     function saveFeature(){
         let trimmedName = currentFeatureName.value.trim();
+        if (offLimitsNames.includes(trimmedName)){
+            saveErrorMsg.value = `${trimmedName} is a reserved keyword. Choose a different name.`;
+            return;
+        }
         if (trimmedName.length > 0 && currentSelectedFields.value.length > 0){
             // Check for duplicates
             for (let i = 0; i < allFeaturesConfig.value["features"].length; i++){
@@ -155,6 +168,7 @@ import { all } from "axios";
                 }
             }
             doneEditing();
+            emitFeatures();
             return;
         } else if (trimmedName == ""){
             saveErrorMsg.value = "Enter feature name.";
@@ -184,6 +198,7 @@ import { all } from "axios";
             editingFeatureIndex.value = null;
         }
         doneEditing();
+        emitFeatures();
     }
     function doneEditing(){
         saveErrorMsg.value = "";
@@ -209,10 +224,9 @@ import { all } from "axios";
                 currentSelectedFields.value[i] = fieldNameNew.value;
             }
         }
+        emitFeatures();
     });
-    watch(availableFields, (newFields, oldFields) => {       
-        console.log(`Old fields: ${JSON.stringify(oldFields)}`);
-        console.log(`New fields: ${JSON.stringify(newFields)}`);
+    watch(availableFields, (newFields, oldFields) => {
         if (newFields.length < oldFields.length){
             // Removing deleted fields from any existing features or selected fields
             oldFields.forEach(oldField => {
@@ -237,5 +251,9 @@ import { all } from "axios";
                 }
             })
         }
+        emitFeatures();
     });
+    function emitFeatures(){
+        emit("featuresChanged", allFeaturesConfig.value);
+    }
 </script>

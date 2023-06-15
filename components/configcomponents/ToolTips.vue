@@ -1,14 +1,13 @@
 <template>
-    <h5>
-        Tool tips
-        <sup class="optional">Tutorial</sup>
-    </h5>
+    <a href="https://hugeampkpncms.org/node/44" target="_blank" class="tutorial-link">
+        Tool tips tutorial
+    </a>
     <div class="row dr-builder-ui">
-        <div class="col-md-3 col">
-                <div class="label">Output</div>
-                <pre class="output">{{ JSON.stringify(toolTipConfig) }}</pre>
-            </div>
-        <div class="col-md-9 col">
+        <!-- <div class="col-md-3 col">
+            <div class="label">Output</div>
+            <pre class="output">{{ JSON.stringify(toolTipConfig) }}</pre>
+        </div> -->
+        <div class="col-md-12 col">
             <div class="label">
                 Tool tips
             </div>
@@ -31,6 +30,7 @@
     import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const emit = defineEmits(["toolTipsChanged"]);
     const availableFields = computed(()=> props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
     const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
@@ -41,6 +41,7 @@
         } else {
             toolTipConfig.value[field] = text;
         }
+        emitToolTips();
     }
     watch (availableFields, (newFields, oldFields)=> {
         if (newFields.length < oldFields.length){
@@ -49,6 +50,7 @@
                     delete toolTipConfig.value[oldField];
                 }
             });
+            emitToolTips();
         }
     });
     watch(fieldNameOld, () => {
@@ -58,6 +60,10 @@
             let toolTip = toolTipConfig.value[fieldNameOld.value];
             delete toolTipConfig.value[fieldNameOld.value];
             toolTipConfig.value[fieldNameNew.value] = toolTip;
+            emitToolTips();
         }
     });
+    function emitToolTips(){
+        emit("toolTipsChanged", toolTipConfig.value);
+    }
 </script>

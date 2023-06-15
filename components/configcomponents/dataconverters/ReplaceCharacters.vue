@@ -64,6 +64,7 @@
         "raw field": selectedField,
 		"replace": replaceChars
     });
+	let readySaveMsg = "";
     if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
@@ -93,19 +94,40 @@
 		emitConfig();
     });
 	function emitConfig(){
-
-        emit('configChanged', replaceCharConfig.value, readyToSave());
+        emit('configChanged', replaceCharConfig.value, readyToSave(), readySaveMsg);
 	}
     function readyToSave(){
+		if (!replaceCharConfig.value["field name"] || replaceCharConfig.value["field name"].trim() == ""){
+			readySaveMsg = "Enter a field name.";
+            return false;
+		}
+		if (replaceCharConfig.value["field name"].includes(",")){
+			readySaveMsg = "Commas may not be used in field names.";
+			return false;
+		}
+		if(!replaceCharConfig.value["raw field"]){
+			readySaveMsg = "Select a raw field.";
+            return false;
+		}
 		let emptyEntries = false;
+		let foundCommas = false;
 		replaceCharConfig.value["replace"].forEach(entry => {
 			if(entry["from"] == ""){
 				emptyEntries = true;
 			}
+			if(entry["to"].includes(",")){
+				foundCommas = true;
+			}
 		});
-        return (!!replaceCharConfig.value["field name"] 
-			&& !!replaceCharConfig.value["raw field"]
-            && replaceCharConfig.value["field name"].trim() != ""
-			&& !emptyEntries);
+		if (emptyEntries){
+			readySaveMsg = "Fill in all 'Replace' entries.";
+			return;
+		}
+		if (foundCommas){
+			readySaveMsg = "Commas may not be used in character replacements.";
+			return;
+		}
+		readySaveMsg = "";
+        return true;
     }
 </script>

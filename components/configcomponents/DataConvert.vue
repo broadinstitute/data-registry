@@ -1,8 +1,8 @@
 <template>
     <div>
-        <h5>Data convert
-			<sup class="optional">Tutorial</sup>
-		</h5>
+        <a href="https://hugeampkpncms.org/node/42" target="_blank" class="tutorial-link">
+            Data Convert tutorial
+        </a>
         <div class="row dr-builder-ui">
             <div class="col-md-3 col">
                 <div class="label">Type</div>
@@ -17,44 +17,44 @@
                         <sup>required</sup>
                 </div>
                 <input type="text" class="form-control input-default" v-model="newFieldName"/>
-                <div class="label">Output</div>
-                <pre class="output">{{ currentConfigString }}</pre>
+                <!-- <div class="label">Output</div>
+                <pre class="output">{{ currentConfigString }}</pre> -->
             </div>
             <div class="col-md-8 col">
                 <RawRename 
                     v-if="dataConvertType=='raw'" :raw-fields="rawFields" :new-field-name="newFieldName"
                     :load-config="currentConfigString" 
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </RawRename>
 				<Calculate 
                     v-else-if="dataConvertType=='calculate'" :raw-fields="rawFields" 
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </Calculate>
                 <Join 
                     v-else-if="dataConvertType=='join'" :raw-fields="rawFields"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </Join>
 				<JoinMulti 
                     v-else-if="dataConvertType=='join multi'" :raw-fields="rawFields"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </JoinMulti>
 				<ArrayToString 
                     v-else-if="dataConvertType=='array to string'" :raw-fields="rawFields"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ArrayToString>
 				<ReplaceCharacters 
                     v-else-if="dataConvertType=='replace characters'" :raw-fields="rawFields"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ReplaceCharacters>
 				<ScoreColumns 
                     v-else-if="dataConvertType=='score columns'" :raw-fields="rawFields"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready) => updateConfig(newConfig, ready)">
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ScoreColumns>
 
                 <div class="failed-save" v-if="showMsg">{{ failedSaveMsg }}</div>
@@ -139,23 +139,10 @@
     const newFieldName = ref(fieldNamePlaceholder);
     let readyToSave = false;
     const showMsg = ref(false);
-    let failedSaveMsg = "";
+    let failedSaveMsg = "Field not ready to save";
     const currentFieldConfig = ref({});
     const currentConfigString = computed(() => JSON.stringify(currentFieldConfig.value));
-    const savedFieldConfigs = ref([
-        {
-            "type": "join multi",
-            "field name": "Coding sequence",
-            "fields to join": ["CHR", "POS", "REF", "ALT"],
-            "join by": [":",":","/"]
-        },
-        {
-            "type":"calculate",
-            "field name":"P-Value(-Log10)",
-            "raw field":"PVAL",
-            "calculation type":"-log10"
-        }
-    ]);
+    const savedFieldConfigs = ref([]);
     const editingFieldIndex = ref(-1);
 
     function updateConfig(newConfig, ready=false, msg="Field not ready to save."){
@@ -185,9 +172,7 @@
         let newField = JSON.parse(newFieldString);
         let newName = newField["field name"];
         if (!readyToSave){
-            failedSaveMsg = "Field not ready to save";
             showMsg.value = true;
-            console.log(newFieldString);
             return;
         }
         // Check for duplicates
@@ -240,12 +225,32 @@
         savedFieldConfigs.value.forEach(
             field => savedFields.push(field["field name"])
         );
-        emit("dcChanged", savedFieldConfigs, savedFields);
+        emit("dcChanged", savedFieldConfigs.value, savedFields);
     }
     watch(dataConvertType, ()=>{
+        showMsg.value = false;
         if (editingFieldIndex.value == -1){
             updateConfig({});
         }
     });
-    // To get the placeholder data out there. Will remove
+    watch(rawFields, (newFields, oldFields) => {
+        let newFieldsSorted = JSON.parse(JSON.stringify(newFields));
+        newFieldsSorted.sort();
+        let oldFieldsSorted = JSON.parse(JSON.stringify(oldFields));
+        oldFieldsSorted.sort();
+        if (JSON.stringify(newFieldsSorted) != JSON.stringify(oldFieldsSorted)){
+            clearDataConvert();
+        }
+    });
+    function clearDataConvert(){
+        dataConvertType.value = defaultType;
+        newFieldName.value = fieldNamePlaceholder;
+        readyToSave = false;
+        showMsg.value = false;
+        currentFieldConfig.value = {};
+        savedFieldConfigs.value = [];
+        editingFieldIndex.value = -1;
+        emitDataConvert();
+
+    }
 </script>

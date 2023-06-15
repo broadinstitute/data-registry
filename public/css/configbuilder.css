@@ -219,3 +219,6 @@ pre.output{
 .move-prev-next:disabled{
 	color: cornflowerblue;
 }
+.tutorial-link {
+	font-size: smaller;
+}

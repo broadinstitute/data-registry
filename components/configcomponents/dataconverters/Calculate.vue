@@ -40,6 +40,7 @@
         "raw field": selectedField,
 		"calculation type": calcType
     });
+	let readySaveMsg = "";
     if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
@@ -50,12 +51,26 @@
         emitConfig();
     })
     function readyToSave(){
-        return (!!calcConfig.value["field name"] 
-			&& !!calcConfig.value["raw field"]
-            && calcConfig.value["field name"].trim() != ""
-			&& !!calcConfig.value["calculation type"]);
+		if (!calcConfig.value["field name"] || calcConfig.value["field name"].trim() == ""){
+			readySaveMsg = "Enter a field name.";
+            return false;
+		}
+		if (calcConfig.value["field name"].includes(",")){
+			readySaveMsg = "Commas may not be used in field names.";
+			return false;
+		}
+		if (!calcConfig.value["raw field"]){
+			readySaveMsg = "Select a raw field.";
+            return false;
+		}
+		if (!calcConfig.value["calculation type"]){
+			readySaveMsg = "Select a calculation type.";
+			return false;
+		}
+		readySaveMsg = "";
+		return true;
     }
 	function emitConfig(){
-		emit('configChanged', calcConfig.value, readyToSave());
+		emit('configChanged', calcConfig.value, readyToSave(), readySaveMsg);
 	}
 </script>
