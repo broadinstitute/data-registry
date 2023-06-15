@@ -10,9 +10,9 @@
 				<div>
 					<div title="Builder">
 						<div class="row">
-							<div class="col-md-7">
+							<div class="col-md-12">
 								<div class="row dr-builder-ui">
-									<div class="col-md-3 col">
+									<div class="col-md-2 col">
 										<div class="label">
 											Select field
 										</div>
@@ -22,7 +22,7 @@
 											</option>
 										</select>
 									</div>
-									<div class="col-md-3 col">
+									<div class="col-md-2 col">
 										<div class="label">
 											Filter type
 										</div>
@@ -30,7 +30,7 @@
 											<option v-for="item in filterTypeOptions">{{ item }}</option>
 										</select>
 									</div>
-									<div class="col-md-3 col">
+									<div class="col-md-2 col">
 										<div class="label">
 											Label
 										</div>
@@ -39,7 +39,7 @@
                                 			id="flexCheckDefault" v-model="labelInBubble"/>
                             			<span class="form-check-label" for="flexCheckDefault"> Label in bubble</span>
 									</div>
-									<div class="col-md-3 col">
+									<div class="col-md-2 col">
 										<button class="btn btn-primary btn-sm" type="button" @click="saveFilter()">
 											Save
 										</button>
@@ -53,9 +53,9 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-md-5">
+							<!--div class="col-md-5">
 								<div class="row dr-builder-ui">
-									<div class="col-md-6 col">
+									<div class="col-md-12 col">
 										<div class="label">
 											Filter order
 										</div>
@@ -76,45 +76,17 @@
 												</td>
 											</tr>
 										</tbody>
-										<!--ul class="dr-byor-data-columns">
-											<li>Variant ID (<a>Edit</a>)
-												<label>
-													<select class="form-control">
-														<option>0</option>
-														<option>1</option>
-													</select>
-												</label>
-											</li>
-											<li>P-Value (<a>Edit</a>)
-												<label>
-													<select class="form-control">
-														<option>0</option>
-														<option>1</option>
-													</select>
-												</label>
-											</li>
-										</ul-->
-									</div>
-									<div class="col-md-6 col">
-										<div class="label">
-											Filter width
-										</div>
-										<select class="form-control" v-model="filterWidth">
-											<option value="small">Small</option>
-											<option value="medium">Medium (default)</option>
-											<option value="large">Large</option>
-										</select>
 									</div>
 								</div>
-							</div>
+							</div-->
 						</div>
 					</div>
-					<div class="label">Output</div>
-					<pre>{{ JSON.stringify(singleFilterConfig)}}</pre>
-					<pre>{{ JSON.stringify(allFilters) }}</pre>
 				</div>
 			</div>
 		</div>
+		<div class="label">Output</div>
+		<pre>{{ JSON.stringify(singleFilterConfig)}}</pre>
+		<pre>{{ JSON.stringify(allFilters) }}</pre>
 </template>
 <style scoped>
     @import "public/css/mdkp.css";
