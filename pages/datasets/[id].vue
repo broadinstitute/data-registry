@@ -1,8 +1,7 @@
 <template>
-  <div>
+  <div class="container-fluid">
     <DRDatasetAccordion :dsId="dsId" :edit-mode="route.query.edit === 'true'"/>
-  </div>
-  <div class="row mt-2">
+    <div class="row mt-2">
     <div class="col text-start">
       <nuxt-link :to="{ name: 'datasets' }">
         <button type="button" class="btn btn-success">
@@ -18,6 +17,7 @@
         </button>
       </nuxt-link>
     </div>
+  </div>
   </div>
 </template>
 
