@@ -19,7 +19,7 @@ const props = defineProps({
     }
   })
   const store = useDatasetStore()
-  const isReadOnly = ref(!props.editMode && !!props.datasetId)
+  const isReadOnly = computed(() => !props.editMode && !!props.datasetId)
   const study = ref(null)
   const dsId = useState("dsId")
   const config = useRuntimeConfig()
@@ -155,14 +155,8 @@ const props = defineProps({
 <template>
   <form class="needs-validation dr-form" id="mdForm" novalidate>
     <div class="row">
-      <div class="col-md-8"><h4>Dataset Metadata</h4></div>
-      <div class="col-md-4 float-end" v-if="props.datasetId">
-        <div class="form-check form-switch float-end">
-          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-                 @click="() => isReadOnly = !isReadOnly" :checked="!isReadOnly"/>
-          <label class="form-check-label label" for="flexSwitchCheckDefault">Allow Edits</label>
-        </div>
-      </div>
+      <div class="col"><h4>Dataset Metadata</h4></div>
+
     </div>
     <div class="row dr-status-section">
       <div class="col col-6">

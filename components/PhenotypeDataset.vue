@@ -29,7 +29,7 @@
           <div class="input-group" style="align-items: baseline">
           <input v-if="!phenotypeDataset.id" type="file" class="form-control input-default" @change="fileChange" required :disabled="props.disabled">
           <input type="text" class="form-control input-default" v-else disabled="disabled" :value="phenotypeDataset.fileName">
-          <span style="margin-left: 4px"><a @click.prevent="deletePhenotype" href="#" style="color: inherit"><i class="bi bi-trash"></i></a></span>
+          <span style="margin-left: 4px" v-if="!props.disabled"><a @click.prevent="deletePhenotype" href="#" style="color: inherit"><i class="bi bi-trash"></i></a></span>
           </div>
     </div>
   </div>
@@ -52,7 +52,7 @@
 
         </div>
       <div class="row" v-if="!isControlDisabled()">
-        <div class="col col-md-11 offset-md-1" style="margin-top: -22px; padding: 0px">
+        <div class="col col-md-11 offset-md-1" :style="credibleSetAddStyle">
           <a href="#" @click.prevent="phenotypeDataset.credibleSets.push({})">Add Credible Set</a>
         </div>
       </div>
@@ -120,6 +120,10 @@ const pTypeClass = computed(() => {
 function isControlDisabled(){
   return props.disabled || !!phenotypeDataset.value.id
 }
+
+const credibleSetAddStyle = computed(() => {
+  return phenotypeDataset.value.credibleSets.length === 0 ? {} : {'margin-top': '-22px', 'padding': '0px'}
+})
 
 function deletePhenotype(){
   emit('remove-phenotype-dataset', {id: props.identifier})

@@ -7,9 +7,9 @@ const props = defineProps({
       type: String,
       required: true
     },
-    isReadOnly: {
+    editMode: {
       type: Boolean,
-      default: false
+      default: true
     },
     datasetId: {
       type: String,
@@ -58,6 +58,10 @@ const props = defineProps({
     }
   }
 
+  function showAddFiles(){
+    return props.editMode
+  }
+
 </script>
 
 <template>
@@ -70,17 +74,17 @@ const props = defineProps({
             <li v-for="(phenotypeDataset, index) in store.savedDataSets">
               <PhenotypeDataset :dataset-data-type="dataType" :key="index" :phenotypeDataset="phenotypeDataset"
                                 :identifier="index" @remove-phenotype-dataset="removePhenotypeDataset"
-                                :disabled="isReadOnly"/>
+                                :disabled="!editMode"/>
             </li>
           </ul>
-          <div style="display: inline; margin-top: -25px" v-if="!isReadOnly">
+          <div style="display: inline; margin-top: -25px" v-if="editMode">
             <a href="#" @click.prevent="store.addPhenoBlankDataset()">Add Additional Phenotype</a>
           </div>
         </form>
       </div>
       <div class="row">
         <div class="col col-md-2">
-          <button type="button" class="btn btn-primary" @click="save" v-if="store.savedDataSets.filter(p => !p.id).length > 0">Add Data</button>
+          <button type="button" class="btn btn-primary" @click="save" v-if="editMode">Add Data</button>
         </div>
       </div>
     </div>
