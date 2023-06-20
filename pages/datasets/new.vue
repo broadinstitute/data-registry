@@ -20,4 +20,10 @@
   </div>
   </div>
 </template>
+<script setup>
+import { useDatasetStore } from '~/stores/DatasetStore'
 
+
+const store = useDatasetStore()
+store.$reset()
+</script>

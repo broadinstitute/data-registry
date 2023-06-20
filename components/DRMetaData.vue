@@ -21,7 +21,6 @@ const props = defineProps({
   const store = useDatasetStore()
   const isReadOnly = computed(() => !props.editMode && !!props.datasetId)
   const study = ref(null)
-  const dsId = useState("dsId")
   const config = useRuntimeConfig()
   const datasetName = ref(null);
   const dataType = ref("file");
@@ -80,7 +79,6 @@ const props = defineProps({
       institution: data.study.institution,
     };
     savedStudy.value = data.study.name;
-
   }
 
   async function save(){
@@ -88,7 +86,7 @@ const props = defineProps({
       return
     }
     if (typeof study.value === "object") {
-      dsId.value = await saveDataset(study.value.value)
+      await saveDataset(study.value.value)
     } else {
       const data = await store.saveStudy({ name: study.value, institution: institution.value })
       //handle the case where we add a new study and dataset and then add another dataset
@@ -100,7 +98,7 @@ const props = defineProps({
       };
       store.addStudy(newStudy)
       study.value = newStudy
-      dsId.value = await saveDataset(data.study_id)
+      await saveDataset(data.study_id)
     }
 
   }
@@ -125,12 +123,10 @@ const props = defineProps({
       pub_id: pubId.value,
       publication: publication.value,
     }
-    if (dsId.value) {
-      opts.id = dsId.value;
+    if (store.datasetId) {
+      opts.id = store.datasetId
     }
-
-    const data = await store.saveDataset(opts)
-    return data.dataset_id;
+    await store.saveDataset(opts)
   }
 
 

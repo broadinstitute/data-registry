@@ -82,11 +82,15 @@ export const useDatasetStore = defineStore('DatasetStore', {
       isServerSuccess: false,
       processing: false,
       modalMsg: '',
+      savedDataSetId: null,
     }
   },
   getters: {
     savedDataSets: (state) => {
       return state.combinedPhenotypesAndCredibleSets
+    },
+    dataSetId: (state) => {
+      return state.savedDataSetId
     }
   },
   actions: {
@@ -125,18 +129,15 @@ export const useDatasetStore = defineStore('DatasetStore', {
     async saveDataset(dataset) {
       this.processing = true
       if (dataset.id) {
-        const { data } = await configuredAxios.patch("/api/datasets", JSON.stringify(dataset))
-        this.processing = false
-        this.showNotification = true
-        this.isServerSuccess = true
-        return data
+        await configuredAxios.patch("/api/datasets", JSON.stringify(dataset))
       } else {
         const { data } = await configuredAxios.post("/api/datasets", JSON.stringify(dataset))
-        this.processing = false
-        this.showNotification = true
-        this.isServerSuccess = true
-        return data
+        this.savedDataSetId = data.dataset_id
       }
+      this.addPhenoBlankDataset()
+      this.processing = false
+      this.showNotification = true
+      this.isServerSuccess = true
     },
     async uploadFiles(dataset_id) {
       this.processing = true

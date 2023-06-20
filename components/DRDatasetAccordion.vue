@@ -8,10 +8,9 @@
     },
     editMode: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   })
-  const datasetId = useState("dsId", props.dsId)
   const store = useDatasetStore()
   const localEditMode = ref(props.editMode)
 </script>
@@ -22,7 +21,7 @@
       :message="store.errorMessage"
       :success="store.isServerSuccess"
   />
-  <div class="row" v-if="props.dsId">
+  <div class="row" v-if="store.dataSetId">
     <div class="col">
       <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
@@ -41,7 +40,7 @@
         </h2>
         <div id="drmetadata" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#dsAccordion">
           <div class="accordion-body">
-            <DRMetaData :dataset-id="datasetId" :edit-mode="localEditMode"/>
+            <DRMetaData :dataset-id="store.dataSetId" :edit-mode="localEditMode"/>
           </div>
         </div>
       </div>
@@ -53,7 +52,7 @@
         </h2>
         <div id="drfiles" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#dsAccordion">
           <div class="accordion-body">
-            <DRFiles data-type="file" :edit-mode="localEditMode" :dataset-id="datasetId" />
+            <DRFiles data-type="file" :edit-mode="localEditMode" :dataset-id="store.dataSetId" />
           </div>
         </div>
       </div>

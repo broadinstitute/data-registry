@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <DRDatasetAccordion :dsId="dsId" :edit-mode="route.query.edit === 'true'"/>
+    <DRDatasetAccordion :dsId="route.params.id" :edit-mode="route.query.edit === 'true'"/>
     <div class="row mt-2">
     <div class="col text-start">
       <nuxt-link :to="{ name: 'datasets' }">
@@ -22,8 +22,12 @@
 </template>
 
 <script setup>
+import { useDatasetStore } from '~/stores/DatasetStore'
+
+
 const route = useRoute()
-const dsId = useState("dsId", () => route.params.id)
+const store = useDatasetStore()
+store.savedDataSetId = route.params.id
 
 
 </script>
