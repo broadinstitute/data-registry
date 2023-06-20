@@ -24,7 +24,7 @@
   <div class="accordion" id="dsAccordion">
     <div class="accordion-item">
       <h2 class="accordion-header" id="headingOne">
-        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#drmetadata" aria-expanded="true" aria-controls="drmetadata">
+        <button class="accordion-button large-accordion-heading" type="button" data-bs-toggle="collapse" data-bs-target="#drmetadata" aria-expanded="true" aria-controls="drmetadata">
           Metadata
         </button>
       </h2>
@@ -36,7 +36,7 @@
     </div>
     <div class="accordion-item">
       <h2 class="accordion-header" id="headingTwo">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#drfiles" aria-expanded="false" aria-controls="drfiles">
+        <button class="accordion-button collapsed large-accordion-heading" type="button" data-bs-toggle="collapse" data-bs-target="#drfiles" aria-expanded="false" aria-controls="drfiles">
           Files
         </button>
       </h2>
