@@ -62,7 +62,7 @@
 										Filter order
 									</div>
 									<tbody class="dr-byor-data-columns">
-										<tr v-for="filter, index in allFilters" class="arrow-button-list">
+										<tr v-for="filter, index in allFilters" class="arrow-button-list filter-row">
 											<td>
 												{{ filter.label }}
 											</td>			
@@ -79,8 +79,8 @@
 												</button>
 											</td>
 											<td>
-												<span class="editing" v-if="editingFilterIndex == index">Editing</span>
-                   								<a v-else @click="editFilter(index)"><span class="edit">Edit</span></a>
+												<span class="editing-large" v-if="editingFilterIndex == index">Editing</span>
+                   								<a v-else @click="editFilter(index)"><span class="edit-large">Edit</span></a>
 											</td>
 										</tr>
 									</tbody>
@@ -92,9 +92,19 @@
 			</div>
 		</div>
 	</div>
-	<div class="label">Output</div>
-	<pre>{{ JSON.stringify(singleFilterConfig)}}</pre>
-	<pre>{{ JSON.stringify(allFilters) }}</pre>
+	<div class="card-body dr-form">
+			<h4>Filter format output</h4>
+			<div class="row dr-builder-ui">
+				<div class="col-md-10">
+					<pre class="output">{{ JSON.stringify(allFilters) }}</pre>
+				</div>
+				<div class="col-md-2">
+					<button class="btn btn-primary btn-sm" type="button" @click="copyFilterConfig">
+                    	Copy configuration
+                	</button>
+				</div>
+			</div>
+		</div>
 </template>
 <style scoped>
     @import "public/css/mdkp.css";
@@ -103,7 +113,6 @@
 <script setup>
     import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
-import { all } from "axios";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const availableFields = computed(() => props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
@@ -216,5 +225,8 @@ import { all } from "axios";
 		beginning.push(risingItem);
 		beginning.push(fallingItem);
 		allFilters.value = beginning.concat(end);
+	}
+	function copyFilterConfig(){
+		navigator.clipboard.writeText(JSON.stringify(allFilters.value));
 	}
 </script>

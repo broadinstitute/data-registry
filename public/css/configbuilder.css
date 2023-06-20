@@ -153,7 +153,6 @@ ul.dr-byor-data-columns.inline-list > li > label {
 	margin-right: 0;
 	vertical-align: 1px;
 }
-
 .dr-format-bubble span.editing {
 	color: black;
 	background-color: white;
@@ -165,6 +164,28 @@ ul.dr-byor-data-columns.inline-list > li > label {
 	vertical-align: 1px;
 }
 
+span.edit-large{
+	color: #ffffff;
+	background-color: #000000;
+	border-right: none;
+	border-radius: 8px;
+	font-size: 12px;
+	padding: 3px 5px 3px 5px;
+	margin-right: 0;
+}
+
+span.editing-large{
+	color: black;
+	background-color: white;
+	border: 1px solid gray;
+	border-radius: 8px;
+	font-size: 12px;
+	padding: 3px 5px 3px 5px;
+	margin-right: 0;
+}
+.filter-row{
+	padding-bottom: 10px;
+}
 .dr-format-bubble span.edit:hover {
 	cursor: pointer;
 }
