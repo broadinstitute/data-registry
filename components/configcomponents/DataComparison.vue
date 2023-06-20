@@ -1,5 +1,7 @@
 <template>
-    			<h4>
+	<div class="card mdkp-card">
+		<div class="row card-body">
+			<h4>
 				Data comparison
 				<sup class="optional"
 					>Optional for only daynamic data points | Tutorial
@@ -166,6 +168,9 @@
 					</div>
 				</div>
 			</div>
+		</div>
+		
+	</div>
 </template>
 <style scoped>
     @import "public/css/mdkp.css";

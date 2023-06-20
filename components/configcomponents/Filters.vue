@@ -93,7 +93,7 @@
 		</div>
 	</div>
 	<div class="card-body dr-form">
-			<h4>Filter format output</h4>
+			<h5>Filter format output</h5>
 			<div class="row dr-builder-ui">
 				<div class="col-md-10">
 					<pre class="output">{{ JSON.stringify(allFilters) }}</pre>
