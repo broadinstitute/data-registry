@@ -12,92 +12,85 @@
 					<div class="row">
 						<div class="col-md-7">
 							<div class="row dr-builder-ui">
-												<div class="col-md-3 col">
-													<div class="label">
-											Select field
-										</div>
-										<select class="form-control" v-model="selectedField">
-											<option v-for="field in availableFields">
-												{{field}}
-											</option>
-										</select>
-												</div>
-												<div class="col-md-3 col">
-													<div class="label">
-											Filter type
-										</div>
-										<select class="form-control" v-model="selectedFilterType">
-											<option v-for="item in filterTypeOptions">{{ item }}</option>
-										</select>
-												</div>
-												<div class="col-md-3 col">
-													<div class="label">
-											Label
-										</div>
-										<input type="text" class="form-control input-default" v-model="filterLabel"/>
-										<input class="form-check-input" type="checkbox" 
-                                			id="flexCheckDefault" v-model="labelInBubble"/>
-                            			<span class="form-check-label" for="flexCheckDefault"> Label in bubble</span>
-												</div>
-												<div class="col-md-3 col">
-													<button class="btn btn-primary btn-sm" type="button" @click="saveFilter()">
-											Save
-										</button>
-										<button class="btn btn-warning btn-sm" type="button" @click="cancelFilterEdit()">
-											Cancel
-										</button>
-										<button class="btn btn-danger btn-sm" type="button" @click="deleteFilter()">
-											Delete
-										</button>
-										<div class="failed-save">{{ message }}</div>
-												</div>
-											</div>
-										</div>
-										<div class="col-md-5">
-											<div class="row dr-builder-ui">
-												<div class="col-md-6 col">
-													<div class="label">
-											Filter order
-										</div>
-										<tbody class="dr-byor-data-columns">
-											<tr v-for="filter, index in allFilters" class="arrow-button-list">
-												{{ filter.label }}
-												<td class="arrow-button-holder">
-													<button class="btn btn-primary arrow-button arrow-button-up" 
-														:disabled="index == 0" @click="moveUp(index)">
-															&uarr;
-													</button>
-												</td>
-												<td class="arrow-button-holder">
-													<button class="btn btn-primary arrow-button"
-													:disabled="index == allFilters.length - 1" @click="moveDown(index)">
-														&darr;
-													</button>
-												</td>
-											</tr>
-										</tbody>
-												</div>
-												<div class="col-md-6 col">
-													<div class="label">
-														Filter width
-													</div>
-
-													<select
-														class="form-control"
-													>
-														<option>
-															Midium (default)
-														</option>
-														<option>Small</option>
-														<option>Large</option>
-													</select>
-												</div>
-											</div>
-										</div>
+								<div class="col-md-3 col">
+									<div class="label">
+										Select field
 									</div>
+									<select class="form-control" v-model="selectedField">
+										<option v-for="field in availableFields">
+											{{field}}
+										</option>
+									</select>
+								</div>
+								<div class="col-md-3 col">
+									<div class="label">
+										Filter type
+									</div>
+									<select class="form-control" v-model="selectedFilterType">
+										<option v-for="item in Object.keys(filterTypeOptions)">
+											{{ filterTypeOptions[item] }}
+										</option>
+									</select>
+								</div>
+								<div class="col-md-3 col">
+									<div class="label">
+										Label
+									</div>
+									<input type="text" class="form-control input-default" v-model="filterLabel"/>
+									<input class="form-check-input" type="checkbox" 
+										id="flexCheckDefault" v-model="labelInBubble"/>
+									<span class="form-check-label" for="flexCheckDefault"> Label in bubble</span>
+								</div>
+								<div class="col-md-3 col">
+									<button class="btn btn-primary btn-sm" type="button" @click="saveFilter()">
+										Save
+									</button>
+									<button class="btn btn-warning btn-sm" type="button" @click="clearAll()">
+										Cancel
+									</button>
+									<button class="btn btn-danger btn-sm" type="button" @click="deleteFilter()">
+										Delete
+									</button>
+									<div class="failed-save">{{ message }}</div>
 								</div>
 							</div>
 						</div>
+						<div class="col-md-5">
+							<div class="row dr-builder-ui">
+								<div class="col-md-12 col">
+									<div class="label">
+										Filter order
+									</div>
+									<tbody class="dr-byor-data-columns">
+										<tr v-for="filter, index in allFilters" class="arrow-button-list">
+											<td>
+												{{ filter.label }}
+											</td>			
+											<td class="arrow-button-holder">
+												<button class="btn btn-primary arrow-button arrow-button-up" 
+													:disabled="index == 0" @click="moveUp(index)">
+														&uarr;
+												</button>
+											</td>
+											<td class="arrow-button-holder">
+												<button class="btn btn-primary arrow-button"
+												:disabled="index == allFilters.length - 1" @click="moveDown(index)">
+													&darr;
+												</button>
+											</td>
+											<td>
+												<span class="editing" v-if="editingFilterIndex == index">Editing</span>
+                   								<a v-else @click="editFilter(index)"><span class="edit">Edit</span></a>
+											</td>
+										</tr>
+									</tbody>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 	<div class="label">Output</div>
 	<pre>{{ JSON.stringify(singleFilterConfig)}}</pre>
@@ -128,14 +121,14 @@ import { all } from "axios";
 		"type": null,
 		"label in bubble": "false"
 	});
-	const filterTypeOptions = [
-		"Search",
-		"Search greater than",
-		"Search lower than",
-		"Search or",
-		"Search and",
-		"Dropdown"
-	];
+	const filterTypeOptions = {
+		"search": "Search",
+		"search greater than": "Search greater than",
+		"search lower than": "Search less than",
+		"search or": "Search or",
+		"search and": "Search and",
+		"dropdown": "Dropdown"
+	};
 	const allFilters = ref([]);
     watch(availableFields, () => console.log(JSON.stringify(availableFields.value)));
     watch(fieldNameOld, () => {
@@ -167,15 +160,30 @@ import { all } from "axios";
 			message.value = "Select a filter type.";
 			return;
 		}
-		allFilters.value.push(JSON.parse(JSON.stringify(singleFilterConfig.value)));
+		let thisFilter = JSON.parse(JSON.stringify(singleFilterConfig.value));
+		if (editingFilterIndex.value != -1){
+			allFilters.value[editingFilterIndex.value] = thisFilter;
+		} else {
+			allFilters.value.push(thisFilter);
+		}
 		clearAll();
 	}
 	function clearAll(){
+		console.log("Clearing all");
+		editingFilterIndex.value = -1;
 		message.value = "";
 		selectedField.value = null;
 		selectedFilterType.value = null;
 		labelInBubble.value = false;
 		filterLabel.value = "";
+	}
+	function editFilter(index){
+		editingFilterIndex.value = index;
+		let filterContent = JSON.parse(JSON.stringify(allFilters.value[index]));
+		selectedField.value = filterContent.field;
+		filterLabel.value = filterContent.label;
+		selectedFilterType.value = filterTypeOptions[filterContent.type];
+		labelInBubble.value = filterContent["label in bubble"] == "true";
 	}
 	function cancelFilterEdit(){
 		if (editingFilterIndex.value == -1){
@@ -184,10 +192,12 @@ import { all } from "axios";
 		}
 	}
 	function deleteFilter(){
-		if (editingFilterIndex.value == -1){
-			clearAll();
-			return;
+		if (editingFilterIndex.value != -1){
+			let beginning = allFilters.value.slice(0, editingFilterIndex.value);
+			let end = allFilters.value.slice(editingFilterIndex.value + 1);
+			allFilters.value = beginning.concat(end);
 		}
+		clearAll();
 	}
 	function moveUp(index){
 		let beginning = allFilters.value.slice(0, index-1);
