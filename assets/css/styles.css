@@ -18,6 +18,10 @@
   padding: 15px;
 }
 
+.large-accordion-heading {
+  font-size: 22px;
+}
+
 ul {
   list-style: none;
   padding-left: 0;
