@@ -8,11 +8,3 @@
         </div>
     </nav>
 </template>
-
-<script>
-export default {
-    name: "PageFooter",
-};
-</script>
-
-<style></style>

@@ -1,18 +1,14 @@
 <template>
     <nav class="navbar navbar-expand-lg p-3 mb-3 border-bottom">
         <div class="container">
-            <a href="/" class="navbar-brand mr-4"
-                >[ Data Registry <i class="bi bi-r-square-fill"></i> ]</a
-            >
+            <a href="/" class="navbar-brand mr-4">[ Data Registry <i class="bi bi-r-square-fill"></i> ]</a>
 
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a href="/" class="nav-link px-2 link-secondary">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/datasets" class="nav-link px-2 link-body-emphasis"
-                        >Datasets</a
-                    >
+                    <a href="/datasets" class="nav-link px-2 link-body-emphasis">Datasets</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a
@@ -72,10 +68,3 @@
     </nav>
 </template>
 
-<script>
-export default {
-    name: "PageHeader",
-};
-</script>
-
-<style></style>
