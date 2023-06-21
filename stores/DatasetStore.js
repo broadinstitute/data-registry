@@ -161,7 +161,7 @@ export const useDatasetStore = defineStore('DatasetStore', {
             cs.id = await saveCredibleSet(phenotype.id.replaceAll('-', ''), cs)
           }
         }
-        if(phenotype.credibleSets === [{}]){
+        if(Object.keys(phenotype.credibleSets[0]).length === 0 && phenotype.credibleSets.length === 1){
           phenotype.credibleSets = []
         }
       }
