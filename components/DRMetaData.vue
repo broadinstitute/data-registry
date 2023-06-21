@@ -182,18 +182,7 @@ const props = defineProps({
 
       <div class="col-md-9">
         <div class="row">
-          <div class="col-md-4 col">
-            <div class="label">
-              Data source type<sup>*</sup>
-            </div>
-            <select class="form-select" v-model="dataType" required :disabled="isReadOnly">
-              <option value="file">File</option>
-              <option value="remote">
-                Remote storage
-              </option>
-            </select>
-          </div>
-          <div class="col-md-4 col">
+          <div class="col-md-6 col">
             <div class="label">Data type<sup>*</sup></div>
             <select class="form-select" v-model="geneticsDataType" required :disabled="isReadOnly">
               <option value="gwas">GWAS</option>
@@ -207,7 +196,7 @@ const props = defineProps({
               </option>
             </select>
           </div>
-          <div class="col-md-4 col">
+          <div class="col-md-6 col">
             <div class="label">
               Genome build<sup>*</sup>
             </div>
