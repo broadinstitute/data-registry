@@ -33,29 +33,32 @@
           </div>
     </div>
   </div>
-        <div class="row" v-for="(cs, idx) in phenotypeDataset.credibleSets">
-          <div class="col col-md-11 offset-md-1">
-            <div class="row dr-meta-info" style="margin-right: 10px;">
-              <div class="col col-md-6">
-                <div class="label">Credible Set Name</div>
-                <input type="text" class="form-control input-default credible-set" placeholder="name" :data-associated-phenotype="`${props.identifier}-${idx}`"
-                       v-model="cs.name" :disabled="isControlDisabled()">
-              </div>
-              <div class="col col-md-6">
-                <div class="label">Credible Set File</div>
-                <input v-if="!phenotypeDataset.id" type="file" class="form-control input-default credible-set" placeholder="file"
-                       :data-associated-phenotype="`${props.identifier}-${idx}`" @change="credibleSetFileChange" :disabled="props.disabled">
-                <input type="text" class="form-control input-default" v-else disabled="disabled" :value="cs.fileName">
-              </div>
-            </div>
+    <div class="row" v-for="(cs, idx) in phenotypeDataset.credibleSets">
+      <div class="col col-md-11 offset-md-1">
+        <div class="row dr-meta-info" style="margin-right: 10px;">
+          <div class="col col-md-6">
+            <div class="label">Credible Set Name</div>
+            <input type="text" class="form-control input-default credible-set" placeholder="name"
+                   :data-associated-phenotype="`${props.identifier}-${idx}`"
+                   v-model="cs.name" :disabled="props.disabled || !!cs.id">
           </div>
-
-        </div>
-      <div class="row" v-if="!isControlDisabled()">
-        <div class="col col-md-11 offset-md-1" :style="credibleSetAddStyle">
-          <a href="#" @click.prevent="phenotypeDataset.credibleSets.push({})">Add Credible Set</a>
+          <div class="col col-md-6">
+            <div class="label">Credible Set File</div>
+            <input v-if="!cs.id" type="file"
+                   class="form-control input-default credible-set" placeholder="file"
+                   :data-associated-phenotype="`${props.identifier}-${idx}`"
+                   @change="credibleSetFileChange" :disabled="props.disabled">
+            <input type="text" class="form-control input-default" v-else disabled="disabled"
+                   :value="cs.fileName">
+          </div>
         </div>
       </div>
+    </div>
+    <div class="row" v-if="!props.disabled">
+      <div class="col col-md-11 offset-md-1" :style="credibleSetAddStyle">
+        <a href="#" @click.prevent="phenotypeDataset.credibleSets.push({})">Add Credible Set</a>
+      </div>
+    </div>
 </template>
 
 <script setup>

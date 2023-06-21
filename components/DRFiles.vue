@@ -57,10 +57,9 @@ const props = defineProps({
       store.removePhenoDataset(e.id)
     }
   }
-
-  function showAddFiles(){
-    return props.editMode
-  }
+  const showAddFiles = computed(() => {
+    return props.editMode && store.credibleSetsToAdd
+  })
 
 </script>
 
@@ -84,7 +83,7 @@ const props = defineProps({
       </div>
       <div class="row">
         <div class="col col-md-2">
-          <button type="button" class="btn btn-primary" @click="save" v-if="editMode">Add Data</button>
+          <button type="button" class="btn btn-primary" @click="save" v-if="showAddFiles">Add Data</button>
         </div>
       </div>
     </div>

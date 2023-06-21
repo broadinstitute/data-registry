@@ -31,8 +31,9 @@ async function savePhenotype(dataset_id, pType) {
 async function saveCredibleSet(saved_phenotype_id, cs) {
   const formData = new FormData();
   formData.append("file", cs.credibleSetFile);
-  await configuredAxios.post(`/api/crediblesetupload/${saved_phenotype_id}/${cs.name}`,
+  const { data } = await configuredAxios.post(`/api/crediblesetupload/${saved_phenotype_id}/${cs.name}`,
     formData, { headers: { "Content-Type": "multipart/form-data" }})
+  return data.credible_set_id;
 }
 
 function mapCredibleSets(){
@@ -91,6 +92,15 @@ export const useDatasetStore = defineStore('DatasetStore', {
     },
     dataSetId: (state) => {
       return state.savedDataSetId
+    },
+    credibleSetsToAdd: (state) => {
+      let result = false
+      state.combinedPhenotypesAndCredibleSets.forEach((p) => {
+        if (p.credibleSets.filter((cs) => !cs.id).length > 0) {
+          result = true
+        }
+      })
+      return result
     }
   },
   actions: {
@@ -142,19 +152,16 @@ export const useDatasetStore = defineStore('DatasetStore', {
     async uploadFiles(dataset_id) {
       this.processing = true
       for (const phenotype of this.savedDataSets) {
-        if(phenotype.id) {
-          continue
+        this.modalMsg = `Uploading data for ${phenotype.description}`
+        if(!phenotype.id){
+          phenotype.id  = await savePhenotype(dataset_id.replaceAll('-', ''), phenotype)
         }
-        this.modalMsg = `Uploading data for ${phenotype.description}`;
-        phenotype.id  = await savePhenotype(dataset_id.replaceAll('-', ''), phenotype)
-        let csCount = 0
         for (const cs of phenotype.credibleSets) {
-          if (cs.name && cs.name !== "") {
-            await saveCredibleSet(phenotype.id, cs)
-            csCount++
+          if (!cs.id && cs.credibleSetFile) {
+            cs.id = await saveCredibleSet(phenotype.id.replaceAll('-', ''), cs)
           }
         }
-        if (csCount === 0) {
+        if(phenotype.credibleSets === [{}]){
           phenotype.credibleSets = []
         }
       }
