@@ -8,9 +8,6 @@
                 Feature name
             </div>
             <input type="text" class="form-control input-default" v-model="currentFeatureName"/>
-            <!-- <div class="label">Output</div>
-            <pre class="output">{{ singleFeatureConfigString }}</pre>
-            <pre class="output">{{ allFeaturesConfigString }}</pre> -->
         </div>
         <div class="col-md-3 col">
                 <div class="label">
@@ -77,13 +74,7 @@
             </div>
         </div>
 </template>
-<style scoped>
-    @import "public/css/mdkp.css";
-    @import "public/css/configbuilder.css";
-</style>
 <script setup>
-    import "bootstrap/dist/css/bootstrap.min.css";
-    import "bootstrap-icons/font/bootstrap-icons.css";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["featuresChanged"]);
     const availableFields = computed(()=> props.fields);
@@ -105,8 +96,6 @@
         "locus field",
         "star column"
     ]
-    const singleFeatureConfigString = computed(()=> `"${currentFeatureName.value}": ${JSON.stringify(currentSelectedFields.value)}`);
-    const allFeaturesConfigString = computed(()=> JSON.stringify(allFeaturesConfig.value));
     function moveUpDown(index, down=false){
         if (down) { index++; }
 		let risingItem = currentSelectedFields.value[index];
@@ -200,7 +189,6 @@
             }
         });
         for (let i = 0; i < currentSelectedFields.value.length; i++){
-            console.log(currentSelectedFields.value[i]);
             if(currentSelectedFields.value[i] == fieldNameOld.value){
                 currentSelectedFields.value[i] = fieldNameNew.value;
             }

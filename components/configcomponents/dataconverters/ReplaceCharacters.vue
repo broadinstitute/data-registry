@@ -40,10 +40,6 @@
 		</div>
 	</div>
 </template>
-<style scoped>
-    @import "public/css/mdkp.css";
-    @import "public/css/configbuilder.css";
-</style>
 <script setup>
 	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
     const emit = defineEmits(['configChanged']);
@@ -95,14 +91,6 @@
         emit('configChanged', replaceCharConfig.value, readyToSave(), readySaveMsg);
 	}
     function readyToSave(){
-		if (!replaceCharConfig.value["field name"] || replaceCharConfig.value["field name"].trim() == ""){
-			readySaveMsg = "Enter a field name.";
-            return false;
-		}
-		if (replaceCharConfig.value["field name"].includes(",")){
-			readySaveMsg = "Commas may not be used in field names.";
-			return false;
-		}
 		if(!replaceCharConfig.value["raw field"]){
 			readySaveMsg = "Select a raw field.";
             return false;

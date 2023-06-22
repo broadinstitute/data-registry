@@ -106,13 +106,7 @@
 			</div>
 		</div>
 </template>
-<style scoped>
-    @import "public/css/mdkp.css";
-    @import "public/css/configbuilder.css";
-</style>
 <script setup>
-    import "bootstrap/dist/css/bootstrap.min.css";
-	import "bootstrap-icons/font/bootstrap-icons.css";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const availableFields = computed(() => props.fields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
@@ -139,7 +133,6 @@
 		"dropdown": "Dropdown"
 	};
 	const allFilters = ref([]);
-    watch(availableFields, () => console.log(JSON.stringify(availableFields.value)));
     watch(fieldNameOld, () => {
 		if (selectedField.value == fieldNameOld.value){
 			selectedField.value = fieldNameNew.value;
@@ -169,7 +162,7 @@
 			message.value = "Select a filter type.";
 			return;
 		}
-		let thisFilter = JSON.parse(JSON.stringify(singleFilterConfig.value));
+		let thisFilter = JSON.parse(JSON.stringify(singleFilterConfig.value)); // Deep copy
 		if (editingFilterIndex.value != -1){
 			allFilters.value[editingFilterIndex.value] = thisFilter;
 		} else {
@@ -178,7 +171,6 @@
 		clearAll();
 	}
 	function clearAll(){
-		console.log("Clearing all");
 		editingFilterIndex.value = -1;
 		message.value = "";
 		selectedField.value = null;
@@ -188,18 +180,13 @@
 	}
 	function editFilter(index){
 		editingFilterIndex.value = index;
-		let filterContent = JSON.parse(JSON.stringify(allFilters.value[index]));
+		let filterContent = JSON.parse(JSON.stringify(allFilters.value[index])); // Deep copy
 		selectedField.value = filterContent.field;
 		filterLabel.value = filterContent.label;
 		selectedFilterType.value = filterTypeOptions[filterContent.type];
 		labelInBubble.value = filterContent["label in bubble"] == "true";
 	}
-	function cancelFilterEdit(){
-		if (editingFilterIndex.value == -1){
-			clearAll();
-			return;
-		}
-	}
+
 	function deleteFilter(){
 		if (editingFilterIndex.value != -1){
 			allFilters.value.splice(editingFilterIndex.value, 1);
@@ -212,11 +199,7 @@
 		allFilters.value.splice(index, 1);
 		allFilters.value.splice(index-1, 0, risingItem);
 	}
-	function moveDown(index){
-		let risingItem = allFilters.value[index+1];
-		allFilters.value.splice(index+1, 1);
-		allFilters.value.splice(index, 0, risingItem);
-	}
+
 	function copyFilterConfig(){
 		navigator.clipboard.writeText(JSON.stringify(allFilters.value));
 	}

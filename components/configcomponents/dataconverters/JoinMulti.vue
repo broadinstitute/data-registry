@@ -44,10 +44,6 @@
 		</div>
 	</div>
 </template>
-<style scoped>
-    @import "public/css/mdkp.css";
-    @import "public/css/configbuilder.css";
-</style>
 <script setup>
 	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
 	const emit = defineEmits(['configChanged']);
@@ -100,14 +96,6 @@
     function readyToSave(){
 		let fieldsLength = joinMultiConfig.value["fields to join"].length;
 		let joinLength = joinMultiConfig.value["join by"].length;
-		if (!joinMultiConfig.value["field name"] || joinMultiConfig.value["field name"].trim() == ""){
-			readySaveMsg = "Enter a field name.";
-            return false;
-		}
-		if (joinMultiConfig.value["field name"].includes(",")){
-			readySaveMsg = "Commas may not be used in field names.";
-			return false;
-		}
 		if (joinMultiConfig.value["fields to join"].length < 2){
 			readySaveMsg = "Select some fields to join.";
 			return false;

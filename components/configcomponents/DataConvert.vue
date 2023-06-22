@@ -17,8 +17,6 @@
                         <sup>required</sup>
                 </div>
                 <input type="text" class="form-control input-default" v-model="newFieldName"/>
-                <!-- <div class="label">Output</div>
-                <pre class="output">{{ currentConfigString }}</pre> -->
             </div>
             <div class="col-md-8 col">
                 <RawRename 
@@ -83,13 +81,7 @@
         </div>
     </div>
 </template>
-<style scoped>
-@import "public/css/mdkp.css";
-@import "public/css/configbuilder.css";
-</style>
 <script setup>
-    import "bootstrap/dist/css/bootstrap.min.css";
-	import "bootstrap-icons/font/bootstrap-icons.css";
     import ArrayToString from "@/components/configcomponents/dataconverters/ArrayToString.vue";
     import Calculate from "@/components/configcomponents/dataconverters/Calculate.vue";
     import Join from "@/components/configcomponents/dataconverters/Join.vue";
@@ -97,8 +89,6 @@
     import RawRename from "@/components/configcomponents/dataconverters/RawRename.vue";
     import ReplaceCharacters from "@/components/configcomponents/dataconverters/ReplaceCharacters.vue";
     import ScoreColumns from "@/components/configcomponents/dataconverters/ScoreColumns.vue";
-
-
     const props = defineProps({rawFields: Array});
     const emit = defineEmits(["dcChanged", "fieldNameChanged"]);
     const rawFields = computed(()=> props.rawFields);
@@ -168,10 +158,19 @@
         updateConfig(savedField, true);
     }
     function saveField(){
-        let newFieldString = JSON.stringify(currentFieldConfig.value);
-        let newField = JSON.parse(newFieldString);
-        let newName = newField["field name"];
         if (!readyToSave){
+            showMsg.value = true;
+            return;
+        }
+        let newField = JSON.parse(JSON.stringify(currentFieldConfig.value)); // Deep copy
+        if (!newField["field name"] || newField["field name"].trim() === ""){
+            failedSaveMsg = "Enter a field name.";
+            showMsg.value = true;
+            return;
+        }
+        let newName = newField["field name"];
+        if (newName.includes(",")){
+            failedSaveMsg = "Commas may not be used in field names.";
             showMsg.value = true;
             return;
         }
@@ -232,9 +231,9 @@
         }
     });
     watch(rawFields, (newFields, oldFields) => {
-        let newFieldsSorted = JSON.parse(JSON.stringify(newFields));
+        let newFieldsSorted = JSON.parse(JSON.stringify(newFields)); // Deep copy
         newFieldsSorted.sort();
-        let oldFieldsSorted = JSON.parse(JSON.stringify(oldFields));
+        let oldFieldsSorted = JSON.parse(JSON.stringify(oldFields)); // Deep copy
         oldFieldsSorted.sort();
         if (JSON.stringify(newFieldsSorted) != JSON.stringify(oldFieldsSorted)){
             clearDataConvert();

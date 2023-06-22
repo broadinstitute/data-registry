@@ -3,10 +3,6 @@
         Top rows tutorial
     </a>
     <div class="row dr-builder-ui">
-        <!-- <div class="col-md-3 col">
-            <div class="label">Output</div>
-            <pre class="output">{{ JSON.stringify(selectedFields) }}</pre>
-        </div> -->
         <div class="col-md-6 col">
             <div class="label">
                 Select rows
@@ -43,13 +39,7 @@
         </div>
     </div>
 </template>
-<style scoped>
-    @import "public/css/mdkp.css";
-    @import "public/css/configbuilder.css";
-</style>
 <script setup>
-    import "bootstrap/dist/css/bootstrap.min.css";
-	import "bootstrap-icons/font/bootstrap-icons.css";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["topRowsChanged"]);
     const availableFields = computed(()=> props.fields);

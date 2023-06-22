@@ -3,10 +3,6 @@
         Tool tips tutorial
     </a>
     <div class="row dr-builder-ui">
-        <!-- <div class="col-md-3 col">
-            <div class="label">Output</div>
-            <pre class="output">{{ JSON.stringify(toolTipConfig) }}</pre>
-        </div> -->
         <div class="col-md-12 col">
             <div class="label">
                 Tool tips
@@ -22,13 +18,7 @@
         </div>
     </div>
 </template>
-<style scoped>
-@import "public/css/mdkp.css";
-@import "public/css/configbuilder.css";
-</style>
 <script setup>
-    import "bootstrap/dist/css/bootstrap.min.css";
-	import "bootstrap-icons/font/bootstrap-icons.css";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["toolTipsChanged"]);
     const availableFields = computed(()=> props.fields);

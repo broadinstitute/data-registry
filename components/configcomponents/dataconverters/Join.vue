@@ -32,10 +32,6 @@
 		</div>
 	</div>
 </template>
-<style scoped>
-    @import "public/css/mdkp.css";
-    @import "public/css/configbuilder.css";
-</style>
 <script setup>
 	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
     const emit = defineEmits(['configChanged']);
@@ -64,14 +60,6 @@
         emitConfig();
     })
     function readyToSave(){
-		if(!joinConfig.value["field name"] || joinConfig.value["field name"].trim() == ""){
-			readySaveMsg = "Enter a field name.";
-            return false;
-		}
-		if (joinConfig.value["field name"].includes(",")){
-			readySaveMsg = "Commas may not be used in field names.";
-			return false;
-		}
 		if (joinConfig.value["join by"].includes(",")){
 			readySaveMsg = "Commas may not be used in field joins.";
 			return false;

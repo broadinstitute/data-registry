@@ -34,13 +34,11 @@
 		</div>
 	</div>
 </template>
-<style scoped>
-@import "public/css/mdkp.css";
-@import "public/css/configbuilder.css";
+<style>
+	@import "public/css/mdkp.css";
+	@import "public/css/configbuilder.css";
 </style>
 <script setup>
-	import "bootstrap/dist/css/bootstrap.min.css";
-	import "bootstrap-icons/font/bootstrap-icons.css";
 	import DataTableFormat from "@/components/configcomponents/DataTableFormat.vue";
 	import Filters from "@/components/configcomponents/Filters.vue";
 	const fieldsList = ref([]);

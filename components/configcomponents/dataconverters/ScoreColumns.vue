@@ -39,10 +39,6 @@
 		</div>
 	</div>
 </template>
-<style scoped>
-    @import "public/css/mdkp.css";
-    @import "public/css/configbuilder.css";
-</style>
 <script setup>
 	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
 	const emit = defineEmits(['configChanged']);
@@ -115,14 +111,6 @@
 		emit('configChanged', scoreColumnsConfig.value, readyToSave(), readySaveMsg);
 	}
     function readyToSave(){
-		if (!scoreColumnsConfig.value["field name"] || scoreColumnsConfig.value["field name"].trim() == ""){
-			readySaveMsg = "Enter a field name.";
-            return false;
-		}
-		if (scoreColumnsConfig.value["field name"].includes(",")){
-			readySaveMsg = "Commas may not be used in field names.";
-			return false;
-		}
 		if (scoreColumnsConfig.value["fields to score"].length < 1){
 			readySaveMsg = "Select fields to score.";
 			return false;

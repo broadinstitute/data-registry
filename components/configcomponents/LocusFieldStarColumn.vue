@@ -26,13 +26,7 @@
 			</div>
 		</div>
 </template>
-<style scoped>
-    @import "public/css/mdkp.css";
-    @import "public/css/configbuilder.css";
-</style>
 <script setup>
-	import "bootstrap/dist/css/bootstrap.min.css";
-	import "bootstrap-icons/font/bootstrap-icons.css";
 	const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["locusStarChanged"]);
 	const availableFields = computed(()=> props.fields);

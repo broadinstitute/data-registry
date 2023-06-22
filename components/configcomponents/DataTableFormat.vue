@@ -144,13 +144,7 @@
 		</div>
 	</div>
 </template>
-<style scoped>
-@import "public/css/mdkp.css";
-@import "public/css/configbuilder.css";
-</style>
 <script setup>
-	import "bootstrap/dist/css/bootstrap.min.css";
-	import "bootstrap-icons/font/bootstrap-icons.css";
 	import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 	import DataConvert from "@/components/configcomponents/DataConvert.vue";
 	import TopRows from "@/components/configcomponents/TopRows.vue";
