@@ -275,8 +275,12 @@
 			selectedOptions.value.includes("render background percent negative")){
 				saveErrorMsg.value = "Select 'render background %' as either positive or negative, not both.";
 				return;
-			}
-		let columnConfig = JSON.parse(JSON.stringify(singleColumnConfig.value));
+		}
+		if (selectedOptions.value.includes("js math") && mathMethod.value.trim() === ""){
+			saveErrorMsg.value = "Specify a JavaScript math method.";
+			return;
+		}
+		let columnConfig = JSON.parse(JSON.stringify(singleColumnConfig.value)); // Needs deep copy
 		allColumnsConfig.value[selectedColumn.value] = columnConfig;
 		clearAll();
 	}
