@@ -28,13 +28,13 @@
                 {{ field }}
                 <td class="arrow-button-holder">
                     <button class="btn btn-primary arrow-button arrow-button-up" 
-                        :disabled="index == 0" @click="moveUp(index)">
+                        :disabled="index == 0" @click="moveUpDown(index)">
                         &uarr;
                     </button>
                 </td>
                 <td class="arrow-button-holder">
                     <button class="btn btn-primary arrow-button"
-                    :disabled="index == selectedFields.length - 1" @click="moveDown(index)">
+                    :disabled="index == selectedFields.length - 1" @click="moveUpDown(index, true)">
                     &darr;
                     </button>
                 </td>
@@ -74,23 +74,11 @@
             selectedFields.value[index] = fieldNameNew.value;
         }
     });
-    function moveUp(index){
-		let beginning = selectedFields.value.slice(0, index-1);
+    function moveUpDown(index, down=false){
+        if (down) { index++; }
 		let risingItem = selectedFields.value[index];
-		let fallingItem = selectedFields.value[index-1]
-		let end = selectedFields.value.slice(index + 1);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		selectedFields.value = beginning.concat(end);
-	}
-	function moveDown(index){
-		let beginning = selectedFields.value.slice(0, index);
-		let risingItem = selectedFields.value[index+1];
-		let fallingItem = selectedFields.value[index]
-		let end = selectedFields.value.slice(index + 2);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		selectedFields.value = beginning.concat(end);
+		selectedFields.value.splice(index, 1);
+        selectedFields.value.splice(index-1, 0, risingItem);
 	}
     watch(selectedFields, () => emit("topRowsChanged", selectedFields.value));
 </script>

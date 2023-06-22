@@ -33,13 +33,13 @@
                         {{ field }}
                         <td class="arrow-button-holder">
                             <button class="btn btn-primary arrow-button arrow-button-up" 
-                                :disabled="index == 0" @click="moveUp(index)">
+                                :disabled="index == 0" @click="moveUpDown(index)">
                                 &uarr;
                             </button>
                         </td>
                         <td class="arrow-button-holder">
                             <button class="btn btn-primary arrow-button"
-                            :disabled="index == currentSelectedFields.length - 1" @click="moveDown(index)">
+                            :disabled="index == currentSelectedFields.length - 1" @click="moveUpDown(index, true)">
                             &darr;
                             </button>
                         </td>
@@ -62,14 +62,14 @@
         <div class="row">
             <div class="col-md-12 col text-center dr-bubbles-wrapper">
 				<div v-for="feature, index in allFeaturesConfig.features" class="dr-format-bubble">
-                    <button class="btn btn-secondary move-prev-next" @click="movePrev(index)"
+                    <button class="btn btn-secondary move-prev-next" @click="movePrevNext(index)"
                         :disabled="editingFeatureIndex != -1 || index == 0" >
                             &leftarrow;
                     </button>
                     <span class="name">{{ feature }}</span>
                     <span class="editing" v-if="editingFeatureIndex == index">Editing</span>
                     <a v-else @click="editFeature(index)"><span class="edit">Edit</span></a>
-                    <button class="btn btn-secondary move-prev-next" @click="moveNext(index)" 
+                    <button class="btn btn-secondary move-prev-next" @click="movePrevNext(index, true)" 
                         :disabled="editingFeatureIndex != -1 || index == allFeaturesConfig.features.length - 1">
                             &rightarrow;
                     </button>
@@ -107,38 +107,19 @@
     ]
     const singleFeatureConfigString = computed(()=> `"${currentFeatureName.value}": ${JSON.stringify(currentSelectedFields.value)}`);
     const allFeaturesConfigString = computed(()=> JSON.stringify(allFeaturesConfig.value));
-    function moveUp(index){
-		let beginning = currentSelectedFields.value.slice(0, index-1);
+    function moveUpDown(index, down=false){
+        if (down) { index++; }
 		let risingItem = currentSelectedFields.value[index];
-		let fallingItem = currentSelectedFields.value[index-1]
-		let end = currentSelectedFields.value.slice(index + 1);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		currentSelectedFields.value = beginning.concat(end);
+        currentSelectedFields.value.splice(index, 1);
+        currentSelectedFields.value.splice(index-1, 0, risingItem);
 	}
-	function moveDown(index){
-		let beginning = currentSelectedFields.value.slice(0, index);
-		let risingItem = currentSelectedFields.value[index+1];
-		let fallingItem = currentSelectedFields.value[index]
-		let end = currentSelectedFields.value.slice(index + 2);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		currentSelectedFields.value = beginning.concat(end);
-	}
-    function movePrev(index){
+    function movePrevNext(index, next=false){
+        if (next) { index++; }
         let list = allFeaturesConfig.value["features"];
-        let beginning = list.slice(0, index - 1);
-        beginning.push(list[index]);
-        beginning.push(list[index - 1]);
-        allFeaturesConfig.value["features"] = beginning.concat(list.slice(index + 1));
-        emitFeatures();
-    }
-    function moveNext(index){
-        let list = allFeaturesConfig.value["features"];
-        let beginning = list.slice(0, index);
-        beginning.push(list[index + 1]);
-        beginning.push(list[index]);
-        allFeaturesConfig.value["features"] = beginning.concat(list.slice(index + 2));
+        let risingItem = list[index];
+        list.splice(index, 1);
+        list.splice(index - 1, 0, risingItem);
+        allFeaturesConfig.value["features"] = list;
         emitFeatures();
     }
     function saveFeature(){

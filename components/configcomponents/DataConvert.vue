@@ -215,9 +215,7 @@
             return;
         }
         //If deleting a field already under editing
-        let beginning = savedFieldConfigs.value.slice(0, editingFieldIndex.value);
-        let end = savedFieldConfigs.value.slice(editingFieldIndex.value+1);
-        savedFieldConfigs.value = beginning.concat(end);
+        savedFieldConfigs.value.splice(editingFieldIndex.value, 1);
         doneEditing();
     }
     function emitDataConvert(){

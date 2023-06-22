@@ -20,16 +20,16 @@
 			</div>
 			<tbody class="dr-byor-data-columns">
 				<tr v-for="field, index in selectedFields" class="arrow-button-list">
-					{{ field }}
+					<td>{{ field }}</td>
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button arrow-button-up" 
-							:disabled="index == 0" @click="moveUp(index)">
+							:disabled="index == 0" @click="moveUpDown(index)">
 							&uarr;
 						</button>
 					</td>
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button"
-						:disabled="index == selectedFields.length - 1" @click="moveDown(index)">
+						:disabled="index == selectedFields.length - 1" @click="moveUpDown(index, true)">
 						&darr;
 						</button>
 					</td>
@@ -72,23 +72,11 @@
 		joinBy.value = oldConfig["join by"];
 		
     }
-	function moveUp(index){
-		let beginning = selectedFields.value.slice(0, index-1);
+	function moveUpDown(index, down=false){
+		if (down) { index++; }
 		let risingItem = selectedFields.value[index];
-		let fallingItem = selectedFields.value[index-1]
-		let end = selectedFields.value.slice(index + 1);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		selectedFields.value = beginning.concat(end);
-	}
-	function moveDown(index){
-		let beginning = selectedFields.value.slice(0, index);
-		let risingItem = selectedFields.value[index+1];
-		let fallingItem = selectedFields.value[index]
-		let end = selectedFields.value.slice(index + 2);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		selectedFields.value = beginning.concat(end);
+		selectedFields.value.splice(index, 1);
+		selectedFields.value.splice(index - 1, 0, risingItem);
 	}
 	function getInput(index, input){
 		joinBy.value[index] = input;
