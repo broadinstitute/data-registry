@@ -150,10 +150,6 @@ const props = defineProps({
 
 <template>
   <form class="needs-validation dr-form" id="mdForm" novalidate>
-    <div class="row">
-      <div class="col"><h4>Dataset Metadata</h4></div>
-
-    </div>
     <div class="row dr-status-section">
       <div class="col col-6">
         <div class="label">Dataset name<sup>*</sup></div>
@@ -374,7 +370,7 @@ const props = defineProps({
       </div>
     </div>
     <button type="button" class="btn btn-primary" @click="save" v-if="!isReadOnly">
-      {{  props.datasetId ? "Update" : "Save"}} Dataset
+      {{  props.datasetId ? "Update" : "Save"}} metadata
     </button>
   </form>
 </template>

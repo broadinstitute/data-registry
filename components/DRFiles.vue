@@ -68,7 +68,6 @@ const props = defineProps({
   <div v-if="datasetId">
       <div class="row dr-data-section">
         <form class="needs-validation" novalidate id="filesForm">
-          <div class="col-md-12"><h4>Data</h4></div>
           <ul>
             <li v-for="(phenotypeDataset, index) in store.savedDataSets">
               <PhenotypeDataset :dataset-data-type="dataType" :key="index" :phenotypeDataset="phenotypeDataset"
