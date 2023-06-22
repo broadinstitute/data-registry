@@ -64,10 +64,6 @@
         emitConfig();
     })
     function readyToSave(){
-		if(!joinConfig.value["field name"] || joinConfig.value["field name"].trim() == ""){
-			readySaveMsg = "Enter a field name.";
-            return false;
-		}
 		if (joinConfig.value["join by"].includes(",")){
 			readySaveMsg = "Commas may not be used in field joins.";
 			return false;

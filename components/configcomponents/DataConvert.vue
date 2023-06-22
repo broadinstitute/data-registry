@@ -168,13 +168,17 @@
         updateConfig(savedField, true);
     }
     function saveField(){
-        let newFieldString = JSON.stringify(currentFieldConfig.value);
-        let newField = JSON.parse(newFieldString);
-        let newName = newField["field name"];
         if (!readyToSave){
             showMsg.value = true;
             return;
         }
+        let newField = JSON.parse(JSON.stringify(currentFieldConfig.value)); // Needs a deep copy
+        if (!newField["field name"] || newField["field name"].trim() === ""){
+            failedSaveMsg = "Enter a field name.";
+            showMsg.value = true;
+            return;
+        }
+        let newName = newField["field name"];
         if (newName.includes(",")){
             failedSaveMsg = "Commas may not be used in field names.";
             showMsg.value = true;

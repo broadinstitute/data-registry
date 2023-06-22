@@ -100,10 +100,6 @@
     function readyToSave(){
 		let fieldsLength = joinMultiConfig.value["fields to join"].length;
 		let joinLength = joinMultiConfig.value["join by"].length;
-		if (!joinMultiConfig.value["field name"] || joinMultiConfig.value["field name"].trim() == ""){
-			readySaveMsg = "Enter a field name.";
-            return false;
-		}
 		if (joinMultiConfig.value["fields to join"].length < 2){
 			readySaveMsg = "Select some fields to join.";
 			return false;

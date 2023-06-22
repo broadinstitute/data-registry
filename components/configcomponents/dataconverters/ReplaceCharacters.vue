@@ -95,10 +95,6 @@
         emit('configChanged', replaceCharConfig.value, readyToSave(), readySaveMsg);
 	}
     function readyToSave(){
-		if (!replaceCharConfig.value["field name"] || replaceCharConfig.value["field name"].trim() == ""){
-			readySaveMsg = "Enter a field name.";
-            return false;
-		}
 		if(!replaceCharConfig.value["raw field"]){
 			readySaveMsg = "Select a raw field.";
             return false;

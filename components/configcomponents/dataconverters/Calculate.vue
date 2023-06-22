@@ -51,10 +51,6 @@
         emitConfig();
     })
     function readyToSave(){
-		if (!calcConfig.value["field name"] || calcConfig.value["field name"].trim() == ""){
-			readySaveMsg = "Enter a field name.";
-            return false;
-		}
 		if (!calcConfig.value["raw field"]){
 			readySaveMsg = "Select a raw field.";
             return false;

@@ -115,10 +115,6 @@
 		emit('configChanged', scoreColumnsConfig.value, readyToSave(), readySaveMsg);
 	}
     function readyToSave(){
-		if (!scoreColumnsConfig.value["field name"] || scoreColumnsConfig.value["field name"].trim() == ""){
-			readySaveMsg = "Enter a field name.";
-            return false;
-		}
 		if (scoreColumnsConfig.value["fields to score"].length < 1){
 			readySaveMsg = "Select fields to score.";
 			return false;

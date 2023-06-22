@@ -48,10 +48,6 @@
     });
     function readyToSave(){
 		//separator CAN be an empty string so we don't check that
-		if (!arrayRenameConfig.value["field name"] || arrayRenameConfig.value["field name"].trim() == ""){
-			readySaveMsg = "Enter a field name.";
-            return false;
-		}
 		if (arrayRenameConfig.value["separate by"].includes(",")){
 			readySaveMsg = "Commas may not be used in separator.";
 			return false;
