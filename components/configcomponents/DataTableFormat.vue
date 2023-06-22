@@ -151,6 +151,7 @@
 <script setup>
 	import "bootstrap/dist/css/bootstrap.min.css";
 	import "bootstrap-icons/font/bootstrap-icons.css";
+	import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 	import DataConvert from "@/components/configcomponents/DataConvert.vue";
 	import TopRows from "@/components/configcomponents/TopRows.vue";
 	import ToolTips from "@/components/configcomponents/ToolTips.vue";
