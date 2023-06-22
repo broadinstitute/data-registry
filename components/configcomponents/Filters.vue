@@ -202,9 +202,7 @@
 	}
 	function deleteFilter(){
 		if (editingFilterIndex.value != -1){
-			let beginning = allFilters.value.slice(0, editingFilterIndex.value);
-			let end = allFilters.value.slice(editingFilterIndex.value + 1);
-			allFilters.value = beginning.concat(end);
+			allFilters.value.splice(editingFilterIndex.value, 1);
 		}
 		clearAll();
 	}
