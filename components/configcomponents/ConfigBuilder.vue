@@ -34,7 +34,7 @@
 		</div>
 	</div>
 </template>
-<style scoped>
+<style>
 @import "public/css/mdkp.css";
 @import "public/css/configbuilder.css";
 </style>

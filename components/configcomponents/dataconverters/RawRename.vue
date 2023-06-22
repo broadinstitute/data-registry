@@ -16,10 +16,6 @@
         </div>
     </div>
 </template>
-<style scoped>
-    @import "public/css/mdkp.css";
-    @import "public/css/configbuilder.css";
-</style>
 <script setup>
 	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
     const emit = defineEmits(['configChanged']);
