@@ -57,11 +57,11 @@
 				</div>
 				<div class="form-inline">
 					<span>Link to:</span>
-					<input type="text" class="form-control form-control-sm input-default" 
-						style="width: 80%; margin-left: 5px;" v-model="linkTo"/>
+					<input type="text" v-model="linkTo"
+						class="form-control form-control-sm input-default column-format-wide"/>
 				</div>
 				<div class="form-inline">
-					<div class="form-check" style="margin-right: 10px;">
+					<div class="form-check column-format-label">
 						<label class="form-check-label">
 							<input class="form-check-input" type="checkbox" v-model="newTab"/>
 							New tab
@@ -76,8 +76,8 @@
 				</div>
 				<div class="form-inline" v-if="asButton">
 					<span>Button label:</span>
-					<input type="text" class="form-control form-control-sm input-default"
-						style="width: 80%; margin-left: 5px;" v-model="buttonLabel"/>
+					<input type="text" v-model="buttonLabel" 
+						class="form-control form-control-sm input-default column-format-wide"/>
 				</div>
 			</div>
 			<div v-if="selectedOptions.includes('render background percent') || 
@@ -87,8 +87,8 @@
 				</div>
 				<div class="form-inline">
 					<span>Percent if no value:</span>
-					<input type="number" class="form-control form-control-sm input-default"
-						style="width: 50%; margin-left: 5px;" v-model="percentNoValue"/>
+					<input type="number" v-model="percentNoValue" 
+						class="form-control form-control-sm input-default column-format-medium"/>
 				</div>
 			</div>
 			<div v-if="selectedOptions.includes('fixed')">
@@ -97,8 +97,7 @@
 				</div>
 				<div class="form-inline">
 					<span>Place </span>
-					<select class="form-control form-control-sm" v-model="fixedPlaces"
-							style=" width: 50%; margin-left: 5px;">
+					<select class="form-control form-control-sm column-format-medium" v-model="fixedPlaces">
 						<option v-for="i in 9">{{ i + 1 }}</option>
 					</select>
 				</div>
@@ -109,8 +108,8 @@
 				</div>
 				<div class="form-inline">
 					<span>Method </span>
-					<input type="text" class="form-control form-control-sm input-default"
-						v-model="mathMethod" style="width: 50%; margin-left: 5px;"/>
+					<input type="text" v-model="mathMethod"
+						class="form-control form-control-sm input-default column-format-medium"/>
 				</div>
 			</div>
 			<div class="failed-save">{{ saveErrorMsg }}</div>
