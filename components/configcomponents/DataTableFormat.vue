@@ -132,10 +132,10 @@
 		<div class="card-body dr-form">
 			<h4>Data table format output</h4>
 			<div class="row dr-builder-ui">
-				<div class="col-md-11">
+				<div class="col-md-10">
 					<pre class="output">{{ dataTableFormatString}}</pre>
 				</div>
-				<div class="col-md-1">
+				<div class="col-md-2">
 					<button class="btn btn-primary btn-sm" type="button" @click="copyConfig">
                     	Copy configuration
                 	</button>
@@ -158,12 +158,8 @@
 	import Features from "@/components/configcomponents/Features.vue";
 	import ColumnFormatting from "@/components/configcomponents/ColumnFormatting.vue";
 	import LocusFieldStarColumn from "./LocusFieldStarColumn.vue";
-	import DataComparison from "@/components/configcomponents/DataComparison.vue";
 
-/* 	computed property outputObject generates output
-	another computed property outputString stringifies and displays it
-	outputObject makes sense of all the little config items stored in various formats
-	so that the string does not have to be the source of truth during editing */
+	const emit = defineEmits(["fieldsUpdated", "fieldRenamed"]);
 	const dataTableFormat = ref({});
 	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
 	const dataConvert = ref([]);
@@ -233,6 +229,7 @@
 	}
 	function changeFieldName(oldName, newName){
 		nameChange.value = [oldName, newName];
+		emit("fieldRenamed", nameChange.value);
 	}
 	function getRawFields (){
 		let topLine = pastedData.value.split("\n")[0];
@@ -245,4 +242,9 @@
 	function copyConfig(){
 		navigator.clipboard.writeText(dataTableFormatString.value);
 	}
+	watch(convertedFields, (newFields, oldFields) => {
+		if (JSON.stringify(newFields) != JSON.stringify(oldFields)){
+			emit("fieldsUpdated", convertedFields.value);
+		}
+	});
 </script>
