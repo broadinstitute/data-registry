@@ -133,7 +133,6 @@
 		"dropdown": "Dropdown"
 	};
 	const allFilters = ref([]);
-    watch(availableFields, () => console.log(JSON.stringify(availableFields.value)));
     watch(fieldNameOld, () => {
 		if (selectedField.value == fieldNameOld.value){
 			selectedField.value = fieldNameNew.value;
@@ -163,7 +162,7 @@
 			message.value = "Select a filter type.";
 			return;
 		}
-		let thisFilter = JSON.parse(JSON.stringify(singleFilterConfig.value));
+		let thisFilter = JSON.parse(JSON.stringify(singleFilterConfig.value)); // Deep copy
 		if (editingFilterIndex.value != -1){
 			allFilters.value[editingFilterIndex.value] = thisFilter;
 		} else {
@@ -172,7 +171,6 @@
 		clearAll();
 	}
 	function clearAll(){
-		console.log("Clearing all");
 		editingFilterIndex.value = -1;
 		message.value = "";
 		selectedField.value = null;
@@ -182,7 +180,7 @@
 	}
 	function editFilter(index){
 		editingFilterIndex.value = index;
-		let filterContent = JSON.parse(JSON.stringify(allFilters.value[index]));
+		let filterContent = JSON.parse(JSON.stringify(allFilters.value[index])); // Deep copy
 		selectedField.value = filterContent.field;
 		filterLabel.value = filterContent.label;
 		selectedFilterType.value = filterTypeOptions[filterContent.type];

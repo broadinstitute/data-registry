@@ -162,7 +162,7 @@
             showMsg.value = true;
             return;
         }
-        let newField = JSON.parse(JSON.stringify(currentFieldConfig.value)); // Needs a deep copy
+        let newField = JSON.parse(JSON.stringify(currentFieldConfig.value)); // Deep copy
         if (!newField["field name"] || newField["field name"].trim() === ""){
             failedSaveMsg = "Enter a field name.";
             showMsg.value = true;
@@ -231,9 +231,9 @@
         }
     });
     watch(rawFields, (newFields, oldFields) => {
-        let newFieldsSorted = JSON.parse(JSON.stringify(newFields));
+        let newFieldsSorted = JSON.parse(JSON.stringify(newFields)); // Deep copy
         newFieldsSorted.sort();
-        let oldFieldsSorted = JSON.parse(JSON.stringify(oldFields));
+        let oldFieldsSorted = JSON.parse(JSON.stringify(oldFields)); // Deep copy
         oldFieldsSorted.sort();
         if (JSON.stringify(newFieldsSorted) != JSON.stringify(oldFieldsSorted)){
             clearDataConvert();

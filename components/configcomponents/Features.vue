@@ -96,8 +96,6 @@
         "locus field",
         "star column"
     ]
-    const singleFeatureConfigString = computed(()=> `"${currentFeatureName.value}": ${JSON.stringify(currentSelectedFields.value)}`);
-    const allFeaturesConfigString = computed(()=> JSON.stringify(allFeaturesConfig.value));
     function moveUpDown(index, down=false){
         if (down) { index++; }
 		let risingItem = currentSelectedFields.value[index];
@@ -191,7 +189,6 @@
             }
         });
         for (let i = 0; i < currentSelectedFields.value.length; i++){
-            console.log(currentSelectedFields.value[i]);
             if(currentSelectedFields.value[i] == fieldNameOld.value){
                 currentSelectedFields.value[i] = fieldNameNew.value;
             }

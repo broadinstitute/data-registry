@@ -165,8 +165,6 @@
 	const selectedOptionsMod = computed(()=> selectedOptions.value.map(
 			item => item == "fixed" ? `fixed ${fixedPlaces.value}` : item));
 	const singleColumnConfig = ref({"type": []});
-	const singleColumnConfigString = computed(() => 
-		`"${selectedColumn.value}": ${JSON.stringify(singleColumnConfig.value)}`);
 	const allColumnsConfig = ref({});
 	const allColumnsConfigString = computed(() => JSON.stringify(allColumnsConfig.value));
 	const savedColumns = computed(() => Object.keys(allColumnsConfig.value));
@@ -191,7 +189,7 @@
 			selectedColumn.value = fieldNameNew.value;
 		}
 		if (!!allColumnsConfig.value[fieldNameOld.value]){
-			let updatedFieldConfig = JSON.parse(JSON.stringify(allColumnsConfig.value[fieldNameOld.value]));	
+			let updatedFieldConfig = JSON.parse(JSON.stringify(allColumnsConfig.value[fieldNameOld.value])); // Deep copy
 			delete allColumnsConfig.value[fieldNameOld.value];
 			allColumnsConfig.value[fieldNameNew.value] = updatedFieldConfig;
 		}
@@ -280,7 +278,7 @@
 			saveErrorMsg.value = "Specify a JavaScript math method.";
 			return;
 		}
-		let columnConfig = JSON.parse(JSON.stringify(singleColumnConfig.value)); // Needs deep copy
+		let columnConfig = JSON.parse(JSON.stringify(singleColumnConfig.value)); // Deep copy
 		allColumnsConfig.value[selectedColumn.value] = columnConfig;
 		clearAll();
 	}
@@ -291,7 +289,7 @@
 		clearAll();
 	}
 	function editColumn(column, oldColumn=null){
-		let loadConfig = JSON.parse(JSON.stringify(allColumnsConfig.value[column]));
+		let loadConfig = JSON.parse(JSON.stringify(allColumnsConfig.value[column])); // Deep copy
 		clearAll();
 		selectedColumn.value = column;
 		singleColumnConfig.value = loadConfig;
