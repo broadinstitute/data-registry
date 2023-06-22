@@ -123,8 +123,8 @@ const props = defineProps({
       pub_id: pubId.value,
       publication: publication.value,
     }
-    if (store.datasetId) {
-      opts.id = store.datasetId
+    if (store.dataSetId) {
+      opts.id = store.dataSetId
     }
     await store.saveDataset(opts)
   }

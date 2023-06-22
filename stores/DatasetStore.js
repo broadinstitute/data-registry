@@ -129,6 +129,7 @@ export const useDatasetStore = defineStore('DatasetStore', {
       const { data } = await configuredAxios.get(`/api/datasets/${dsId}`)
       this.savedPhenotypes = data.phenotypes
       this.savedCredibleSets = data.credible_sets
+      this.savedDataSetId = data.dataset.id
       this.combinedPhenotypesAndCredibleSets = mapCredibleSets()
       return data
     },
@@ -138,6 +139,7 @@ export const useDatasetStore = defineStore('DatasetStore', {
     },
     async saveDataset(dataset) {
       this.processing = true
+      this.modalMsg = "Saving dataset metadata"
       if (dataset.id) {
         await configuredAxios.patch("/api/datasets", JSON.stringify(dataset))
       } else {
