@@ -3,10 +3,6 @@
         Top rows tutorial
     </a>
     <div class="row dr-builder-ui">
-        <!-- <div class="col-md-3 col">
-            <div class="label">Output</div>
-            <pre class="output">{{ JSON.stringify(selectedFields) }}</pre>
-        </div> -->
         <div class="col-md-6 col">
             <div class="label">
                 Select rows

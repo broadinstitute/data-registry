@@ -8,9 +8,6 @@
                 Feature name
             </div>
             <input type="text" class="form-control input-default" v-model="currentFeatureName"/>
-            <!-- <div class="label">Output</div>
-            <pre class="output">{{ singleFeatureConfigString }}</pre>
-            <pre class="output">{{ allFeaturesConfigString }}</pre> -->
         </div>
         <div class="col-md-3 col">
                 <div class="label">

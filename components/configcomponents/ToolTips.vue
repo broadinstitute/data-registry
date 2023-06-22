@@ -3,10 +3,6 @@
         Tool tips tutorial
     </a>
     <div class="row dr-builder-ui">
-        <!-- <div class="col-md-3 col">
-            <div class="label">Output</div>
-            <pre class="output">{{ JSON.stringify(toolTipConfig) }}</pre>
-        </div> -->
         <div class="col-md-12 col">
             <div class="label">
                 Tool tips

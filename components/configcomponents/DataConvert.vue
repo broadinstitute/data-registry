@@ -17,8 +17,6 @@
                         <sup>required</sup>
                 </div>
                 <input type="text" class="form-control input-default" v-model="newFieldName"/>
-                <!-- <div class="label">Output</div>
-                <pre class="output">{{ currentConfigString }}</pre> -->
             </div>
             <div class="col-md-8 col">
                 <RawRename 
