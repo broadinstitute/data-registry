@@ -33,13 +33,13 @@
                         {{ field }}
                         <td class="arrow-button-holder">
                             <button class="btn btn-primary arrow-button arrow-button-up" 
-                                :disabled="index == 0" @click="moveUp(index)">
+                                :disabled="index == 0" @click="moveUpDown(index)">
                                 &uarr;
                             </button>
                         </td>
                         <td class="arrow-button-holder">
                             <button class="btn btn-primary arrow-button"
-                            :disabled="index == currentSelectedFields.length - 1" @click="moveDown(index)">
+                            :disabled="index == currentSelectedFields.length - 1" @click="moveUpDown(index, true)">
                             &darr;
                             </button>
                         </td>
@@ -107,23 +107,11 @@
     ]
     const singleFeatureConfigString = computed(()=> `"${currentFeatureName.value}": ${JSON.stringify(currentSelectedFields.value)}`);
     const allFeaturesConfigString = computed(()=> JSON.stringify(allFeaturesConfig.value));
-    function moveUp(index){
-		let beginning = currentSelectedFields.value.slice(0, index-1);
+    function moveUpDown(index, down=false){
+        if (down) { index++; }
 		let risingItem = currentSelectedFields.value[index];
-		let fallingItem = currentSelectedFields.value[index-1]
-		let end = currentSelectedFields.value.slice(index + 1);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		currentSelectedFields.value = beginning.concat(end);
-	}
-	function moveDown(index){
-		let beginning = currentSelectedFields.value.slice(0, index);
-		let risingItem = currentSelectedFields.value[index+1];
-		let fallingItem = currentSelectedFields.value[index]
-		let end = currentSelectedFields.value.slice(index + 2);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		currentSelectedFields.value = beginning.concat(end);
+        currentSelectedFields.value.splice(index, 1);
+        currentSelectedFields.value.splice(index-1, 0, risingItem);
 	}
     function movePrev(index){
         let list = allFeaturesConfig.value["features"];
