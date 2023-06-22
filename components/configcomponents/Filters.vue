@@ -194,12 +194,7 @@
 		selectedFilterType.value = filterTypeOptions[filterContent.type];
 		labelInBubble.value = filterContent["label in bubble"] == "true";
 	}
-	function cancelFilterEdit(){
-		if (editingFilterIndex.value == -1){
-			clearAll();
-			return;
-		}
-	}
+
 	function deleteFilter(){
 		if (editingFilterIndex.value != -1){
 			allFilters.value.splice(editingFilterIndex.value, 1);
@@ -212,11 +207,7 @@
 		allFilters.value.splice(index, 1);
 		allFilters.value.splice(index-1, 0, risingItem);
 	}
-	function moveDown(index){
-		let risingItem = allFilters.value[index+1];
-		allFilters.value.splice(index+1, 1);
-		allFilters.value.splice(index, 0, risingItem);
-	}
+
 	function copyFilterConfig(){
 		navigator.clipboard.writeText(JSON.stringify(allFilters.value));
 	}

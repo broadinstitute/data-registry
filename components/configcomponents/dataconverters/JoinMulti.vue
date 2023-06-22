@@ -104,10 +104,6 @@
 			readySaveMsg = "Enter a field name.";
             return false;
 		}
-		if (joinMultiConfig.value["field name"].includes(",")){
-			readySaveMsg = "Commas may not be used in field names.";
-			return false;
-		}
 		if (joinMultiConfig.value["fields to join"].length < 2){
 			readySaveMsg = "Select some fields to join.";
 			return false;

@@ -175,6 +175,11 @@
             showMsg.value = true;
             return;
         }
+        if (newName.includes(",")){
+            failedSaveMsg = "Commas may not be used in field names.";
+            showMsg.value = true;
+            return;
+        }
         // Check for duplicates
         for (let i = 0; i < savedFieldConfigs.value.length; i++){
             let existingFieldName = savedFieldConfigs.value[i]["field name"];
