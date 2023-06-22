@@ -3,11 +3,6 @@
         Column formatting tutorial
     </a>
 	<div class="row dr-builder-ui">
-		<!-- <div class="col-md-3 col">
-            <div class="label">Output</div>
-            <pre class="output">{{ singleColumnConfigString }}</pre>
-            <pre class="output">{{ allColumnsConfigString }}</pre>
-        </div> -->
 		<div class="col-md-2 col">
                 <div class="label">
                     Select column
@@ -42,13 +37,13 @@
 					{{ formatOptions[option] }}
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button arrow-button-up" 
-							:disabled="index == 0" @click="moveUp(index)">
+							:disabled="index == 0" @click="moveUpDown(index)">
 							&uarr;
 						</button>
 					</td>
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button"
-						:disabled="index == selectedOptions.length - 1" @click="moveDown(index)">
+						:disabled="index == selectedOptions.length - 1" @click="moveUpDown(index, true)">
 						&darr;
 						</button>
 					</td>
@@ -232,23 +227,11 @@
 		percentNoValue.value = 0;
 		saveErrorMsg.value = "";
 	}
-	function moveUp(index){
-		let beginning = selectedOptions.value.slice(0, index-1);
+	function moveUpDown(index, down=false){
+		if (down) { index++; }
 		let risingItem = selectedOptions.value[index];
-		let fallingItem = selectedOptions.value[index-1]
-		let end = selectedOptions.value.slice(index + 1);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		selectedOptions.value = beginning.concat(end);
-	}
-	function moveDown(index){
-		let beginning = selectedOptions.value.slice(0, index);
-		let risingItem = selectedOptions.value[index+1];
-		let fallingItem = selectedOptions.value[index]
-		let end = selectedOptions.value.slice(index + 2);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		selectedOptions.value = beginning.concat(end);
+		selectedOptions.value.splice(index, 1);
+		selectedOptions.value.splice(index - 1, 0, risingItem);
 	}
 	function updateFormat(){
 		singleColumnConfig.value["type"] = selectedOptionsMod.value;
