@@ -68,13 +68,13 @@
 											</td>			
 											<td class="arrow-button-holder">
 												<button class="btn btn-primary arrow-button arrow-button-up" 
-													:disabled="index == 0" @click="moveUp(index)">
+													:disabled="index == 0" @click="moveUpDown(index)">
 														&uarr;
 												</button>
 											</td>
 											<td class="arrow-button-holder">
 												<button class="btn btn-primary arrow-button"
-												:disabled="index == allFilters.length - 1" @click="moveDown(index)">
+												:disabled="index == allFilters.length - 1" @click="moveUpDown(index, true)">
 													&darr;
 												</button>
 											</td>
@@ -206,19 +206,16 @@
 		}
 		clearAll();
 	}
-	function moveUp(index){
+	function moveUpDown(index, down=false){
+		if (down){ index++; }
 		let risingItem = allFilters.value[index];
 		allFilters.value.splice(index, 1);
 		allFilters.value.splice(index-1, 0, risingItem);
 	}
 	function moveDown(index){
-		let beginning = allFilters.value.slice(0, index);
 		let risingItem = allFilters.value[index+1];
-		let fallingItem = allFilters.value[index]
-		let end = allFilters.value.slice(index + 2);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		allFilters.value = beginning.concat(end);
+		allFilters.value.splice(index+1, 1);
+		allFilters.value.splice(index, 0, risingItem);
 	}
 	function copyFilterConfig(){
 		navigator.clipboard.writeText(JSON.stringify(allFilters.value));
