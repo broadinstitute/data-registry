@@ -207,13 +207,9 @@
 		clearAll();
 	}
 	function moveUp(index){
-		let beginning = allFilters.value.slice(0, index-1);
 		let risingItem = allFilters.value[index];
-		let fallingItem = allFilters.value[index-1]
-		let end = allFilters.value.slice(index + 1);
-		beginning.push(risingItem);
-		beginning.push(fallingItem);
-		allFilters.value = beginning.concat(end);
+		allFilters.value.splice(index, 1);
+		allFilters.value.splice(index-1, 0, risingItem);
 	}
 	function moveDown(index){
 		let beginning = allFilters.value.slice(0, index);
