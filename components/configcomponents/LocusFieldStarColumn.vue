@@ -27,8 +27,6 @@
 		</div>
 </template>
 <script setup>
-	import "bootstrap/dist/css/bootstrap.min.css";
-	import "bootstrap-icons/font/bootstrap-icons.css";
 	const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["locusStarChanged"]);
 	const availableFields = computed(()=> props.fields);

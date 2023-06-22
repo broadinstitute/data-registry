@@ -82,8 +82,6 @@
     </div>
 </template>
 <script setup>
-    import "bootstrap/dist/css/bootstrap.min.css";
-	import "bootstrap-icons/font/bootstrap-icons.css";
     import ArrayToString from "@/components/configcomponents/dataconverters/ArrayToString.vue";
     import Calculate from "@/components/configcomponents/dataconverters/Calculate.vue";
     import Join from "@/components/configcomponents/dataconverters/Join.vue";
@@ -91,8 +89,6 @@
     import RawRename from "@/components/configcomponents/dataconverters/RawRename.vue";
     import ReplaceCharacters from "@/components/configcomponents/dataconverters/ReplaceCharacters.vue";
     import ScoreColumns from "@/components/configcomponents/dataconverters/ScoreColumns.vue";
-
-
     const props = defineProps({rawFields: Array});
     const emit = defineEmits(["dcChanged", "fieldNameChanged"]);
     const rawFields = computed(()=> props.rawFields);
