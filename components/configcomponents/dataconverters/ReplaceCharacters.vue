@@ -78,9 +78,7 @@
 		});
 	}
 	function deleteEntry(index){
-		let beginning = replaceChars.value.slice(0,index);
-		let end = replaceChars.value.slice(index+1);
-		replaceChars.value = beginning.concat(end);
+		replaceChars.value.splice(index, 1);
 	}
 	function updateFrom(index, value){
 		replaceChars.value[index]["from"] = value;
