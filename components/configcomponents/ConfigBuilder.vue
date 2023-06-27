@@ -5,7 +5,7 @@
 			<div class="card mdkp-card dataset-page-header">
 				<div class="row card-body">
 					<div class="col-md-8">
-						<h2>BYOR Configuration Builder</h2>
+						<h2>BYOR Configuration Builder <sup>Beta 1.0</sup></h2>
 					</div>
 					<!--ConfigLoadBox goes here-->
 				</div>
@@ -24,7 +24,9 @@
 				<div class="card-body">
 					<div class="row dr-submit-section">
 						<div class="col-md-12 col filter-col-md">
-							<button class="btn btn-primary" type="button">
+							<div style="font-size: smaller;">Coming soon</div>
+							<button class="btn btn-primary disabled" type="button" 
+								style="background-color: darkgray; border: none;">
 								Save configuration
 							</button>
 						</div>
