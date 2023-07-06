@@ -266,11 +266,11 @@ const props = defineProps({
           <div class="col-md-4 col">
             <div class="label">Data Sharing<sup>*</sup></div>
             <label class="form-check-label">
-              <input type="radio" v-model="publiclyAvailable" value="true" class="form-check-input">
+              <input type="radio" v-model="publiclyAvailable" value="true" class="form-check-input" :disabled="isReadOnly" required name="public">
               Share uploaded files with other data registry users
             </label>
             <label class="form-check-label">
-              <input type="radio" v-model="publiclyAvailable" value="false" class="form-check-input">
+              <input type="radio" v-model="publiclyAvailable" value="false" class="form-check-input" :disabled="isReadOnly" required name="public">
               Keep uploaded files private
             </label>
           </div>

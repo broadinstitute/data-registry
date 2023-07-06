@@ -11,6 +11,7 @@
                 <th scope="col">Samples</th>
                 <th scope="col">Status</th>
                 <th scope="col">Submitter</th>
+                <th scope="col">Files</th>
                 <th scope="col">Uploaded</th>
                 <th>&nbsp;</th>
             </tr>
@@ -38,7 +39,12 @@
                 <td>{{ dataset.global_sample_size }}</td>
                 <td>{{ dataset.status }}</td>
                 <td>{{ dataset.data_submitter }}</td>
-
+                <td v-if="dataset.publicly_available">
+                  <nuxt-link :to="`/datasets/files/${dataset.id}`">files</nuxt-link>
+                </td>
+                <td v-else>
+                  Not Shared
+                </td>
                 <td>
                     {{
                         dataset.created_at
