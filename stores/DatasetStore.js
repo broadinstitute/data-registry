@@ -121,6 +121,10 @@ export const useDatasetStore = defineStore('DatasetStore', {
         return { label: s.name, value: s.id, institution: s.institution }
       })
     },
+    async fetchDatasetFiles(dsId) {
+      const { data } = await configuredAxios.get(`/api/filelist/${dsId}`)
+      return data
+    },
     async saveStudy(study) {
       const { data } =  await configuredAxios.post("/api/studies", JSON.stringify(study))
       return data

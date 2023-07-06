@@ -34,6 +34,7 @@ const props = defineProps({
   const dataContributorEmail = ref(null);
   const dataContributor = ref(null);
   const sex = ref("");
+  const publiclyAvailable = ref(null);
   const globalSampleSize = ref("");
   const pubStatus = ref("");
   const description = ref("");
@@ -67,6 +68,7 @@ const props = defineProps({
     dataSubmitterEmail.value = ds.data_submitter_email;
     ancestry.value = ds.ancestry;
     sex.value = ds.sex;
+    publiclyAvailable.value = ds.publicly_available;
     pubStatus.value = ds.status;
     geneticsDataType.value = ds.data_type;
     globalSampleSize.value = ds.global_sample_size;
@@ -119,6 +121,7 @@ const props = defineProps({
       global_sample_size: globalSampleSize.value,
       study_id: shortened_study_id,
       status: pubStatus.value,
+      publicly_available: publiclyAvailable.value,
       description: description.value,
       pub_id: pubId.value,
       publication: publication.value,
@@ -203,7 +206,7 @@ const props = defineProps({
           </div>
         </div>
         <div class="row">
-          <div class="col-md-6 col">
+          <div class="col-md-4 col">
             <div class="label">Ancestry<sup>*</sup></div>
             <select class="form-select" v-model="ancestry" required :disabled="isReadOnly">
               <option value="ABA">
@@ -247,7 +250,7 @@ const props = defineProps({
               </option>
             </select>
           </div>
-          <div class="col-md-6 col">
+          <div class="col-md-4 col">
             <div class="label">Sex<sup>*</sup></div>
             <select
                 class="form-select"
@@ -259,6 +262,17 @@ const props = defineProps({
               <option value="male">Male</option>
               <option value="female">Female</option>
             </select>
+          </div>
+          <div class="col-md-4 col">
+            <div class="label">Data Sharing<sup>*</sup></div>
+            <label class="form-check-label">
+              <input type="radio" v-model="publiclyAvailable" value="true" class="form-check-input">
+              Share uploaded files with other data registry users
+            </label>
+            <label class="form-check-label">
+              <input type="radio" v-model="publiclyAvailable" value="false" class="form-check-input">
+              Keep uploaded files private
+            </label>
           </div>
         </div>
         <div class="row">
