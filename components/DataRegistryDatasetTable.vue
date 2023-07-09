@@ -40,7 +40,7 @@
                 <td>{{ dataset.status }}</td>
                 <td>{{ dataset.data_submitter }}</td>
                 <td v-if="dataset.publicly_available">
-                  <nuxt-link :to="`/datasets/files/${dataset.id}`">files</nuxt-link>
+                  <i class="bi bi-files" @click="copyToClip(dataset)" style="cursor: pointer" title="click to copy shareable urls for dataset files"></i> {{ copyMsg }}
                 </td>
                 <td v-else>
                   Not Shared
@@ -54,8 +54,8 @@
                 </td>
                 <td>
                     <nuxt-link :to="`/datasets/${dataset.id}?edit=true`"
-                        ><i class="bi bi-pencil" style="cursor: pointer"></i
-                    ></nuxt-link>
+                        ><i class="bi bi-pencil" style="cursor: pointer"></i>
+                    </nuxt-link>
                     &nbsp;
                     <i
                         @click="deleteDataSet(dataset.id)"
@@ -69,29 +69,44 @@
 </template>
 
 <script setup>
+import useAxios from '~/composables/useAxios'
+
+
 const route = useRouter();
+const copyMsg = ref("");
 const config = useRuntimeConfig();
 const datasets = ref([]);
+
+const axios = useAxios(config, undefined, (error) => {
+    console.log(error)
+    throw new Error("Server Error")
+})
 
 onMounted(() => {
     fetchDataSets();
 });
 
+async function copyToClip(dataSet){
+  let files = (await axios.get(`/api/filelist/${dataSet.id}`)).data
+  if(files.length === 0) {
+    copyMsg.value = "No file paths to copy"
+  } else {
+    files = files.map(f => `${config.public["apiBaseUrl"]}/api/${f}`)
+    await navigator.clipboard.writeText(files.join("\n"))
+    copyMsg.value = `Copied ${files.length} file paths`
+  }
+  setTimeout(() => {
+    copyMsg.value = "";
+  }, 2000)
+}
+
 async function deleteDataSet(id) {
-    await $fetch(`${config.public["apiBaseUrl"]}/api/datasets/${id}`, {
-        method: "DELETE",
-        headers: { "access-token": config.public["apiSecret"] },
-    });
+    await axios.delete(`/api/datasets/${id}`)
     datasets.value = datasets.value.filter((dataset) => dataset.id !== id);
 }
 
 async function fetchDataSets() {
-    datasets.value = await $fetch(
-        `${config.public["apiBaseUrl"]}/api/datasets`,
-        {
-            headers: { "access-token": config.public["apiSecret"] },
-        },
-    );
+    datasets.value = (await axios.get(`/api/datasets`)).data;
 }
 function formatSex(gender) {
     if (!gender) return "";

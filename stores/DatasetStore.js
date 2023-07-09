@@ -54,7 +54,7 @@ function mapCredibleSets(){
       sampleSize: p.sample_size,
       cases: p.cases,
       controls: p.controls,
-      credibleSets: credibleSets[p.id] || [],
+      credibleSets: credibleSets[p.id] || [{}],
       id: p.id,
       fileName: p.file_name,
       description: store.phenotypes[p.phenotype]
@@ -120,10 +120,6 @@ export const useDatasetStore = defineStore('DatasetStore', {
       this.studies = data.map((s) => {
         return { label: s.name, value: s.id, institution: s.institution }
       })
-    },
-    async fetchDatasetFiles(dsId) {
-      const { data } = await configuredAxios.get(`/api/filelist/${dsId}`)
-      return data
     },
     async saveStudy(study) {
       const { data } =  await configuredAxios.post("/api/studies", JSON.stringify(study))
