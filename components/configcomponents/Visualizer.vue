@@ -16,14 +16,15 @@
                                         <div class="label">
                                             Select visualizer
                                         </div>
-                                        <select class="form-control">
-                                            <option>Manhattan (vector)</option>
-                                            <option>Manhattan (bitmap)</option>
-                                            <option>Heatmap</option>
-                                            <option>Phewas</option>
-                                            <option>Region</option>
+                                        <select v-model="visType" class="form-control">
+                                            <option value="">Select a visualizer</option>
+                                            <option value="manhattan_vector">Manhattan (vector)</option>
+                                            <option value="manhattan_bitmap">Manhattan (bitmap)</option>
+                                            <option value="heatmap">Heatmap</option>
+                                            <option value="phewas">Phewas</option>
+                                            <option value="region">Region</option>
                                             <!--<option>Score</option>-->
-                                            <option>Volcano</option>
+                                            <option value="volcano">Volcano</option>
                                         </select>
                                     </div>
                                                     <!-- Manhattan (vector) 
@@ -40,7 +41,8 @@
                                         <div class="label">
                                             Set parameters
                                         </div>
-                                        <div class="row">
+                                        <div v-if="visType == 'manhattan_vector'">
+                                            <div class="row">
                                             <div class="col-md-3">
                                                 X Axis field:
                                             </div>
@@ -163,6 +165,8 @@
                                                 />
                                             </div>
                                         </div>
+                                        </div>
+                                        
                                         <!-- Manhattan (bitmap) 
     {"type":"manhattan bitmap plot",
     "x axis field": "locus",
@@ -172,7 +176,8 @@
     "x axis label": "Chromosome",
     "hover content": ["locus","P-value"],
     "height": 300}-->
-                                        <div class="row">
+                                        <div v-if="visType == 'manhattan_bitmap'">
+                                            <div class="row">
                                             <div class="col-md-3">
                                                 X Axis field:
                                             </div>
@@ -301,6 +306,8 @@
                                                 />
                                             </div>
                                         </div>
+                                        </div>
+                                        
                                             <!-- Heat map 
     {"type":"heat map",
     "label": "Epigenomic enrichment of Genetic Clusters obs_cppa heatmap",
@@ -311,7 +318,8 @@
     "row field": "cluster",
     "row label": "cluster",
     "font size": 12}-->
-                                        <div class="row">
+                                        <div v-if="visType == 'heatmap'">
+                                            <div class="row">
                                             <div class="col-md-3">
                                                 Plot label:
                                             </div>
@@ -507,6 +515,8 @@
                                                 />
                                             </div>
                                         </div>
+                                        </div>
+                                        
                                         <!-- PheWAS
                                                             {"type":"phewas plot",
     "group by": "phenotype group",
@@ -523,7 +533,8 @@
     "height": 500,
     "star key":"phenotype"
             }-->
-                                        <div class="row">
+                                        <div v-if="visType == 'phewas'">
+                                            <div class="row">
                                             <div class="col-md-3">
                                                 Y axis field:
                                             </div>
@@ -660,6 +671,8 @@
                                                 />
                                             </div>
                                         </div>
+                                        </div>
+                                        
                                         <!-- Region plot 
     {"type":"region plot",
     "x axis field": "position",
@@ -682,7 +695,8 @@
     "genes track":{"input type":"dynamic","dynamic parameter":"region"}
             }
             -->
-                                        <div class="row">
+                                        <div v-if="visType == 'region'">
+                                            <div class="row">
                                             <div class="col-md-3">
                                                 X Axis field:
                                             </div>
@@ -1087,6 +1101,8 @@
                                                 />
                                             </div>
                                         </div>
+                                        </div>
+                                        
                                         <!-- Volcano plot
                                                         
     {"type":"volcano plot",
@@ -1104,7 +1120,8 @@
     "legend": "<span class='volcano-score-0'>&nbsp;</span> NS <span class='volcano-score-1'>&nbsp;</span> Log<sub>2</sub> FC <span class='volcano-score-2'>&nbsp;</span> p-value and log<sub>2</sub> FC<br>Genes with positive fold change are upregulated in high-risk samples",
     }
                                                         -->
-                                        <div class="row">
+                                        <div v-if="visType == 'volcano'">
+                                            <div class="row">
                                             <div class="col-md-3">
                                                 X Axis field:
                                             </div>
@@ -1307,6 +1324,8 @@
                                                 </textarea>
                                             </div>
                                         </div>
+                                        </div>
+                                        
                                     </div>
                                     <!--<div class="col-md-3 col">
                                                         <div class="label">
@@ -1538,3 +1557,6 @@
         </div>
     </div>  
 </template>
+<script setup>
+    const visType = ref("");
+</script>
