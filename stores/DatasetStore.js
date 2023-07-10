@@ -54,7 +54,7 @@ function mapCredibleSets(){
       sampleSize: p.sample_size,
       cases: p.cases,
       controls: p.controls,
-      credibleSets: credibleSets[p.id] || [],
+      credibleSets: credibleSets[p.id] || [{}],
       id: p.id,
       fileName: p.file_name,
       description: store.phenotypes[p.phenotype]
