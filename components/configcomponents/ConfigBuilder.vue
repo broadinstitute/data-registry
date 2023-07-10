@@ -18,9 +18,11 @@
 			<!--DataComparison goes here-->
   			<div class="card mdkp-card">
 				<div class="card-body dr-form">
-					<Filters :fields="fieldsList" :fieldNameUpdate="fieldRename"></Filters>
+					<Filters :fields="fieldsList" :fieldNameUpdate="fieldRename">
+					</Filters>
 				</div>
-				<Visualizer></Visualizer>
+				<Visualizer :fields="fieldsList" :fieldNameUpdate="fieldRename">
+				</Visualizer>
 				<div class="card-body">
 					<div class="row dr-submit-section">
 						<div class="col-md-12 col filter-col-md">

@@ -30,15 +30,25 @@
                                         <div class="label">
                                             Set parameters
                                         </div>
-                                        <Manhattan v-if="visType == 'manhattan'">
+                                        <Manhattan v-if="visType == 'manhattan'"
+                                            :fields="availableFields"
+                                            :fieldNameUpdate="fieldUpdate">
                                         </Manhattan>
-                                        <Heatmap v-if="visType == 'heatmap'">
+                                        <Heatmap v-if="visType == 'heatmap'"
+                                            :fields="availableFields"
+                                            :fieldNameUpdate="fieldUpdate">
                                         </Heatmap>
-                                        <Phewas v-if="visType == 'phewas'">
+                                        <Phewas v-if="visType == 'phewas'"
+                                            :fields="availableFields"
+                                            :fieldNameUpdate="fieldUpdate">
                                         </Phewas> 
-                                        <Region v-if="visType == 'region'">
+                                        <Region v-if="visType == 'region'"
+                                            :fields="availableFields"
+                                            :fieldNameUpdate="fieldUpdate">
                                         </Region>
-                                        <Volcano v-if="visType == 'volcano'">
+                                        <Volcano v-if="visType == 'volcano'"
+                                            :fields="availableFields"
+                                            :fieldNameUpdate="fieldUpdate">
                                         </Volcano>
                                     </div>
                                     <div class="col-md-2 col">
@@ -241,5 +251,8 @@
     import Phewas from "@/components/configcomponents/visualizers/Phewas.vue";
     import Region from "@/components/configcomponents/visualizers/Region.vue";
     import Volcano from "@/components/configcomponents/visualizers/Volcano.vue";
+    const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const availableFields = computed(() => props.fields);
+    const fieldUpdate = computed(() => props.fieldNameUpdate);
     const visType = ref("");
 </script>

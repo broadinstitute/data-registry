@@ -5,9 +5,7 @@
     </div>
     <div class="col-md-9">
         <select class="form-control form-control-sm">
-            <option>field 1</option>
-            <option>field 2</option>
-            <option>field 3</option>
+            <option v-for="field in availableFields">{{ field }}</option>
         </select>
     </div>
 </div>
@@ -71,9 +69,7 @@
     <div class="col-md-9">
         <select class="form-control form-control-sm">
             <option>Null</option>
-            <option>field 1</option>
-            <option>field 2</option>
-            <option>field 3</option>
+            <option v-for="field in availableFields">{{ field }}</option>
         </select>
     </div>
 </div>
@@ -83,9 +79,7 @@
     </div>
     <div class="col-md-9">
         <select class="form-control form-control-sm">
-            <option>field 1</option>
-            <option>field 2</option>
-            <option>field 3</option>
+            <option v-for="field in availableFields">{{ field }}</option>
         </select>
     </div>
 </div>
@@ -95,9 +89,7 @@
     </div>
     <div class="col-md-9">
         <select class="form-control form-control-sm">
-            <option>field 1</option>
-            <option>field 2</option>
-            <option>field 3</option>
+            <option v-for="field in availableFields">{{ field }}</option>
         </select>
     </div>
 </div>
@@ -119,9 +111,7 @@
     </div>
     <div class="col-md-9">
         <select class="form-control form-control-sm">
-            <option>field 1</option>
-            <option>field 2</option>
-            <option>field 3</option>
+            <option v-for="field in availableFields">{{ field }}</option>
         </select>
     </div>
 </div>
@@ -137,3 +127,7 @@
     </div>
 </div>
 </template>
+<script setup>
+    const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const availableFields = computed(() => props.fields);
+</script>
