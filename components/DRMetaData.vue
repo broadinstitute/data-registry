@@ -267,7 +267,7 @@ const props = defineProps({
             <div class="label">Data Sharing<sup>*</sup></div>
             <label class="form-check-label">
               <input type="radio" v-model="publiclyAvailable" value="true" class="form-check-input" :disabled="isReadOnly" required name="public">
-              Share uploaded files with other data registry users
+              Share uploaded files via a public URL
             </label>
             <label class="form-check-label">
               <input type="radio" v-model="publiclyAvailable" value="false" class="form-check-input" :disabled="isReadOnly" required name="public">
