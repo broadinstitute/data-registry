@@ -17,13 +17,10 @@
             </tr>
         </thead>
         <tbody class="table-group-divider">
-            <tr v-for="dataset in datasets" :key="dataset.id">
+            <template v-for="dataset in datasets" :key="dataset.id">
+              <tr>
                 <td>
-                    <a
-                        class="link-primary"
-                        @click="route.push({ path: `/datasets/${dataset.id}` })"
-                        >{{ dataset.name }}</a
-                    >
+                    <a class="link-primary" @click="route.push({ path: `/datasets/${dataset.id}` })">{{ dataset.name }}</a>
                 </td>
                 <td>
                     {{
@@ -40,7 +37,9 @@
                 <td>{{ dataset.status }}</td>
                 <td>{{ dataset.data_submitter }}</td>
                 <td v-if="dataset.publicly_available">
-                  <i class="bi bi-files" @click="copyToClip(dataset)" style="cursor: pointer" title="click to copy shareable urls for dataset files"></i> {{ copyMsg }}
+                  <button class="btn btn-secondary" @click="toggleFiles(dataset)">
+                    {{ dataset.showFiles ? "Hide" : "Show" }} Files
+                  </button>
                 </td>
                 <td v-else>
                   Not Shared
@@ -64,17 +63,55 @@
                     ></i>
                 </td>
             </tr>
+            <tr v-if="dataset.showFiles">
+              <td colspan="12">
+              <table class="table table-striped table-hover">
+               <thead>
+                <tr>
+                  <th>File</th>
+                  <th>Phenotype</th>
+                  <th>Type</th>
+                  <th>Size</th>
+                  <th>Path</th>
+                  <th>Access</th>
+                  <th>Access Credentials</th>
+                </tr>
+               </thead>
+                <tbody class="table-group-divider">
+                <tr v-for="file in dataset.files">
+                  <td>{{ file.name }}</td>
+                  <td>{{ file.phenotype }}</td>
+                  <td>{{ file.type}}</td>
+                  <td>{{ file.size }}</td>
+                  <td><button class="btn btn-secondary" @click="copyToClip(file)">{{ file.copyMsg ? file.copyMsg : 'Copy'}}</button></td>
+                  <td>
+                    <select class="form-select" disabled title="will be enabled later">
+                      <option value="private">Private</option>
+                      <option value="public">Public</option>
+                      <option value="review">Review</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button class="btn btn-secondary" disabled title="will be enabled later">Set</button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              </td>
+            </tr>
+            </template>
         </tbody>
     </table>
 </template>
 
 <script setup>
 import useAxios from '~/composables/useAxios'
+import { useDatasetStore } from '~/stores/DatasetStore'
 
 
 const route = useRouter();
-const copyMsg = ref("");
 const config = useRuntimeConfig();
+const store = useDatasetStore()
 const datasets = ref([]);
 
 const axios = useAxios(config, undefined, (error) => {
@@ -82,21 +119,31 @@ const axios = useAxios(config, undefined, (error) => {
     throw new Error("Server Error")
 })
 
-onMounted(() => {
-    fetchDataSets();
+onMounted(async () => {
+    await fetchDataSets();
+    await store.fetchPhenotypes()
 });
 
-async function copyToClip(dataSet){
-  let files = (await axios.get(`/api/filelist/${dataSet.id}`)).data
-  if(files.length === 0) {
-    copyMsg.value = "No file paths to copy"
-  } else {
-    files = files.map(f => `${config.public["apiBaseUrl"]}/api/${f}`)
-    await navigator.clipboard.writeText(files.join("\n"))
-    copyMsg.value = `Copied ${files.length} file paths`
+async function toggleFiles(dataSet) {
+  if(!dataSet.files) {
+    dataSet.files = (await axios.get(`/api/filelist/${dataSet.id}`)).data
+    for (const file of dataSet.files) {
+      file.phenotype = store.phenotypes[file.phenotype].description
+      const urlParts = file.path.split('/')
+      urlParts[2] = encodeURIComponent(file.phenotype)
+      file.path = urlParts.join('/')
+      file.copyMsg = ''
+    }
   }
+  dataSet.showFiles = !dataSet.showFiles
+}
+async function copyToClip(file){
+  const fullPath = `${config.public['apiBaseUrl']}/api/${file.path}`
+  await navigator.clipboard.writeText(fullPath)
+  file.copyMsg = 'Copied!'
+
   setTimeout(() => {
-    copyMsg.value = "";
+    file.copyMsg = ''
   }, 2000)
 }
 
@@ -106,7 +153,7 @@ async function deleteDataSet(id) {
 }
 
 async function fetchDataSets() {
-    datasets.value = (await axios.get(`/api/datasets`)).data;
+  datasets.value = (await axios.get(`/api/datasets`)).data.map(ds => {return {...ds, showFiles: false}})
 }
 function formatSex(gender) {
     if (!gender) return "";
