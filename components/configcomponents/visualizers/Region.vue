@@ -145,7 +145,7 @@
             </select>
         </div>
     </div>
-    <div v-if="popType='dynamic'">
+    <div v-if="popType == 'dynamic'">
         <div class="row">
             <div class="col-md-3">
                 Populations parameter:
@@ -448,8 +448,6 @@
 </div>
 </template>
 <script setup>
-import { render } from 'nuxt/dist/app/compat/capi';
-
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const availableFields = computed(() => props.fields);
     const xAxisField = ref("");
