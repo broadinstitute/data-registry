@@ -140,7 +140,6 @@
             "hover content": hoverContent.value,
             "thresholds": thresholds.value, // we will figure out how to do thresholds
             "height": parseInt(height.value),
-            "star key":"phenotype"
             }
         // Phenotype map can only be added administratively.
         if (betaField.value != ""){
