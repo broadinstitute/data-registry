@@ -86,10 +86,10 @@
             <input type="number" class="form-control input-default form-control-sm" v-model="height"/>
         </div>
     </div>
-    <pre>{{ JSON.stringify(configObject) }}</pre>
 </template>
 <script setup>
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const emit = defineEmits(["updateVisualizer"]);
     const availableFields = computed(() => props.fields);
     const graphicFormat = ref("Vector");
     const xAxisField = ref("");
@@ -100,7 +100,6 @@
     const height = ref(250);
     const linkTo = ref("");
     const hoverContent = ref([]);
-
     // Do we want to bother checking that they aren't the same field?
     const configObject = computed(() => {
         let type = graphicFormat.value == "Vector" ? "manhattan plot" : "manhattan bitmap plot";
@@ -116,5 +115,8 @@
             "hover content": hoverContent.value
         };
         return config;
+    });
+    watch(configObject, () =>{
+        emit('updateVisualizer', JSON.stringify(configObject.value));
     });
 </script>

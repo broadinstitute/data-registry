@@ -32,19 +32,23 @@
                                         </div>
                                         <Manhattan v-if="visType == 'manhattan'"
                                             :fields="availableFields"
-                                            :fieldNameUpdate="fieldUpdate">
+                                            :fieldNameUpdate="fieldUpdate"
+                                            @update-visualizer="(newConfig) => showConfig(newConfig)">
                                         </Manhattan>
                                         <Heatmap v-if="visType == 'heatmap'"
                                             :fields="availableFields"
-                                            :fieldNameUpdate="fieldUpdate">
+                                            :fieldNameUpdate="fieldUpdate"
+                                            @update-visualizer="(newConfig) => showConfig(newConfig)">
                                         </Heatmap>
                                         <Phewas v-if="visType == 'phewas'"
                                             :fields="availableFields"
-                                            :fieldNameUpdate="fieldUpdate">
+                                            :fieldNameUpdate="fieldUpdate"
+                                            @update-visualizer="(newConfig) => showConfig(newConfig)">
                                         </Phewas> 
                                         <Region v-if="visType == 'region'"
                                             :fields="availableFields"
-                                            :fieldNameUpdate="fieldUpdate">
+                                            :fieldNameUpdate="fieldUpdate"
+                                            @update-visualizer="(newConfig) => showConfig(newConfig)">
                                         </Region>
                                         <Volcano v-if="visType == 'volcano'"
                                             :fields="availableFields"
@@ -66,6 +70,13 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="row card-body">
+            <div class="col-md-12">
+                <div class="row">
+                    <pre>{{ configString }}</pre>
                 </div>
             </div>
         </div>
@@ -255,4 +266,8 @@
     const availableFields = computed(() => props.fields);
     const fieldUpdate = computed(() => props.fieldNameUpdate);
     const visType = ref("");
+    const configString = ref("{}");
+    function showConfig(newConfigString){
+        configString.value = newConfigString; 
+    }
 </script>

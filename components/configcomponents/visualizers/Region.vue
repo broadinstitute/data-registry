@@ -449,6 +449,7 @@
 </template>
 <script setup>
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const emit = defineEmits(["updateVisualizer"]);
     const availableFields = computed(() => props.fields);
     const xAxisField = ref("");
     const xAxisLabel = ref("");
@@ -465,6 +466,7 @@
     const refVarField = ref("");
     const popField = ref("");
     const popType = ref("dynamic");
+    const popParam = ref("");
     const configObject = computed(() => {
         let config = {
             "type":"region plot",
@@ -487,5 +489,9 @@
     "populations":{"Mixed":"ALL","EU":"EUR","AA":"AFR","EA":"EAS","HS":"AMR","SA":"SAS"}},
     "genes track":{"input type":"dynamic","dynamic parameter":"region"}
             }
+        return config;
+    });
+    watch(configObject, () =>{
+        emit('updateVisualizer', JSON.stringify(configObject.value));
     });
 </script>

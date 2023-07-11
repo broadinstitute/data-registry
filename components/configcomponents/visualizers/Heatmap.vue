@@ -187,6 +187,7 @@
 </template>
 <script setup>
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const emit = defineEmits(["updateVisualizer"]);
     const availableFields = computed(() => props.fields);
     const plotLabel = ref("");
     const columnField = ref("");
@@ -236,5 +237,8 @@
             config["sub"] = sub;
         }
         return config;
+    });
+    watch(configObject, () =>{
+        emit('updateVisualizer', JSON.stringify(configObject.value));
     });
 </script>

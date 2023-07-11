@@ -117,6 +117,7 @@
 </template>
 <script setup>
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const emit = defineEmits(["updateVisualizer"]);
     const availableFields = computed(() => props.fields);
     const yAxisField = ref("");
     const convertLog = ref(false);
@@ -146,5 +147,8 @@
             config["beta field"] = betaField.value;
         }
         return config;
+    });
+    watch(configObject, () =>{
+        emit('updateVisualizer', JSON.stringify(configObject.value));
     });
 </script>
