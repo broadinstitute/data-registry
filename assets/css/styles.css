@@ -3,15 +3,16 @@
   color: #ff0000;
 }
 
-.dr-form .col > div.label,
-.dataset-page-header .col > div.label {
+.dr-form .col>div.label,
+.dataset-page-header .col>div.label {
   font-weight: 700;
   font-size: 14px;
 }
 
-.row  {
+.row {
   margin-bottom: 15px;
 }
+
 .dr-meta-info {
   border-radius: 5px;
   background-color: #eeeeee;
@@ -34,4 +35,16 @@ ul {
 
 .dataset-accordion-button:is(.collapsed) {
   background-color: #eeeeee;
+}
+
+.btn:disabled {
+  background-color: #cccccc !important;
+  border: solid 1px #aaaaaa !important;
+}
+
+.form-select:disabled {
+  background-color: #cccccc !important;
+  border: solid 1px #aaaaaa !important;
+  color: #ffffff !important;
+  opacity: .65 !important;
 }

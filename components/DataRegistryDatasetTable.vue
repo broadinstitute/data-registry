@@ -37,7 +37,7 @@
                 <td>{{ dataset.status }}</td>
                 <td>{{ dataset.data_submitter }}</td>
                 <td v-if="dataset.publicly_available">
-                  <button class="btn btn-secondary" @click="toggleFiles(dataset)">
+                  <button class="btn btn-secondary btn-sm" @click="toggleFiles(dataset)">
                     {{ dataset.showFiles ? "Hide" : "Show" }} Files
                   </button>
                 </td>
@@ -84,17 +84,17 @@
                   <td>{{ file.phenotype }}</td>
                   <td>{{ file.type}}</td>
                   <td>{{ file.size }}</td>
-                  <td><button class="btn btn-secondary" @click="copyToClip(file)">{{ file.copyMsg ? file.copyMsg : 'Copy'}}</button></td>
+                  <td><button class="btn btn-secondary btn-sm" @click="copyToClip(file)">{{ file.copyMsg ? file.copyMsg : 'Copy'}}</button></td>
                   <td>{{ file.createdAt }}</td>
                   <td>
-                    <select class="form-select" disabled title="will be enabled later">
+                    <select class="form-select form-select-sm" disabled title="will be enabled later">
                       <option value="private">Private</option>
                       <option value="public">Public</option>
                       <option value="review">Review</option>
                     </select>
                   </td>
                   <td>
-                    <button class="btn btn-secondary" disabled title="will be enabled later">Set</button>
+                    <button class="btn btn-secondary btn-sm" disabled title="will be enabled later">Set</button>
                   </td>
                 </tr>
                 </tbody>
