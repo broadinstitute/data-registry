@@ -73,6 +73,7 @@
                   <th>Type</th>
                   <th>Size</th>
                   <th>Path</th>
+                  <th>Uploaded On</th>
                   <th>Access</th>
                   <th>Access Credentials</th>
                 </tr>
@@ -84,6 +85,7 @@
                   <td>{{ file.type}}</td>
                   <td>{{ file.size }}</td>
                   <td><button class="btn btn-secondary" @click="copyToClip(file)">{{ file.copyMsg ? file.copyMsg : 'Copy'}}</button></td>
+                  <td>{{ file.createdAt }}</td>
                   <td>
                     <select class="form-select" disabled title="will be enabled later">
                       <option value="private">Private</option>
