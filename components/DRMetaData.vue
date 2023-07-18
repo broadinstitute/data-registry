@@ -72,6 +72,7 @@ const props = defineProps({
     pubStatus.value = ds.status;
     geneticsDataType.value = ds.data_type;
     globalSampleSize.value = ds.global_sample_size;
+    pubId.value = ds.pub_id;
     description.value = ds.description;
     dataType.value = ds.data_source_type;
     institution.value = data.study.institution;
@@ -331,7 +332,7 @@ const props = defineProps({
       </div>
       <div class="col-md-3 dr-meta-info">
         <div class="col-md-12 col">
-          <div class="label">Data submitter<sup>*</sup></div>
+          <div class="label">Principal investigator<sup>*</sup></div>
           <input
               type="text"
               class="form-control input-default"
@@ -343,7 +344,7 @@ const props = defineProps({
         </div>
         <div class="col-md-12 col">
           <div class="label">
-            Data submitter email<sup>*</sup>
+            Principal investigator email<sup>*</sup>
           </div>
           <input
               type="text"
@@ -355,7 +356,7 @@ const props = defineProps({
           />
         </div>
         <div class="col-md-12 col">
-          <div class="label">Data contributor</div>
+          <div class="label">Contributing investigator</div>
           <input
               type="text"
               class="form-control input-default"
@@ -365,7 +366,7 @@ const props = defineProps({
           />
         </div>
         <div class="col-md-12 col">
-          <div class="label">Data contributor email</div>
+          <div class="label">Contributing investigator email</div>
           <input
               type="text"
               class="form-control input-default"
