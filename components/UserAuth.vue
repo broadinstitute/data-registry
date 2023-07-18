@@ -17,7 +17,7 @@
   const password = ref("");
   let csrf_token = "";
   let logout_token = "";
-  async  function login(){
+  async function login(){
       let userData = {
           "name": user.value,
           "pass": password.value
