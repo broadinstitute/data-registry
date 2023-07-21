@@ -3,7 +3,6 @@
       <h3>User Login</h3>
       <div v-if="csrf_token != ''">
         <h4>Welcome, {{ user }}!</h4>
-        <button @click="logout">Logout</button>
       </div>
       <div v-else>
           <label>Username:<input v-model="user"/></label>
@@ -16,7 +15,6 @@
 <script setup>
   import "bootstrap/dist/css/bootstrap.min.css";
   import "bootstrap-icons/font/bootstrap-icons.css";
-  const emit = defineEmits(["csrf"]);
   const config = useRuntimeConfig();
   const user = ref("");
   const password = ref("");
@@ -37,30 +35,27 @@
             }
           });
         const responseObject = await response.json();
-        console.log(responseObject);
-        if (!!responseObject.csrf_token && !!responseObject.logout_token){
+        if (!!responseObject.current_user){
           csrf_token.value = responseObject.csrf_token;
           logout_token.value = responseObject.logout_token;
-          emit("csrf", csrf_token.value);
+          verifyToken();
         } else {
           user.value = "";
-          password.value = "";
         }
+        password.value = "";
     }
-  async function logout(){
-    const response = await fetch(
-      `${config.public.apiDrupalUrl}/user/logout?_format=json&token=${logout_token.value}`, 
-          {
-            method: "POST",
-            body: "{}",
-            withCredentials: true,
-            headers: {
-              "Content-Type": "application/json",
-              "credentials": "include"
-            }
-          });
-        const responseObject = await response.json();
-        console.log(responseObject);
+  async function verifyToken(){
+    const response = await fetch(`${config.public.apiDrupalUrl}/user/login`, 
+      {
+        method: "GET",
+        headers: {
+          "X-CSRF-Token": csrf_token.value
+        }
+      });
+      if (response.status == 200){
+        // Here is where we should store a cookie
+        console.log("Success!");
+      }
   }
   </script>
   
