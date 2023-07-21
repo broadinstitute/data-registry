@@ -16,10 +16,13 @@
   import "bootstrap/dist/css/bootstrap.min.css";
   import "bootstrap-icons/font/bootstrap-icons.css";
   const config = useRuntimeConfig();
-  const user = ref("");
+  const user = ref(!!localStorage.getItem("_byor_user") ? localStorage.getItem("_byor_user") : "");
   const password = ref("");
-  const csrf_token = ref("");
-  const logout_token = ref("");
+  // Here we check for an existing token
+  const csrf_token = ref(!!localStorage.getItem("_byor_csrf_token") 
+    ? localStorage.getItem("_byor_csrf_token") : "");
+  const logout_token = ref(!!localStorage.getItem("_byor_logout_token") 
+    ? localStorage.getItem("_byor_logout_token") : "");
   async function login(){
       let userData = {
           "name": user.value,
@@ -52,12 +55,19 @@
           "X-CSRF-Token": csrf_token.value
         }
       });
+      console.log(response);
       if (response.status == 200){
-        // Here is where we should store a cookie
         console.log("Success!");
+        if (!localStorage.getItem("_byor_csrf_token")){
+          localStorage.setItem("_byor_csrf_token", csrf_token.value);
+          localStorage.setItem("_byor_logout_token", logout_token.value);
+          localStorage.setItem("_byor_user", user.value)
+        } else {
+          console.log("Still logged in.");
+        }
       }
   }
-  </script>
+</script>
   
   <!-- Add "scoped" attribute to limit CSS to this component only -->
   <style scoped>
