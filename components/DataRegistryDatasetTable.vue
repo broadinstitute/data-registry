@@ -130,7 +130,7 @@ async function toggleFiles(dataSet) {
   if(!dataSet.files) {
     dataSet.files = (await axios.get(`/api/filelist/${dataSet.id}`)).data
     for (const file of dataSet.files) {
-      file.phenotype = store.phenotypes[file.phenotype].description
+      file.phenotype = store.phenotypes[file.phenotype] ? store.phenotypes[file.phenotype].description : file.phenotype
       const urlParts = file.path.split('/')
       urlParts[2] = encodeURIComponent(file.phenotype)
       file.path = urlParts.join('/')

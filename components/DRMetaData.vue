@@ -51,11 +51,15 @@ const props = defineProps({
     }
   })
 
+  function getDescriptionFromPubData(data) {
+    return `${data.title}\n${data.authors}\n${data.publication}. ${data.month_year_published};${data.volume_issue}:${data.pages}. ${data.elocation_id}.`
+  }
+
   async function getPubMedInfo() {
     const data = await store.fetchPubInfo(pubId.value)
     if (data) {
-      description.value = data.abstract
-      publication.value = data.title
+      description.value = description.value ? `${description.value}\n${getDescriptionFromPubData(data)}` : getDescriptionFromPubData(data)
+      publication.value = publication.value ? `${publication.value}\n${data.publication}` : data.publication
     }
   }
 
@@ -73,6 +77,7 @@ const props = defineProps({
     geneticsDataType.value = ds.data_type;
     globalSampleSize.value = ds.global_sample_size;
     pubId.value = ds.pub_id;
+    publication.value = ds.publication
     description.value = ds.description;
     dataType.value = ds.data_source_type;
     institution.value = data.study.institution;
@@ -194,6 +199,7 @@ const props = defineProps({
               <option value="wgs">
                 Whole genome sequencing
               </option>
+              <option value="other">Other</option>
             </select>
           </div>
           <div class="col-md-6 col">
@@ -203,6 +209,7 @@ const props = defineProps({
             <select class="form-select" v-model="genomeBuild" required :disabled="isReadOnly">
               <option value="hg19">hg19 (GRCh37)</option>
               <option value="hg19">GRCh38</option>
+              <option value="n/a">N/A</option>
             </select>
           </div>
         </div>
@@ -249,6 +256,7 @@ const props = defineProps({
               <option value="Mixed">
                 Mixed ancestry
               </option>
+              <option value="n/a">N/A</option>
             </select>
           </div>
           <div class="col-md-4 col">
@@ -262,6 +270,7 @@ const props = defineProps({
               <option value="mixed">Mixed</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
+              <option value="n/a">N/A</option>
             </select>
           </div>
           <div class="col-md-4 col">
@@ -332,7 +341,7 @@ const props = defineProps({
       </div>
       <div class="col-md-3 dr-meta-info">
         <div class="col-md-12 col">
-          <div class="label">Principal investigator<sup>*</sup></div>
+          <div class="label">Data submitter<sup>*</sup></div>
           <input
               type="text"
               class="form-control input-default"
@@ -344,7 +353,7 @@ const props = defineProps({
         </div>
         <div class="col-md-12 col">
           <div class="label">
-            Principal investigator email<sup>*</sup>
+            Data submitter email<sup>*</sup>
           </div>
           <input
               type="text"
@@ -356,7 +365,7 @@ const props = defineProps({
           />
         </div>
         <div class="col-md-12 col">
-          <div class="label">Contributing investigator</div>
+          <div class="label">Principal investigator</div>
           <input
               type="text"
               class="form-control input-default"
@@ -366,7 +375,7 @@ const props = defineProps({
           />
         </div>
         <div class="col-md-12 col">
-          <div class="label">Contributing investigator email</div>
+          <div class="label">Principal investigator email</div>
           <input
               type="text"
               class="form-control input-default"
