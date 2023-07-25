@@ -15,14 +15,15 @@
 <script setup>
   import "bootstrap/dist/css/bootstrap.min.css";
   import "bootstrap-icons/font/bootstrap-icons.css";
+  import VueCookies from 'vue-cookies';
   const config = useRuntimeConfig();
-  const user = ref(!!localStorage.getItem("_byor_user") ? localStorage.getItem("_byor_user") : "");
+  const user = ref($cookies.isKey("_byor_user") ? $cookies.get("_byor_user") : "");
   const password = ref("");
   // Here we check for an existing token
-  const csrf_token = ref(!!localStorage.getItem("_byor_csrf_token") 
-    ? localStorage.getItem("_byor_csrf_token") : "");
-  const logout_token = ref(!!localStorage.getItem("_byor_logout_token") 
-    ? localStorage.getItem("_byor_logout_token") : "");
+  const csrf_token = ref($cookies.isKey("_byor_csrf_token") 
+    ? $cookies.get("_byor_csrf_token") : "");
+  const logout_token = ref($cookies.isKey("_byor_logout_token") 
+    ? $cookies.get("_byor_logout_token") : "");
   async function login(){
       let userData = {
           "name": user.value,
@@ -58,10 +59,10 @@
       console.log(response);
       if (response.status == 200){
         console.log("Success!");
-        if (!localStorage.getItem("_byor_csrf_token")){
-          localStorage.setItem("_byor_csrf_token", csrf_token.value);
-          localStorage.setItem("_byor_logout_token", logout_token.value);
-          localStorage.setItem("_byor_user", user.value)
+        if (!$cookies.isKey("_byor_csrf_token")){
+          $cookies.set("_byor_csrf_token", csrf_token.value);
+          $cookies.set("_byor_logout_token", logout_token.value);
+          $cookies.set("_byor_user", user.value)
         } else {
           console.log("Still logged in.");
         }
