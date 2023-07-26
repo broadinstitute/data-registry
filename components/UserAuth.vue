@@ -3,6 +3,7 @@
       <h3>User Login</h3>
       <div v-if="csrf_token != ''">
         <h4>Welcome, {{ user }}!</h4>
+        <button @click="logout">Logout</button>
       </div>
       <div v-else>
           <label>Username:<input v-model="user"/></label>
@@ -68,6 +69,26 @@
         }
       }
   }
+  async function logout(){
+        const response = await fetch(
+          `${config.public.apiDrupalUrl}/user/logout?_format=json&token=${logout_token.value}`, 
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": csrf_token.value
+            }
+          });
+          console.log(response);
+          if (response.status == 200){
+            $cookies.remove("_byor_csrf_token");
+            $cookies.remove("_byor_logout_token");
+            $cookies.remove("_byor_user");
+            user.value = "";
+            csrf_token.value = "";
+            logout_token.value = "";
+          }
+    }
 </script>
   
   <!-- Add "scoped" attribute to limit CSS to this component only -->
