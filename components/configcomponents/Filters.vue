@@ -27,7 +27,7 @@
 										Filter type
 									</div>
 									<select class="form-control" v-model="selectedFilterType">
-										<option v-for="item in Object.keys(filterTypeOptions)">
+										<option v-for="item in Object.keys(filterTypeOptions)" :value="item">
 											{{ filterTypeOptions[item] }}
 										</option>
 									</select>
