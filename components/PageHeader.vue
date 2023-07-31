@@ -61,10 +61,19 @@
                     <li><a class="dropdown-item" href="#">Settings</a></li>
                     <li><a class="dropdown-item" href="#">Profile</a></li>
                     <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" href="#">Sign out</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="signOut">Sign out</a></li>
                 </ul>
             </span>
         </div>
     </nav>
 </template>
 
+<script setup>
+import { useUserStore } from '~/stores/UserStore'
+
+
+function signOut() {
+  const userStore = useUserStore()
+  userStore.logout()
+}
+</script>
