@@ -59,7 +59,7 @@
                 </a>
                 <ul class="dropdown-menu text-small">
                     <li><a class="dropdown-item" href="#">Settings</a></li>
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="navigateTo('/profile')">Profile</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item" href="#" @click.prevent="signOut">Sign out</a></li>
                 </ul>
@@ -76,4 +76,5 @@ function signOut() {
   const userStore = useUserStore()
   userStore.logout()
 }
+
 </script>
