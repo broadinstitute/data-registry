@@ -21,14 +21,14 @@ export const useUserStore = defineStore('UserStore', {
           return navigateTo('/login')
         })
     },
-    getUserInfo(navigateToPath) {
-      this.axios.get('/api/is-logged-in')
-        .then(response => {
-          this.user = response.data
-        })
-        .catch(() => {
-          return navigateTo('/login?redirect=' + navigateToPath)
-        })
+    async isUserLoggedIn() {
+      try {
+        const { data } = await this.axios.get('/api/is-logged-in')
+        this.user = data
+        return true
+      } catch (error) {
+         return false
+      }
     },
     async login(email, password) {
       await this.axios.post('/api/login', JSON.stringify({ email, password }))
