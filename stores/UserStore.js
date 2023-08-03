@@ -15,11 +15,10 @@ export const useUserStore = defineStore('UserStore', {
       const config = useRuntimeConfig()
       this.axios = useAxios(config)
     },
-    logout() {
-      this.axios.post('/api/logout').then(() => {
-          this.user = null
-          return navigateTo('/login')
-        })
+    async logout() {
+      await this.axios.post('/api/logout')
+      this.user = null
+      navigateTo('/login')
     },
     async isUserLoggedIn() {
       try {

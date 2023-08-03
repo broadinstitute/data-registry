@@ -8,7 +8,7 @@
                     <a href="/" class="nav-link px-2 link-secondary">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/datasets" class="nav-link px-2 link-body-emphasis">Datasets</a>
+                    <nuxt-link href="/datasets" class="nav-link px-2 link-body-emphasis">Datasets</nuxt-link>
                 </li>
                 <li class="nav-item dropdown">
                     <a
@@ -69,6 +69,7 @@
 </template>
 
 <script setup>
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { useUserStore } from '~/stores/UserStore'
 
 

@@ -105,6 +105,9 @@ export const useDatasetStore = defineStore('DatasetStore', {
   },
   actions: {
     async fetchPhenotypes() {
+      if(Object.keys(this.phenotypes).length > 0){
+        return
+      }
       const { data, error  } = await useFetch(config.public["phenotypesUrl"])
       if (error.value) {
         this.showNotification = true
