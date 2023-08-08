@@ -8,7 +8,7 @@
                     <a href="/" class="nav-link px-2 link-secondary">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/datasets" class="nav-link px-2 link-body-emphasis">Datasets</a>
+                    <nuxt-link href="/datasets" class="nav-link px-2 link-body-emphasis">Datasets</nuxt-link>
                 </li>
                 <li class="nav-item dropdown">
                     <a
@@ -59,12 +59,23 @@
                 </a>
                 <ul class="dropdown-menu text-small">
                     <li><a class="dropdown-item" href="#">Settings</a></li>
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="navigateTo('/profile')">Profile</a></li>
                     <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" href="#">Sign out</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="signOut">Sign out</a></li>
                 </ul>
             </span>
         </div>
     </nav>
 </template>
 
+<script setup>
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import { useUserStore } from '~/stores/UserStore'
+
+
+function signOut() {
+  const userStore = useUserStore()
+  userStore.logout()
+}
+
+</script>

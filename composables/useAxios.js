@@ -7,6 +7,7 @@ export default function(config, fulfilled = undefined, rejected = undefined){
       "access-token": config.public['apiSecret'],
       "Content-Type": "application/json",
     },
+    withCredentials: true,
   })
   configuredAxios.interceptors.response.use(fulfilled, rejected)
   return configuredAxios;
