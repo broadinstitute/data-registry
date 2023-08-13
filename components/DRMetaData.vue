@@ -52,7 +52,7 @@ const props = defineProps({
   })
 
   function getDescriptionFromPubData(data) {
-    return `${data.title}\n${data.authors}\n${data.publication}. ${data.month_year_published};${data.volume_issue}:${data.pages}. ${data.elocation_id}.`
+    return `${data.title}\n${data.authors}\n${data.publication}. ${data.month_year_published};${data.volume_issue}:${data.pages}. ${data.elocation_id ? data.elocation_id + '.' : ''}`
   }
 
   async function getPubMedInfo() {
