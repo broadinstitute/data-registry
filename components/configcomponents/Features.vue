@@ -75,11 +75,14 @@
         </div>
 </template>
 <script setup>
-    const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+
+    const store = useConfigBuilderStore();
+    const props = defineProps({fields: Array});
     const emit = defineEmits(["featuresChanged"]);
     const availableFields = computed(()=> props.fields);
-    const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
-    const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
+    const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
+    const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
     const currentFeatureName = ref("");
     const currentSelectedFields = ref([]);
     const editingFeatureIndex = ref(-1);

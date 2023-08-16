@@ -11,14 +11,11 @@
 				</div>
 			</div>
 			<!--DataLoader goes here-->
-			<DataTableFormat 
-				@fieldsUpdated="(updatedFields) => processFields(updatedFields)"
-				@fieldRenamed="(latestRename) => processFieldRename(latestRename)">
-			</DataTableFormat>
+			<DataTableFormat></DataTableFormat>
 			<!--DataComparison goes here-->
   			<div class="card mdkp-card">
 				<div class="card-body dr-form">
-					<Filters :fieldNameUpdate="fieldRename"></Filters>
+					<Filters></Filters>
 				</div>
 				<!-- Visualizer goes here-->
 				<div class="card-body">
@@ -47,9 +44,6 @@
 
 	const store = useConfigBuilderStore();
 	const fieldRename = ref([null, null]);
-	function processFields(updatedFields){
-		store.setFields(updatedFields);
-	}
 	function processFieldRename(latestRename){
 		fieldRename.value = latestRename;
 	}

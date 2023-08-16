@@ -110,10 +110,9 @@
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-    const props = defineProps({fieldNameUpdate: Array});
     const availableFields = computed(() => store.getFields);
-    const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
-    const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
+    const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
+    const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
 	const message = ref("");
 	const editingFilterIndex = ref(-1);
 	const selectedField = ref(null);

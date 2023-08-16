@@ -48,7 +48,7 @@
 										<div id="columnformattingbody" class="accordion-collapse collapse"
 											aria-labelledby="columnFormattingHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<ColumnFormatting :fields="convertedFields" :fieldNameUpdate="nameChange"
+												<ColumnFormatting :fields="convertedFields"
 													@col-format-changed="(config) => updateColumnFormatting(config)">
 												</ColumnFormatting>
 											</div>
@@ -65,7 +65,7 @@
 										<div id="toprowsbody" class="accordion-collapse collapse"
 											aria-labelledby="topRowsHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"
+												<TopRows :fields="convertedFields"
 													@top-rows-changed="(fields) => updateTopRows(fields)">
 												</TopRows>
 											</div>
@@ -82,7 +82,7 @@
 										<div id="featuresbody" class="accordion-collapse collapse"
 											aria-labelledby="featuresHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<Features :fields="convertedFields" :fieldNameUpdate="nameChange"
+												<Features :fields="convertedFields"
 													@features-changed="(updatedFeatures) => updateFeatures(updatedFeatures)">
 												</Features>
 											</div>
@@ -99,7 +99,7 @@
 										<div id="tooltipsbody" class="accordion-collapse collapse"
 											aria-labelledby="toolTipsHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"
+												<ToolTips :fields="convertedFields"
 													@tool-tips-changed="(updatedToolTips) => updateToolTips(updatedToolTips)">
 												</ToolTips>
 											</div>
@@ -116,7 +116,7 @@
 										<div id="locusstarbody" class="accordion-collapse collapse"
 											aria-labelledby="locusStarHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<LocusFieldStarColumn :fields="convertedFields" :fieldNameUpdate="nameChange"
+												<LocusFieldStarColumn :fields="convertedFields"
 													@locus-star-changed="(updatedLocusStar) => updateLocusStar(updatedLocusStar)">
 												</LocusFieldStarColumn>
 											</div>
@@ -152,8 +152,9 @@
 	import Features from "@/components/configcomponents/Features.vue";
 	import ColumnFormatting from "@/components/configcomponents/ColumnFormatting.vue";
 	import LocusFieldStarColumn from "./LocusFieldStarColumn.vue";
+	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
-	const emit = defineEmits(["fieldsUpdated", "fieldRenamed"]);
+	const store = useConfigBuilderStore();
 	const dataTableFormat = ref({});
 	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
 	const dataConvert = ref([]);
@@ -161,7 +162,6 @@
 	const convertedFields = ref([]);
 	const topRows = ref([]);
 	const toolTips = ref({});
-	const nameChange = ref([null, null]);
 	const pastedData = ref("");
 	const featureConfig = ref({ "features": [] });
 	const locus = ref("");
@@ -222,8 +222,7 @@
 		outputDataTableFormat();
 	}
 	function changeFieldName(oldName, newName){
-		nameChange.value = [oldName, newName];
-		emit("fieldRenamed", nameChange.value);
+		store.renameField(oldName, newName);
 	}
 	function getRawFields (){
 		let topLine = pastedData.value.split("\n")[0];
@@ -238,7 +237,7 @@
 	}
 	watch(convertedFields, (newFields, oldFields) => {
 		if (JSON.stringify(newFields) != JSON.stringify(oldFields)){
-			emit("fieldsUpdated", convertedFields.value);
+			store.setFields(convertedFields.value);
 		}
 	});
 </script>
