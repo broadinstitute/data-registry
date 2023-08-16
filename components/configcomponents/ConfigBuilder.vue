@@ -18,7 +18,7 @@
 			<!--DataComparison goes here-->
   			<div class="card mdkp-card">
 				<div class="card-body dr-form">
-					<Filters :fields="fieldsList" :fieldNameUpdate="fieldRename"></Filters>
+					<Filters :fieldNameUpdate="fieldRename"></Filters>
 				</div>
 				<!-- Visualizer goes here-->
 				<div class="card-body">
@@ -43,10 +43,12 @@
 <script setup>
 	import DataTableFormat from "@/components/configcomponents/DataTableFormat.vue";
 	import Filters from "@/components/configcomponents/Filters.vue";
-	const fieldsList = ref([]);
+	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+
+	const store = useConfigBuilderStore();
 	const fieldRename = ref([null, null]);
 	function processFields(updatedFields){
-		fieldsList.value = updatedFields;
+		store.setFields(updatedFields);
 	}
 	function processFieldRename(latestRename){
 		fieldRename.value = latestRename;

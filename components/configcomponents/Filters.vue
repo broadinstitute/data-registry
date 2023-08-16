@@ -107,8 +107,11 @@
 		</div>
 </template>
 <script setup>
-    const props = defineProps({fields: Array, fieldNameUpdate: Array});
-    const availableFields = computed(() => props.fields);
+	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+
+	const store = useConfigBuilderStore();
+    const props = defineProps({fieldNameUpdate: Array});
+    const availableFields = computed(() => store.getFields);
     const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
     const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
 	const message = ref("");
