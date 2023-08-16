@@ -31,8 +31,7 @@
 											aria-labelledby="dataConvertHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<DataConvert :raw-fields="rawFields" 
-													@dc-changed="(configs, fields) => updateDataConvert(configs, fields)"
-													@field-name-changed="(oldName, newName) => changeFieldName(oldName, newName)">
+													@dc-changed="(configs, fields) => updateDataConvert(configs, fields)">
 												</DataConvert>
 											</div>
 										</div>
@@ -219,9 +218,6 @@
 		locus.value = updatedLocusStar[0];
 		star.value = updatedLocusStar[1];
 		outputDataTableFormat();
-	}
-	function changeFieldName(oldName, newName){
-		store.renameField(oldName, newName);
 	}
 	function getRawFields (){
 		let topLine = pastedData.value.split("\n")[0];

@@ -89,8 +89,11 @@
     import RawRename from "@/components/configcomponents/dataconverters/RawRename.vue";
     import ReplaceCharacters from "@/components/configcomponents/dataconverters/ReplaceCharacters.vue";
     import ScoreColumns from "@/components/configcomponents/dataconverters/ScoreColumns.vue";
+    import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+
+	const store = useConfigBuilderStore();
     const props = defineProps({rawFields: Array});
-    const emit = defineEmits(["dcChanged", "fieldNameChanged"]);
+    const emit = defineEmits(["dcChanged"]);
     const rawFields = computed(()=> props.rawFields);
     const defaultType = "";
     const dataConvertType = ref(defaultType);
@@ -192,7 +195,7 @@
             let oldName = savedFieldConfigs.value[editingFieldIndex.value]["field name"];            
             savedFieldConfigs.value[editingFieldIndex.value] = newField;
             if(oldName != newName){
-                emit("fieldNameChanged", oldName, newName);
+                store.renameField(oldName, newName);
             }
         }
         doneEditing();
