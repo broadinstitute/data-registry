@@ -43,8 +43,4 @@
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-	const fieldRename = ref([null, null]);
-	function processFieldRename(latestRename){
-		fieldRename.value = latestRename;
-	}
 </script>

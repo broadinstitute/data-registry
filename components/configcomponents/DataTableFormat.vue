@@ -48,7 +48,7 @@
 										<div id="columnformattingbody" class="accordion-collapse collapse"
 											aria-labelledby="columnFormattingHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<ColumnFormatting :fields="convertedFields"
+												<ColumnFormatting
 													@col-format-changed="(config) => updateColumnFormatting(config)">
 												</ColumnFormatting>
 											</div>
@@ -65,7 +65,7 @@
 										<div id="toprowsbody" class="accordion-collapse collapse"
 											aria-labelledby="topRowsHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<TopRows :fields="convertedFields"
+												<TopRows
 													@top-rows-changed="(fields) => updateTopRows(fields)">
 												</TopRows>
 											</div>
@@ -82,7 +82,7 @@
 										<div id="featuresbody" class="accordion-collapse collapse"
 											aria-labelledby="featuresHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<Features :fields="convertedFields"
+												<Features
 													@features-changed="(updatedFeatures) => updateFeatures(updatedFeatures)">
 												</Features>
 											</div>
@@ -99,7 +99,7 @@
 										<div id="tooltipsbody" class="accordion-collapse collapse"
 											aria-labelledby="toolTipsHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<ToolTips :fields="convertedFields"
+												<ToolTips
 													@tool-tips-changed="(updatedToolTips) => updateToolTips(updatedToolTips)">
 												</ToolTips>
 											</div>
@@ -116,7 +116,7 @@
 										<div id="locusstarbody" class="accordion-collapse collapse"
 											aria-labelledby="locusStarHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<LocusFieldStarColumn :fields="convertedFields"
+												<LocusFieldStarColumn
 													@locus-star-changed="(updatedLocusStar) => updateLocusStar(updatedLocusStar)">
 												</LocusFieldStarColumn>
 											</div>
@@ -159,7 +159,6 @@
 	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
 	const dataConvert = ref([]);
 	const rawFields = ref([]);
-	const convertedFields = ref([]);
 	const topRows = ref([]);
 	const toolTips = ref({});
 	const pastedData = ref("");
@@ -197,7 +196,7 @@
 	}
 	function updateDataConvert(configs, fields){
 		dataConvert.value = configs;
-		convertedFields.value = fields;
+		store.setConvertedFields(fields);
 		outputDataTableFormat();
 	}
 	function updateTopRows(fields){
@@ -235,9 +234,4 @@
 	function copyConfig(){
 		navigator.clipboard.writeText(dataTableFormatString.value);
 	}
-	watch(convertedFields, (newFields, oldFields) => {
-		if (JSON.stringify(newFields) != JSON.stringify(oldFields)){
-			store.setFields(convertedFields.value);
-		}
-	});
 </script>

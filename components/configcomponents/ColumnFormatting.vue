@@ -142,9 +142,8 @@
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-	const props = defineProps({fields: Array});
     const emit = defineEmits(["colFormatChanged"]);
-    const availableFields = computed(()=> props.fields);
+    const availableFields = computed(()=> store.getConvertedFields);
     const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
     const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
 	const formatOptions = {

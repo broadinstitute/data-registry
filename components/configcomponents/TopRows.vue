@@ -43,9 +43,8 @@
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
     const store = useConfigBuilderStore();
-    const props = defineProps({fields: Array});
     const emit = defineEmits(["topRowsChanged"]);
-    const availableFields = computed(()=> props.fields);
+    const availableFields = computed(()=> store.getConvertedFields);
     const selectedFields = ref([]); 
     const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
     const fieldNameNew = computed(() => store.getLatestFieldRename[1]);

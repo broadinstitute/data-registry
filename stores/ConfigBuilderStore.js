@@ -2,16 +2,16 @@ import { defineStore } from 'pinia';
 
 export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
     state: () => ({
-        fields: [],
+        convertedFields: [],
         latestFieldRename: [null, null]
     }),
     getters: {
-        getFields: (state) => state.fields,
+        getConvertedFields: (state) => state.convertedFields,
         getLatestFieldRename: (state) => state.latestFieldRename
     },
     actions: {
-        setFields(newFields){
-            this.fields = newFields;
+        setConvertedFields(newFields){
+            this.convertedFields = newFields;
         },
         renameField(oldName, newName){
             this.latestFieldRename = [oldName, newName];
