@@ -72,7 +72,6 @@
             store.setColumnNameChange([rawField, newName]);
         }
         columnNames.value[rawField] = newName;
-        console.log(JSON.stringify(columnNames.value));
         saveColumns();
     }
     function setDefaultColumnName(index){

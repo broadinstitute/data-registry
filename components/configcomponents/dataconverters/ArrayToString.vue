@@ -16,43 +16,47 @@
 			</div>
 			<input type="text" class="form-control input-default" v-model="separator"/>
 		</div>
+		<div v-if="selectedField != null">
+			<CreateConvert :selected-field="selectedField"
+				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
+			</CreateConvert>
+		</div>
 	</div>
 </template>
 <script setup>
+	import CreateConvert from '@/components/configcomponents/CreateConvert.vue';
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-	const props = defineProps({newFieldName: String, loadConfig: String});
+	const props = defineProps({loadConfig: String});
     const emit = defineEmits(['configChanged']);
 	const fields = computed(() => store.getSelectedColumns);
     const selectedField = ref(null);
-    const latestFieldName = computed(()=>{
-        return props.newFieldName;
-    });
+    const latestFieldName = ref("");
 	const separator = ref("");
-	const arrayRenameConfig = ref({
-        "type": "array to string",
-        "field name": latestFieldName,
-        "raw field": selectedField,
-		"separate by": separator
-    });
+	const createNewField = ref(false);
+	
 	let readySaveMsg = "";
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
 		separator.value = oldConfig["separate by"];
-		
+		latestFieldName.value = oldConfig["field name"];
+		createNewField.value = oldConfig["create new"];
     }
+	watch(selectedField, () => 
+		latestFieldName.value = store.getColumnObject[selectedField.value]
+	);
     watch([latestFieldName, selectedField, separator], ()=>{
         emitConfig();
     });
-    function readyToSave(){
+    function readyToSave(config){
 		//separator CAN be an empty string so we don't check that
-		if (arrayRenameConfig.value["separate by"].includes(",")){
+		if (config["separate by"].includes(",")){
 			readySaveMsg = "Commas may not be used in separator.";
 			return false;
 		}
-		if (!arrayRenameConfig.value["raw field"]){
+		if (!config["raw field"]){
 			readySaveMsg = "Select a raw field.";
             return false;
 		}
@@ -60,6 +64,17 @@
         return true;
     }
 	function emitConfig(){
-		emit('configChanged', arrayRenameConfig.value, readyToSave(), readySaveMsg);
+		let arrayRenameConfig = {
+        	"type": "array to string",
+        	"field name": latestFieldName.value,
+        	"raw field": selectedField.value,
+			"separate by": separator.value,
+			"create new": createNewField.value
+    	};
+		emit('configChanged', arrayRenameConfig, readyToSave(arrayRenameConfig), readySaveMsg);
+	}
+	function processFieldInfo(createNew, newName){
+		createNewField.value = createNew;
+		latestFieldName.value = newName;
 	}
 </script>
