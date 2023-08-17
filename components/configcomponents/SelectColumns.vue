@@ -52,7 +52,7 @@
         }
         setDisplayName(index, "");
         delete columnNames.value[rawField];
-        emitColumns();
+        saveColumns();
     }
     function setColumnName(index, newName){
         let warning = document.querySelector(`#warning_${index}`);
@@ -72,21 +72,25 @@
             emitColumnNameChange(rawField, newName);
         }
         columnNames.value[rawField] = newName;
-        emitColumns();
+        saveColumns();
     }
     function setDefaultColumnName(index){
         let rawField = rawFields.value[index];
         setDisplayName(index, rawField);
         //What happens if the original column data has an empty string in it?
         columnNames.value[rawField] = rawField;
-        emitColumns();
+        saveColumns();
     }
     function setDisplayName(index, newName){
         let inputField = document.querySelector(`input#field_${index}`);
         inputField.value = newName;
     }
-    function emitColumns(){
-        emit("columnsSelected", columnNames.value);
+    function saveColumns(){
+        let output = [];
+        selectedColumns.value.forEach(column => {
+            output.push([column, columnNames.value[column]])
+        });
+        store.setSelectedColumns(output);
     }
     function emitColumnNameChange(column, newName){
         emit ("columnNameChange", [column, newName]);

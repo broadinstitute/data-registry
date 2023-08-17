@@ -30,7 +30,7 @@
 										<div id="selectcolumnsbody" class="accordion-collapse collapse show"
 											aria-labelledby="dataConvertHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<SelectColumns @columns-selected="fields => getFields(fields)"
+												<SelectColumns
 													@column-name-change="names => columnNameChange(names)">
 												</SelectColumns>
 											</div>
@@ -236,11 +236,8 @@
 		star.value = updatedLocusStar[1];
 		outputDataTableFormat();
 	}
-	function getFields(){
-		console.log("We should do this using store");
-	}
 	function columnNameChange(){
-		console.log("We should do this using store");
+		console.log("We should do column name change using store");
 	}
 	watch(pastedData, ()=>{
 		pastedData.value = pastedData.value.trim();

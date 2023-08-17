@@ -40,7 +40,7 @@
                     @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </JoinMulti>
 				<ArrayToString 
-                    v-else-if="dataConvertType=='array to string'" :raw-fields="rawFields"
+                    v-else-if="dataConvertType=='array to string'"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ArrayToString>
@@ -54,7 +54,6 @@
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ScoreColumns>
-
                 <div class="failed-save" v-if="showMsg">{{ failedSaveMsg }}</div>
 			</div>
 			<div class="col-md-1 col">
@@ -93,7 +92,7 @@
 
 	const store = useConfigBuilderStore();
     const emit = defineEmits(["dcChanged"]);
-    const rawFields = computed(()=> store.getRawFields);
+    const rawFields = computed(()=> store.getSelectedColumns);
     const defaultType = "";
     const dataConvertType = ref(defaultType);
     const dataConvertOptions = [
