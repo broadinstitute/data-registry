@@ -80,13 +80,11 @@
     import Calculate from "@/components/configcomponents/dataconverters/Calculate.vue";
     import Join from "@/components/configcomponents/dataconverters/Join.vue";
     import JoinMulti from "@/components/configcomponents/dataconverters/JoinMulti.vue";
-    import RawRename from "@/components/configcomponents/dataconverters/RawRename.vue";
     import ReplaceCharacters from "@/components/configcomponents/dataconverters/ReplaceCharacters.vue";
     import ScoreColumns from "@/components/configcomponents/dataconverters/ScoreColumns.vue";
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-    const emit = defineEmits(["dcChanged"]);
     const rawFields = computed(()=> store.getSelectedColumns);
     const defaultType = "";
     const dataConvertType = ref(defaultType);
@@ -106,10 +104,6 @@
         {
             displayName: "Join multi",
             selectValue: "join multi"
-        },
-        {
-            displayName: "Raw (rename)",
-            selectValue: "raw"
         },
         {
             displayName: "Replace characters",
@@ -218,7 +212,8 @@
         savedFieldConfigs.value.forEach(
             field => savedFields.push(field["field name"])
         );
-        emit("dcChanged", savedFieldConfigs.value, savedFields);
+        store.setConvertedFields(savedFields);
+        store.setDataConvert(savedFieldConfigs.value);
     }
     watch(dataConvertType, ()=>{
         showMsg.value = false;

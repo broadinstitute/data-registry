@@ -40,7 +40,6 @@
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
     const store = useConfigBuilderStore();
-    const emit = defineEmits(["columnsSelected", "columnNameChange"]);
     const rawFields = computed(()=> store.getRawFields);
     const selectedColumns = ref([]);
     const columnNames = ref({});
@@ -69,9 +68,11 @@
         }
         // Replace an old name
         if (!!columnNames.value[rawField]){
-            emitColumnNameChange(rawField, newName);
+            console.log(`${rawField} => ${newName}`);
+            store.setColumnNameChange([rawField, newName]);
         }
         columnNames.value[rawField] = newName;
+        console.log(JSON.stringify(columnNames.value));
         saveColumns();
     }
     function setDefaultColumnName(index){
@@ -92,9 +93,6 @@
         });
         store.setSelectedColumns(output);
         store.setColumnObject(columnNames.value);
-    }
-    function emitColumnNameChange(column, newName){
-        emit ("columnNameChange", [column, newName]);
     }
     function selectAll(){
         selectedColumns.value = rawFields.value;

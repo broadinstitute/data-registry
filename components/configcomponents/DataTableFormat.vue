@@ -30,9 +30,7 @@
 										<div id="selectcolumnsbody" class="accordion-collapse collapse show"
 											aria-labelledby="dataConvertHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<SelectColumns
-													@column-name-change="names => columnNameChange(names)">
-												</SelectColumns>
+												<SelectColumns></SelectColumns>
 											</div>
 										</div>
 									</div>
@@ -47,9 +45,7 @@
 										<div id="dataconvertbody" class="accordion-collapse collapse"
 											aria-labelledby="dataConvertHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<DataConvert 
-													@dc-changed="(configs, fields) => updateDataConvert(configs, fields)">
-												</DataConvert>
+												<DataConvert></DataConvert>
 											</div>
 										</div>
 									</div>
@@ -174,7 +170,7 @@
 	const store = useConfigBuilderStore();
 	const dataTableFormat = ref({});
 	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
-	const dataConvert = ref([]);
+	const dataConvert = computed(() => store.getDataConvert);
 	const topRows = ref([]);
 	const toolTips = ref({});
 	const pastedData = ref("");
@@ -209,11 +205,6 @@
 			format["star column"] = star.value;
 		}
 		dataTableFormat.value = format;
-	}
-	function updateDataConvert(configs, fields){
-		dataConvert.value = configs;
-		store.setConvertedFields(fields);
-		outputDataTableFormat();
 	}
 	function updateTopRows(fields){
 		topRows.value = fields;
