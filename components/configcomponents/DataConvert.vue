@@ -92,9 +92,8 @@
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-    const props = defineProps({rawFields: Array});
     const emit = defineEmits(["dcChanged"]);
-    const rawFields = computed(()=> props.rawFields);
+    const rawFields = computed(()=> store.getRawFields);
     const defaultType = "";
     const dataConvertType = ref(defaultType);
     const dataConvertOptions = [

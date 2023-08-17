@@ -20,17 +20,34 @@
 								</div>
 								<div class="accordion" id="dataTableAccordion">
 									<div class="accordion-item">
-										<h5 class="accordion-header" id="dataConvertHeading">
+										<h5 class="accordion-header" id="selectColumnsHeading">
 											<button class="accordion-button" type="button" data-bs-toggle="collapse"
-												data-bs-target="#dataconvertbody" aria-expanded="true"
+												data-bs-target="#selectcolumnsbody" aria-expanded="true"
+												aria-controls="selectcolumnsbody">
+													Select columns
+											</button>
+										</h5>
+										<div id="selectcolumnsbody" class="accordion-collapse collapse show"
+											aria-labelledby="dataConvertHeading" data-bs-parent="#dataTableAccordion">
+											<div class="accordion-body">
+												<SelectColumns @columns-selected="fields => getFields(fields)"
+													@column-name-change="names => columnNameChange(names)">
+												</SelectColumns>
+											</div>
+										</div>
+									</div>
+									<div class="accordion-item">
+										<h5 class="accordion-header" id="dataConvertHeading">
+											<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+												data-bs-target="#dataconvertbody" aria-expanded="false"
 												aria-controls="dataconvertbody">
 													Data convert
 											</button>
 										</h5>
-										<div id="dataconvertbody" class="accordion-collapse collapse show"
+										<div id="dataconvertbody" class="accordion-collapse collapse"
 											aria-labelledby="dataConvertHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<DataConvert :raw-fields="rawFields" 
+												<DataConvert 
 													@dc-changed="(configs, fields) => updateDataConvert(configs, fields)">
 												</DataConvert>
 											</div>
@@ -145,6 +162,7 @@
 </template>
 <script setup>
 	import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+	import SelectColumns from "@/components/configcomponents/SelectColumns.vue";
 	import DataConvert from "@/components/configcomponents/DataConvert.vue";
 	import TopRows from "@/components/configcomponents/TopRows.vue";
 	import ToolTips from "@/components/configcomponents/ToolTips.vue";
@@ -157,7 +175,6 @@
 	const dataTableFormat = ref({});
 	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
 	const dataConvert = ref([]);
-	const rawFields = ref([]);
 	const topRows = ref([]);
 	const toolTips = ref({});
 	const pastedData = ref("");
@@ -219,13 +236,17 @@
 		star.value = updatedLocusStar[1];
 		outputDataTableFormat();
 	}
-	function getRawFields (){
-		let topLine = pastedData.value.split("\n")[0];
-		rawFields.value = topLine.split(",");
+	function getFields(){
+		console.log("We should do this using store");
+	}
+	function columnNameChange(){
+		console.log("We should do this using store");
 	}
 	watch(pastedData, ()=>{
 		pastedData.value = pastedData.value.trim();
-		getRawFields();
+		let topLine = pastedData.value.split("\n")[0];
+		let rawFields = topLine.split(",");
+		store.setRawFields(rawFields);
 	});
 	function copyConfig(){
 		navigator.clipboard.writeText(dataTableFormatString.value);
