@@ -85,7 +85,6 @@
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-    const rawFields = computed(()=> store.getSelectedColumns);
     const defaultType = "";
     const dataConvertType = ref(defaultType);
     const dataConvertOptions = [
@@ -221,24 +220,4 @@
             updateConfig({});
         }
     });
-    watch(rawFields, (newFields, oldFields) => {
-        let newFieldsSorted = JSON.parse(JSON.stringify(newFields)); // Deep copy
-        newFieldsSorted.sort();
-        let oldFieldsSorted = JSON.parse(JSON.stringify(oldFields)); // Deep copy
-        oldFieldsSorted.sort();
-        if (JSON.stringify(newFieldsSorted) != JSON.stringify(oldFieldsSorted)){
-            clearDataConvert();
-        }
-    });
-    function clearDataConvert(){
-        dataConvertType.value = defaultType;
-        newFieldName.value = fieldNamePlaceholder;
-        readyToSave = false;
-        showMsg.value = false;
-        currentFieldConfig.value = {};
-        savedFieldConfigs.value = [];
-        editingFieldIndex.value = -1;
-        emitDataConvert();
-
-    }
 </script>
