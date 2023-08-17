@@ -5,11 +5,11 @@
 				Join multi | Select field(s) (Boolean)
 			</div>
 			<ul class="dr-byor-data-columns">
-				<li v-for="rawField in rawFields" class="form-check form-check-inline">
-						<input class="form-check-input" type="checkbox" :value="rawField" 
+				<li v-for="field in fields" class="form-check form-check-inline">
+						<input class="form-check-input" type="checkbox" :value="field[0]" 
 							id="flexCheckDefault" v-model="selectedFields"
 							@change="(event)=>addRemoveEntry(event)"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
+						<span class="form-check-label" for="flexCheckDefault">{{ field[1] }}</span>
 				</li>
 			</ul>
 			<button @click="()=>clearAll()" class="btn btn-primary">Clear selection</button>
@@ -22,7 +22,7 @@
 					<th>Score false</th>
 				</tr>
 				<tr v-for="field in selectedFields">
-					<td>{{ field }}</td>
+					<td>{{ fieldDisplayNames[field] }}</td>
 					<td>
 						<input type="number" class="form-control input-default" 
 							:value="!!scores[field] ? scores[field]['value to score']['yes'] : 1"
@@ -40,7 +40,12 @@
 	</div>
 </template>
 <script setup>
-	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
+	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+
+	const store = useConfigBuilderStore();
+	const props = defineProps({newFieldName: String, loadConfig: String});
+	const fields = computed(() => store.getSelectedColumns);
+	const fieldDisplayNames = computed(() => store.getColumnObject);
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
 	const scores = ref({});

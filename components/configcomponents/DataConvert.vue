@@ -19,23 +19,18 @@
                 <input type="text" class="form-control input-default" v-model="newFieldName"/>
             </div>
             <div class="col-md-8 col">
-                <RawRename 
-                    v-if="dataConvertType=='raw'" :raw-fields="rawFields" :new-field-name="newFieldName"
-                    :load-config="currentConfigString" 
-                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
-                </RawRename>
 				<Calculate 
-                    v-else-if="dataConvertType=='calculate'" :raw-fields="rawFields" 
+                    v-if="dataConvertType=='calculate'"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </Calculate>
                 <Join 
-                    v-else-if="dataConvertType=='join'" :raw-fields="rawFields"
+                    v-else-if="dataConvertType=='join'"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </Join>
 				<JoinMulti 
-                    v-else-if="dataConvertType=='join multi'" :raw-fields="rawFields"
+                    v-else-if="dataConvertType=='join multi'"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </JoinMulti>
@@ -45,12 +40,12 @@
                     @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ArrayToString>
 				<ReplaceCharacters 
-                    v-else-if="dataConvertType=='replace characters'" :raw-fields="rawFields"
+                    v-else-if="dataConvertType=='replace characters'"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ReplaceCharacters>
 				<ScoreColumns 
-                    v-else-if="dataConvertType=='score columns'" :raw-fields="rawFields"
+                    v-else-if="dataConvertType=='score columns'"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ScoreColumns>

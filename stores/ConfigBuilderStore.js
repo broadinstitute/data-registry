@@ -4,12 +4,14 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
     state: () => ({
         rawFields: [],
         selectedColumns: [],
+        columnObject: {},
         convertedFields: [],
         latestFieldRename: [null, null],
     }),
     getters: {
         getRawFields: (state) => state.rawFields,
         getSelectedColumns: (state) => state.selectedColumns,
+        getColumnObject: (state) => state.columnObject,
         getConvertedFields: (state) => state.convertedFields,
         getLatestFieldRename: (state) => state.latestFieldRename
     },
@@ -19,6 +21,9 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         },
         setSelectedColumns(columns){
             this.selectedColumns = columns;
+        },
+        setColumnObject(newColumnObject){
+            this.columnObject = newColumnObject;
         },
         setConvertedFields(newFields){
             this.convertedFields = newFields;

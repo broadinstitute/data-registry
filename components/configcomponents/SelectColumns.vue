@@ -91,6 +91,7 @@
             output.push([column, columnNames.value[column]])
         });
         store.setSelectedColumns(output);
+        store.setColumnObject(columnNames.value);
     }
     function emitColumnNameChange(column, newName){
         emit ("columnNameChange", [column, newName]);
