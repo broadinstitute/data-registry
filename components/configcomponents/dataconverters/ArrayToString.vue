@@ -18,6 +18,8 @@
 		</div>
 		<div v-if="selectedField != null">
 			<CreateConvert :selected-field="selectedField"
+				:loaded-field-create-new="createNewField"
+				:loaded-field-name="latestFieldName"
 				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
 			</CreateConvert>
 		</div>

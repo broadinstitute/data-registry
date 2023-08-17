@@ -20,14 +20,16 @@
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 	const store = useConfigBuilderStore();
     const props = defineProps({
-        selectedField: String
+        selectedField: String,
+        loadedFieldCreateNew: Boolean,
+        loadedFieldName: String
     });
     const emit = defineEmits(["fieldNameSet"]);
-    const convertOrCreate = ref("convert");
+    const convertOrCreate = ref(!!props.loadedFieldCreateNew ? "create" : "convert");
     const createNewField = computed(() => convertOrCreate.value == "create");
     const selectedField = computed(()=> props.selectedField);
     const selectedFieldColName = computed(() => store.getColumnObject[selectedField.value]);
-    const newFieldName = ref("");
+    const newFieldName = ref(!!props.loadedFieldCreateNew ? props.loadedFieldName : "");
     function emitNewName(){
         let nameToEmit = !!createNewField.value ? newFieldName.value : selectedFieldColName.value;
         emit("fieldNameSet", createNewField.value, nameToEmit);

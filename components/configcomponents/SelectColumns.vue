@@ -68,7 +68,6 @@
         }
         // Replace an old name
         if (!!columnNames.value[rawField]){
-            console.log(`${rawField} => ${newName}`);
             store.setColumnNameChange([rawField, newName]);
         }
         columnNames.value[rawField] = newName;
