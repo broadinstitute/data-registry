@@ -6,10 +6,10 @@
 			</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fields" class="form-check form-check-inline">
-						<input class="form-check-input" type="checkbox" :value="field[0]" 
+						<input class="form-check-input" type="checkbox" :value="field" 
 							id="flexCheckDefault" v-model="selectedFields"
 							@change="(event)=>removeJoinEntry(event)"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ field[1] }}</span>
+						<span class="form-check-label" for="flexCheckDefault">{{ fieldColumnNames[field] }}</span>
 				</li>
 			</ul>
 			<button @click="()=>clearAll()" class="btn btn-primary">Clear selection</button>
@@ -20,7 +20,7 @@
 			</div>
 			<tbody class="dr-byor-data-columns">
 				<tr v-for="field, index in selectedFields" class="arrow-button-list">
-					<td>{{ fieldDisplayNames[field] }}</td>
+					<td>{{ fieldColumnNames[field] }}</td>
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button arrow-button-up" 
 							:disabled="index == 0" @click="moveUpDown(index)">
@@ -49,8 +49,8 @@
 
 	const store = useConfigBuilderStore();
 	const props = defineProps({newFieldName: String, loadConfig: String});
-	const fields = computed(() => store.getSelectedColumns);
-	const fieldDisplayNames = computed(() => store.getColumnObject);
+	const fieldColumnNames = computed(() => store.getSelectedColumns);
+	const fields = computed(() => Object.keys(fieldColumnNames.value));
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
 	const joinBy = ref([]);

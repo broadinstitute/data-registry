@@ -3,19 +3,17 @@ import { defineStore } from 'pinia';
 export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
     state: () => ({
         rawFields: [],
-        selectedColumns: [],
-        columnObject: {},
+        selectedColumns: {},
         columnNameChange: [null, null],
         convertedFields: [],
-        dataConvert: [],
+        convertedFieldsConfig: [],
         latestFieldRename: [null, null],
     }),
     getters: {
         getRawFields: (state) => state.rawFields,
         getSelectedColumns: (state) => state.selectedColumns,
-        getColumnObject: (state) => state.columnObject,
         getConvertedFields: (state) => state.convertedFields,
-        getDataConvert: (state) => state.dataConvert,
+        getConvertedFieldsConfig: (state) => state.convertedFieldsConfig,
         getLatestFieldRename: (state) => state.latestFieldRename
     },
     actions: {
@@ -25,17 +23,20 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         setSelectedColumns(columns){
             this.selectedColumns = columns;
         },
-        setColumnObject(newColumnObject){
-            this.columnObject = newColumnObject;
-        },
         setColumnNameChange(nameChange){
             this.columnNameChange = nameChange;
         },
-        setConvertedFields(newFields){
-            this.convertedFields = newFields;
-        },
-        setDataConvert(newDataConvert){
-            this.dataConvert = newDataConvert;
+        setConvertedFields(newConvertedFields){
+            let fieldNames = [];
+            newConvertedFields.forEach(newField => {
+                if (newField["type"] == "split"){
+                    fieldNames = fieldNames.concat(newField["field name"]);
+                } else {
+                    fieldNames.push(newField["field name"]);
+                }
+            });
+            this.convertedFields = fieldNames;
+            this.convertedFieldsConfig = newConvertedFields;
         },
         renameField(oldName, newName){
             this.latestFieldRename = [oldName, newName];

@@ -85,12 +85,7 @@
         inputField.value = newName;
     }
     function saveColumns(){
-        let output = [];
-        selectedColumns.value.forEach(column => {
-            output.push([column, columnNames.value[column]])
-        });
-        store.setSelectedColumns(output);
-        store.setColumnObject(columnNames.value);
+        store.setSelectedColumns(columnNames.value);
     }
     function selectAll(){
         selectedColumns.value = rawFields.value;

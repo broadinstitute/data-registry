@@ -6,9 +6,9 @@
 			</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fields" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="calculate" :value="field[0]" 
+					<input class="form-check-input" type="radio" name="calculate" :value="field" 
 					id="flexCheckDefault" v-model="selectedField"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ field[1] }}</span>
+						<span class="form-check-label" for="flexCheckDefault">{{ fieldColumnNames[field] }}</span>
 				</li>													
 			</ul>
 		</div>
@@ -36,7 +36,8 @@
 	const store = useConfigBuilderStore();
 	const props = defineProps({newFieldName: String, loadConfig: String});
     const emit = defineEmits(['configChanged']);
-	const fields = computed(() => store.getSelectedColumns);
+	const fieldColumnNames = computed(() => store.getSelectedColumns);
+	const fields = computed(() => Object.keys(fieldColumnNames.value));
     const selectedField = ref(null);
 	const calcType = ref("-log10");
     const latestFieldName = ref("");
@@ -50,7 +51,7 @@
 		createNewField.value = oldConfig["create new"];
     }
 	watch(selectedField, () => 
-		latestFieldName.value = store.getColumnObject[selectedField.value]
+		latestFieldName.value = fieldColumnNames.value[selectedField.value]
 	);
     watch([latestFieldName, selectedField, calcType], ()=>{
         emitConfig();

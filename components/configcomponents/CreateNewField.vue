@@ -28,7 +28,7 @@
     const convertOrCreate = ref(!!props.loadedFieldCreateNew ? "create" : "convert");
     const createNewField = computed(() => convertOrCreate.value == "create");
     const selectedField = computed(()=> props.selectedField);
-    const selectedFieldColName = computed(() => store.getColumnObject[selectedField.value]);
+    const selectedFieldColName = computed(() => store.getSelectedColumns[selectedField.value]);
     const newFieldName = ref(!!props.loadedFieldCreateNew ? props.loadedFieldName : "");
     function emitNewName(){
         let nameToEmit = !!createNewField.value ? newFieldName.value : selectedFieldColName.value;
