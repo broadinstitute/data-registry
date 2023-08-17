@@ -38,7 +38,6 @@
 	const separator = ref("");
 	const createNewField = ref(false);
 	
-	let readySaveMsg = "";
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
@@ -52,20 +51,20 @@
     watch([latestFieldName, selectedField, separator], ()=>{
         emitConfig();
     });
-    function readyToSave(config){
+    function preSaveCheck(){
+		if (selectedField.value == null){
+			return [false, "Select a field."];
+		}
 		//separator CAN be an empty string so we don't check that
-		if (config["separate by"].includes(",")){
-			readySaveMsg = "Commas may not be used in separator.";
-			return false;
+		if (separator.value.includes(",")){
+			return [false, "Commas may not be used in separator."];
 		}
-		if (!config["raw field"]){
-			readySaveMsg = "Select a raw field.";
-            return false;
-		}
-		readySaveMsg = "";
-        return true;
+        return [true, ""];
     }
 	function emitConfig(){
+		let check = preSaveCheck();
+		let ready = check[0];
+		let msg = check[1];
 		let arrayRenameConfig = {
         	"type": "array to string",
         	"field name": latestFieldName.value,
@@ -73,7 +72,7 @@
 			"separate by": separator.value,
 			"create new": createNewField.value
     	};
-		emit('configChanged', arrayRenameConfig, readyToSave(arrayRenameConfig), readySaveMsg);
+		emit('configChanged', arrayRenameConfig, ready, msg);
 	}
 	function processFieldInfo(createNew, newName){
 		createNewField.value = createNew;

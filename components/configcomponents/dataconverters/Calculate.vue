@@ -20,9 +20,17 @@
 				<option value="-log10">-Log10</option>
 			</select>
 		</div>
+		<div v-if="selectedField != null">
+			<CreateConvert :selected-field="selectedField"
+				:loaded-field-create-new="createNewField"
+				:loaded-field-name="latestFieldName"
+				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
+			</CreateConvert>
+		</div>
 	</div>
 </template>
 <script setup>
+	import CreateConvert from '@/components/configcomponents/CreateConvert.vue';
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
@@ -31,38 +39,43 @@
 	const fields = computed(() => store.getSelectedColumns);
     const selectedField = ref(null);
 	const calcType = ref("-log10");
-    const latestFieldName = computed(()=>{
-        return props.newFieldName;
-    });
-	const calcConfig = ref({
-        "type": "calculate",
-        "field name": latestFieldName,
-        "raw field": selectedField,
-		"calculation type": calcType
-    });
-	let readySaveMsg = "";
+    const latestFieldName = ref("");
+	const createNewField = ref(false);
+	
     if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
 		calcType.value = oldConfig["calculation type"];
-		
+		latestFieldName.value = oldConfig["field name"];
+		createNewField.value = oldConfig["create new"];
     }
+	watch(selectedField, () => 
+		latestFieldName.value = store.getColumnObject[selectedField.value]
+	);
     watch([latestFieldName, selectedField, calcType], ()=>{
         emitConfig();
     })
-    function readyToSave(){
-		if (!calcConfig.value["raw field"]){
-			readySaveMsg = "Select a raw field.";
-            return false;
+    function preSaveCheck(){
+		if (selectedField.value == null){
+			return [false, "Select a field."];
 		}
-		if (!calcConfig.value["calculation type"]){
-			readySaveMsg = "Select a calculation type.";
-			return false;
-		}
-		readySaveMsg = "";
-		return true;
+		return [true, ""];
     }
 	function emitConfig(){
-		emit('configChanged', calcConfig.value, readyToSave(), readySaveMsg);
+		let check = preSaveCheck();
+		let ready = check[0];
+		let msg = check[1];
+		let calcConfig = {
+			"type": "calculate",
+			"field name": latestFieldName.value,
+			"raw field": selectedField.value,
+			"calculation type": calcType.value,
+			"create new": createNewField.value
+    	};
+		emit('configChanged', calcConfig, ready, msg);
+	}
+	function processFieldInfo(createNew, newName){
+		createNewField.value = createNew;
+		latestFieldName.value = newName;
 	}
 </script>

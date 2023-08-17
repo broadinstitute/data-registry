@@ -38,9 +38,17 @@
 			</table>
 			<button class="btn btn-primary" @click="addEntry()">Add</button>
 		</div>
+		<div v-if="selectedField != null">
+			<CreateConvert :selected-field="selectedField"
+				:loaded-field-create-new="createNewField"
+				:loaded-field-name="latestFieldName"
+				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
+			</CreateConvert>
+		</div>
 	</div>
 </template>
 <script setup>
+	import CreateConvert from '@/components/configcomponents/CreateConvert.vue';
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
@@ -48,28 +56,23 @@
 	const fields = computed(() => store.getSelectedColumns);
     const emit = defineEmits(['configChanged']);
     const selectedField = ref(null);
-	const numReplaces = ref(1);
-    const latestFieldName = computed(()=>{
-        return props.newFieldName;
-    });
+    const latestFieldName = ref("");
+	const createNewField = ref(false);
 	const replaceChars = ref([
 		{
 			"from": "",
 			"to": ""
 		}
 	]);
-	const replaceCharConfig = ref({
-        "type": "replace characters",
-        "field name": latestFieldName,
-        "raw field": selectedField,
-		"replace": replaceChars
-    });
-	let readySaveMsg = "";
+	watch(selectedField, () => 
+		latestFieldName.value = store.getColumnObject[selectedField.value]
+	);
     if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
 		replaceChars.value = oldConfig["replace"];
-		
+		latestFieldName.value = oldConfig["field name"];
+		createNewField.value = oldConfig["create new"];
     }
 	function addEntry(){
 		replaceChars.value.push({
@@ -91,17 +94,13 @@
     watch([latestFieldName, selectedField, replaceChars], ()=>{
 		emitConfig();
     });
-	function emitConfig(){
-        emit('configChanged', replaceCharConfig.value, readyToSave(), readySaveMsg);
-	}
-    function readyToSave(){
-		if(!replaceCharConfig.value["raw field"]){
-			readySaveMsg = "Select a raw field.";
-            return false;
+    function preSaveCheck(){
+		if(selectedField.value == null){
+            return [false, "Select a raw field."];
 		}
 		let emptyEntries = false;
 		let foundCommas = false;
-		replaceCharConfig.value["replace"].forEach(entry => {
+		replaceChars.value.forEach(entry => {
 			if(entry["from"] == ""){
 				emptyEntries = true;
 			}
@@ -110,14 +109,28 @@
 			}
 		});
 		if (emptyEntries){
-			readySaveMsg = "Fill in all 'Replace' entries.";
-			return;
+			return [false, "Fill in all 'Replace' entries."];
 		}
 		if (foundCommas){
-			readySaveMsg = "Commas may not be used in character replacements.";
-			return;
+			return [false, "Commas may not be used in character replacements."];
 		}
-		readySaveMsg = "";
-        return true;
+        return [true, ""];
     }
+	function emitConfig(){
+		let check = preSaveCheck();
+		let ready = check[0];
+		let msg = check[1];
+		let replaceCharConfig = {
+        	"type": "replace characters",
+        	"field name": latestFieldName.value,
+        	"raw field": selectedField.value,
+			"replace": replaceChars.value,
+			"create new": createNewField.value
+    	};
+        emit('configChanged', replaceCharConfig, ready, msg);
+	}
+	function processFieldInfo(createNew, newName){
+		createNewField.value = createNew;
+		latestFieldName.value = newName;
+	}
 </script>
