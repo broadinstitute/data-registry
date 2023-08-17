@@ -17,16 +17,16 @@
 			<input type="text" class="form-control input-default" v-model="separator"/>
 		</div>
 		<div v-if="selectedField != null">
-			<CreateConvert :selected-field="selectedField"
+			<CreateNewField :selected-field="selectedField"
 				:loaded-field-create-new="createNewField"
 				:loaded-field-name="latestFieldName"
 				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
-			</CreateConvert>
+			</CreateNewField>
 		</div>
 	</div>
 </template>
 <script setup>
-	import CreateConvert from '@/components/configcomponents/CreateConvert.vue';
+	import CreateNewField from '@/components/configcomponents/CreateNewField.vue';
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();

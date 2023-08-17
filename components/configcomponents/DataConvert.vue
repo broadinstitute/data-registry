@@ -207,12 +207,7 @@
         doneEditing();
     }
     function emitDataConvert(){
-        let savedFields = [];
-        savedFieldConfigs.value.forEach(
-            field => savedFields.push(field["field name"])
-        );
-        store.setConvertedFields(savedFields);
-        store.setDataConvert(savedFieldConfigs.value);
+        store.setConvertedFields(savedFieldConfigs.value);
     }
     watch(dataConvertType, ()=>{
         showMsg.value = false;

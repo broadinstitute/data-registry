@@ -170,7 +170,7 @@
 	const store = useConfigBuilderStore();
 	const dataTableFormat = ref({});
 	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
-	const dataConvert = computed(() => store.getDataConvert);
+	const dataConvert = computed(() => store.getConvertedFieldsConfig);
 	const topRows = ref([]);
 	const toolTips = ref({});
 	const pastedData = ref("");
