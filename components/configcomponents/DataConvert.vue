@@ -49,6 +49,11 @@
                     :new-field-name="newFieldName" :load-config="currentConfigString"
                     @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
                 </ScoreColumns>
+                <Split 
+                    v-else-if="dataConvertType=='split'"
+                    :new-field-name="newFieldName" :load-config="currentConfigString"
+                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
+                </Split>
                 <div class="failed-save" v-if="showMsg">{{ failedSaveMsg }}</div>
 			</div>
 			<div class="col-md-1 col">
@@ -82,6 +87,7 @@
     import JoinMulti from "@/components/configcomponents/dataconverters/JoinMulti.vue";
     import ReplaceCharacters from "@/components/configcomponents/dataconverters/ReplaceCharacters.vue";
     import ScoreColumns from "@/components/configcomponents/dataconverters/ScoreColumns.vue";
+    import Split from "@/components/configcomponents/dataconverters/Split.vue";
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
@@ -111,6 +117,10 @@
         {
             displayName: "Score columns",
             selectValue: "score columns"
+        },
+        {
+            displayName: "Split columns",
+            selectValue: "split"
         }
     ];
 
@@ -152,17 +162,17 @@
             return;
         }
         let newField = JSON.parse(JSON.stringify(currentFieldConfig.value)); // Deep copy
-        if (!newField["field name"] || newField["field name"].trim() === ""){
+        if (!newField["field name"]){
             failedSaveMsg = "Enter a field name.";
             showMsg.value = true;
             return;
         }
-        let newName = newField["field name"];
-        if (newName.includes(",")){
-            failedSaveMsg = "Commas may not be used in field names.";
+        let nameCheck = fieldNameCheck(newField);
+        if (!nameCheck[0]){
+            failedSaveMsg = nameCheck[1];
             showMsg.value = true;
             return;
-        }
+        } 
         // Check for duplicates
         for (let i = 0; i < savedFieldConfigs.value.length; i++){
             let existingFieldName = savedFieldConfigs.value[i]["field name"];
@@ -185,6 +195,29 @@
             }
         }
         doneEditing();
+    }
+    function fieldNameCheck(fieldConfig){
+        if (fieldConfig.type == 'split'){
+            let names = fieldConfig["field name"];
+            for (let i = 0; i < names.length; i++){
+                let check = fieldNameOkay(names[i]);
+                if (!check[0]){
+                    return check;
+                }
+            }
+            return [true, ""];
+        } else {
+            return fieldNameOkay(fieldConfig["field name"]);
+        }
+    }
+    function fieldNameOkay(fieldName){
+        if (fieldName.trim() == ''){
+            return [false, 'Field name cannot be empty.'];
+        }
+        if (fieldName.includes(",")){
+            return [false, 'Commas are not allowed in field names.'];
+        }
+        return [true, ""]
     }
     function doneEditing(){
         editingFieldIndex.value = -1;

@@ -2,7 +2,7 @@
     <div class="row" id="scoreColumnsConfig">
 		<div class="col-md-4 col">
 			<div class="label">
-				Join multi | Select field(s) (Boolean)
+				Score columns | Select field(s) (Boolean)
 			</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fields" class="form-check form-check-inline">
