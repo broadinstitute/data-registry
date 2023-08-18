@@ -12,28 +12,19 @@ npm install
 ```
 
 ## Development Server
+If you're running the API server locally and want to access it from your local front end dev
+server, you should run `npm run dev-local` and in your `.env` file set `NUXT_PUBLIC_API_BASE_URL=http://localhost:5000` 
+then you'll access this website via `http://localhost:3000`.
 
-Start the development server on http://localhost:3000
+If you're only making front end changes and want to use the deployed api server, you should add this entry: 
+`127.0.0.1   local.kpndataregistry.org` in `/etc/hosts` you should run `npm run dev` and in your `.env` 
+file set `NUXT_PUBLIC_API_BASE_URL=https://kpndataregistry.org` then use `https://local.kpndataregistry.org`.
 
-```bash
-npm run dev
-```
 
-## Local Dev With Docker
-```bash
-docker build -t data-registry-ui .
-docker run -it --rm -v ${PWD}:/app -v /app/node_modules -p 3000:3000 -p 24600:24600 data-registry-ui
-```
-Then you should be able to access the app at http://localhost:3000 and local dev changes to vue files should be be picked up seamlessly by the docker image 
-and hot reload in the browser.
-## Production
-
-Build the application for production:
-
-```bash
-npx nuxi generate --dotenv <path-to-env>
-aws s3 cp --recursive .output/public s3://data-registry-vue/
-```
+## Deployment
+Deployment is via Jenkins. The Jenkins jobs are located here:
+- [Dev](http://107.22.69.235:8080/view/Data%20Registry/job/DR%20-%20Frontend%20-%20Dev)
+- [Prod](http://107.22.69.235:8080/view/Data%20Registry/job/DR%20-%20Frontend%20-%20Prod)
 
 ## Sample .env
 
@@ -45,4 +36,3 @@ NUXT_PUBLIC_API_BASE_URL=??
 NUXT_PUBLIC_PHENOTYPES_URL=??
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
