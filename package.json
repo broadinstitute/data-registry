@@ -2,7 +2,8 @@
     "private": true,
     "scripts": {
         "build": "nuxt build",
-        "dev": "nuxt dev"
+        "dev": "nuxt dev --host local.kpndataregistry.org --https --ssl-key server.key --ssl-cert server.crt",
+        "dev-local": "nuxt dev"
     },
     "devDependencies": {
         "@nuxt/devtools": "^0.7.2",

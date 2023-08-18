@@ -22,6 +22,9 @@ export const useUserStore = defineStore('UserStore', {
     },
     async isUserLoggedIn() {
       try {
+        if (!this.axios) {
+          this.init()
+        }
         const { data } = await this.axios.get('/api/is-logged-in')
         this.user = data
         return true
@@ -30,6 +33,9 @@ export const useUserStore = defineStore('UserStore', {
       }
     },
     async login(email, password) {
+      if (!this.axios) {
+        this.init()
+      }
       await this.axios.post('/api/login', JSON.stringify({ email, password }))
     }
   }

@@ -8,9 +8,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (userStore.user || to.path === '/login') {
     return
   }
-  if(!userStore.axios){
-    userStore.init()
-  }
   const isLoggedIn = await userStore.isUserLoggedIn()
   if (!isLoggedIn) {
     return callWithNuxt(nuxtApp, navigateTo, ['/login?redirect=' + to.path])
