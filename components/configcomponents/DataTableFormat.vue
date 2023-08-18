@@ -170,7 +170,7 @@
 	const store = useConfigBuilderStore();
 	const dataTableFormat = ref({});
 	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
-	const dataConvert = computed(() => store.getConvertedFieldsConfig);
+	const dataConvert = computed(() => store.getAllFieldsConfig);
 	const topRows = ref([]);
 	const toolTips = ref({});
 	const pastedData = ref("");
@@ -236,6 +236,7 @@
 		let rawFields = topLine.split(",");
 		store.setRawFields(rawFields);
 	});
+	watch(dataConvert, () => outputDataTableFormat());
 	function copyConfig(){
 		navigator.clipboard.writeText(dataTableFormatString.value);
 	}

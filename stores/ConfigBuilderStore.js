@@ -7,6 +7,7 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         columnNameChange: [null, null],
         convertedFields: [],
         convertedFieldsConfig: [],
+        unConvertedFieldsConfig: [],
         latestFieldRename: [null, null],
     }),
     getters: {
@@ -14,6 +15,7 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         getSelectedColumns: (state) => state.selectedColumns,
         getConvertedFields: (state) => state.convertedFields,
         getConvertedFieldsConfig: (state) => state.convertedFieldsConfig,
+        getAllFieldsConfig: (state) => state.unConvertedFieldsConfig.concat(state.convertedFieldsConfig),
         getLatestFieldRename: (state) => state.latestFieldRename
     },
     actions: {
@@ -21,6 +23,18 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
             this.rawFields = fields;
         },
         setSelectedColumns(columns){
+            // TODO decide how to store the selected columns: object or array?
+            let columnKeys = Object.keys(columns);
+            let rawFieldItems = [];
+            columnKeys.forEach(columnKey => {
+                let rawFieldItem = {
+                    "type": "raw",
+                    "field name": columns[columnKey],
+                    "raw field": columnKey
+                };
+                rawFieldItems.push(rawFieldItem);
+            });
+            this.unConvertedFieldsConfig = rawFieldItems;
             this.selectedColumns = columns;
         },
         setColumnNameChange(nameChange){
