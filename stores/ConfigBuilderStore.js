@@ -61,6 +61,6 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         },
         renameField(oldName, newName){
             this.latestFieldRename = [oldName, newName];
-        }
+        },
     }
 });

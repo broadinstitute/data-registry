@@ -51,7 +51,8 @@
         "type": "join",
         "field name": latestFieldName,
 		"fields to join": fieldsToJoin,
-		"join by": joinBy
+		"join by": joinBy,
+		"create new": true
     });
 	let readySaveMsg = "";
     if (props.loadConfig != "{}"){

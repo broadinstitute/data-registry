@@ -123,7 +123,6 @@
             selectValue: "split"
         }
     ];
-
     const fieldNamePlaceholder = ""; 
     const newFieldName = ref(fieldNamePlaceholder);
     let readyToSave = false;
@@ -132,6 +131,8 @@
     const currentFieldConfig = ref({});
     const currentConfigString = computed(() => JSON.stringify(currentFieldConfig.value));
     const savedFieldConfigs = ref([]);
+    const fieldColumns = computed(() => store.getSelectedColumns);
+    const fieldColumnNewNames = computed(() => Object.values(fieldColumns.value));
     const editingFieldIndex = ref(-1);
 
     function updateConfig(newConfig, ready=false, msg="Field not ready to save."){
@@ -173,15 +174,6 @@
             showMsg.value = true;
             return;
         } 
-        // Check for duplicates
-        for (let i = 0; i < savedFieldConfigs.value.length; i++){
-            let existingFieldName = savedFieldConfigs.value[i]["field name"];
-            if (i != editingFieldIndex.value && existingFieldName == newName){
-                failedSaveMsg = "Select a unique field name.";
-                showMsg.value = true;
-                return;
-            }
-        }
         // If we make it this far, the new field is unique and we can use it.
         showMsg.value = false;
         if(editingFieldIndex.value == -1){
@@ -207,15 +199,45 @@
             }
             return [true, ""];
         } else {
-            return fieldNameOkay(fieldConfig["field name"]);
+            let rawField = !!fieldConfig['raw field'] ? fieldConfig['raw field'] : "";
+            let createNew = fieldConfig['create new'];
+            return fieldNameOkay(fieldConfig["field name"], rawField, createNew);
         }
     }
-    function fieldNameOkay(fieldName){
+    function fieldNameOkay(fieldName, rawField="", createNew=true){
         if (fieldName.trim() == ''){
             return [false, 'Field name cannot be empty.'];
         }
         if (fieldName.includes(",")){
             return [false, 'Commas are not allowed in field names.'];
+        }
+        // Duplicate checking against renamed columns
+        if (fieldColumnNewNames.value.includes(fieldName)){
+            if (createNew || fieldColumns[rawField] != fieldName){
+                return [false, 'Select a unique field name.'];
+            }
+        }
+        // Duplicate checking against converted columns
+        for (let i = 0; i < savedFieldConfigs.value.length; i++){
+            if (i == editingFieldIndex.value){
+                continue;
+            }
+            let existingFieldConfig = savedFieldConfigs.value[i];
+            if (existingFieldConfig.type == 'split'){
+                let splitNames = existingFieldConfig['field name'];
+                for (let j = 0; j < splitNames.length; j++){
+                    let existingFieldName = splitNames[j];
+                    if (existingFieldName == fieldName){
+                        return[false, "Select a unique field name."];
+                    }
+                }
+            } else {
+                let existingFieldName = existingFieldConfig["field name"];
+                if (existingFieldName == fieldName){
+                    return[false, "Select a unique field name."];
+                }
+            }
+    
         }
         return [true, ""]
     }

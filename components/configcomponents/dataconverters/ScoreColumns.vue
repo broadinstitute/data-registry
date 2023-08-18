@@ -56,7 +56,8 @@
         "type": "score columns",
         "field name": latestFieldName,
 		"fields to score": selectedFields,
-		"score by": scores
+		"score by": scores,
+		"create new": true
     });
 	let readySaveMsg = "";
 	if (props.loadConfig != "{}"){

@@ -61,7 +61,8 @@
         "type": "join multi",
         "field name": latestFieldName,
 		"fields to join": selectedFields,
-		"join by": joinBy
+		"join by": joinBy,
+		"create new": true
     });
 	let readySaveMsg = "";
 	function emitConfig(){
