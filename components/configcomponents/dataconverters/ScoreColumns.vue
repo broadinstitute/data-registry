@@ -37,21 +37,25 @@
 				</tr>
 			</table>
 		</div>
+		<div class="label">
+			New field name
+			<label>
+				<input type="text" class="form-control input-default" v-model="latestFieldName">
+			</label>
+		</div>
 	</div>
 </template>
 <script setup>
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-	const props = defineProps({newFieldName: String, loadConfig: String});
+	const props = defineProps({loadConfig: String});
 	const fieldColumnNames = computed(() => store.getSelectedColumns);
 	const fields = computed(() => Object.keys(fieldColumnNames.value));
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
 	const scores = ref({});
-	const latestFieldName = computed(()=>{
-        return props.newFieldName;
-    });
+	const latestFieldName = ref("");
 	const scoreColumnsConfig = ref({
         "type": "score columns",
         "field name": latestFieldName,
@@ -59,7 +63,6 @@
 		"score by": scores,
 		"create new": true
     });
-	let readySaveMsg = "";
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
 		let fields = oldConfig["fields to score"];
@@ -114,20 +117,17 @@
         emitConfig();
     })
 	function emitConfig(){
-		emit('configChanged', scoreColumnsConfig.value, readyToSave(), readySaveMsg);
+		emit('configChanged', scoreColumnsConfig.value, preSaveCheck());
 	}
-    function readyToSave(){
+    function preSaveCheck(){
 		if (scoreColumnsConfig.value["fields to score"].length < 1){
-			readySaveMsg = "Select fields to score.";
-			return false;
+			return [false, "Select fields to score."];
 		}
 		scoreColumnsConfig.value["fields to score"].forEach(field => {
 			if (!scoreColumnsConfig.value["score by"][field]){
-				readySaveMsg = "Specify values for score calculation.";
-				return false;
+				return [false, "Specify values for score calculation."];
 			}
 		});
-		readySaveMsg = "";
-        return true;
+        return [true, ""]
     }
 </script>

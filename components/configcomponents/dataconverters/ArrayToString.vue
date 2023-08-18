@@ -63,9 +63,6 @@
         return [true, ""];
     }
 	function emitConfig(){
-		let check = preSaveCheck();
-		let ready = check[0];
-		let msg = check[1];
 		let arrayRenameConfig = {
         	"type": "array to string",
         	"field name": latestFieldName.value,
@@ -73,7 +70,7 @@
 			"separate by": separator.value,
 			"create new": createNewField.value
     	};
-		emit('configChanged', arrayRenameConfig, ready, msg);
+		emit('configChanged', arrayRenameConfig, preSaveCheck());
 	}
 	function processFieldInfo(createNew, newName){
 		createNewField.value = createNew;

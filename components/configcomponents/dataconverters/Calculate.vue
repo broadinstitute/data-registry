@@ -63,9 +63,6 @@
 		return [true, ""];
     }
 	function emitConfig(){
-		let check = preSaveCheck();
-		let ready = check[0];
-		let msg = check[1];
 		let calcConfig = {
 			"type": "calculate",
 			"field name": latestFieldName.value,
@@ -73,7 +70,7 @@
 			"calculation type": calcType.value,
 			"create new": createNewField.value
     	};
-		emit('configChanged', calcConfig, ready, msg);
+		emit('configChanged', calcConfig, preSaveCheck());
 	}
 	function processFieldInfo(createNew, newName){
 		createNewField.value = createNew;

@@ -42,21 +42,25 @@
 				</tr>
 			</tbody>
 		</div>
+		<div class="label">
+			New field name
+			<label>
+				<input type="text" class="form-control input-default" v-model="latestFieldName">
+			</label>
+		</div>
 	</div>
 </template>
 <script setup>
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-	const props = defineProps({newFieldName: String, loadConfig: String});
+	const props = defineProps({loadConfig: String});
 	const fieldColumnNames = computed(() => store.getSelectedColumns);
 	const fields = computed(() => Object.keys(fieldColumnNames.value));
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
 	const joinBy = ref([]);
-	const latestFieldName = computed(()=>{
-        return props.newFieldName;
-    });
+	const latestFieldName = ref("");
 	const joinMultiConfig = ref({
         "type": "join multi",
         "field name": latestFieldName,
@@ -64,9 +68,8 @@
 		"join by": joinBy,
 		"create new": true
     });
-	let readySaveMsg = "";
 	function emitConfig(){
-		emit('configChanged', joinMultiConfig.value, readyToSave(), readySaveMsg);
+		emit('configChanged', joinMultiConfig.value, preSaveCheck());
 	}
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
@@ -99,26 +102,22 @@
 		emitConfig();
 	}
 	
-    function readyToSave(){
+    function preSaveCheck(){
 		let fieldsLength = joinMultiConfig.value["fields to join"].length;
 		let joinLength = joinMultiConfig.value["join by"].length;
 		if (joinMultiConfig.value["fields to join"].length < 2){
-			readySaveMsg = "Select some fields to join.";
-			return false;
+			return [false, "Select some fields to join."];
 		}
 		if (joinLength != fieldsLength - 1){
-			readySaveMsg = "Specify join separators.";
-			return false;
+			return [false, "Specify join separators."]
 		}
 		for (let i = 0; i < joinLength; i++){
 			let joinEntry = joinMultiConfig.value["join by"][i];
 			if (joinEntry.includes(",")){
-				readySaveMsg = "Commas may not be used in field joins.";
-				return false;
+				return [false, "Commas may not be used in field joins."];
 			}
 		}
-		readySaveMsg = "";
-        return true;
+        return [true, ""];
     }
 	watch([latestFieldName, selectedFields, joinBy], ()=>{
         emitConfig();

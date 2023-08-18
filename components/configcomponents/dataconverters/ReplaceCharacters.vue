@@ -52,7 +52,7 @@
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-	const props = defineProps({ newFieldName: String, loadConfig: String});
+	const props = defineProps({loadConfig: String});
 	const fieldColumnNames = computed(() => store.getSelectedColumns);
 	const fields = computed(() => Object.keys(fieldColumnNames.value));
     const emit = defineEmits(['configChanged']);
@@ -118,9 +118,6 @@
         return [true, ""];
     }
 	function emitConfig(){
-		let check = preSaveCheck();
-		let ready = check[0];
-		let msg = check[1];
 		let replaceCharConfig = {
         	"type": "replace characters",
         	"field name": latestFieldName.value,
@@ -128,7 +125,7 @@
 			"replace": replaceChars.value,
 			"create new": createNewField.value
     	};
-        emit('configChanged', replaceCharConfig, ready, msg);
+        emit('configChanged', replaceCharConfig, preSaveCheck());
 	}
 	function processFieldInfo(createNew, newName){
 		createNewField.value = createNew;

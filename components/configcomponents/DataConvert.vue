@@ -12,47 +12,36 @@
                         {{ dcOption.displayName }}
                     </option>
                 </select>
-                <div class="label dr-form">
-                    New field name
-                        <sup>required</sup>
-                </div>
-                <input type="text" class="form-control input-default" v-model="newFieldName"/>
             </div>
             <div class="col-md-8 col">
 				<Calculate 
-                    v-if="dataConvertType=='calculate'"
-                    :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
+                    v-if="dataConvertType=='calculate'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </Calculate>
                 <Join 
-                    v-else-if="dataConvertType=='join'"
-                    :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
+                    v-else-if="dataConvertType=='join'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </Join>
 				<JoinMulti 
-                    v-else-if="dataConvertType=='join multi'"
-                    :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
+                    v-else-if="dataConvertType=='join multi'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </JoinMulti>
 				<ArrayToString 
-                    v-else-if="dataConvertType=='array to string'"
-                    :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
+                    v-else-if="dataConvertType=='array to string'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </ArrayToString>
 				<ReplaceCharacters 
-                    v-else-if="dataConvertType=='replace characters'"
-                    :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
+                    v-else-if="dataConvertType=='replace characters'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </ReplaceCharacters>
 				<ScoreColumns 
-                    v-else-if="dataConvertType=='score columns'"
-                    :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
+                    v-else-if="dataConvertType=='score columns'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </ScoreColumns>
                 <Split 
                     v-else-if="dataConvertType=='split'"
                     :new-field-name="newFieldName" :load-config="currentConfigString"
-                    @config-changed="(newConfig, ready, msg) => updateConfig(newConfig, ready, msg)">
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </Split>
                 <div class="failed-save" v-if="showMsg">{{ failedSaveMsg }}</div>
 			</div>
@@ -135,13 +124,13 @@
     const fieldColumnNewNames = computed(() => Object.values(fieldColumns.value));
     const editingFieldIndex = ref(-1);
 
-    function updateConfig(newConfig, ready=false, msg="Field not ready to save."){
+    function updateConfig(newConfig, check=[false, "Field not ready to save."]){
         currentFieldConfig.value = newConfig;
-        readyToSave = ready;
-        if (ready){
+        readyToSave = check[0];
+        if (readyToSave){
             showMsg.value = false;
         }
-        failedSaveMsg = ready ? "" : msg;
+        failedSaveMsg = readyToSave ? "" : check[1];
     }
     function editField(index){
         // You can't change a field type while editing. If you want to do that, you must delete and start over.
@@ -201,6 +190,7 @@
         } else {
             let rawField = !!fieldConfig['raw field'] ? fieldConfig['raw field'] : "";
             let createNew = fieldConfig['create new'];
+            console.log(createNew);
             return fieldNameOkay(fieldConfig["field name"], rawField, createNew);
         }
     }
@@ -211,12 +201,8 @@
         if (fieldName.includes(",")){
             return [false, 'Commas are not allowed in field names.'];
         }
-        // Duplicate checking against renamed columns
-        if (fieldColumnNewNames.value.includes(fieldName)){
-            if (createNew || fieldColumns[rawField] != fieldName){
-                return [false, 'Select a unique field name.'];
-            }
-        }
+        // Duplicate checking against renamed columns needs to be here
+
         // Duplicate checking against converted columns
         for (let i = 0; i < savedFieldConfigs.value.length; i++){
             if (i == editingFieldIndex.value){

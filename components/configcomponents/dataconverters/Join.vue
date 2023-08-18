@@ -30,13 +30,19 @@
 			</div>
 			<input type="text" class="form-control input-default" v-model="joinBy"/>
 		</div>
+		<div class="label">
+			New field name
+			<label>
+				<input type="text" class="form-control input-default" v-model="latestFieldName">
+			</label>
+		</div>
 	</div>
 </template>
 <script setup>
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-	const props = defineProps({newFieldName: String, loadConfig: String});
+	const props = defineProps({loadConfig: String});
 	const fieldColumnNames = computed(() => store.getSelectedColumns);
 	const fields = computed(() => Object.keys(fieldColumnNames.value));
     const emit = defineEmits(['configChanged']);
@@ -44,9 +50,7 @@
 	const secondField = ref(null);
 	const fieldsToJoin = computed(()=>[firstField.value, secondField.value]);
 	const joinBy = ref("");
-    const latestFieldName = computed(()=>{
-        return props.newFieldName;
-    });
+    const latestFieldName = ref("");
 	const joinConfig = ref({
         "type": "join",
         "field name": latestFieldName,
@@ -54,7 +58,6 @@
 		"join by": joinBy,
 		"create new": true
     });
-	let readySaveMsg = "";
     if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         firstField.value = oldConfig["fields to join"][0];
@@ -65,19 +68,16 @@
     watch([latestFieldName, fieldsToJoin, joinBy], ()=>{
         emitConfig();
     })
-    function readyToSave(){
+    function preSaveCheck(){
 		if (joinConfig.value["join by"].includes(",")){
-			readySaveMsg = "Commas may not be used in field joins.";
-			return false;
+			return [false, "Commas may not be used in field joins."]
 		}
 		if (!joinConfig.value["fields to join"][0] || !joinConfig.value["fields to join"][1]){
-			readySaveMsg = "Select two fields to join.";
-			return false;
+			return [false, "Select two fields to join."]
 		}
-		readySaveMsg = "";
-        return true;
+        return [true, ""];
     }
 	function emitConfig(){
-		emit('configChanged', joinConfig.value, readyToSave(), readySaveMsg);
+		emit('configChanged', joinConfig.value, preSaveCheck());
 	}
 </script>
