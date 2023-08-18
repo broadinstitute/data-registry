@@ -13,8 +13,9 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
     getters: {
         getRawFields: (state) => state.rawFields,
         getSelectedColumns: (state) => state.selectedColumns,
-        getConvertedFields: (state) => state.convertedFields,
         getConvertedFieldsConfig: (state) => state.convertedFieldsConfig,
+        getUnConvertedFieldsConfig: (state) => state.unConvertedFieldsConfig,
+        getAllFields: (state) => state.unConvertedFieldsConfig.map(field => field["field name"]).concat(state.convertedFields),
         getAllFieldsConfig: (state) => state.unConvertedFieldsConfig.concat(state.convertedFieldsConfig),
         getLatestFieldRename: (state) => state.latestFieldRename
     },
@@ -23,7 +24,6 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
             this.rawFields = fields;
         },
         setSelectedColumns(columns){
-            // TODO decide how to store the selected columns: object or array?
             let columnKeys = Object.keys(columns);
             let rawFieldItems = [];
             columnKeys.forEach(columnKey => {
@@ -47,6 +47,13 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
                     fieldNames = fieldNames.concat(newField["field name"]);
                 } else {
                     fieldNames.push(newField["field name"]);
+                }
+                // Don't duplicate fields from the raw list if they're to be converted ultimately.
+                if (!newField["create new"]){
+                    let convertingField = newField["raw field"];
+                    this.unConvertedFieldsConfig = this.unConvertedFieldsConfig.filter(
+                        item => item["raw field"] != convertingField
+                    );
                 }
             });
             this.convertedFields = fieldNames;

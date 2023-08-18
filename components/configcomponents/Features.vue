@@ -79,7 +79,7 @@
 
     const store = useConfigBuilderStore();
     const emit = defineEmits(["featuresChanged"]);
-    const availableFields = computed(()=> store.getConvertedFields);
+    const availableFields = computed(()=> store.getAllFields);
     const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
     const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
     const currentFeatureName = ref("");

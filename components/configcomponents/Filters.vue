@@ -110,7 +110,7 @@
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-    const availableFields = computed(() => store.getConvertedFields);
+    const availableFields = computed(() => store.getAllFields);
     const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
     const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
 	const message = ref("");

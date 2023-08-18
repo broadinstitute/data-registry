@@ -44,7 +44,7 @@
 
     const store = useConfigBuilderStore();
     const emit = defineEmits(["topRowsChanged"]);
-    const availableFields = computed(()=> store.getConvertedFields);
+    const availableFields = computed(()=> store.getAllFields);
     const selectedFields = ref([]); 
     const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
     const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
