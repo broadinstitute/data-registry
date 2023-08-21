@@ -13,6 +13,7 @@ const submitForm = async () => {
     await userStore.login(email.value, password.value)
     navigateTo(route.query.redirect !== '/' ? route.query.redirect : '/')
   } catch (error) {
+    console.log(error)
     errorMessage.value = 'Sorry, we could not log you in.'
   }
 }
