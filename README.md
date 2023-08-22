@@ -13,13 +13,13 @@ npm install
 
 ## Development Server
 If you're running the API server locally and want to access it from your local front end dev
-server, you should run `npm run dev-local` and in your `.env` file set `NUXT_PUBLIC_API_BASE_URL=http://localhost:5000` 
+server, you should run `npm run dev` and in your `.env` file set `NUXT_PUBLIC_API_BASE_URL=http://localhost:5000` 
 then you'll access this website via `http://localhost:3000`.
 
 If you're only making front end changes and want to use the deployed api server, you should add this entry: 
 `127.0.0.1   local.kpndataregistry.org` in `/etc/hosts` you should run `npm run dev` and in your `.env` 
-file set `NUXT_PUBLIC_API_BASE_URL=https://kpndataregistry.org` then run `npm run dev` and 
-use `https://local.kpndataregistry.org` to access your local server.
+file set `NUXT_PUBLIC_API_BASE_URL=http://kpndataregistry.org/dev-api` then 
+use `http://local.kpndataregistry.org:3000` to access your local server.
 
 
 ## Deployment
