@@ -39,8 +39,7 @@
                     @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </ScoreColumns>
                 <Split 
-                    v-else-if="dataConvertType=='split'"
-                    :new-field-name="newFieldName" :load-config="currentConfigString"
+                    v-else-if="dataConvertType=='split'" :load-config="currentConfigString"
                     @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </Split>
                 <div class="failed-save" v-if="showMsg">{{ failedSaveMsg }}</div>
@@ -112,16 +111,13 @@
             selectValue: "split"
         }
     ];
-    const fieldNamePlaceholder = ""; 
-    const newFieldName = ref(fieldNamePlaceholder);
     let readyToSave = false;
     const showMsg = ref(false);
     let failedSaveMsg = "Field not ready to save";
     const currentFieldConfig = ref({});
     const currentConfigString = computed(() => JSON.stringify(currentFieldConfig.value));
+    const unConvertedFields = computed(() => store.getUnConvertedFieldsConfig);
     const savedFieldConfigs = ref([]);
-    const fieldColumns = computed(() => store.getSelectedColumns);
-    const fieldColumnNewNames = computed(() => Object.values(fieldColumns.value));
     const editingFieldIndex = ref(-1);
 
     function updateConfig(newConfig, check=[false, "Field not ready to save."]){
@@ -142,7 +138,6 @@
         }
         editingFieldIndex.value = index;
         let savedField = savedFieldConfigs.value[index];
-        newFieldName.value = savedField["field name"];
         dataConvertType.value = savedField["type"];
         updateConfig(savedField, true);
     }
@@ -190,7 +185,6 @@
         } else {
             let rawField = !!fieldConfig['raw field'] ? fieldConfig['raw field'] : "";
             let createNew = fieldConfig['create new'];
-            console.log(createNew);
             return fieldNameOkay(fieldConfig["field name"], rawField, createNew);
         }
     }
@@ -202,7 +196,17 @@
             return [false, 'Commas are not allowed in field names.'];
         }
         // Duplicate checking against renamed columns needs to be here
-
+        for (let i = 0; i < unConvertedFields.value.length; i++){
+            let unConvertedField = unConvertedFields.value[i];
+            let duplicateIsOk = (unConvertedField["raw field"] == rawField && !createNew);
+            if (duplicateIsOk){
+                console.log(unConvertedField["field name"]);
+                console.log(rawField);
+            }
+            if (!duplicateIsOk && unConvertedField["field name"] == fieldName){
+                return [false, 'Field name duplicates one of your selected columns.'];
+            }
+        }
         // Duplicate checking against converted columns
         for (let i = 0; i < savedFieldConfigs.value.length; i++){
             if (i == editingFieldIndex.value){
@@ -230,7 +234,6 @@
     function doneEditing(){
         editingFieldIndex.value = -1;
         updateConfig({});
-        newFieldName.value = fieldNamePlaceholder;
         dataConvertType.value = defaultType;
         emitDataConvert();
         showMsg.value = false;
