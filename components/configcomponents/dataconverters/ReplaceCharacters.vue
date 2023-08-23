@@ -40,6 +40,7 @@
 		</div>
 		<div v-if="selectedField != null">
 			<CreateNewField :selected-field="selectedField"
+				:field-is-loaded="fieldIsLoaded"
 				:loaded-field-create-new="createNewField"
 				:loaded-field-name="latestFieldName"
 				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
@@ -57,6 +58,7 @@
 	const fields = computed(() => Object.keys(fieldColumnNames.value));
     const emit = defineEmits(['configChanged']);
     const selectedField = ref(null);
+	const fieldIsLoaded = ref(false);
     const latestFieldName = ref("");
 	const createNewField = ref(false);
 	const replaceChars = ref([
@@ -69,6 +71,7 @@
 		latestFieldName.value = fieldColumnNames.value[selectedField.value]
 	);
     if (props.loadConfig != "{}"){
+		fieldIsLoaded.value = true;
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
 		replaceChars.value = oldConfig["replace"];

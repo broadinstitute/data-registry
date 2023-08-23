@@ -62,5 +62,13 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         renameField(oldName, newName){
             this.latestFieldRename = [oldName, newName];
         },
+        restoreUnConverted(rawField){
+            let unConverted = {
+                "type": "raw",
+                "field name": this.selectedColumns[rawField],
+                "raw field": rawField
+            }
+            this.unConvertedFieldsConfig.push(unConverted);
+        }
     }
 });

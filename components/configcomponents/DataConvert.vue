@@ -247,6 +247,10 @@
             return;
         }
         //If deleting a field already under editing
+        let fieldDeleted = savedFieldConfigs.value[editingFieldIndex.value];
+        if (!fieldDeleted["create new"]){
+            store.restoreUnConverted(fieldDeleted["raw field"]);
+        }
         savedFieldConfigs.value.splice(editingFieldIndex.value, 1);
         doneEditing();
     }

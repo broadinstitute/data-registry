@@ -22,6 +22,7 @@
 		</div>
 		<div v-if="selectedField != null">
 			<CreateNewField :selected-field="selectedField"
+				:field-is-loaded="fieldIsLoaded"
 				:loaded-field-create-new="createNewField"
 				:loaded-field-name="latestFieldName"
 				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
@@ -39,11 +40,13 @@
 	const fieldColumnNames = computed(() => store.getSelectedColumns);
 	const fields = computed(() => Object.keys(fieldColumnNames.value));
     const selectedField = ref(null);
+	const fieldIsLoaded = ref(false);
 	const calcType = ref("-log10");
     const latestFieldName = ref("");
 	const createNewField = ref(false);
 	
     if (props.loadConfig != "{}"){
+		fieldIsLoaded.value = true;
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
 		calcType.value = oldConfig["calculation type"];
