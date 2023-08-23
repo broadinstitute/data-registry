@@ -163,12 +163,17 @@
         if(editingFieldIndex.value == -1){
             savedFieldConfigs.value.push(newField);
         } else {
-            // why does the bubble show the new name before it is saved?
-            let oldName = savedFieldConfigs.value[editingFieldIndex.value]["field name"];            
+            let oldField = savedFieldConfigs.value[editingFieldIndex.value];
+            if (!oldField["create new"] && !!newField["create new"]){
+                store.restoreUnConverted(newField["raw field"]);
+            }
+            let oldName = oldField["field name"];
+            let newName = newField["field name"];
             savedFieldConfigs.value[editingFieldIndex.value] = newField;
-            if(oldName != newName){
+            if(oldName != newName && newField["type"] != "split"){
                 store.renameField(oldName, newName);
             }
+            // Need to determine the logic for a split name change
         }
         doneEditing();
     }
