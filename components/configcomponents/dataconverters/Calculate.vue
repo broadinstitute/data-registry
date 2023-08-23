@@ -23,7 +23,7 @@
 		<div v-if="selectedField != null">
 			<CreateNewField :selected-field="selectedField"
 				:field-is-loaded="fieldIsLoaded"
-				:loaded-field-create-new="createNewField"
+				:loaded-field-create-new="defaultCreateNew"
 				:loaded-field-name="latestFieldName"
 				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
 			</CreateNewField>
@@ -44,6 +44,7 @@
 	const calcType = ref("-log10");
     const latestFieldName = ref("");
 	const createNewField = ref(false);
+	const defaultCreateNew = ref(false);
 	
     if (props.loadConfig != "{}"){
 		fieldIsLoaded.value = true;
@@ -52,6 +53,7 @@
 		calcType.value = oldConfig["calculation type"];
 		latestFieldName.value = oldConfig["field name"];
 		createNewField.value = oldConfig["create new"];
+		defaultCreateNew.value = oldConfig["create new"];
     }
 	watch(selectedField, () => 
 		latestFieldName.value = fieldColumnNames.value[selectedField.value]

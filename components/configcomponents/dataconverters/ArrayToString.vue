@@ -19,7 +19,7 @@
 		<div v-if="selectedField != null">
 			<CreateNewField :selected-field="selectedField"
 				:field-is-loaded="fieldIsLoaded"
-				:loaded-field-create-new="createNewField"
+				:loaded-field-create-new="defaultCreateNew"
 				:loaded-field-name="latestFieldName"
 				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
 			</CreateNewField>
@@ -39,6 +39,7 @@
 	const fieldIsLoaded = ref(false);
     const latestFieldName = ref("");
 	const separator = ref("");
+	const defaultCreateNew = ref(false);
 	const createNewField = ref(false);
 	
 	if (props.loadConfig != "{}"){
@@ -48,6 +49,7 @@
 		separator.value = oldConfig["separate by"];
 		latestFieldName.value = oldConfig["field name"];
 		createNewField.value = oldConfig["create new"];
+		defaultCreateNew.value = oldConfig["create new"];
     }
 	watch(selectedField, () => 
 		latestFieldName.value = fieldColumnNames.value[selectedField.value]

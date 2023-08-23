@@ -31,31 +31,21 @@
     const createNewField = computed(() => convertOrCreate.value == "create");
     const selectedField = computed(()=> props.selectedField);
     const selectedFieldColName = computed(() => store.getSelectedColumns[selectedField.value]);
-    const fieldIsLoaded = computed(() => props.fieldIsLoaded);
     const unConvertedFields = computed(() => store.getUnConvertedFieldsConfig.map(field => field["raw field"]));
     const fieldAvailable= computed(() => {
         let available = unConvertedFields.value.includes(selectedField.value);
-        if (!fieldIsLoaded.value && !available){
+        if (!props.fieldIsLoaded && !available){
             convertOrCreate.value = "create";
         }
-        return available;
+        // Force enable the convert option if you're loading a field which already has it chosen
+        return (props.fieldIsLoaded && !props.loadedFieldCreateNew) ? true : available;
     });
-    const enableConvertOption = computed(() => (props.fieldIsLoaded && !props.loadedFieldCreateNew) ? true : fieldAvailable.value);
     const newFieldName = ref(!!props.loadedFieldCreateNew ? props.loadedFieldName : "");
     function emitNewName(){
         let nameToEmit = !!createNewField.value ? newFieldName.value : selectedFieldColName.value;
         emit("fieldNameSet", createNewField.value, nameToEmit);
     }
     watch([selectedField, createNewField, newFieldName], () => {
-        console.log("Emitting new name");
         emitNewName();
     });
-/*     watch([fieldIsLoaded, fieldAvailable], () => {
-        console.log(`Field is loaded: ${fieldIsLoaded.value}`);
-        console.log(`Field is available: ${fieldAvailable.value}`);
-        if (!fieldIsLoaded.value && !fieldAvailable.value){
-            console.log("it should default to create here");
-            convertOrCreate = "create";
-        }
-    }); */
 </script>
