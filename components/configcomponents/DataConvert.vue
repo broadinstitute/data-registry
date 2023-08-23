@@ -199,10 +199,6 @@
         for (let i = 0; i < unConvertedFields.value.length; i++){
             let unConvertedField = unConvertedFields.value[i];
             let duplicateIsOk = (unConvertedField["raw field"] == rawField && !createNew);
-            if (duplicateIsOk){
-                console.log(unConvertedField["field name"]);
-                console.log(rawField);
-            }
             if (!duplicateIsOk && unConvertedField["field name"] == fieldName){
                 return [false, 'Field name duplicates one of your selected columns.'];
             }
