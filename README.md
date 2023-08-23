@@ -12,14 +12,16 @@ npm install
 ```
 
 ## Development Server
+We use a cookie for authentication so you need to use the same domain for the front end and the API.
+The easiest way to do this is to add an entry in your `/etc/hosts` file like this:
+`127.0.0.1   local.kpndataregistry.org`
 If you're running the API server locally and want to access it from your local front end dev
-server, you should run `npm run dev-local` and in your `.env` file set `NUXT_PUBLIC_API_BASE_URL=http://localhost:5000` 
-then you'll access this website via `http://localhost:3000`.
+server, in your `.env` file set `NUXT_PUBLIC_API_BASE_URL=http://local.kpndatregistry.org:5000`
 
-If you're only making front end changes and want to use the deployed api server, you should add this entry: 
-`127.0.0.1   local.kpndataregistry.org` in `/etc/hosts` you should run `npm run dev` and in your `.env` 
-file set `NUXT_PUBLIC_API_BASE_URL=https://kpndataregistry.org` then run `npm run dev` and 
-use `https://local.kpndataregistry.org` to access your local server.
+If you're only making front end changes and want to use the qa deployed api server, set 
+`NUXT_PUBLIC_API_BASE_URL='http://dev.kpndataregistry.org'`  
+
+In either case, use `http://local.kpndataregistry.org:3000` to access your local server.
 
 
 ## Deployment
@@ -32,7 +34,7 @@ Deployment is via Jenkins. The Jenkins jobs are located here:
 A sample .env file is provided, `.env-sample`. It should be copied to the root directory and renamed to .env. The following environment variables are required:
 
 ```
-NUXT_PUBLIC_API_SECRET=??
+NUXT_PUBLIC_API_SECRET=??1
 NUXT_PUBLIC_API_BASE_URL=??
 NUXT_PUBLIC_PHENOTYPES_URL=??
 ```
