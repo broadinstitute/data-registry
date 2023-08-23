@@ -117,6 +117,7 @@
     const currentFieldConfig = ref({});
     const currentConfigString = computed(() => JSON.stringify(currentFieldConfig.value));
     const unConvertedFields = computed(() => store.getUnConvertedFieldsConfig);
+    const columnNameChange = computed(() => store.getLatestColumnRename);
     const savedFieldConfigs = ref([]);
     const editingFieldIndex = ref(-1);
 
@@ -262,6 +263,20 @@
         showMsg.value = false;
         if (editingFieldIndex.value == -1){
             updateConfig({});
+        }
+    });
+    watch(columnNameChange, ()=> {
+        let rawField = columnNameChange.value[0];
+        let newName = columnNameChange.value[1];
+        for (let i = 0; i < savedFieldConfigs.value.length; i++){
+            let fieldConfig = savedFieldConfigs.value[i];
+            let oldName = fieldConfig["field name"]
+            if (!!fieldConfig["raw field"] && fieldConfig["raw field"] == rawField && !fieldConfig["create new"]){
+                    fieldConfig["field name"] = newName;
+                    savedFieldConfigs.value[i] = fieldConfig;
+                    store.renameField(oldName, newName);
+                }
+            
         }
     });
 </script>

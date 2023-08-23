@@ -68,7 +68,7 @@
         }
         // Replace an old name
         if (!!columnNames.value[rawField]){
-            store.setColumnNameChange([rawField, newName]);
+            store.renameColumn(rawField, newName);
         }
         columnNames.value[rawField] = newName;
         saveColumns();
