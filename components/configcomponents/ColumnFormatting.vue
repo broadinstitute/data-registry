@@ -186,7 +186,8 @@
 			editColumn(selectedColumn.value);
 		}
 	});
-	watch(fieldNameOld, () => {
+	watch([availableFields, fieldNameOld], (newValues, oldValues) => {
+		// Name changes to fields should be handled first
 		if (selectedColumn.value == fieldNameOld.value){
 			selectedColumn.value = fieldNameNew.value;
 		}
@@ -195,9 +196,10 @@
 			delete allColumnsConfig.value[fieldNameOld.value];
 			allColumnsConfig.value[fieldNameNew.value] = updatedFieldConfig;
 		}
-		
-	});
-	watch(availableFields, (newFields, oldFields) => {
+
+		// Then handle field deletion
+		let newFields = newValues[0];
+		let oldFields = oldValues[0];
 		oldFields.forEach(oldField => {
 			if(!newFields.includes(oldField)){
 				delete allColumnsConfig.value[oldField];

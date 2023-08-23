@@ -53,9 +53,6 @@
 	const newFieldNames = ref(["", ""]);
 
 	function emitConfig(){
-		let check = preSaveCheck();
-		let ready = check[0];
-		let msg = check[1];
 		let splitConfig = {
 			"type": "split",
 			"field name": newFieldNames.value,
@@ -63,7 +60,7 @@
 			"split by": splitBy.value,
 			"create new": true
 		};
-		emit('configChanged', splitConfig, ready, msg);
+		emit('configChanged', splitConfig, preSaveCheck());
 	}
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
@@ -98,6 +95,13 @@
 		let splitLength = splitBy.value.length;
 		if (fieldsLength < 2){
 			return [false, "Specify at least 2 fields."];
+		}
+		for (let i = 0; i < fieldsLength; i ++){
+			for (let j = 0; j < fieldsLength; j++){
+				if (i != j && newFieldNames.value[i] == newFieldNames.value[j]){
+					return [false, "Specify unique field names."];
+				}
+			}
 		}
 		if (splitLength != fieldsLength - 1){
 			return [false, "Specify split separators."];
