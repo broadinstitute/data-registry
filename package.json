@@ -5,7 +5,7 @@
         "dev": "nuxt dev --host local.kpndataregistry.org"
     },
     "devDependencies": {
-        "@nuxt/devtools": "^0.7.2",
+        "@nuxt/devtools": "^0.8.0",
         "@vitejs/plugin-vue": "^4.2.3",
         "nuxt": "^3.6.5",
         "vue-router": "^4.2.4"
