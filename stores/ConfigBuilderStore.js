@@ -8,6 +8,8 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         convertedFields: [],
         convertedFieldsConfig: [],
         unConvertedFieldsConfig: [],
+        allFields: [],
+        allFieldsConfig: [],
         latestFieldRename: [null, null],
     }),
     getters: {
@@ -19,14 +21,18 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         }},
         getConvertedFieldsConfig: (state) => state.convertedFieldsConfig,
         getUnConvertedFieldsConfig: (state) => state.unConvertedFieldsConfig,
-        getAllFields: (state) => state.unConvertedFieldsConfig.map(field => field["field name"]).concat(state.convertedFields),
-        getAllFieldsConfig: (state) => state.unConvertedFieldsConfig.concat(state.convertedFieldsConfig),
+        getAllFields: (state) => state.allFields,
+        getAllFieldsConfig: (state) => state.allFieldsConfig,
         getLatestFieldRename: (state) => state.latestFieldRename,
         getLatestColumnRename: (state) => state.latestColumnRename,
     },
     actions: {
         setRawFields(fields){
             this.rawFields = fields;
+        },
+        updateAllFields(){
+            this.allFields = this.unConvertedFieldsConfig.map(field => field["field name"]).concat(this.convertedFields);
+            this.allFieldsConfig = this.unConvertedFieldsConfig.concat(this.convertedFieldsConfig);
         },
         addSelectedColumn(rawField){
             this.selectedColumns.push([rawField, rawField]);
@@ -35,12 +41,14 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
                 "field name": rawField,
                 "raw field": rawField
             });
+            this.updateAllFields();
         },
         deleteSelectedColumn(rawField){
             let i = this.selectedColumns.map(item => item[0]).indexOf(rawField);
             this.selectedColumns.splice(i, 1);
             let j = this.unConvertedFieldsConfig.map(item => item["raw field"]).indexOf(rawField);
             this.unConvertedFieldsConfig.splice(j, 1);
+            this.updateAllFields();
         },
         renameColumn(rawField, newName){
             for (let i = 0; i < this.selectedColumns.length; i++){
@@ -61,6 +69,7 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
                 }
             }
             this.latestColumnRename = [rawField, newName];
+            this.updateAllFields();
         },
         setConvertedFields(newConvertedFields){
             let fieldNames = [];
@@ -80,6 +89,7 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
             });
             this.convertedFields = fieldNames;
             this.convertedFieldsConfig = newConvertedFields;
+            this.updateAllFields();
         },
         renameField(oldName, newName){
             this.latestFieldRename = [oldName, newName];
@@ -91,6 +101,7 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
                 "raw field": rawField
             }
             this.unConvertedFieldsConfig.push(unConverted);
+            this.updateAllFields();
         }
     }
 });

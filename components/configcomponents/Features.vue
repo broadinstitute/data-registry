@@ -79,7 +79,12 @@
 
     const store = useConfigBuilderStore();
     const emit = defineEmits(["featuresChanged"]);
-    const availableFields = computed(()=> store.getAllFields);
+    // WHY is this updating on such a delay
+    const availableFields = computed(()=> {
+        let fields = store.getAllFields;
+        console.log(fields);
+        return fields;
+    });
     const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
     const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
     const currentFeatureName = ref("");
@@ -178,50 +183,45 @@
         currentSelectedFields.value = [];
         editingFeatureIndex.value = -1;
     }
-    watch(fieldNameOld, ()=> {
+    watch([availableFields, fieldNameOld], (newValues, oldValues) => {
+        // First handle name changes
         allFeaturesConfig.value["features"].forEach(feature => {
             let featureCopy = allFeaturesConfig.value[feature];
-            if (featureCopy.includes(fieldNameOld.value)){
-                for(let i = 0; i < featureCopy.length; i++){
-                    if (featureCopy[i] == fieldNameOld.value){
-                        featureCopy[i] = fieldNameNew.value;
-                    }
+            for(let i = 0; i < featureCopy.length; i++){
+                if (featureCopy[i] == fieldNameOld.value){
+                    featureCopy[i] = fieldNameNew.value;
                 }
-                allFeaturesConfig.value[feature] = featureCopy;
             }
+            allFeaturesConfig.value[feature] = featureCopy;
         });
         for (let i = 0; i < currentSelectedFields.value.length; i++){
             if(currentSelectedFields.value[i] == fieldNameOld.value){
                 currentSelectedFields.value[i] = fieldNameNew.value;
             }
         }
-        emitFeatures();
-    });
-    watch(availableFields, (newFields, oldFields) => {
-        if (newFields.length < oldFields.length){
-            // Removing deleted fields from any existing features or selected fields
-            oldFields.forEach(oldField => {
-                if (!newFields.includes(oldField)){
-                    currentSelectedFields.value = 
-                        currentSelectedFields.value.filter(field => field != oldField);
-                    for (let i = 0; i < allFeaturesConfig.value["features"].length; i++){
-                        let featureName = allFeaturesConfig.value["features"][i];
-                        let featureCopy = allFeaturesConfig.value[featureName];
-                        if (featureCopy.includes(oldField)){
-                            allFeaturesConfig.value[featureName] = featureCopy.filter(field => field != oldField);
-                        }
+        // Next, handle deletions
+        let oldFields = oldValues[0];
+        let newFields = newValues[0];
+        oldFields.forEach(oldField => {
+            if (!newFields.includes(oldField)){
+                currentSelectedFields.value = 
+                    currentSelectedFields.value.filter(field => field != oldField);
+                for (let i = 0; i < allFeaturesConfig.value["features"].length; i++){
+                    let featureName = allFeaturesConfig.value["features"][i];
+                    let featureCopy = allFeaturesConfig.value[featureName];
+                    if (featureCopy.includes(oldField)){
+                        allFeaturesConfig.value[featureName] = featureCopy.filter(field => field != oldField);
                     }
                 }
-            });
-            // Cleanup in case any features are now empty
-            allFeaturesConfig.value["features"].forEach(feature => {
-                if(allFeaturesConfig.value[feature].length == 0){
-                    delete allFeaturesConfig.value[feature];
-                    allFeaturesConfig.value["features"] = 
-                        allFeaturesConfig.value["features"].filter(item => item != feature);
-                }
-            })
-        }
+            }});
+        // Cleanup in case any features are now empty
+        allFeaturesConfig.value["features"].forEach(feature => {
+            if(allFeaturesConfig.value[feature].length == 0){
+                delete allFeaturesConfig.value[feature];
+                allFeaturesConfig.value["features"] = 
+                    allFeaturesConfig.value["features"].filter(item => item != feature);
+            }
+        });
         emitFeatures();
     });
     function emitFeatures(){
