@@ -5,11 +5,11 @@
 				Join multi | Select field(s)
 			</div>
 			<ul class="dr-byor-data-columns">
-				<li v-for="field in fields" class="form-check form-check-inline">
-						<input class="form-check-input" type="checkbox" :value="field" 
+				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
+						<input class="form-check-input" type="checkbox" :value="field[0]" 
 							id="flexCheckDefault" v-model="selectedFields"
 							@change="(event)=>removeJoinEntry(event)"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ fieldColumnNames[field] }}</span>
+						<span class="form-check-label" for="flexCheckDefault">{{ field[1] }}</span>
 				</li>
 			</ul>
 			<button @click="()=>clearAll()" class="btn btn-primary">Clear selection</button>
@@ -20,7 +20,7 @@
 			</div>
 			<tbody class="dr-byor-data-columns">
 				<tr v-for="field, index in selectedFields" class="arrow-button-list">
-					<td>{{ fieldColumnNames[field] }}</td>
+					<td>{{ getColumnName(field) }}</td>
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button arrow-button-up" 
 							:disabled="index == 0" @click="moveUpDown(index)">
@@ -56,7 +56,6 @@
 	const store = useConfigBuilderStore();
 	const props = defineProps({loadConfig: String});
 	const fieldColumnNames = computed(() => store.getSelectedColumns);
-	const fields = computed(() => Object.keys(fieldColumnNames.value));
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
 	const joinBy = ref([]);
@@ -70,6 +69,9 @@
     });
 	function emitConfig(){
 		emit('configChanged', joinMultiConfig.value, preSaveCheck());
+	}
+	function getColumnName(field){
+		return store.getColumnName(field);
 	}
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);

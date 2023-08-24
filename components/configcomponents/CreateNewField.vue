@@ -30,7 +30,11 @@
     const convertOrCreate = ref(!!props.loadedFieldCreateNew ? "create" : "convert");
     const createNewField = computed(() => convertOrCreate.value == "create");
     const selectedField = computed(()=> props.selectedField);
-    const selectedFieldColName = computed(() => store.getSelectedColumns[selectedField.value]);
+    const selectedFieldColName = computed(() => {
+        let columns = store.getSelectedColumns;
+        let index = columns.map(item => item[0]).indexOf(selectedField.value);
+		return columns[index][1];
+    });
     const unConvertedFields = computed(() => store.getUnConvertedFieldsConfig.map(field => field["raw field"]));
     const fieldAvailable= computed(() => {
         let available = unConvertedFields.value.includes(selectedField.value);

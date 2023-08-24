@@ -5,11 +5,11 @@
 				Score columns | Select field(s) (Boolean)
 			</div>
 			<ul class="dr-byor-data-columns">
-				<li v-for="field in fields" class="form-check form-check-inline">
-						<input class="form-check-input" type="checkbox" :value="field" 
+				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
+						<input class="form-check-input" type="checkbox" :value="field[0]" 
 							id="flexCheckDefault" v-model="selectedFields"
 							@change="(event)=>addRemoveEntry(event)"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ fieldColumnNames[field] }}</span>
+						<span class="form-check-label" for="flexCheckDefault">{{ field[1] }}</span>
 				</li>
 			</ul>
 			<button @click="()=>clearAll()" class="btn btn-primary">Clear selection</button>
@@ -22,7 +22,7 @@
 					<th>Score false</th>
 				</tr>
 				<tr v-for="field in selectedFields">
-					<td>{{ fieldColumnNames[field] }}</td>
+					<td>{{ getColumnName(field) }}</td>
 					<td>
 						<input type="number" class="form-control input-default" 
 							:value="!!scores[field] ? scores[field]['value to score']['yes'] : 1"
@@ -51,7 +51,6 @@
 	const store = useConfigBuilderStore();
 	const props = defineProps({loadConfig: String});
 	const fieldColumnNames = computed(() => store.getSelectedColumns);
-	const fields = computed(() => Object.keys(fieldColumnNames.value));
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
 	const scores = ref({});
@@ -74,6 +73,9 @@
 		});
 		
     }
+	function getColumnName(field){
+		return store.getColumnName(field);
+	}
 	function addRemoveEntry(event){
 		let box = event.target.value;
 		let boxes = event.target._modelValue;

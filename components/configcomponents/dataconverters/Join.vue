@@ -5,10 +5,10 @@
 				Join | Select field 1
 			</div>
 			<ul class="dr-byor-data-columns">
-				<li v-for="field in fields" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="first" :value="field" 
+				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="first" :value="field[0]" 
                         id="flexCheckDefault" v-model="firstField"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ fieldColumnNames[field] }}</span>
+						<span class="form-check-label" for="flexCheckDefault">{{ field[1] }}</span>
 				</li>													
 			</ul>
 		</div>
@@ -17,10 +17,10 @@
 				Select field 2
 			</div>
 			<ul class="dr-byor-data-columns">
-				<li v-for="field in fields" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="second" :value="field" 
+				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="second" :value="field[0]" 
                         id="flexCheckDefault" v-model="secondField"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ fieldColumnNames[field] }}</span>
+						<span class="form-check-label" for="flexCheckDefault">{{ field[1] }}</span>
 				</li>													
 			</ul>
 		</div>
@@ -44,7 +44,6 @@
 	const store = useConfigBuilderStore();
 	const props = defineProps({loadConfig: String});
 	const fieldColumnNames = computed(() => store.getSelectedColumns);
-	const fields = computed(() => Object.keys(fieldColumnNames.value));
     const emit = defineEmits(['configChanged']);
     const firstField = ref(null);
 	const secondField = ref(null);

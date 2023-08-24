@@ -13,12 +13,16 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
     getters: {
         getRawFields: (state) => state.rawFields,
         getSelectedColumns: (state) => state.selectedColumns,
+        getColumnName: (state) => { return (rawField) => {
+            let index = state.selectedColumns.map(column => column[0]).indexOf(rawField);
+            return state.selectedColumns[index][1];
+        }},
         getConvertedFieldsConfig: (state) => state.convertedFieldsConfig,
         getUnConvertedFieldsConfig: (state) => state.unConvertedFieldsConfig,
         getAllFields: (state) => state.unConvertedFieldsConfig.map(field => field["field name"]).concat(state.convertedFields),
         getAllFieldsConfig: (state) => state.unConvertedFieldsConfig.concat(state.convertedFieldsConfig),
         getLatestFieldRename: (state) => state.latestFieldRename,
-        getLatestColumnRename: (state) => state.latestColumnRename
+        getLatestColumnRename: (state) => state.latestColumnRename,
     },
     actions: {
         setRawFields(fields){
@@ -83,7 +87,7 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         restoreUnConverted(rawField){
             let unConverted = {
                 "type": "raw",
-                "field name": this.selectedColumns[rawField],
+                "field name": this.getColumnName(rawField),
                 "raw field": rawField
             }
             this.unConvertedFieldsConfig.push(unConverted);

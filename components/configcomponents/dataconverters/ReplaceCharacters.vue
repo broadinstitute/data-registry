@@ -5,10 +5,10 @@
 				Replace characters | Select field
 			</div>
 			<ul class="dr-byor-data-columns">
-				<li v-for="field in fields" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="replace" :value="field" 
+				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="replace" :value="field[0]" 
 						id="flexCheckDefault" v-model="selectedField"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ fieldColumnNames[field] }}</span>
+						<span class="form-check-label" for="flexCheckDefault">{{ field[1] }}</span>
 				</li>													
 			</ul>
 		</div>
@@ -55,7 +55,6 @@
 	const store = useConfigBuilderStore();
 	const props = defineProps({loadConfig: String});
 	const fieldColumnNames = computed(() => store.getSelectedColumns);
-	const fields = computed(() => Object.keys(fieldColumnNames.value));
     const emit = defineEmits(['configChanged']);
     const selectedField = ref(null);
 	const fieldIsLoaded = ref(false);
@@ -68,9 +67,7 @@
 			"to": ""
 		}
 	]);
-	watch(selectedField, () => 
-		latestFieldName.value = fieldColumnNames.value[selectedField.value]
-	);
+	watch(selectedField, () => latestFieldName.value = store.getColumnName(selectedField.value));
     if (props.loadConfig != "{}"){
 		fieldIsLoaded.value = true;
         let oldConfig = JSON.parse(props.loadConfig);
