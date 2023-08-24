@@ -90,4 +90,11 @@
             toggleBox(i);
         }
     }
+    watch(rawFields, (newFields, oldFields) => {
+        oldFields.forEach(oldField => {
+            if (!newFields.includes(oldField)){
+                store.deleteSelectedColumn(oldField);
+            }
+        });
+    });
 </script>

@@ -234,6 +234,9 @@
 		pastedData.value = pastedData.value.trim();
 		let topLine = pastedData.value.split("\n")[0];
 		let rawFields = topLine.split(",");
+		if (pastedData.value == "") {
+			rawFields = [];
+		}
 		store.setRawFields(rawFields);
 	});
 	watch(dataConvert, () => outputDataTableFormat());
