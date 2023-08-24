@@ -36,20 +36,21 @@
     const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
 	const locus = ref("");
 	const star = ref("");
-	watch (availableFields, () => {
+	watch ([availableFields, fieldNameOld], () => {
+		// Handle name changes first
+		if (locus.value == fieldNameOld.value){
+			locus.value = fieldNameNew.value;
+		}
+		if (star.value == fieldNameOld.value){
+			star.value = fieldNameNew.value;
+		}
+
+		// Then handle deletions
         if (!availableFields.value.includes(locus.value)){
 			locus.value = "";
 		}
 		if (!availableFields.value.includes(star.value)){
 			star.value = "";
-		}
-    });
-	watch(fieldNameOld, () => {
-        if (locus.value == fieldNameOld.value){
-			locus.value = fieldNameNew.value;
-		}
-		if (star.value == fieldNameOld.value){
-			star.value = fieldNameNew.value;
 		}
     });
 	watch([locus, star], () => { emitLocusStar() });
