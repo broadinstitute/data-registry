@@ -11,7 +11,7 @@
                 <li v-for="field in availableFields">
                     <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
                     <input type="text" class="form-control input-default"
-						placeholder="tool tip" 
+						placeholder="tool tip" :value="toolTipConfig[field]"
                         @change="(event) => updateToolTips(field, event.target.value)"/>
                 </li>
             </ul>
@@ -37,7 +37,6 @@
     }
     watch ([availableFields, fieldNameOld], (newValues, oldValues)=> {
         // Handle name changes first
-        console.log(`${fieldNameOld.value} => ${fieldNameNew.value}`);
         if (!!toolTipConfig.value[fieldNameOld.value]){
             let toolTip = toolTipConfig.value[fieldNameOld.value];
             // do we need to do this part?
