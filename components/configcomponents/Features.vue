@@ -82,7 +82,6 @@
     // WHY is this updating on such a delay
     const availableFields = computed(()=> {
         let fields = store.getAllFields;
-        console.log(fields);
         return fields;
     });
     const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
@@ -187,9 +186,12 @@
         // First handle name changes
         allFeaturesConfig.value["features"].forEach(feature => {
             let featureCopy = allFeaturesConfig.value[feature];
-            for(let i = 0; i < featureCopy.length; i++){
-                if (featureCopy[i] == fieldNameOld.value){
-                    featureCopy[i] = fieldNameNew.value;
+            // Guarding against duplicate names in features due to create/convert
+            if (!featureCopy.includes(fieldNameNew.value)){
+                for(let i = 0; i < featureCopy.length; i++){
+                    if (featureCopy[i] == fieldNameOld.value){
+                        featureCopy[i] = fieldNameNew.value;
+                    }
                 }
             }
             allFeaturesConfig.value[feature] = featureCopy;

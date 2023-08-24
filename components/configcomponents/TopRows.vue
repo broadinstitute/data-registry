@@ -48,23 +48,19 @@
     const selectedFields = ref([]); 
     const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
     const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
-    watch (availableFields, (newFields, oldFields)=> {
-        if (newFields.length < oldFields.length){
-            oldFields.forEach((oldField)=>{
-                if (!newFields.includes(oldField)){
-                    selectedFields.value = 
-                        selectedFields.value.filter(field => field != oldField);
-                }
-            });
-        }
-    });
-    watch(fieldNameOld, () => {
-        // Field names are already updated within the list of available fields.
-        // We need to update it in the list of selected fields.
-        if (selectedFields.value.includes(fieldNameOld.value)){
+    watch([availableFields, fieldNameOld], (newValues, oldValues) => {
+        if (selectedFields.value.includes(fieldNameOld.value) && !selectedFields.value.includes(fieldNameNew.value)){
             let index = selectedFields.value.indexOf(fieldNameOld.value);
             selectedFields.value[index] = fieldNameNew.value;
         }
+        let oldFields = oldValues[0];
+        let newFields = newValues[0];
+        oldFields.forEach((oldField)=>{
+            if (!newFields.includes(oldField)){
+                selectedFields.value = 
+                    selectedFields.value.filter(field => field != oldField);
+            }
+        });
     });
     function moveUpDown(index, down=false){
         if (down) { index++; }
