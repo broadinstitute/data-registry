@@ -19,6 +19,7 @@ const props = defineProps({
 
   const config = useRuntimeConfig()
   const store = useDatasetStore()
+  const route = useRouter()
 
   function credible_set_validation() {
     //if a credible set name or file is provided, make sure to require the counterpart field
@@ -44,6 +45,7 @@ const props = defineProps({
       return
     }
     await store.uploadFiles(props.datasetId)
+    await route.push({ path: '/datasets' })
   }
 
   async function removePhenotypeDataset(e) {

@@ -145,7 +145,6 @@
 	</div>
 </template>
 <script setup>
-	import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 	import DataConvert from "@/components/configcomponents/DataConvert.vue";
 	import TopRows from "@/components/configcomponents/TopRows.vue";
 	import ToolTips from "@/components/configcomponents/ToolTips.vue";
