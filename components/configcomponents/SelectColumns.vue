@@ -42,50 +42,41 @@
     const store = useConfigBuilderStore();
     const rawFields = computed(()=> store.getRawFields);
     const selectedColumns = ref([]);
-    const columnNames = ref({});
     function toggleBox(index){
         let rawField = rawFields.value[index];
         if(selectedColumns.value.includes(rawField)){
-            setDefaultColumnName(index);
+            store.addSelectedColumn(rawField);
+            setDisplayName(index, rawField);
             return;
         }
         setDisplayName(index, "");
-        delete columnNames.value[rawField];
-        saveColumns();
+        store.deleteSelectedColumn(rawField);
     }
     function setColumnName(index, newName){
         let warning = document.querySelector(`#warning_${index}`);
         warning.hidden = true;
         let rawField = rawFields.value[index];
         if (newName == ""){
-            setDefaultColumnName(index);
+            restoreDefaultColumnName(index);
             return;
         }
-        if (Object.values(columnNames.value).includes(newName)){
+        if (store.getSelectedColumns.map(column => column[1]).includes(newName)){
             warning.hidden = false;
-            setDefaultColumnName(index);
+            restoreDefaultColumnName(index);
             return;
         }
-        // Replace an old name
-        if (!!columnNames.value[rawField]){
-            store.renameColumn(rawField, newName);
-        }
-        columnNames.value[rawField] = newName;
-        saveColumns();
+        store.renameColumn(rawField, newName);
     }
-    function setDefaultColumnName(index){
+    function restoreDefaultColumnName(index){
         let rawField = rawFields.value[index];
         setDisplayName(index, rawField);
+        store.renameColumn(rawField, newName);
         //What happens if the original column data has an empty string in it?
-        columnNames.value[rawField] = rawField;
-        saveColumns();
     }
+
     function setDisplayName(index, newName){
         let inputField = document.querySelector(`input#field_${index}`);
         inputField.value = newName;
-    }
-    function saveColumns(){
-        store.setSelectedColumns(columnNames.value);
     }
     function selectAll(){
         selectedColumns.value = rawFields.value;

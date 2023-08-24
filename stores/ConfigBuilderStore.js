@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
     state: () => ({
         rawFields: [],
-        selectedColumns: {},
+        selectedColumns: [],
         latestColumnRename: [null, null],
         convertedFields: [],
         convertedFieldsConfig: [],
@@ -24,32 +24,38 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         setRawFields(fields){
             this.rawFields = fields;
         },
-        setSelectedColumns(columns){
-            // TODO overhaul column select to add columns one by one
-            let columnKeys = Object.keys(columns);
-            let rawFieldItems = [];
-            columnKeys.forEach(columnKey => {
-                let fieldAlreadyConverted = false;
-                for (let i = 0; i < this.convertedFieldsConfig.length; i++){
-                    let fieldConfig = this.convertedFieldsConfig[i];
-                    if (!!fieldConfig["raw field"] && fieldConfig["raw field"] == columnKey && !fieldConfig["create new"]){
-                        fieldAlreadyConverted = true;
-                        console.log(`Field ${columnKey} has been converted`);
-                    }
-                }
-                if (!fieldAlreadyConverted){
-                    let rawFieldItem = {
-                        "type": "raw",
-                        "field name": columns[columnKey],
-                        "raw field": columnKey
-                    };
-                    rawFieldItems.push(rawFieldItem);
-                }
+        addSelectedColumn(rawField){
+            this.selectedColumns.push([rawField, rawField]);
+            this.unConvertedFieldsConfig.push({
+                "type": "raw",
+                "field name": rawField,
+                "raw field": rawField
             });
-            this.unConvertedFieldsConfig = rawFieldItems;
-            this.selectedColumns = columns;
+        },
+        deleteSelectedColumn(rawField){
+            let i = this.selectedColumns.map(item => item[0]).indexOf(rawField);
+            this.selectedColumns.splice(i, 1);
+            let j = this.unConvertedFieldsConfig.map(item => item["raw field"]).indexOf(rawField);
+            this.unConvertedFieldsConfig.splice(j, 1);
         },
         renameColumn(rawField, newName){
+            for (let i = 0; i < this.selectedColumns.length; i++){
+                let columnEntry = this.selectedColumns[i];
+                if (columnEntry[0] == rawField){
+                    this.selectedColumns[i] = [rawField, newName];
+                }
+            }
+            for (let i = 0; i < this.unConvertedFieldsConfig.length; i++){
+                let entry = this.unConvertedFieldsConfig[i];
+                if (entry["raw field"] == rawField){
+                    let updatedEntry = {
+                        "type": "raw",
+                        "field name": newName,
+                        "raw field": rawField
+                    }
+                    this.unConvertedFieldsConfig[i] = updatedEntry; 
+                }
+            }
             this.latestColumnRename = [rawField, newName];
         },
         setConvertedFields(newConvertedFields){
