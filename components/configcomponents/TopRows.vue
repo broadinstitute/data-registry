@@ -38,6 +38,14 @@
         </tbody>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-1">
+            <button class="btn btn-primary" @click="() => selectAll()">Select all</button>
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-primary" @click="() => clearAll()">Clear all</button>
+        </div>
+    </div>
 </template>
 <script setup>
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
@@ -68,5 +76,11 @@
 		selectedFields.value.splice(index, 1);
         selectedFields.value.splice(index-1, 0, risingItem);
 	}
+    function selectAll(){
+        selectedFields.value = JSON.parse(JSON.stringify(availableFields.value)); // Deep copy
+    }
+    function clearAll(){
+        selectedFields.value = [];
+    }
     watch(selectedFields, () => emit("topRowsChanged", selectedFields.value));
 </script>
