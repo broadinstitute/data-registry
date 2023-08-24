@@ -93,6 +93,7 @@
     watch(rawFields, (newFields, oldFields) => {
         oldFields.forEach(oldField => {
             if (!newFields.includes(oldField)){
+                selectedColumns.value = selectedColumns.value.filter(column => column != oldField);
                 store.deleteSelectedColumn(oldField);
             }
         });

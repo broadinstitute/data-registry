@@ -116,6 +116,7 @@
     let failedSaveMsg = "Field not ready to save";
     const currentFieldConfig = ref({});
     const currentConfigString = computed(() => JSON.stringify(currentFieldConfig.value));
+    const selectedColumns = computed(() => store.getSelectedColumns.map(column => column[0]));
     const unConvertedFields = computed(() => store.getUnConvertedFieldsConfig);
     const columnNameChange = computed(() => store.getLatestColumnRename);
     const savedFieldConfigs = ref([]);
@@ -237,7 +238,7 @@
         editingFieldIndex.value = -1;
         updateConfig({});
         dataConvertType.value = defaultType;
-        emitDataConvert();
+        saveDataConvert();
         showMsg.value = false;
     }
     function cancelFieldEdit(){
@@ -256,7 +257,7 @@
         savedFieldConfigs.value.splice(editingFieldIndex.value, 1);
         doneEditing();
     }
-    function emitDataConvert(){
+    function saveDataConvert(){
         store.setConvertedFields(savedFieldConfigs.value);
     }
     watch(dataConvertType, ()=>{
@@ -276,7 +277,30 @@
                     savedFieldConfigs.value[i] = fieldConfig;
                     store.renameField(oldName, newName);
                 }
-            
         }
+        saveDataConvert();
     });
+    watch(selectedColumns, (newColumns, oldColumns) => {
+        oldColumns.forEach(oldColumn => {
+            if (!newColumns.includes(oldColumn)){
+                savedFieldConfigs.value = savedFieldConfigs.value.filter(config => !usesField(config, oldColumn));
+            }
+        })
+        saveDataConvert();
+    });
+    function usesField(config, column){
+        if (!!config["raw field"] && config["raw field"] == column){
+            return true;
+        }
+        if (!!config["fields to join"] && config["fields to join"].includes(column)){
+            return true;
+        }
+        if (!!config["fields to score"] && config["fields to score"].includes(column)){
+            return true;
+        }
+        if (!!config["field to split"] && config["field to split"] == column){
+            return true;
+        }
+        return false;
+    }
 </script>
