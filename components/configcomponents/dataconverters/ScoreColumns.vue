@@ -64,6 +64,7 @@
     });
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
+		latestFieldName.value = oldConfig["field name"];
 		let fields = oldConfig["fields to score"];
         selectedFields.value = fields;
 		fields.forEach(field => {

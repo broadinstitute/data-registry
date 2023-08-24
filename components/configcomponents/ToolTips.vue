@@ -35,25 +35,26 @@
         }
         emitToolTips();
     }
-    watch (availableFields, (newFields, oldFields)=> {
-        if (newFields.length < oldFields.length){
-            oldFields.forEach((oldField)=>{
-                if (!newFields.includes(oldField)){
-                    delete toolTipConfig.value[oldField];
-                }
-            });
-            emitToolTips();
-        }
-    });
-    watch(fieldNameOld, () => {
-        // Field names are already updated within the list of available fields.
-        // We need to update it in the list of selected fields.
+    watch ([availableFields, fieldNameOld], (newValues, oldValues)=> {
+        // Handle name changes first
+        console.log(`${fieldNameOld.value} => ${fieldNameNew.value}`);
         if (!!toolTipConfig.value[fieldNameOld.value]){
             let toolTip = toolTipConfig.value[fieldNameOld.value];
-            delete toolTipConfig.value[fieldNameOld.value];
+            // do we need to do this part?
+            if (!availableFields.value.includes(fieldNameOld.value)){
+                delete toolTipConfig.value[fieldNameOld.value];
+            }
             toolTipConfig.value[fieldNameNew.value] = toolTip;
-            emitToolTips();
         }
+        // Then handle deletions
+        let oldFields = oldValues[0];
+        let newFields = newValues[0];
+        oldFields.forEach((oldField)=>{
+            if (!newFields.includes(oldField)){
+                delete toolTipConfig.value[oldField];
+            }
+        });
+
     });
     function emitToolTips(){
         emit("toolTipsChanged", toolTipConfig.value);

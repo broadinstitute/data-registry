@@ -75,6 +75,7 @@
 	}
 	if (props.loadConfig != "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
+		latestFieldName = oldConfig["field name"];
         selectedFields.value = oldConfig["fields to join"];
 		joinBy.value = oldConfig["join by"];
 		
