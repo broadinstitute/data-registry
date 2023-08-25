@@ -40,10 +40,10 @@
     </div>
     <div class="row">
         <div class="col-md-1">
-            <button class="btn btn-primary" @click="() => selectAll()">Select all</button>
+            <button class="btn btn-primary" @click="() => selectAll(true)">Select all</button>
         </div>
         <div class="col-md-1">
-            <button class="btn btn-primary" @click="() => clearAll()">Clear all</button>
+            <button class="btn btn-primary" @click="() => selectAll(false)">Clear all</button>
         </div>
     </div>
 </template>
@@ -76,11 +76,9 @@
 		selectedFields.value.splice(index, 1);
         selectedFields.value.splice(index-1, 0, risingItem);
 	}
-    function selectAll(){
-        selectedFields.value = JSON.parse(JSON.stringify(availableFields.value)); // Deep copy
-    }
-    function clearAll(){
-        selectedFields.value = [];
+    function selectAll(toggleOn){
+        selectedFields.value = !!toggleOn ? 
+            JSON.parse(JSON.stringify(availableFields.value)) : []; // Deep copy
     }
     watch(selectedFields, () => emit("topRowsChanged", selectedFields.value));
 </script>

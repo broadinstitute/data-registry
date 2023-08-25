@@ -3,10 +3,10 @@
     <sup class="optional">Edit default field names to set new names</sup>
     <div class="row">
         <div class="col-md-1">
-            <button class="btn btn-primary" @click="() => selectAll()">Select all</button>
+            <button class="btn btn-primary" @click="() => selectAll(true)">Select all</button>
         </div>
         <div class="col-md-1">
-            <button class="btn btn-primary" @click="() => clearAll()">Clear all</button>
+            <button class="btn btn-primary" @click="() => selectAll(false)">Clear all</button>
         </div>
     </div>
     <div>
@@ -78,14 +78,8 @@
         let inputField = document.querySelector(`input#field_${index}`);
         inputField.value = newName;
     }
-    function selectAll(){
-        selectedColumns.value = rawFields.value;
-        for (let i = 0; i < rawFields.value.length; i++){
-            toggleBox(i);
-        }
-    }
-    function clearAll(){
-        selectedColumns.value = [];
+    function selectAll(toggleOn){
+        selectedColumns.value = !!toggleOn ? rawFields.value : [];
         for (let i = 0; i < rawFields.value.length; i++){
             toggleBox(i);
         }
