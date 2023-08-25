@@ -61,7 +61,7 @@
 											aria-labelledby="columnFormattingHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<ColumnFormatting
-													@col-format-changed="(config) => updateColumnFormatting(config)">
+													@col-format-changed="(config) => updateFormat('column formatting', config)">
 												</ColumnFormatting>
 											</div>
 										</div>
@@ -78,7 +78,7 @@
 											aria-labelledby="topRowsHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<TopRows
-													@top-rows-changed="(fields) => updateTopRows(fields)">
+													@top-rows-changed="(fields) => updateFormat('top rows', fields)">
 												</TopRows>
 											</div>
 										</div>
@@ -95,7 +95,7 @@
 											aria-labelledby="featuresHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<Features
-													@features-changed="(updatedFeatures) => updateFeatures(updatedFeatures)">
+													@features-changed="(features) => updateFormat('features', features)">
 												</Features>
 											</div>
 										</div>
@@ -112,7 +112,7 @@
 											aria-labelledby="toolTipsHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<ToolTips
-													@tool-tips-changed="(updatedToolTips) => updateToolTips(updatedToolTips)">
+													@tool-tips-changed="(toolTips) => updateFormat('tool tips', toolTips)">
 												</ToolTips>
 											</div>
 										</div>
@@ -129,7 +129,8 @@
 											aria-labelledby="locusStarHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<LocusFieldStarColumn
-													@locus-star-changed="(updatedLocusStar) => updateLocusStar(updatedLocusStar)">
+													@locus-changed="(locus) => updateFormat('locus', locus)"
+													@star-changed="(star) => updateFormat('star', star)">
 												</LocusFieldStarColumn>
 											</div>
 										</div>
@@ -168,67 +169,19 @@
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-	const dataTableFormat = ref({});
-	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
+	const dataTableFormatString = computed(() => JSON.stringify(config.value));
 	const dataConvert = computed(() => store.getAllFieldsConfig);
-	const topRows = ref([]);
-	const toolTips = ref({});
 	const pastedData = ref("");
-	const featureConfig = ref({ "features": [] });
-	const locus = ref("");
-	const star = ref("");
-	const columnFormatting = ref({});
-	function outputDataTableFormat(){
-		let format = {};
-		if (dataConvert.value.length > 0){
-			format["data convert"] = dataConvert.value;
+	const config = ref({});
+	function updateFormat(target, content){
+		if (target == "features"){
+			let oldFeatures = !!config.value["features"] ? config.value["features"] : [];
+			oldFeatures.forEach(feature => delete config.value[feature]);
+			Object.keys(content).forEach(featureKey => 
+				config.value[featureKey] = content[featureKey]); 
+		} else {
+			config.value[target] = content;
 		}
-		if (Object.keys(columnFormatting.value).length > 0){
-			format["column formatting"] = columnFormatting.value;
-		}
-		if (topRows.value.length > 0){
-			format["top rows"] = topRows.value;
-		}
-		if (featureConfig.value["features"].length > 0){
-			let featureKeys = Object.keys(featureConfig.value);
-			featureKeys.forEach(featureKey => 
-				format[featureKey] = featureConfig.value[featureKey]);
-		}
-		let toolTipCount = Object.keys(toolTips.value).length;
-		if (toolTipCount > 0){
-			format["tool tips"] = toolTips.value;
-		}
-		if (locus.value != ""){
-			format["locus field"] = locus.value;
-		}
-		if (star.value != ""){
-			format["star column"] = star.value;
-		}
-		dataTableFormat.value = format;
-	}
-	function updateTopRows(fields){
-		topRows.value = fields;
-		outputDataTableFormat();
-	}
-	function updateFeatures(updatedFeatures){
-		featureConfig.value = updatedFeatures;
-		outputDataTableFormat();
-	}
-	function updateColumnFormatting(config){
-		columnFormatting.value = config;
-		outputDataTableFormat();
-	}
-	function updateToolTips(updatedToolTips){
-		toolTips.value = updatedToolTips;
-		outputDataTableFormat();
-	}
-	function updateLocusStar(updatedLocusStar){
-		locus.value = updatedLocusStar[0];
-		star.value = updatedLocusStar[1];
-		outputDataTableFormat();
-	}
-	function columnNameChange(){
-		console.log("We should do column name change using store");
 	}
 	watch(pastedData, ()=>{
 		pastedData.value = pastedData.value.trim();
@@ -239,7 +192,7 @@
 		}
 		store.setRawFields(rawFields);
 	});
-	watch(dataConvert, () => outputDataTableFormat());
+	watch(dataConvert, () => config.value["data convert"] = dataConvert.value);
 	function copyConfig(){
 		navigator.clipboard.writeText(dataTableFormatString.value);
 	}

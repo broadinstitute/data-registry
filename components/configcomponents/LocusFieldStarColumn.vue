@@ -30,7 +30,7 @@
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-    const emit = defineEmits(["locusStarChanged"]);
+    const emit = defineEmits(["locusChanged", "starChanged"]);
     const availableFields = computed(()=> store.getAllFields);
     const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
     const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
@@ -53,8 +53,6 @@
 			star.value = "";
 		}
     });
-	watch([locus, star], () => { emitLocusStar() });
-	function emitLocusStar (){
-		emit("locusStarChanged", [locus.value, star.value]);
-	}
+	watch(locus, () => { emit("locusChanged", locus.value) });
+	watch(star, () => { emit("starChanged", star.value) });
 </script>
