@@ -69,7 +69,6 @@
 </template>
 
 <script setup>
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { useUserStore } from '~/stores/UserStore'
 
 

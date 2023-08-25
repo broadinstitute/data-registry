@@ -1,4 +1,5 @@
 <script setup>
+import * as Bootstrap from 'bootstrap'
 import { useDatasetStore } from '~/stores/DatasetStore'
 
 
@@ -49,6 +50,7 @@ const props = defineProps({
     if (props.datasetId) {
       await loadDataset(props.datasetId)
     }
+    datasetName.value.focus()
   })
 
   function getDescriptionFromPubData(data) {
@@ -70,6 +72,8 @@ const props = defineProps({
     genomeBuild.value = ds.genome_build;
     dataSubmitter.value = ds.data_submitter;
     dataSubmitterEmail.value = ds.data_submitter_email;
+    dataContributor.value = ds.data_contributor
+    dataContributorEmail.value = ds.data_contributor_email
     ancestry.value = ds.ancestry;
     sex.value = ds.sex;
     publiclyAvailable.value = ds.publicly_available;
@@ -136,7 +140,26 @@ const props = defineProps({
       opts.id = store.dataSetId
     }
     await store.saveDataset(opts)
+    const accordionData = document.getElementById('drfiles')
+    const bsCollapse = new Bootstrap.Collapse(accordionData, {
+      toggle: false
+    })
+    bsCollapse.show()
+    if(store.hasNoSavedData) {
+      await nextTick(() => {
+        document.getElementById('pheno-0').focus()
+      });
+    }
+
   }
+
+  watch(() => props.editMode, (isEditable) => {
+    if (isEditable) {
+      nextTick(() => {
+        datasetName.value.focus()
+      })
+    }
+  })
 
 
   function leaveStudy(event) {

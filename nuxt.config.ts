@@ -25,4 +25,8 @@ export default defineNuxtConfig({
         pinia: "/node_modules/@pinia/nuxt/node_modules/pinia/dist/pinia.mjs"
     },
     telemetry: false,
+    plugins: [
+        { src: '~/plugins/bootstrap.js', mode: 'client' }
+    ]
+
 });

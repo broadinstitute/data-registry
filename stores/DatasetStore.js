@@ -6,7 +6,7 @@ const configuredAxios = useAxios(config, undefined, (error) => {
   console.log(JSON.stringify(error))
   const store = useDatasetStore()
   store.processing = false
-  store.errorMessage = error.message
+  store.errorMessage = error.errorMessage
   store.serverSuccess = false
   store.showNotification = true
   throw new Error("Server error")
@@ -80,6 +80,7 @@ export const useDatasetStore = defineStore('DatasetStore', {
       combinedPhenotypesAndCredibleSets: [],
       showNotification: false,
       errorMessage: '',
+      successMessage: '',
       isServerSuccess: false,
       processing: false,
       modalMsg: '',
@@ -89,6 +90,9 @@ export const useDatasetStore = defineStore('DatasetStore', {
   getters: {
     savedDataSets: (state) => {
       return state.combinedPhenotypesAndCredibleSets
+    },
+    hasNoSavedData: (state) => {
+      return Object.keys(state.combinedPhenotypesAndCredibleSets[0]).length === 1
     },
     dataSetId: (state) => {
       return state.savedDataSetId
@@ -111,7 +115,7 @@ export const useDatasetStore = defineStore('DatasetStore', {
       const { data, error  } = await useFetch(config.public["phenotypesUrl"])
       if (error.value) {
         this.showNotification = true
-        this.errorMessage = error.value.message
+        this.errorMessage = error.value.errorMessage
       } else {
         const mappedPhenotypes = {}
         data.value.data.forEach((d) => (mappedPhenotypes[d.name] = d))
@@ -149,10 +153,13 @@ export const useDatasetStore = defineStore('DatasetStore', {
         const { data } = await configuredAxios.post("/api/datasets", JSON.stringify(dataset))
         this.savedDataSetId = data.dataset_id
       }
-      this.addPhenoBlankDataset()
+      if(this.combinedPhenotypesAndCredibleSets.length === 0){
+        this.addPhenoBlankDataset()
+      }
       this.processing = false
       this.showNotification = true
       this.isServerSuccess = true
+      this.successMessage = "Metadata saved, you can now upload files."
     },
     async uploadFiles(dataset_id) {
       this.processing = true

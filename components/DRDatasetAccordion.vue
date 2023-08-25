@@ -1,5 +1,4 @@
 <script setup>
-  import 'bootstrap/dist/js/bootstrap.bundle.min.js'
   import Modal from '~/components/Modal.vue'
   import { useDatasetStore } from '~/stores/DatasetStore'
   const props = defineProps({
@@ -18,8 +17,9 @@
 <template>
   <ServerNotification
       :show-notification="store.showNotification"
-      :message="store.errorMessage"
+      :errorMessage="store.errorMessage"
       :success="store.isServerSuccess"
+      :successMessage="store.successMessage"
   />
   <div class="row" v-if="store.dataSetId">
     <div class="col">
