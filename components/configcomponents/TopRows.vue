@@ -52,10 +52,10 @@
 
     const store = useConfigBuilderStore();
     const emit = defineEmits(["topRowsChanged"]);
-    const availableFields = computed(()=> store.getAllFields);
+    const availableFields = computed(()=> store.allFields);
     const selectedFields = ref([]); 
-    const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
-    const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
+    const fieldNameOld = computed(() => store.latestFieldRename[0]);
+    const fieldNameNew = computed(() => store.latestFieldRename[1]);
     watch([availableFields, fieldNameOld], (newValues, oldValues) => {
         if (selectedFields.value.includes(fieldNameOld.value) && !selectedFields.value.includes(fieldNameNew.value)){
             let index = selectedFields.value.indexOf(fieldNameOld.value);

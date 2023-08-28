@@ -31,9 +31,9 @@
 
 	const store = useConfigBuilderStore();
     const emit = defineEmits(["locusChanged", "starChanged"]);
-    const availableFields = computed(()=> store.getAllFields);
-    const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
-    const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
+    const availableFields = computed(()=> store.allFields);
+    const fieldNameOld = computed(() => store.latestFieldRename[0]);
+    const fieldNameNew = computed(() => store.latestFieldRename[1]);
 	const locus = ref("");
 	const star = ref("");
 	watch ([availableFields, fieldNameOld], () => {

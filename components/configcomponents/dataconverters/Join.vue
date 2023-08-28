@@ -43,7 +43,7 @@
 
 	const store = useConfigBuilderStore();
 	const props = defineProps({loadConfig: String});
-	const fieldColumnNames = computed(() => store.getSelectedColumns);
+	const fieldColumnNames = computed(() => store.selectedColumns);
     const emit = defineEmits(['configChanged']);
     const firstField = ref(null);
 	const secondField = ref(null);

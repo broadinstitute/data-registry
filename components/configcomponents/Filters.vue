@@ -110,9 +110,9 @@
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
-    const availableFields = computed(() => store.getAllFields);
-    const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
-    const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
+    const availableFields = computed(() => store.allFields);
+    const fieldNameOld = computed(() => store.latestFieldRename[0]);
+    const fieldNameNew = computed(() => store.latestFieldRename[1]);
 	const message = ref("");
 	const editingFilterIndex = ref(-1);
 	const selectedField = ref(null);

@@ -23,9 +23,9 @@
 
     const store = useConfigBuilderStore();
     const emit = defineEmits(["toolTipsChanged"]);
-    const availableFields = computed(()=> store.getAllFields);
-    const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
-    const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
+    const availableFields = computed(()=> store.allFields);
+    const fieldNameOld = computed(() => store.latestFieldRename[0]);
+    const fieldNameNew = computed(() => store.latestFieldRename[1]);
     const toolTipConfig = ref({});
     function updateToolTips(field, text){
         if (text == ""){

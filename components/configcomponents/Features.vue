@@ -81,11 +81,11 @@
     const emit = defineEmits(["featuresChanged"]);
     // WHY is this updating on such a delay
     const availableFields = computed(()=> {
-        let fields = store.getAllFields;
+        let fields = store.allFields;
         return fields;
     });
-    const fieldNameOld = computed(() => store.getLatestFieldRename[0]);
-    const fieldNameNew = computed(() => store.getLatestFieldRename[1]);
+    const fieldNameOld = computed(() => store.latestFieldRename[0]);
+    const fieldNameNew = computed(() => store.latestFieldRename[1]);
     const currentFeatureName = ref("");
     const currentSelectedFields = ref([]);
     const editingFeatureIndex = ref(-1);

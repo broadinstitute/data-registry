@@ -170,7 +170,7 @@
 
 	const store = useConfigBuilderStore();
 	const dataTableFormatString = computed(() => JSON.stringify(config.value));
-	const dataConvert = computed(() => store.getAllFieldsConfig);
+	const dataConvert = computed(() => store.allFieldsConfig);
 	const pastedData = ref("");
 	const config = ref({});
 	function updateFormat(target, content){

@@ -116,9 +116,9 @@
     let failedSaveMsg = "Field not ready to save";
     const currentFieldConfig = ref({});
     const currentConfigString = computed(() => JSON.stringify(currentFieldConfig.value));
-    const selectedColumns = computed(() => store.getSelectedColumns.map(column => column[0]));
-    const unConvertedFields = computed(() => store.getUnConvertedFieldsConfig);
-    const columnNameChange = computed(() => store.getLatestColumnRename);
+    const selectedColumns = computed(() => store.selectedColumns.map(column => column[0]));
+    const unConvertedFields = computed(() => store.unConvertedFieldsConfig);
+    const columnNameChange = computed(() => store.latestColumnRename);
     const savedFieldConfigs = ref([]);
     const editingFieldIndex = ref(-1);
 

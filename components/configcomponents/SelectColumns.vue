@@ -40,7 +40,7 @@
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
     const store = useConfigBuilderStore();
-    const rawFields = computed(()=> store.getRawFields);
+    const rawFields = computed(()=> store.rawFields);
     const selectedColumns = ref([]);
     function toggleBox(index){
         let rawField = rawFields.value[index];
@@ -60,7 +60,7 @@
             restoreDefaultColumnName(index);
             return;
         }
-        if (store.getSelectedColumns.map(column => column[1]).includes(newName)){
+        if (store.selectedColumns.map(column => column[1]).includes(newName)){
             warning.hidden = false;
             restoreDefaultColumnName(index);
             return;

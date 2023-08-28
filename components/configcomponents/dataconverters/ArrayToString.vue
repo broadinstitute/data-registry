@@ -33,7 +33,7 @@
 	const store = useConfigBuilderStore();
 	const props = defineProps({loadConfig: String});
     const emit = defineEmits(['configChanged']);
-	const fieldColumnNames = computed(() => store.getSelectedColumns);
+	const fieldColumnNames = computed(() => store.selectedColumns);
     const selectedField = ref(null);
 	const fieldIsLoaded = ref(false);
     const latestFieldName = ref("");
