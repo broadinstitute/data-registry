@@ -13,18 +13,10 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         latestFieldRename: [null, null],
     }),
     getters: {
-        getRawFields: (state) => state.rawFields,
-        getSelectedColumns: (state) => state.selectedColumns,
         getColumnName: (state) => { return (rawField) => {
             let index = state.selectedColumns.map(column => column[0]).indexOf(rawField);
             return state.selectedColumns[index][1];
         }},
-        getConvertedFieldsConfig: (state) => state.convertedFieldsConfig,
-        getUnConvertedFieldsConfig: (state) => state.unConvertedFieldsConfig,
-        getAllFields: (state) => state.allFields,
-        getAllFieldsConfig: (state) => state.allFieldsConfig,
-        getLatestFieldRename: (state) => state.latestFieldRename,
-        getLatestColumnRename: (state) => state.latestColumnRename,
     },
     actions: {
         setRawFields(fields){

@@ -48,7 +48,7 @@
 				<button class="btn btn-primary btn-sm" type="button" @click="saveField">
                     Save
                 </button>
-                <button class="btn btn-warning btn-sm" type="button" @click="cancelFieldEdit">
+                <button class="btn btn-warning btn-sm" type="button" @click="doneEditing">
                     Cancel
                 </button>
                 <button class="btn btn-danger btn-sm" type="button" @click="deleteField">
@@ -240,9 +240,6 @@
         dataConvertType.value = defaultType;
         saveDataConvert();
         showMsg.value = false;
-    }
-    function cancelFieldEdit(){
-        doneEditing();
     }
     function deleteField(){
         if (editingFieldIndex.value == -1){
