@@ -106,21 +106,29 @@
 	}
 	
     function preSaveCheck(){
+		let check = {
+			ready: false,
+			msg: ""
+		};
 		let fieldsLength = joinMultiConfig.value["fields to join"].length;
 		let joinLength = joinMultiConfig.value["join by"].length;
-		if (joinMultiConfig.value["fields to join"].length < 2){
-			return [false, "Select some fields to join."];
+		if (fieldsLength < 2){
+			check.msg = "Select some fields to join.";
+			return check;
 		}
 		if (joinLength != fieldsLength - 1){
-			return [false, "Specify join separators."]
+			check.msg ="Specify join separators.";
+			return check;
 		}
 		for (let i = 0; i < joinLength; i++){
 			let joinEntry = joinMultiConfig.value["join by"][i];
 			if (joinEntry.includes(",")){
-				return [false, "Commas may not be used in field joins."];
+				check.msg = "Commas may not be used in field joins.";
+				return check;
 			}
 		}
-        return [true, ""];
+		check.msg = true;
+		return check;
     }
 	watch([latestFieldName, selectedFields, joinBy], ()=>{
         emitConfig();

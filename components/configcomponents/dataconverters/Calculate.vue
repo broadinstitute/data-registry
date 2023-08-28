@@ -59,10 +59,16 @@
         emitConfig();
     })
     function preSaveCheck(){
+		let check = {
+			ready: false,
+			msg: ""
+		};
 		if (selectedField.value == null){
-			return [false, "Select a field."];
+			check.msg = "Select a field.";
+			return check;
 		}
-		return [true, ""];
+		check.ready = true;
+		return check;
     }
 	function emitConfig(){
 		let calcConfig = {

@@ -53,14 +53,21 @@
 	watch(selectedField, () => latestFieldName.value = store.getColumnName(selectedField.value));
     watch([latestFieldName, selectedField, separator], ()=> emitConfig());
     function preSaveCheck(){
+		let check = {
+			ready: false,
+			msg: ""
+		};
 		if (selectedField.value == null){
-			return [false, "Select a field."];
+			check.msg = "Select a field.";
+			return check;
 		}
 		//separator CAN be an empty string so we don't check that
 		if (separator.value.includes(",")){
-			return [false, "Commas may not be used in separator."];
+			check.msg = "Commas may not be used in separator.";
+			return check;
 		}
-        return [true, ""];
+		check.ready = true;
+		return check;
     }
 	function emitConfig(){
 		let arrayRenameConfig = {

@@ -90,28 +90,27 @@
 	}
 	
     function preSaveCheck(){
+		let check = {
+			ready: false,
+			msg: ""
+		};
 		let fieldsLength = newFieldNames.value.length;
-		let splitLength = splitBy.value.length;
 		if (fieldsLength < 2){
-			return [false, "Specify at least 2 fields."];
+			check.msg = "Specify at least 2 fields.";
+			return check;
 		}
 		for (let i = 0; i < fieldsLength; i ++){
-			for (let j = 0; j < fieldsLength; j++){
-				if (i != j && newFieldNames.value[i] == newFieldNames.value[j]){
-					return [false, "Specify unique field names."];
-				}
+			if (newFieldNames.value.slice(0,i).includes(newFieldNames.value[i])){
+				check.msg = "Specify unique field names.";
+				return check;
 			}
 		}
-		if (splitLength != fieldsLength - 1){
-			return [false, "Specify split separators."];
+		if (splitBy.value.length != fieldsLength - 1 || splitBy.value.includes("")){
+			check.msg = "Specify split separators.";
+			return check;
 		}
-		for (let i = 0; i < splitLength; i++){
-			let splitEntry = splitBy.value[i]
-			if (splitEntry == ""){
-				return [false, "Specify split separators."];
-			}
-		}
-        return [true, ""]
+		check.ready = true;
+        return check;
     }
 	watch([newFieldNames, selectedField, splitBy], ()=>{
         emitConfig();
