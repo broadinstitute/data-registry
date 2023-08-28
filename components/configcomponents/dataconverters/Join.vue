@@ -62,20 +62,26 @@
 		latestFieldName.value = oldConfig["field name"];
         firstField.value = oldConfig["fields to join"][0];
 		secondField.value = oldConfig["fields to join"][1];
-		joinBy.value = oldConfig["join by"]
-		
+		joinBy.value = oldConfig["join by"];
     }
     watch([latestFieldName, fieldsToJoin, joinBy], ()=>{
         emitConfig();
     })
     function preSaveCheck(){
+		let check = {
+			ready: false,
+			msg: ""
+		};
 		if (joinConfig.value["join by"].includes(",")){
-			return [false, "Commas may not be used in field joins."]
+			check.msg = "Commas may not be used in field joins.";
+			return check;
 		}
 		if (!joinConfig.value["fields to join"][0] || !joinConfig.value["fields to join"][1]){
-			return [false, "Select two fields to join."]
+			check.msg = "Select two fields to join.";
+			return check;
 		}
-        return [true, ""];
+        check.ready = true;
+		return check;
     }
 	function emitConfig(){
 		emit('configChanged', joinConfig.value, preSaveCheck());

@@ -98,26 +98,27 @@
 		emitConfig();
     });
     function preSaveCheck(){
+		let check = {
+			ready: false,
+			msg: ""
+		};
 		if(selectedField.value == null){
-            return [false, "Select a raw field."];
+            check.msg = "Select a raw field.";
+			return check;
 		}
-		let emptyEntries = false;
-		let foundCommas = false;
-		replaceChars.value.forEach(entry => {
-			if(entry["from"] == ""){
-				emptyEntries = true;
+		for (let i = 0; i < replaceChars.value.length; i++){
+			let entry = replaceChars.value[i];
+			if (entry.from == ""){
+				check.msg = "Fill in all 'Replace' entries.";
+				return check;
 			}
-			if(entry["to"].includes(",")){
-				foundCommas = true;
+			if (entry.to.includes(",")){
+				check.msg = "Commas may not be used in character replacements.";
+				return check;
 			}
-		});
-		if (emptyEntries){
-			return [false, "Fill in all 'Replace' entries."];
 		}
-		if (foundCommas){
-			return [false, "Commas may not be used in character replacements."];
-		}
-        return [true, ""];
+		check.ready = true;
+		return check;
     }
 	function emitConfig(){
 		let replaceCharConfig = {

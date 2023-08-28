@@ -102,11 +102,15 @@
 		scores.value[field] = newEntry;
 	}
 	function updateScore(field, yesOrNo, value){
-		if (value == "" || value == null){
+		let scoreValue = parseInt(value);
+		if (value == "" || value == null || typeof(scoreValue) !== 'number'){
 			// Force emit a value of false for ready to save
-			emit('configChanged', scoreColumnsConfig.value, false, "Specify values for score calculation.");
+			emit('configChanged', scoreColumnsConfig.value, {
+				ready: false,
+				msg: "Scores must be numerical."
+			});
 		} else {
-			scores.value[field]["value to score"][yesOrNo] = parseInt(value);
+			scores.value[field]["value to score"][yesOrNo] = scoreValue;
 			emitConfig();
 		}
 		
@@ -123,14 +127,22 @@
 		emit('configChanged', scoreColumnsConfig.value, preSaveCheck());
 	}
     function preSaveCheck(){
+		let check = {
+			ready: false,
+			msg: ""
+		};
 		if (scoreColumnsConfig.value["fields to score"].length < 1){
-			return [false, "Select fields to score."];
+			check.msg = "Select fields to score.";
+			return check;
 		}
-		scoreColumnsConfig.value["fields to score"].forEach(field => {
+		for (let i = 0; i < scoreColumnsConfig.value["fields to score"].length; i++){
+			let field = scoreColumnsConfig.value["fields to score"][i];
 			if (!scoreColumnsConfig.value["score by"][field]){
-				return [false, "Specify values for score calculation."];
+				check.msg = "Specify values for score calculation.";
+				return check;
 			}
-		});
-        return [true, ""]
+		}
+        check.ready = true;
+		return check;
     }
 </script>

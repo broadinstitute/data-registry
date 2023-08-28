@@ -122,13 +122,13 @@
     const savedFieldConfigs = ref([]);
     const editingFieldIndex = ref(-1);
 
-    function updateConfig(newConfig, check=[false, "Field not ready to save."]){
+    function updateConfig(newConfig, check={ready: false, msg: "Field not ready to save."}){
         currentFieldConfig.value = newConfig;
-        readyToSave = check[0];
+        readyToSave = check.ready;
         if (readyToSave){
             showMsg.value = false;
         }
-        failedSaveMsg = readyToSave ? "" : check[1];
+        failedSaveMsg = readyToSave ? "" : check.msg;
     }
     function editField(index){
         // You can't change a field type while editing. If you want to do that, you must delete and start over.
