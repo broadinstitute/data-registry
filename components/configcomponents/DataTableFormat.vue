@@ -28,7 +28,7 @@
 											</button>
 										</h5>
 										<div id="selectcolumnsbody" class="accordion-collapse collapse show"
-											aria-labelledby="dataConvertHeading" data-bs-parent="#dataTableAccordion">
+											aria-labelledby="selectColumnsHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<SelectColumns></SelectColumns>
 											</div>

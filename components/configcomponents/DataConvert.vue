@@ -172,10 +172,13 @@
             let oldName = oldField["field name"];
             let newName = newField["field name"];
             savedFieldConfigs.value[editingFieldIndex.value] = newField;
-            if(oldName != newName && newField["type"] != "split"){
+            // If we are toggling between convert and create, that shouldn't be processed as a name change.
+            if(oldName != newName && 
+                newField["type"] != "split" && 
+                !!oldField["create new"] &&
+                !!newField["create new"]){
                 store.renameField(oldName, newName);
             }
-            // Need to determine the logic for a split name change
         }
         doneEditing();
     }
