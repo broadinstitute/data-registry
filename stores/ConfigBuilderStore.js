@@ -23,9 +23,8 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         },
         updateAllFields(){
             const flattenFields = (a, b) => a.concat(b.type === "split" ? b["field name"] : [b["field name"]]);
-            this.allFields = this.unConvertedFieldsConfig.map(field => field["field name"])
-                .concat(this.convertedFieldsConfig.reduce(flattenFields, []));
             this.allFieldsConfig = this.unConvertedFieldsConfig.concat(this.convertedFieldsConfig);
+            this.allFields = this.allFieldsConfig.reduce(flattenFields, []);
         },
         addSelectedColumn(rawField){
             this.selectedColumns.push([rawField, rawField]);
