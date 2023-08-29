@@ -141,7 +141,7 @@
         editingFieldIndex.value = index;
         let savedField = savedFieldConfigs.value[index];
         dataConvertType.value = savedField["type"];
-        updateConfig(savedField, true);
+        updateConfig(savedField, {ready: true, msg: ""});
     }
     function saveField(){
         if (!readyToSave){
