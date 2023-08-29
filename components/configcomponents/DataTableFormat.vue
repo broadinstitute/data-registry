@@ -61,7 +61,7 @@
 											aria-labelledby="columnFormattingHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<ColumnFormatting
-													@col-format-changed="(config) => updateFormat('column formatting', config)">
+													@colFormatChanged="(config) => updateFormat('column formatting', config)">
 												</ColumnFormatting>
 											</div>
 										</div>
@@ -78,7 +78,7 @@
 											aria-labelledby="topRowsHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<TopRows
-													@top-rows-changed="(fields) => updateFormat('top rows', fields)">
+													@topRowsChanged="(fields) => updateFormat('top rows', fields)">
 												</TopRows>
 											</div>
 										</div>
@@ -95,7 +95,7 @@
 											aria-labelledby="featuresHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<Features
-													@features-changed="(features) => updateFormat('features', features)">
+													@featuresChanged="(features) => updateFormat('features', features)">
 												</Features>
 											</div>
 										</div>
@@ -112,7 +112,7 @@
 											aria-labelledby="toolTipsHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<ToolTips
-													@tool-tips-changed="(toolTips) => updateFormat('tool tips', toolTips)">
+													@toolTipsChanged="(toolTips) => updateFormat('tool tips', toolTips)">
 												</ToolTips>
 											</div>
 										</div>
@@ -129,8 +129,8 @@
 											aria-labelledby="locusStarHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
 												<LocusFieldStarColumn
-													@locus-changed="(locus) => updateFormat('locus', locus)"
-													@star-changed="(star) => updateFormat('star', star)">
+													@locusChanged="(locus) => updateFormat('locus', locus)"
+													@starChanged="(star) => updateFormat('star', star)">
 												</LocusFieldStarColumn>
 											</div>
 										</div>

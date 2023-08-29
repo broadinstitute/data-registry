@@ -17,7 +17,7 @@
 				:field-is-loaded="fieldIsLoaded"
 				:loaded-field-create-new="defaultCreateNew"
 				:loaded-field-name="latestFieldName"
-				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
+				@fieldNameSet="(createNew, newName) => processFieldInfo(createNew, newName)">
 			</CreateNewField>
 		</div>
 		<div class="col-md-4 col">

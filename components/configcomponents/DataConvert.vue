@@ -16,31 +16,31 @@
             <div class="col-md-8 col">
 				<Calculate 
                     v-if="dataConvertType=='calculate'" :load-config="currentConfigString"
-                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
+                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
                 </Calculate>
                 <Join 
                     v-else-if="dataConvertType=='join'" :load-config="currentConfigString"
-                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
+                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
                 </Join>
 				<JoinMulti 
                     v-else-if="dataConvertType=='join multi'" :load-config="currentConfigString"
-                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
+                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
                 </JoinMulti>
 				<ArrayToString 
                     v-else-if="dataConvertType=='array to string'" :load-config="currentConfigString"
-                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
+                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
                 </ArrayToString>
 				<ReplaceCharacters 
                     v-else-if="dataConvertType=='replace characters'" :load-config="currentConfigString"
-                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
+                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
                 </ReplaceCharacters>
 				<ScoreColumns 
                     v-else-if="dataConvertType=='score columns'" :load-config="currentConfigString"
-                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
+                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
                 </ScoreColumns>
                 <Split 
                     v-else-if="dataConvertType=='split'" :load-config="currentConfigString"
-                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
+                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
                 </Split>
                 <div class="failed-save" v-if="showMsg">{{ failedSaveMsg }}</div>
 			</div>
