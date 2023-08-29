@@ -24,7 +24,7 @@
 							:value="entry"
 							@change="(event)=>updateNames(index, event.target.value)"/>
 					</td>
-					<td v-if="index != newFieldNames.length - 1">
+					<td v-if="index !== newFieldNames.length - 1">
 						<input type="text" class="form-control input-default"
 							:value="splitBy[index]"
 							@change="(event)=>updateSplitBy(index, event.target.value)"/>
@@ -61,7 +61,7 @@
 		};
 		emit('configChanged', splitConfig, preSaveCheck());
 	}
-	if (props.loadConfig != "{}"){
+	if (props.loadConfig !== "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["field to split"];
 		splitBy.value = oldConfig["split by"];
@@ -84,7 +84,7 @@
 	}
 	function deleteEntry(index){
 		newFieldNames.value.splice(index, 1);
-		let splicePos = index == splitBy.value.length ? index - 1 : index;
+		let splicePos = index === splitBy.value.length ? index - 1 : index;
 		splitBy.value.splice(splicePos, 1);
 		emitConfig();
 	}
@@ -105,7 +105,7 @@
 				return check;
 			}
 		}
-		if (splitBy.value.length != fieldsLength - 1 || splitBy.value.includes("")){
+		if (splitBy.value.length !== fieldsLength - 1 || splitBy.value.includes("")){
 			check.msg = "Specify split separators.";
 			return check;
 		}

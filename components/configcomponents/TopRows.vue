@@ -24,13 +24,13 @@
                 {{ field }}
                 <td class="arrow-button-holder">
                     <button class="btn btn-primary arrow-button arrow-button-up" 
-                        :disabled="index == 0" @click="moveUpDown(index)">
+                        :disabled="index === 0" @click="moveUpDown(index)">
                         &uarr;
                     </button>
                 </td>
                 <td class="arrow-button-holder">
                     <button class="btn btn-primary arrow-button"
-                    :disabled="index == selectedFields.length - 1" @click="moveUpDown(index, true)">
+                    :disabled="index === selectedFields.length - 1" @click="moveUpDown(index, true)">
                     &darr;
                     </button>
                 </td>
@@ -66,7 +66,7 @@
         oldFields.forEach((oldField)=>{
             if (!newFields.includes(oldField)){
                 selectedFields.value = 
-                    selectedFields.value.filter(field => field != oldField);
+                    selectedFields.value.filter(field => field !== oldField);
             }
         });
     });

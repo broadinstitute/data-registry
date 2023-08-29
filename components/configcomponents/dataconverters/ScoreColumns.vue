@@ -62,7 +62,7 @@
 		"score by": scores,
 		"create new": true
     });
-	if (props.loadConfig != "{}"){
+	if (props.loadConfig !== "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
 		latestFieldName.value = oldConfig["field name"];
 		let fields = oldConfig["fields to score"];
@@ -103,7 +103,7 @@
 	}
 	function updateScore(field, yesOrNo, value){
 		let scoreValue = parseInt(value);
-		if (value == "" || value == null || typeof(scoreValue) !== 'number'){
+		if (value === "" || value === null || typeof(scoreValue) !== 'number'){
 			// Force emit a value of false for ready to save
 			emit('configChanged', scoreColumnsConfig.value, {
 				ready: false,

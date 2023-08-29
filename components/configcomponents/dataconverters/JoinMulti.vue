@@ -30,18 +30,18 @@
 					<td>{{ getColumnName(field) }}</td>
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button arrow-button-up" 
-							:disabled="index == 0" @click="moveUpDown(index)">
+							:disabled="index === 0" @click="moveUpDown(index)">
 							&uarr;
 						</button>
 					</td>
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button"
-						:disabled="index == selectedFields.length - 1" @click="moveUpDown(index, true)">
+						:disabled="index === selectedFields.length - 1" @click="moveUpDown(index, true)">
 						&darr;
 						</button>
 					</td>
 					<td class="arrow-button-holder">
-						<input v-if="index != selectedFields.length - 1" 
+						<input v-if="index !== selectedFields.length - 1" 
 							type="text" size="5" class="form-control input-default arrow-field"
 							:value="!!joinBy[index]? joinBy[index] : ''"
 							@change="(event)=>getInput(index, event.target.value)"/>
@@ -74,7 +74,7 @@
 	function getColumnName(field){
 		return store.getColumnName(field);
 	}
-	if (props.loadConfig != "{}"){
+	if (props.loadConfig !== "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
 		latestFieldName = oldConfig["field name"];
         selectedFields.value = oldConfig["fields to join"];
@@ -117,7 +117,7 @@
 			check.msg = "Select some fields to join.";
 			return check;
 		}
-		if (joinLength != fieldsLength - 1){
+		if (joinLength !== fieldsLength - 1){
 			check.msg ="Specify join separators.";
 			return check;
 		}

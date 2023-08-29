@@ -56,7 +56,7 @@
         let warning = document.querySelector(`#warning_${index}`);
         warning.hidden = true;
         let rawField = rawFields.value[index];
-        if (newName == ""){
+        if (newName === ""){
             restoreDefaultColumnName(index);
             return;
         }
@@ -87,7 +87,7 @@
     watch(rawFields, (newFields, oldFields) => {
         oldFields.forEach(oldField => {
             if (!newFields.includes(oldField)){
-                selectedColumns.value = selectedColumns.value.filter(column => column != oldField);
+                selectedColumns.value = selectedColumns.value.filter(column => column !== oldField);
                 store.deleteSelectedColumn(oldField);
             }
         });

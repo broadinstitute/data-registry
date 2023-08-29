@@ -41,7 +41,7 @@
 	const defaultCreateNew = ref(false);
 	const createNewField = ref(false);
 	
-	if (props.loadConfig != "{}"){
+	if (props.loadConfig !== "{}"){
 		fieldIsLoaded.value = true;
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
@@ -57,7 +57,7 @@
 			ready: false,
 			msg: ""
 		};
-		if (selectedField.value == null){
+		if (selectedField.value === null){
 			check.msg = "Select a field.";
 			return check;
 		}

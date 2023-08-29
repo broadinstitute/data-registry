@@ -57,7 +57,7 @@
 		"join by": joinBy,
 		"create new": true
     });
-    if (props.loadConfig != "{}"){
+    if (props.loadConfig !== "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
 		latestFieldName.value = oldConfig["field name"];
         firstField.value = oldConfig["fields to join"][0];

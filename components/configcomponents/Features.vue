@@ -30,13 +30,13 @@
                         {{ field }}
                         <td class="arrow-button-holder">
                             <button class="btn btn-primary arrow-button arrow-button-up" 
-                                :disabled="index == 0" @click="moveUpDown(index)">
+                                :disabled="index === 0" @click="moveUpDown(index)">
                                 &uarr;
                             </button>
                         </td>
                         <td class="arrow-button-holder">
                             <button class="btn btn-primary arrow-button"
-                            :disabled="index == currentSelectedFields.length - 1" @click="moveUpDown(index, true)">
+                            :disabled="index === currentSelectedFields.length - 1" @click="moveUpDown(index, true)">
                             &darr;
                             </button>
                         </td>
@@ -60,14 +60,14 @@
             <div class="col-md-12 col text-center dr-bubbles-wrapper">
 				<div v-for="feature, index in allFeaturesConfig.features" class="dr-format-bubble">
                     <button class="btn btn-secondary move-prev-next" @click="movePrevNext(index)"
-                        :disabled="editingFeatureIndex != -1 || index == 0" >
+                        :disabled="editingFeatureIndex !== -1 || index === 0" >
                             &leftarrow;
                     </button>
                     <span class="name">{{ feature }}</span>
-                    <span class="editing" v-if="editingFeatureIndex == index">Editing</span>
+                    <span class="editing" v-if="editingFeatureIndex === index">Editing</span>
                     <a v-else @click="editFeature(index)"><span class="edit">Edit</span></a>
                     <button class="btn btn-secondary move-prev-next" @click="movePrevNext(index, true)" 
-                        :disabled="editingFeatureIndex != -1 || index == allFeaturesConfig.features.length - 1">
+                        :disabled="editingFeatureIndex !== -1 || index === allFeaturesConfig.features.length - 1">
                             &rightarrow;
                     </button>
                 </div>
@@ -127,35 +127,35 @@
             // Check for duplicates
             for (let i = 0; i < allFeaturesConfig.value["features"].length; i++){
                 let existingFeature = allFeaturesConfig.value["features"][i];
-                if (i != editingFeatureIndex.value && existingFeature == trimmedName){
+                if (i !== editingFeatureIndex.value && existingFeature === trimmedName){
                     saveErrorMsg.value = "Select a unique feature name.";
                     return;
                 }
             }
-            if (editingFeatureIndex.value == -1){
+            if (editingFeatureIndex.value === -1){
                 allFeaturesConfig.value["features"].push(trimmedName);
                 allFeaturesConfig.value[trimmedName] = currentSelectedFields.value;
             } else {
                 let oldName = allFeaturesConfig.value["features"][editingFeatureIndex.value];
                 allFeaturesConfig.value["features"][editingFeatureIndex.value] = trimmedName;
                 allFeaturesConfig.value[trimmedName] = currentSelectedFields.value;
-                if (oldName != trimmedName){
+                if (oldName !== trimmedName){
                     delete allFeaturesConfig.value[oldName];
                 }
             }
             doneEditing();
             emitFeatures();
             return;
-        } else if (trimmedName == ""){
+        } else if (trimmedName === ""){
             saveErrorMsg.value = "Enter feature name.";
             return;
-        } else if (currentSelectedFields.value.length == 0){
+        } else if (currentSelectedFields.value.length === 0){
             saveErrorMsg.value = "Select some fields.";
             return;
         }
     }
     function editFeature(index){
-        if (editingFeatureIndex.value != -1){
+        if (editingFeatureIndex.value !== -1){
             saveErrorMsg.value = "Already editing another feature. Save or cancel to continue";
             return;
         }
@@ -166,10 +166,10 @@
         saveErrorMsg.value = "";
     }
     function deleteFeature(){
-        if (editingFeatureIndex.value != -1) {
+        if (editingFeatureIndex.value !== -1) {
             let featureToDelete = allFeaturesConfig.value["features"][editingFeatureIndex.value];
             allFeaturesConfig.value["features"] = 
-                allFeaturesConfig.value["features"].filter(feature => feature != featureToDelete);
+                allFeaturesConfig.value["features"].filter(feature => feature !== featureToDelete);
             delete allFeaturesConfig.value[featureToDelete];
             editingFeatureIndex.value = null;
         }
@@ -189,7 +189,7 @@
             // Guarding against duplicate names in features due to create/convert
             if (!featureCopy.includes(fieldNameNew.value)){
                 for(let i = 0; i < featureCopy.length; i++){
-                    if (featureCopy[i] == fieldNameOld.value){
+                    if (featureCopy[i] === fieldNameOld.value){
                         featureCopy[i] = fieldNameNew.value;
                     }
                 }
@@ -197,7 +197,7 @@
             allFeaturesConfig.value[feature] = featureCopy;
         });
         for (let i = 0; i < currentSelectedFields.value.length; i++){
-            if(currentSelectedFields.value[i] == fieldNameOld.value){
+            if(currentSelectedFields.value[i] === fieldNameOld.value){
                 currentSelectedFields.value[i] = fieldNameNew.value;
             }
         }
@@ -207,21 +207,21 @@
         oldFields.forEach(oldField => {
             if (!newFields.includes(oldField)){
                 currentSelectedFields.value = 
-                    currentSelectedFields.value.filter(field => field != oldField);
+                    currentSelectedFields.value.filter(field => field !== oldField);
                 for (let i = 0; i < allFeaturesConfig.value["features"].length; i++){
                     let featureName = allFeaturesConfig.value["features"][i];
                     let featureCopy = allFeaturesConfig.value[featureName];
                     if (featureCopy.includes(oldField)){
-                        allFeaturesConfig.value[featureName] = featureCopy.filter(field => field != oldField);
+                        allFeaturesConfig.value[featureName] = featureCopy.filter(field => field !== oldField);
                     }
                 }
             }});
         // Cleanup in case any features are now empty
         allFeaturesConfig.value["features"].forEach(feature => {
-            if(allFeaturesConfig.value[feature].length == 0){
+            if(allFeaturesConfig.value[feature].length === 0){
                 delete allFeaturesConfig.value[feature];
                 allFeaturesConfig.value["features"] = 
-                    allFeaturesConfig.value["features"].filter(item => item != feature);
+                    allFeaturesConfig.value["features"].filter(item => item !== feature);
             }
         });
         emitFeatures();

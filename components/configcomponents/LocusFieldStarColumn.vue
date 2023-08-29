@@ -38,10 +38,10 @@
 	const star = ref("");
 	watch ([availableFields, fieldNameOld], () => {
 		// Handle name changes first
-		if (locus.value == fieldNameOld.value){
+		if (locus.value === fieldNameOld.value){
 			locus.value = fieldNameNew.value;
 		}
-		if (star.value == fieldNameOld.value){
+		if (star.value === fieldNameOld.value){
 			star.value = fieldNameNew.value;
 		}
 

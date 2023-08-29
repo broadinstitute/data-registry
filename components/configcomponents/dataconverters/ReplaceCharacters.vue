@@ -68,7 +68,7 @@
 		}
 	]);
 	watch(selectedField, () => latestFieldName.value = store.getColumnName(selectedField.value));
-    if (props.loadConfig != "{}"){
+    if (props.loadConfig !== "{}"){
 		fieldIsLoaded.value = true;
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
@@ -102,13 +102,13 @@
 			ready: false,
 			msg: ""
 		};
-		if(selectedField.value == null){
+		if(selectedField.value === null){
             check.msg = "Select a raw field.";
 			return check;
 		}
 		for (let i = 0; i < replaceChars.value.length; i++){
 			let entry = replaceChars.value[i];
-			if (entry.from == ""){
+			if (entry.from === ""){
 				check.msg = "Fill in all 'Replace' entries.";
 				return check;
 			}

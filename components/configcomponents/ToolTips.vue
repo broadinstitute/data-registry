@@ -28,7 +28,7 @@
     const fieldNameNew = computed(() => store.latestFieldRename[1]);
     const toolTipConfig = ref({});
     function updateToolTips(field, text){
-        if (text == ""){
+        if (text === ""){
             delete toolTipConfig.value[field];
         } else {
             toolTipConfig.value[field] = text;

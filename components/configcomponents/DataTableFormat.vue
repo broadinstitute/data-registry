@@ -174,7 +174,7 @@
 	const pastedData = ref("");
 	const config = ref({});
 	function updateFormat(target, content){
-		if (target == "features"){
+		if (target === "features"){
 			let oldFeatures = !!config.value["features"] ? config.value["features"] : [];
 			oldFeatures.forEach(feature => delete config.value[feature]);
 			Object.keys(content).forEach(featureKey => 
@@ -187,7 +187,7 @@
 		pastedData.value = pastedData.value.trim();
 		let topLine = pastedData.value.split("\n")[0];
 		let rawFields = topLine.split(",");
-		if (pastedData.value == "") {
+		if (pastedData.value === "") {
 			rawFields = [];
 		}
 		store.setRawFields(rawFields);

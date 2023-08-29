@@ -37,13 +37,13 @@
 					{{ formatOptions[option] }}
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button arrow-button-up" 
-							:disabled="index == 0" @click="moveUpDown(index)">
+							:disabled="index === 0" @click="moveUpDown(index)">
 							&uarr;
 						</button>
 					</td>
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button"
-						:disabled="index == selectedOptions.length - 1" @click="moveUpDown(index, true)">
+						:disabled="index === selectedOptions.length - 1" @click="moveUpDown(index, true)">
 						&darr;
 						</button>
 					</td>
@@ -131,8 +131,8 @@
 			<div v-for="column in savedColumns" class="dr-format-bubble">
                     <span class="name">{{ column }}</span> |
 					<span class="type">{{ allColumnsConfig[column]['type'][0] }}</span>
-                    <span class="editing" v-if="selectedColumn == column">Editing</span>
-                    <a v-else-if="selectedColumn == null" @click="editColumn(column)"><span class="edit">Edit</span></a>
+                    <span class="editing" v-if="selectedColumn === column">Editing</span>
+                    <a v-else-if="selectedColumn === null" @click="editColumn(column)"><span class="edit">Edit</span></a>
                     <a v-else @click="warnEditingAlready()"><span class="edit">Edit</span></a>
                 </div>
 		</div>
@@ -165,7 +165,7 @@
 	const buttonLabel = ref("");
 	const percentNoValue = ref(0);
 	const selectedOptionsMod = computed(()=> selectedOptions.value.map(
-			item => item == "fixed" ? `fixed ${fixedPlaces.value}` : item));
+			item => item === "fixed" ? `fixed ${fixedPlaces.value}` : item));
 	const singleColumnConfig = ref({"type": []});
 	const allColumnsConfig = ref({});
 	const allColumnsConfigString = computed(() => JSON.stringify(allColumnsConfig.value));
@@ -182,13 +182,13 @@
 		updateFormat();
 	});
 	watch(selectedColumn, ()=> {
-		if(selectedColumn.value != null && savedColumns.value.includes(selectedColumn.value)){
+		if(selectedColumn.value !== null && savedColumns.value.includes(selectedColumn.value)){
 			editColumn(selectedColumn.value);
 		}
 	});
 	watch([availableFields, fieldNameOld], (newValues, oldValues) => {
 		// Name changes to fields should be handled first
-		if (selectedColumn.value == fieldNameOld.value){
+		if (selectedColumn.value === fieldNameOld.value){
 			selectedColumn.value = fieldNameNew.value;
 		}
 		if (!!allColumnsConfig.value[fieldNameOld.value]){
@@ -203,7 +203,7 @@
 		oldFields.forEach(oldField => {
 			if(!newFields.includes(oldField)){
 				delete allColumnsConfig.value[oldField];
-				if (selectedColumn.value == oldField){
+				if (selectedColumn.value === oldField){
 					clearAll();
 				}
 			}
@@ -255,7 +255,7 @@
 		if (selectedOptions.value.includes("render background percent") 
 			|| selectedOptions.value.includes("render background percent negative")){
 				singleColumnConfig.value["percent if empty"] = 
-					typeof percentNoValue.value == "number" ? percentNoValue.value : 0;
+					typeof percentNoValue.value === "number" ? percentNoValue.value : 0;
 		} else {
 			delete singleColumnConfig.value["percent if empty"];
 		}
@@ -265,11 +265,11 @@
 		emit("colFormatChanged", allColumnsConfig.value);
 	}
 	function saveColumn(){
-		if (selectedColumn.value == null){
+		if (selectedColumn.value === null){
 			saveErrorMsg.value = "Select a column.";
 			return;
 		}
-		if (selectedOptions.value.length == 0){
+		if (selectedOptions.value.length === 0){
 			saveErrorMsg.value = "Select some options.";
 			return;
 		}
@@ -287,7 +287,7 @@
 		clearAll();
 	}
 	function deleteColumn(){
-		if (selectedColumn.value != null){
+		if (selectedColumn.value !== null){
 			delete allColumnsConfig.value[selectedColumn.value];
 		}
 		clearAll();
@@ -300,7 +300,7 @@
 		for (let i = 0; i < loadConfig["type"].length; i++){
 			let item = loadConfig["type"][i]
 			let splitItem = item.split(" ");
-			if (splitItem[0] == "fixed"){
+			if (splitItem[0] === "fixed"){
 				fixedPlaces.value = parseInt(splitItem[1]);
 				loadConfig["type"][i] = "fixed";
 			}
@@ -311,10 +311,10 @@
 			linkTo.value = loadConfig["link to"]; 
 		}
 		if (configKeys.includes("new tab")){
-			newTab.value = loadConfig["new tab"] == "true" ? true : false;
+			newTab.value = loadConfig["new tab"] === "true" ? true : false;
 		}
 		if (configKeys.includes("link type")){
-			asButton.value = loadConfig["link type"] == "button";
+			asButton.value = loadConfig["link type"] === "button";
 		}
 		if (configKeys.includes("link label")){
 			buttonLabel.value = loadConfig["link label"];

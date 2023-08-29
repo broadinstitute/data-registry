@@ -15,32 +15,32 @@
             </div>
             <div class="col-md-8 col">
 				<Calculate 
-                    v-if="dataConvertType=='calculate'" :load-config="currentConfigString"
-                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
+                    v-if="dataConvertType === 'calculate'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </Calculate>
                 <Join 
-                    v-else-if="dataConvertType=='join'" :load-config="currentConfigString"
-                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
+                    v-else-if="dataConvertType === 'join'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </Join>
 				<JoinMulti 
-                    v-else-if="dataConvertType=='join multi'" :load-config="currentConfigString"
-                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
+                    v-else-if="dataConvertType === 'join multi'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </JoinMulti>
 				<ArrayToString 
-                    v-else-if="dataConvertType=='array to string'" :load-config="currentConfigString"
-                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
+                    v-else-if="dataConvertType === 'array to string'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </ArrayToString>
 				<ReplaceCharacters 
-                    v-else-if="dataConvertType=='replace characters'" :load-config="currentConfigString"
-                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
+                    v-else-if="dataConvertType === 'replace characters'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </ReplaceCharacters>
 				<ScoreColumns 
-                    v-else-if="dataConvertType=='score columns'" :load-config="currentConfigString"
-                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
+                    v-else-if="dataConvertType === 'score columns'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </ScoreColumns>
                 <Split 
-                    v-else-if="dataConvertType=='split'" :load-config="currentConfigString"
-                    @configChanged="(newConfig, check) => updateConfig(newConfig, check)">
+                    v-else-if="dataConvertType === 'split'" :load-config="currentConfigString"
+                    @config-changed="(newConfig, check) => updateConfig(newConfig, check)">
                 </Split>
                 <div class="failed-save" v-if="showMsg">{{ failedSaveMsg }}</div>
 			</div>
@@ -62,7 +62,7 @@
 			<div class="dr-format-bubble" v-for="field, index in savedFieldConfigs">
 				<span class="name">{{ field["field name"] }}</span>
                 <span class="type">{{ field["type"] }}</span>
-                <span class="editing" v-if="editingFieldIndex == index">Editing</span>
+                <span class="editing" v-if="editingFieldIndex === index">Editing</span>
                 <a v-else @click="editField(index)"><span class="edit">Edit</span></a>
 		    </div>
         </div>
@@ -133,7 +133,7 @@
     function editField(index){
         // You can't change a field type while editing. If you want to do that, you must delete and start over.
         // Should clicking another field while edit is active serve as a cancel? or should we prevent it?
-        if (editingFieldIndex.value != -1){
+        if (editingFieldIndex.value !== -1){
             failedSaveMsg = "Already editing another field. Save or cancel to continue";
             showMsg.value = true;
             return;
@@ -162,7 +162,7 @@
         } 
         // If we make it this far, the new field is unique and we can use it.
         showMsg.value = false;
-        if(editingFieldIndex.value == -1){
+        if(editingFieldIndex.value === -1){
             savedFieldConfigs.value.push(newField);
         } else {
             let oldField = savedFieldConfigs.value[editingFieldIndex.value];
@@ -173,8 +173,8 @@
             let newName = newField["field name"];
             savedFieldConfigs.value[editingFieldIndex.value] = newField;
             // If we are toggling between convert and create, that shouldn't be processed as a name change.
-            if(oldName != newName && 
-                newField["type"] != "split" && 
+            if(oldName !== newName && 
+                newField["type"] !== "split" && 
                 !!oldField["create new"] &&
                 !!newField["create new"]){
                 store.renameField(oldName, newName);
@@ -183,7 +183,7 @@
         doneEditing();
     }
     function fieldNameCheck(fieldConfig){
-        if (fieldConfig.type == 'split'){
+        if (fieldConfig.type === 'split'){
             let names = fieldConfig["field name"];
             for (let i = 0; i < names.length; i++){
                 let check = fieldNameOkay(names[i]);
@@ -199,7 +199,7 @@
         }
     }
     function fieldNameOkay(fieldName, rawField="", createNew=true){
-        if (fieldName.trim() == ''){
+        if (fieldName.trim() === ''){
             return [false, 'Field name cannot be empty.'];
         }
         if (fieldName.includes(",")){
@@ -208,28 +208,28 @@
         // Duplicate checking against renamed columns needs to be here
         for (let i = 0; i < unConvertedFields.value.length; i++){
             let unConvertedField = unConvertedFields.value[i];
-            let duplicateIsOk = (unConvertedField["raw field"] == rawField && !createNew);
-            if (!duplicateIsOk && unConvertedField["field name"] == fieldName){
+            let duplicateIsOk = (unConvertedField["raw field"] === rawField && !createNew);
+            if (!duplicateIsOk && unConvertedField["field name"] === fieldName){
                 return [false, 'Field name duplicates one of your selected columns.'];
             }
         }
         // Duplicate checking against converted columns
         for (let i = 0; i < savedFieldConfigs.value.length; i++){
-            if (i == editingFieldIndex.value){
+            if (i === editingFieldIndex.value){
                 continue;
             }
             let existingFieldConfig = savedFieldConfigs.value[i];
-            if (existingFieldConfig.type == 'split'){
+            if (existingFieldConfig.type === 'split'){
                 let splitNames = existingFieldConfig['field name'];
                 for (let j = 0; j < splitNames.length; j++){
                     let existingFieldName = splitNames[j];
-                    if (existingFieldName == fieldName){
+                    if (existingFieldName === fieldName){
                         return[false, "Select a unique field name."];
                     }
                 }
             } else {
                 let existingFieldName = existingFieldConfig["field name"];
-                if (existingFieldName == fieldName){
+                if (existingFieldName === fieldName){
                     return[false, "Select a unique field name."];
                 }
             }
@@ -245,7 +245,7 @@
         showMsg.value = false;
     }
     function deleteField(){
-        if (editingFieldIndex.value == -1){
+        if (editingFieldIndex.value === -1){
             doneEditing();
             return;
         }
@@ -262,7 +262,7 @@
     }
     watch(dataConvertType, ()=>{
         showMsg.value = false;
-        if (editingFieldIndex.value == -1){
+        if (editingFieldIndex.value === -1){
             updateConfig({});
         }
     });
@@ -272,7 +272,7 @@
         for (let i = 0; i < savedFieldConfigs.value.length; i++){
             let fieldConfig = savedFieldConfigs.value[i];
             let oldName = fieldConfig["field name"]
-            if (!!fieldConfig["raw field"] && fieldConfig["raw field"] == rawField && !fieldConfig["create new"]){
+            if (!!fieldConfig["raw field"] && fieldConfig["raw field"] === rawField && !fieldConfig["create new"]){
                     fieldConfig["field name"] = newName;
                     savedFieldConfigs.value[i] = fieldConfig;
                     store.renameField(oldName, newName);
@@ -289,7 +289,7 @@
         saveDataConvert();
     });
     function usesField(config, column){
-        if (!!config["raw field"] && config["raw field"] == column){
+        if (!!config["raw field"] && config["raw field"] === column){
             return true;
         }
         if (!!config["fields to join"] && config["fields to join"].includes(column)){
@@ -298,7 +298,7 @@
         if (!!config["fields to score"] && config["fields to score"].includes(column)){
             return true;
         }
-        if (!!config["field to split"] && config["field to split"] == column){
+        if (!!config["field to split"] && config["field to split"] === column){
             return true;
         }
         return false;
