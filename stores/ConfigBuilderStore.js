@@ -5,7 +5,6 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         rawFields: [],
         selectedColumns: [],
         latestColumnRename: [null, null],
-        convertedFields: [],
         convertedFieldsConfig: [],
         unConvertedFieldsConfig: [],
         allFields: [],
@@ -23,7 +22,9 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
             this.rawFields = fields;
         },
         updateAllFields(){
-            this.allFields = this.unConvertedFieldsConfig.map(field => field["field name"]).concat(this.convertedFields);
+            const flattenFields = (a, b) => a.concat(b.type === "split" ? b["field name"] : [b["field name"]]);
+            this.allFields = this.unConvertedFieldsConfig.map(field => field["field name"])
+                .concat(this.convertedFieldsConfig.reduce(flattenFields, []));
             this.allFieldsConfig = this.unConvertedFieldsConfig.concat(this.convertedFieldsConfig);
         },
         addSelectedColumn(rawField){
@@ -64,13 +65,7 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
             this.updateAllFields();
         },
         setConvertedFields(newConvertedFields){
-            let fieldNames = [];
             newConvertedFields.forEach(newField => {
-                if (newField["type"] == "split"){
-                    fieldNames = fieldNames.concat(newField["field name"]);
-                } else {
-                    fieldNames.push(newField["field name"]);
-                }
                 // Don't duplicate fields from the raw list if they're to be converted ultimately.
                 if (!newField["create new"]){
                     let convertingField = newField["raw field"];
@@ -79,7 +74,6 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
                     );
                 }
             });
-            this.convertedFields = fieldNames;
             this.convertedFieldsConfig = newConvertedFields;
             this.updateAllFields();
         },
