@@ -2,7 +2,7 @@
     <div class="row" id="splitConfig">
 		<div class="col-md-4 col">
 			<div class="label">
-				Split | Select field
+				Select field
 			</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
@@ -15,8 +15,8 @@
 		<div class="col-md-4 col">
 			<table>
 					<tr>
-						<th>New field name</th>
-						<th>Split by</th>
+						<th><div class="label">New field name</div></th>
+						<th><div class="label">Split by</div></th>
 					</tr>
 				<tr v-for="entry, index in newFieldNames">
 					<td>

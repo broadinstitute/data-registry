@@ -1,13 +1,7 @@
 <template>
     <div class="label">
-            <input class="form-check-input" type="radio" name="first" value="convert" 
-                id="true-button" v-model="convertOrCreate" :disabled="!fieldAvailable
-                "/>
-            Convert "{{ selectedFieldColName }}"
-    </div>
-    <div class="label">
-            <input class="form-check-input" type="radio" name="first" value="create" 
-                id="false-button" v-model="convertOrCreate"/>
+            <input class="form-check-input" type="checkbox" name="first" value="create" 
+                id="false-button" v-model="createNewField" :disabled="!fieldAvailable"/>
             Create new field
     </div>
     <div class="label new-field-name" v-if="createNewField">
@@ -27,10 +21,12 @@
         loadedFieldName: String
     });
     const emit = defineEmits(["fieldNameSet"]);
-    const convertOrCreate = ref(!!props.loadedFieldCreateNew ? "create" : "convert");
-    const createNewField = computed(() => convertOrCreate.value == "create");
+    const createNewField = ref(props.loadedFieldCreateNew);
     const selectedField = computed(()=> props.selectedField);
     const selectedFieldColName = computed(() => {
+        if (selectedField.value === null){
+            return "";
+        }
         let columns = store.selectedColumns;
         let index = columns.map(item => item[0]).indexOf(selectedField.value);
 		return columns[index][1];
@@ -39,7 +35,7 @@
     const fieldAvailable= computed(() => {
         let available = unConvertedFields.value.includes(selectedField.value);
         if (!props.fieldIsLoaded && !available){
-            convertOrCreate.value = "create";
+            createNewField.value = true;
         }
         // Force enable the convert option if you're loading a field which already has it chosen
         return (props.fieldIsLoaded && !props.loadedFieldCreateNew) ? true : available;

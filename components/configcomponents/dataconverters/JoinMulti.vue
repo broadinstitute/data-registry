@@ -2,7 +2,7 @@
     <div class="row" id="joinMultiConfig">
 		<div class="col-md-4 col">
 			<div class="label">
-				Join multi | Select field(s)
+				Select fields
 			</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
@@ -14,11 +14,18 @@
 			</ul>
 			<button @click="()=>clearAll()" class="btn btn-primary">Clear selection</button>
 		</div>
-		<div class="col-md-4 col">
+		<div class="col-md-4">
 			<div class="label">
-				Selected fields | Join by
+				New field name
+				<input type="text" class="form-control input-default" v-model="latestFieldName">
 			</div>
+		</div>
+		<div class="col-md-4 col">
 			<tbody class="dr-byor-data-columns">
+				<tr>
+					<th colspan="3"></th>
+					<th><div class="label">Join by</div></th>
+				</tr>
 				<tr v-for="field, index in selectedFields" class="arrow-button-list">
 					<td>{{ getColumnName(field) }}</td>
 					<td class="arrow-button-holder">
@@ -35,18 +42,12 @@
 					</td>
 					<td class="arrow-button-holder">
 						<input v-if="index != selectedFields.length - 1" 
-							type="text" class="form-control input-default arrow-field"
+							type="text" size="5" class="form-control input-default arrow-field"
 							:value="!!joinBy[index]? joinBy[index] : ''"
 							@change="(event)=>getInput(index, event.target.value)"/>
 					</td>
 				</tr>
 			</tbody>
-		</div>
-		<div class="label">
-			New field name
-			<label>
-				<input type="text" class="form-control input-default" v-model="latestFieldName">
-			</label>
 		</div>
 	</div>
 </template>

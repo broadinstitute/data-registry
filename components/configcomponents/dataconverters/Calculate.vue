@@ -1,8 +1,8 @@
 <template>
     <div class="row" id="calculateConfig">
-		<div class="col-md-6 col">
+		<div class="col-md-4 col">
 			<div class="label">
-				Calculate | Select field
+				Select field
 			</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
@@ -12,21 +12,21 @@
 				</li>													
 			</ul>
 		</div>
-		<div class="col-md-6 col">
-			<div class="label">
-				Calculate
-			</div>
-			<select class="form-control" v-model="calcType">
-				<option value="-log10">-Log10</option>
-			</select>
-		</div>
-		<div v-if="selectedField != null">
+		<div class="col-md-4">
 			<CreateNewField :selected-field="selectedField"
 				:field-is-loaded="fieldIsLoaded"
 				:loaded-field-create-new="defaultCreateNew"
 				:loaded-field-name="latestFieldName"
 				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
 			</CreateNewField>
+		</div>
+		<div class="col-md-4 col">
+			<div class="label">
+				Calculate
+			</div>
+			<select class="form-control" v-model="calcType">
+				<option value="-log10">-Log10</option>
+			</select>
 		</div>
 	</div>
 </template>

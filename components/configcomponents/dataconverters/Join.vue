@@ -1,8 +1,8 @@
 <template>
     <div class="row" id="joinConfig">
-		<div class="col-md-4 col">
+		<div class="col-md-2 col">
 			<div class="label">
-				Join | Select field 1
+				Select field 1
 			</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
@@ -12,7 +12,7 @@
 				</li>													
 			</ul>
 		</div>
-		<div class="col-md-4 col">
+		<div class="col-md-2 col">
 			<div class="label">
 				Select field 2
 			</div>
@@ -24,17 +24,17 @@
 				</li>													
 			</ul>
 		</div>
+		<div class="col-md-4">
+			<div class="label">
+				New field name
+				<input type="text" class="form-control input-default" v-model="latestFieldName">
+			</div>
+		</div>
 		<div class="col-md-4 col">
 			<div class="label">
 				Join by
 			</div>
 			<input type="text" class="form-control input-default" v-model="joinBy"/>
-		</div>
-		<div class="label">
-			New field name
-			<label>
-				<input type="text" class="form-control input-default" v-model="latestFieldName">
-			</label>
 		</div>
 	</div>
 </template>

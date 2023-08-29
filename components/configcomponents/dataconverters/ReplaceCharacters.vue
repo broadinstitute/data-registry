@@ -1,8 +1,8 @@
 <template>
     <div class="row" id="replaceCharactersConfig">
-		<div class="col-md-6 col">
+		<div class="col-md-4 col">
 			<div class="label">
-				Replace characters | Select field
+				Select field
 			</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
@@ -13,10 +13,18 @@
 			</ul>
 		</div>
 		<div class="col-md-4 col">
+			<CreateNewField :selected-field="selectedField"
+				:field-is-loaded="fieldIsLoaded"
+				:loaded-field-create-new="defaultCreateNew"
+				:loaded-field-name="latestFieldName"
+				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
+			</CreateNewField>
+		</div>
+		<div class="col-md-4 col">
 			<table>
 					<tr>
-						<th>Replace</th>
-						<th>With</th>
+						<th><div class="label">Replace</div></th>
+						<th><div class="label">With</div></th>
 					</tr>
 				<tr v-for="entry, index in replaceChars">
 					<td>
@@ -37,14 +45,6 @@
 				</tr>
 			</table>
 			<button class="btn btn-primary" @click="addEntry()">Add</button>
-		</div>
-		<div v-if="selectedField != null">
-			<CreateNewField :selected-field="selectedField"
-				:field-is-loaded="fieldIsLoaded"
-				:loaded-field-create-new="defaultCreateNew"
-				:loaded-field-name="latestFieldName"
-				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
-			</CreateNewField>
 		</div>
 	</div>
 </template>

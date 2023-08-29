@@ -2,7 +2,7 @@
     <div class="row" id="scoreColumnsConfig">
 		<div class="col-md-4 col">
 			<div class="label">
-				Score columns | Select field(s) (Boolean)
+				Select fields
 			</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
@@ -14,12 +14,18 @@
 			</ul>
 			<button @click="()=>clearAll()" class="btn btn-primary">Clear selection</button>
 		</div>
-		<div class="col-md-6 col">
+		<div class="col-md-4 col">
+			<div class="label">
+				New field name
+				<input type="text" class="form-control input-default" v-model="latestFieldName">
+			</div>
+		</div>
+		<div class="col-md-4 col">
 			<table class="dr-byor-data-columns">
 				<tr>
-					<th>Selected fields</th>
-					<th>Score true</th>
-					<th>Score false</th>
+					<th></th>
+					<th><div class="label">Score true</div></th>
+					<th><div class="label">Score false</div></th>
 				</tr>
 				<tr v-for="field in selectedFields">
 					<td>{{ getColumnName(field) }}</td>
@@ -36,13 +42,7 @@
 					</td>
 				</tr>
 			</table>
-		</div>
-		<div class="label">
-			New field name
-			<label>
-				<input type="text" class="form-control input-default" v-model="latestFieldName">
-			</label>
-		</div>
+		</div>		
 	</div>
 </template>
 <script setup>

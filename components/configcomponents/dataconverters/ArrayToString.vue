@@ -1,7 +1,7 @@
 <template>
     <div class="row" id="array2StringConfig">
-		<div class="col-md-6 col">
-			<div class="label"> Array to string | Select field</div>
+		<div class="col-md-4 col">
+			<div class="label">Select field</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
 					<input class="form-check-input" type="radio" name="array2string" :value="field[0]" 
@@ -10,19 +10,19 @@
 				</li>													
 			</ul>
 		</div>
-		<div class="col-md-6 col">
-			<div class="label">
-				Separate items by
-			</div>
-			<input type="text" class="form-control input-default" v-model="separator"/>
-		</div>
-		<div v-if="selectedField != null">
+		<div class="col-md-4 col">
 			<CreateNewField :selected-field="selectedField"
 				:field-is-loaded="fieldIsLoaded"
 				:loaded-field-create-new="defaultCreateNew"
 				:loaded-field-name="latestFieldName"
 				@field-name-set="(createNew, newName) => processFieldInfo(createNew, newName)">
 			</CreateNewField>
+		</div>
+		<div class="col-md-4 col">
+			<div class="label">
+				Separate items by
+			</div>
+			<input type="text" class="form-control input-default" v-model="separator"/>
 		</div>
 	</div>
 </template>
