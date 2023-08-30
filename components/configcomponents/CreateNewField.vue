@@ -1,35 +1,43 @@
 <template>
-    <div class="label">
+    <div class="col-md-4 col">
+		<div class="label">Select field</div>
+        <SingleFieldSelect :selectedField="selectedField"
+            @fieldSelected="field => acceptField(field)">
+        </SingleFieldSelect>
+    </div>
+    <div class="col-md-4 col">
+        <div class="label">
             <input class="form-check-input" type="checkbox" name="first" value="create" 
                 id="false-button" v-model="createNewField" :disabled="!fieldAvailable"/>
             Create new field
-    </div>
-    <div class="label new-field-name" v-if="createNewField">
+        </div>
+        <div class="label new-field-name" v-if="createNewField">
             New field name <sup>required</sup>
             <label>
                 <input type="text" class="form-control input-default" v-model="newFieldName"/>
             </label>
+        </div>
     </div>
 </template>
 <script setup>
+    import SingleFieldSelect from '@/components/configcomponents/SingleFieldSelect.vue';
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 	const store = useConfigBuilderStore();
     const props = defineProps({
-        selectedField: String,
         fieldIsLoaded: Boolean,
+        selectedField: String,
         loadedFieldCreateNew: Boolean,
         loadedFieldName: String
     });
     const emit = defineEmits(["fieldNameSet"]);
     const createNewField = ref(props.loadedFieldCreateNew);
-    const selectedField = computed(()=> props.selectedField);
-    const selectedFieldColName = computed(() => {
-        if (selectedField.value === null){
-            return "";
-        }
-		return store.getColumnName(selectedField.value);
-    });
-    const unConvertedFields = computed(() => store.getUnConvertedFields.map(field => field["raw field"]));
+    const selectedField = ref(props.selectedField);
+    const selectedFieldColName = computed(() => 
+        selectedField.value === null ? "" : store.getColumnName(selectedField.value)
+    );
+    const unConvertedFields = computed(() => 
+        store.getUnConvertedFields.map(field => field["raw field"])
+    );
     const fieldAvailable= computed(() => {
         let available = unConvertedFields.value.includes(selectedField.value);
         if (!props.fieldIsLoaded && !available){
@@ -39,11 +47,15 @@
         return (props.fieldIsLoaded && !props.loadedFieldCreateNew) ? true : available;
     });
     const newFieldName = ref(!!props.loadedFieldCreateNew ? props.loadedFieldName : "");
-    function emitNewName(){
-        let nameToEmit = !!createNewField.value ? newFieldName.value : selectedFieldColName.value;
-        emit("fieldNameSet", createNewField.value, nameToEmit);
+    function acceptField(field){
+        selectedField.value = field;
     }
     watch([selectedField, createNewField, newFieldName], () => {
-        emitNewName();
+        let emitObject = {
+            "create new": createNewField.value,
+            "raw field": selectedField.value,
+            "field name": !!createNewField.value ? newFieldName.value : selectedFieldColName.value,
+        }
+        emit("fieldNameSet", emitObject);
     });
 </script>

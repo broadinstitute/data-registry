@@ -1,19 +1,11 @@
 <template>
     <div class="row" id="array2StringConfig">
-		<div class="col-md-4 col">
-			<div class="label">Select field</div>
-			<SingleFieldSelect :loadField="selectedField"
-				@fieldSelected="field => acceptField(field)">
-			</SingleFieldSelect>
-		</div>
-		<div class="col-md-4 col">
-			<CreateNewField :selected-field="selectedField"
-				:field-is-loaded="fieldIsLoaded"
-				:loaded-field-create-new="defaultCreateNew"
-				:loaded-field-name="latestFieldName"
-				@fieldNameSet="(createNew, newName) => processFieldInfo(createNew, newName)">
-			</CreateNewField>
-		</div>
+		<CreateNewField :selectedField="selectedField"
+			:fieldIsLoaded="fieldIsLoaded"
+			:loadedFieldCreateNew="defaultCreateNew"
+			:loadedFieldName="latestFieldName"
+			@fieldNameSet="(fieldInfo) => processFieldInfo(fieldInfo)">
+		</CreateNewField>
 		<div class="col-md-4 col">
 			<div class="label">
 				Separate items by
@@ -24,7 +16,6 @@
 </template>
 <script setup>
 	import CreateNewField from '@/components/configcomponents/CreateNewField.vue';
-	import SingleFieldSelect from '@/components/configcomponents/SingleFieldSelect.vue';
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
@@ -41,15 +32,12 @@
 		fieldIsLoaded.value = true;
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
+		console.log(`Selected field should now be ${selectedField.value}`);
 		separator.value = oldConfig["separate by"];
 		latestFieldName.value = oldConfig["field name"];
 		createNewField.value = oldConfig["create new"];
 		defaultCreateNew.value = oldConfig["create new"];
     }
-	function acceptField(field){
-		selectedField.value = field;
-		latestFieldName.value = store.getColumnName(field);
-	}
     function preSaveCheck(){
 		let check = {
 			ready: false,
@@ -77,9 +65,10 @@
     	};
 		emit('configChanged', arrayRenameConfig, preSaveCheck());
 	}
-	function processFieldInfo(createNew, newName){
-		createNewField.value = createNew;
-		latestFieldName.value = newName;
+	function processFieldInfo(fieldInfo){
+		createNewField.value = fieldInfo["create new"];
+		latestFieldName.value = fieldInfo["field name"];
+		selectedField.value = fieldInfo["raw field"];
 	}
     watch([latestFieldName, selectedField, separator], ()=> emitConfig());
 </script>

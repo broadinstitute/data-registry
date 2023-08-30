@@ -13,16 +13,10 @@
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
     const store = useConfigBuilderStore();
-    const props = defineProps({loadField: String});
+    const props = defineProps({selectedField: String});
     const emit = defineEmits(["fieldSelected"]);
     const fieldColumnNames = computed(() => store.selectedColumns);
-    const selectedField = ref(null);
-    const loadField = computed(() => props.loadField);
-    watch (loadField, () => {
-        if (loadField.value !== ""){
-            selectedField.value = loadField.value
-        }
-    });
+    const selectedField = ref(props.selectedField);
     watch (selectedField, (newField, oldField) => {
         if (newField !== oldField){
             emit("fieldSelected", selectedField.value);
