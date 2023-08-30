@@ -4,7 +4,7 @@
 			:fieldIsLoaded="fieldIsLoaded"
 			:loadedFieldCreateNew="defaultCreateNew"
 			:loadedFieldName="latestFieldName"
-			@fieldNameSet="(fieldInfo) => processFieldInfo(fieldInfo)">
+			@fieldNameSet="fieldInfo => processFieldInfo(fieldInfo)">
 		</CreateNewField>
 		<div class="col-md-4 col">
 			<div class="label">
@@ -16,9 +16,6 @@
 </template>
 <script setup>
 	import CreateNewField from '@/components/configcomponents/CreateNewField.vue';
-	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-
-	const store = useConfigBuilderStore();
 	const props = defineProps({loadConfig: String});
     const emit = defineEmits(['configChanged']);
     const selectedField = ref(null);
@@ -32,7 +29,6 @@
 		fieldIsLoaded.value = true;
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
-		console.log(`Selected field should now be ${selectedField.value}`);
 		separator.value = oldConfig["separate by"];
 		latestFieldName.value = oldConfig["field name"];
 		createNewField.value = oldConfig["create new"];

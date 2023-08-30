@@ -1,25 +1,11 @@
 <template>
     <div class="row" id="calculateConfig">
-		<div class="col-md-4 col">
-			<div class="label">
-				Select field
-			</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="calculate" :value="field['raw field']" 
-					id="flexCheckDefault" v-model="selectedField"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ field["field name"] }}</span>
-				</li>													
-			</ul>
-		</div>
-		<div class="col-md-4">
-			<CreateNewField :selected-field="selectedField"
-				:field-is-loaded="fieldIsLoaded"
-				:loaded-field-create-new="defaultCreateNew"
-				:loaded-field-name="latestFieldName"
-				@fieldNameSet="(createNew, newName) => processFieldInfo(createNew, newName)">
-			</CreateNewField>
-		</div>
+		<CreateNewField :selectedField="selectedField"
+			:fieldIsLoaded="fieldIsLoaded"
+			:loadedFieldCreateNew="defaultCreateNew"
+			:loadedFieldName="latestFieldName"
+			@fieldNameSet="fieldInfo => processFieldInfo(fieldInfo)">
+		</CreateNewField>
 		<div class="col-md-4 col">
 			<div class="label">
 				Calculate
@@ -37,7 +23,6 @@
 	const store = useConfigBuilderStore();
 	const props = defineProps({newFieldName: String, loadConfig: String});
     const emit = defineEmits(['configChanged']);
-	const fieldColumnNames = computed(() => store.selectedColumns);
     const selectedField = ref(null);
 	const fieldIsLoaded = ref(false);
 	const calcType = ref("-log10");
@@ -54,7 +39,6 @@
 		createNewField.value = oldConfig["create new"];
 		defaultCreateNew.value = oldConfig["create new"];
     }
-	watch(selectedField, () => latestFieldName.value = store.getColumnName(selectedField.value));
     watch([latestFieldName, selectedField, calcType], ()=>{
         emitConfig();
     })
@@ -80,8 +64,9 @@
     	};
 		emit('configChanged', calcConfig, preSaveCheck());
 	}
-	function processFieldInfo(createNew, newName){
-		createNewField.value = createNew;
-		latestFieldName.value = newName;
+	function processFieldInfo(fieldInfo){
+		createNewField.value = fieldInfo["create new"];
+		latestFieldName.value = fieldInfo["field name"];
+		selectedField.value = fieldInfo["raw field"];
 	}
 </script>
