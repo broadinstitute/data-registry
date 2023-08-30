@@ -4,13 +4,9 @@
 			<div class="label">
 				Select field
 			</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="replace" :value="field['raw field']" 
-						id="flexCheckDefault" v-model="selectedField"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ field['field name'] }}</span>
-				</li>													
-			</ul>
+			<SingleFieldSelect :selectedField="selectedField"
+            	@fieldSelected="field => acceptField(field)">
+        	</SingleFieldSelect>
 		</div>
 		<div class="col-md-4 col">
 			<table>
@@ -41,11 +37,8 @@
 	</div>
 </template>
 <script setup>
-	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-
-	const store = useConfigBuilderStore();
+	import SingleFieldSelect from '@/components/configcomponents/SingleFieldSelect.vue';
 	const props = defineProps({loadConfig: String});
-	const fieldColumnNames = computed(() => store.selectedColumns);
 	const emit = defineEmits(['configChanged']);
 	const selectedField = ref(null);
 	const splitBy = ref([""]);
@@ -88,7 +81,9 @@
 		splitBy.value.splice(splicePos, 1);
 		emitConfig();
 	}
-	
+	function acceptField(field){
+		selectedField.value = field;
+	}
     function preSaveCheck(){
 		let check = {
 			ready: false,
