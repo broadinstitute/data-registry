@@ -18,9 +18,6 @@
 </template>
 <script setup>
 	import CreateNewField from '@/components/configcomponents/CreateNewField.vue';
-	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-
-	const store = useConfigBuilderStore();
 	const props = defineProps({newFieldName: String, loadConfig: String});
     const emit = defineEmits(['configChanged']);
     const selectedField = ref(null);

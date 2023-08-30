@@ -1,31 +1,17 @@
 <template>
     <div class="row" id="replaceCharactersConfig">
-		<div class="col-md-4 col">
-			<div class="label">
-				Select field
-			</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="replace" :value="field['raw field']" 
-						id="flexCheckDefault" v-model="selectedField"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ field["field name"] }}</span>
-				</li>													
-			</ul>
-		</div>
-		<div class="col-md-4 col">
-			<CreateNewField :selected-field="selectedField"
-				:field-is-loaded="fieldIsLoaded"
-				:loaded-field-create-new="defaultCreateNew"
-				:loaded-field-name="latestFieldName"
-				@fieldNameSet="(createNew, newName) => processFieldInfo(createNew, newName)">
-			</CreateNewField>
-		</div>
+		<CreateNewField :selectedField="selectedField"
+			:fieldIsLoaded="fieldIsLoaded"
+			:loadedFieldCreateNew="defaultCreateNew"
+			:loadedFieldName="latestFieldName"
+			@fieldNameSet="fieldInfo => processFieldInfo(fieldInfo)">
+		</CreateNewField>
 		<div class="col-md-4 col">
 			<table>
-					<tr>
-						<th><div class="label">Replace</div></th>
-						<th><div class="label">With</div></th>
-					</tr>
+				<tr>
+					<th><div class="label">Replace</div></th>
+					<th><div class="label">With</div></th>
+				</tr>
 				<tr v-for="entry, index in replaceChars">
 					<td>
 						<input type="text" class="form-control input-default"
@@ -50,11 +36,7 @@
 </template>
 <script setup>
 	import CreateNewField from '@/components/configcomponents/CreateNewField.vue';
-	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-
-	const store = useConfigBuilderStore();
 	const props = defineProps({loadConfig: String});
-	const fieldColumnNames = computed(() => store.selectedColumns);
     const emit = defineEmits(['configChanged']);
     const selectedField = ref(null);
 	const fieldIsLoaded = ref(false);
@@ -67,7 +49,6 @@
 			"to": ""
 		}
 	]);
-	watch(selectedField, () => latestFieldName.value = store.getColumnName(selectedField.value));
     if (props.loadConfig !== "{}"){
 		fieldIsLoaded.value = true;
         let oldConfig = JSON.parse(props.loadConfig);
@@ -130,8 +111,9 @@
     	};
         emit('configChanged', replaceCharConfig, preSaveCheck());
 	}
-	function processFieldInfo(createNew, newName){
-		createNewField.value = createNew;
-		latestFieldName.value = newName;
+	function processFieldInfo(fieldInfo){
+		createNewField.value = fieldInfo["create new"];
+		latestFieldName.value = fieldInfo["field name"];
+		selectedField.value = fieldInfo["raw field"];
 	}
 </script>
