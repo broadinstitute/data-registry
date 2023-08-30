@@ -53,7 +53,7 @@
             restoreDefaultColumnName(index);
             return;
         }
-        if (store.selectedColumns.map(column => column[1]).includes(newName)){
+        if (store.selectedColumns.map(column => column["raw field"]).includes(newName)){
             warning.hidden = false;
             restoreDefaultColumnName(index);
             return;

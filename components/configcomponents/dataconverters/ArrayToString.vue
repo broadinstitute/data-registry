@@ -4,9 +4,9 @@
 			<div class="label">Select field</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="array2string" :value="field[0]" 
+					<input class="form-check-input" type="radio" name="array2string" :value="field['raw field']" 
 						id="flexCheckDefault" v-model="selectedField"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ field[1] }}</span>
+						<span class="form-check-label" for="flexCheckDefault">{{ field["field name"] }}</span>
 				</li>													
 			</ul>
 		</div>

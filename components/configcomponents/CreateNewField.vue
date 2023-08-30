@@ -27,11 +27,9 @@
         if (selectedField.value === null){
             return "";
         }
-        let columns = store.selectedColumns;
-        let index = columns.map(item => item[0]).indexOf(selectedField.value);
-		return columns[index][1];
+		return store.getColumnName(selectedField.value);
     });
-    const unConvertedFields = computed(() => store.unConvertedFieldsConfig.map(field => field["raw field"]));
+    const unConvertedFields = computed(() => store.getUnConvertedFields.map(field => field["raw field"]));
     const fieldAvailable= computed(() => {
         let available = unConvertedFields.value.includes(selectedField.value);
         if (!props.fieldIsLoaded && !available){

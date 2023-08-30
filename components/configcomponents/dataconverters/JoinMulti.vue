@@ -6,10 +6,10 @@
 			</div>
 			<ul class="dr-byor-data-columns">
 				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
-						<input class="form-check-input" type="checkbox" :value="field[0]" 
+						<input class="form-check-input" type="checkbox" :value="field['raw field']" 
 							id="flexCheckDefault" v-model="selectedFields"
 							@change="(event)=>removeJoinEntry(event)"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ field[1] }}</span>
+						<span class="form-check-label" for="flexCheckDefault">{{ field["field name"] }}</span>
 				</li>
 			</ul>
 			<button @click="()=>clearAll()" class="btn btn-primary">Clear selection</button>
@@ -72,7 +72,7 @@
 		emit('configChanged', joinMultiConfig.value, preSaveCheck());
 	}
 	function getColumnName(field){
-		return store.getColumnName(field);
+		return field === null ? "" : store.getColumnName(field);
 	}
 	if (props.loadConfig !== "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
