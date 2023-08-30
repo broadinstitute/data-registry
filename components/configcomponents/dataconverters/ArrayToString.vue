@@ -2,13 +2,9 @@
     <div class="row" id="array2StringConfig">
 		<div class="col-md-4 col">
 			<div class="label">Select field</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="array2string" :value="field['raw field']" 
-						id="flexCheckDefault" v-model="selectedField"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ field["field name"] }}</span>
-				</li>													
-			</ul>
+			<SingleFieldSelect :loadField="selectedField"
+				@fieldSelected="field => acceptField(field)">
+			</SingleFieldSelect>
 		</div>
 		<div class="col-md-4 col">
 			<CreateNewField :selected-field="selectedField"
@@ -28,12 +24,12 @@
 </template>
 <script setup>
 	import CreateNewField from '@/components/configcomponents/CreateNewField.vue';
+	import SingleFieldSelect from '@/components/configcomponents/SingleFieldSelect.vue';
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
 	const store = useConfigBuilderStore();
 	const props = defineProps({loadConfig: String});
     const emit = defineEmits(['configChanged']);
-	const fieldColumnNames = computed(() => store.selectedColumns);
     const selectedField = ref(null);
 	const fieldIsLoaded = ref(false);
     const latestFieldName = ref("");
@@ -50,8 +46,10 @@
 		createNewField.value = oldConfig["create new"];
 		defaultCreateNew.value = oldConfig["create new"];
     }
-	watch(selectedField, () => latestFieldName.value = store.getColumnName(selectedField.value));
-    watch([latestFieldName, selectedField, separator], ()=> emitConfig());
+	function acceptField(field){
+		selectedField.value = field;
+		latestFieldName.value = store.getColumnName(field);
+	}
     function preSaveCheck(){
 		let check = {
 			ready: false,
@@ -83,4 +81,5 @@
 		createNewField.value = createNew;
 		latestFieldName.value = newName;
 	}
+    watch([latestFieldName, selectedField, separator], ()=> emitConfig());
 </script>
