@@ -155,8 +155,8 @@
             return;
         }
         let nameCheck = fieldNameCheck(newField);
-        if (!nameCheck[0]){
-            failedSaveMsg = nameCheck[1];
+        if (!nameCheck.ready){
+            failedSaveMsg = nameCheck.msg;
             showMsg.value = true;
             return;
         } 
@@ -187,11 +187,11 @@
             let names = fieldConfig["field name"];
             for (let i = 0; i < names.length; i++){
                 let check = fieldNameOkay(names[i]);
-                if (!check[0]){
+                if (!check.ready){
                     return check;
                 }
             }
-            return [true, ""];
+            return {ready: true, msg: ""};
         } else {
             let rawField = !!fieldConfig['raw field'] ? fieldConfig['raw field'] : "";
             let createNew = fieldConfig['create new'];
@@ -199,18 +199,22 @@
         }
     }
     function fieldNameOkay(fieldName, rawField="", createNew=true){
+        let check = { ready: false, msg: ""};
         if (fieldName.trim() === ''){
-            return [false, 'Field name cannot be empty.'];
+            check.msg = 'Field name cannot be empty.';
+            return check;
         }
         if (fieldName.includes(",")){
-            return [false, 'Commas are not allowed in field names.'];
+            check.msg = 'Commas are not allowed in field names.';
+            return check;
         }
         // Duplicate checking against renamed columns needs to be here
         for (let i = 0; i < unConvertedFields.value.length; i++){
             let unConvertedField = unConvertedFields.value[i];
             let duplicateIsOk = (unConvertedField["raw field"] === rawField && !createNew);
             if (!duplicateIsOk && unConvertedField["field name"] === fieldName){
-                return [false, 'Field name duplicates one of your selected columns.'];
+                check.msg = 'Field name duplicates one of your selected columns.';
+                return check;
             }
         }
         // Duplicate checking against converted columns
@@ -224,18 +228,21 @@
                 for (let j = 0; j < splitNames.length; j++){
                     let existingFieldName = splitNames[j];
                     if (existingFieldName === fieldName){
-                        return[false, "Select a unique field name."];
+                        check.msg = "Select a unique field name.";
+                        return check;
                     }
                 }
             } else {
                 let existingFieldName = existingFieldConfig["field name"];
                 if (existingFieldName === fieldName){
-                    return[false, "Select a unique field name."];
+                    check.msg = "Select a unique field name.";
+                    return check;
                 }
             }
     
         }
-        return [true, ""]
+        check.ready = true;
+        return check;
     }
     function doneEditing(){
         editingFieldIndex.value = -1;
