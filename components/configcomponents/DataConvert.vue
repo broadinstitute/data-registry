@@ -183,11 +183,7 @@
         doneEditing();
     }
     function fieldNameCheck(fieldConfig){
-        const { type, 
-                'field name': fieldName,
-                'raw field': rawField = "",
-                'create new': createNew
-            } = fieldConfig;
+        const {type, 'field name': fieldName, 'raw field': rawField = "", 'create new': createNew} = fieldConfig;
         if (type === 'split'){
             for (const name of fieldName){
                 const check = fieldNameOkay(name);
@@ -211,8 +207,7 @@
             return check;
         }
         // Duplicate checking against renamed columns needs to be here
-        for (let i = 0; i < unConvertedFields.value.length; i++){
-            let unConvertedField = unConvertedFields.value[i];
+        for (const unConvertedField of unConvertedFields.value){
             let duplicateIsOk = (unConvertedField["raw field"] === rawField && !createNew);
             if (!duplicateIsOk && unConvertedField["field name"] === fieldName){
                 check.msg = 'Field name duplicates one of your selected columns.';
@@ -220,28 +215,18 @@
             }
         }
         // Duplicate checking against converted columns
+        let namesToCheck = [];
         for (let i = 0; i < savedFieldConfigs.value.length; i++){
             if (i === editingFieldIndex.value){
                 continue;
             }
-            let existingFieldConfig = savedFieldConfigs.value[i];
-            if (existingFieldConfig.type === 'split'){
-                let splitNames = existingFieldConfig['field name'];
-                for (let j = 0; j < splitNames.length; j++){
-                    let existingFieldName = splitNames[j];
-                    if (existingFieldName === fieldName){
-                        check.msg = "Select a unique field name.";
-                        return check;
-                    }
-                }
-            } else {
-                let existingFieldName = existingFieldConfig["field name"];
-                if (existingFieldName === fieldName){
-                    check.msg = "Select a unique field name.";
-                    return check;
-                }
-            }
-    
+            let existingField = savedFieldConfigs.value[i];
+            let moreNames = existingField.type === 'split' ? existingField["field name"] : [existingField["field name"]];
+            namesToCheck = namesToCheck.concat(moreNames);
+        }
+        if (namesToCheck.includes(fieldName)){
+            check.msg = "Select a unique field name.";
+            return check;
         }
         check.ready = true;
         return check;
