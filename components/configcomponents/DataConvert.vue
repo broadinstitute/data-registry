@@ -183,20 +183,22 @@
         doneEditing();
     }
     function fieldNameCheck(fieldConfig){
-        if (fieldConfig.type === 'split'){
-            let names = fieldConfig["field name"];
-            for (let i = 0; i < names.length; i++){
-                let check = fieldNameOkay(names[i]);
+        const { type, 
+                'field name': fieldName,
+                'raw field': rawField = "",
+                'create new': createNew
+            } = fieldConfig;
+        if (type === 'split'){
+            for (const name of fieldName){
+                const check = fieldNameOkay(name);
                 if (!check.ready){
                     return check;
                 }
             }
             return {ready: true, msg: ""};
-        } else {
-            let rawField = !!fieldConfig['raw field'] ? fieldConfig['raw field'] : "";
-            let createNew = fieldConfig['create new'];
-            return fieldNameOkay(fieldConfig["field name"], rawField, createNew);
         }
+        return fieldNameOkay(fieldName, rawField, createNew);
+        
     }
     function fieldNameOkay(fieldName, rawField="", createNew=true){
         let check = { ready: false, msg: ""};
