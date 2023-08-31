@@ -188,7 +188,7 @@
             let featureCopy = allFeaturesConfig.value[feature];
             // Guarding against duplicate names in features due to create/convert
             if (!featureCopy.includes(fieldNameNew.value)){
-                for(let i = 0; i < featureCopy.length; i++){
+                for (let i = 0; i < featureCopy.length; i++){
                     if (featureCopy[i] === fieldNameOld.value){
                         featureCopy[i] = fieldNameNew.value;
                     }
@@ -208,8 +208,7 @@
             if (!newFields.includes(oldField)){
                 currentSelectedFields.value = 
                     currentSelectedFields.value.filter(field => field !== oldField);
-                for (let i = 0; i < allFeaturesConfig.value["features"].length; i++){
-                    let featureName = allFeaturesConfig.value["features"][i];
+                for (const featureName of allFeaturesConfig.value.features){
                     let featureCopy = allFeaturesConfig.value[featureName];
                     if (featureCopy.includes(oldField)){
                         allFeaturesConfig.value[featureName] = featureCopy.filter(field => field !== oldField);

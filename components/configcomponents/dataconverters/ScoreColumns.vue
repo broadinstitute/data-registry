@@ -135,8 +135,7 @@
 			check.msg = "Select fields to score.";
 			return check;
 		}
-		for (let i = 0; i < scoreColumnsConfig.value["fields to score"].length; i++){
-			let field = scoreColumnsConfig.value["fields to score"][i];
+		for (const field of scoreColumnsConfig.value["fields to score"]){
 			if (!scoreColumnsConfig.value["score by"][field]){
 				check.msg = "Specify values for score calculation.";
 				return check;

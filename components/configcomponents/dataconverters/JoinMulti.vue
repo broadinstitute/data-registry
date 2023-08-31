@@ -121,8 +121,7 @@
 			check.msg ="Specify join separators.";
 			return check;
 		}
-		for (let i = 0; i < joinLength; i++){
-			let joinEntry = joinMultiConfig.value["join by"][i];
+		for (const joinEntry of joinMultiConfig.value["join by"]){
 			if (joinEntry.includes(",")){
 				check.msg = "Commas may not be used in field joins.";
 				return check;

@@ -292,7 +292,7 @@
 		}
 		clearAll();
 	}
-	function editColumn(column, oldColumn=null){
+	function editColumn(column){
 		let loadConfig = JSON.parse(JSON.stringify(allColumnsConfig.value[column])); // Deep copy
 		clearAll();
 		selectedColumn.value = column;

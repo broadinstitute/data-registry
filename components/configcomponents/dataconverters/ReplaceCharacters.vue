@@ -87,8 +87,7 @@
             check.msg = "Select a raw field.";
 			return check;
 		}
-		for (let i = 0; i < replaceChars.value.length; i++){
-			let entry = replaceChars.value[i];
+		for (const entry of replaceChars.value){
 			if (entry.from === ""){
 				check.msg = "Fill in all 'Replace' entries.";
 				return check;
