@@ -7,26 +7,28 @@
             <div class="label">
                 Select rows
             </div>
-            <tr>
-                <th>
-                    <input class="form-check-input" type="checkbox" 
-                        v-model="selectAll" @change="toggleSelectAll()"/>
-                </th>
-                <th>
-                    <div class="label">
-                        Select rows
-                    </div>
-                </th>
-            </tr>
-            <tr v-for="field in availableFields">
-                <td>
-                    <input class="form-check-input" type="checkbox" :value="field" 
-                        id="flexCheckDefault" v-model="selectedFields"/>
-                </td>
-                <td>
-                    <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
-                </td>
-            </tr>
+            <tbody>
+                <tr>
+                    <th>
+                        <input class="form-check-input" type="checkbox" 
+                            v-model="selectAll" @change="toggleSelectAll()"/>
+                    </th>
+                    <th>
+                        <div class="label">
+                            Select rows
+                        </div>
+                    </th>
+                </tr>
+                <tr v-for="field in availableFields">
+                    <td>
+                        <input class="form-check-input" type="checkbox" :value="field" 
+                            id="flexCheckDefault" v-model="selectedFields"/>
+                    </td>
+                    <td>
+                        <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
+                    </td>
+                </tr>
+            </tbody>
         </div>
         <div class="col-md-6 col">
         <div class="label">
@@ -49,14 +51,6 @@
                 </td>
             </tr>
         </tbody>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-1">
-            <button class="btn btn-primary" @click="() => selectAll(true)">Select all</button>
-        </div>
-        <div class="col-md-1">
-            <button class="btn btn-primary" @click="() => selectAll(false)">Clear all</button>
         </div>
     </div>
 </template>

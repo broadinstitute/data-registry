@@ -4,15 +4,29 @@
 			<div class="label">
 				Select fields
 			</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="field in fieldColumnNames" class="form-check form-check-inline">
-						<input class="form-check-input" type="checkbox" :value="field['raw field']" 
-							id="flexCheckDefault" v-model="selectedFields"
+			<tbody>
+                <tr>
+                    <th>
+                        <input class="form-check-input" type="checkbox" 
+                            v-model="selectAll" @change="toggleSelectAll()"/>
+                    </th>
+                    <th>
+                        <div class="label">
+                            Select fields
+                        </div>
+                    </th>
+                </tr>
+                <tr v-for="field in fieldColumnNames">
+                    <td>
+                        <input class="form-check-input" type="checkbox" :value="field['raw field']" 
+                            id="flexCheckDefault" v-model="selectedFields" 
 							@change="(event)=>removeJoinEntry(event)"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ field["field name"] }}</span>
-				</li>
-			</ul>
-			<button @click="()=>clearAll()" class="btn btn-primary">Clear selection</button>
+                    </td>
+                    <td>
+                        <span class="form-check-label" for="flexCheckDefault">{{ field["field name"] }}</span>
+                    </td>
+                </tr>
+            </tbody>
 		</div>
 		<div class="col-md-4">
 			<div class="label">
@@ -59,6 +73,7 @@
 	const fieldColumnNames = computed(() => store.selectedColumns);
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
+	const selectAll = ref(false);
 	const joinBy = ref([]);
 	const latestFieldName = ref("");
 	const joinMultiConfig = ref({
@@ -100,12 +115,9 @@
 			emitConfig();
 		}
 	}
-	function clearAll(){
-		selectedFields.value = [];
-		joinBy.value = [];
-		emitConfig();
+	function toggleSelectAll(){
+		selectedFields.value = !!selectAll.value ? fieldColumnNames.value.map(field => field["raw field"]) : [];
 	}
-	
     function preSaveCheck(){
 		let check = {
 			ready: false,

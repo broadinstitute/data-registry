@@ -195,6 +195,7 @@
         currentFeatureName.value = "";
         currentSelectedFields.value = [];
         editingFeatureIndex.value = -1;
+        selectAll.value = false;
     }
     watch([availableFields, fieldNameOld], (newValues, oldValues) => {
         // First handle name changes
