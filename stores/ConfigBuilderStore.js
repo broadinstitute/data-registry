@@ -32,6 +32,10 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
             this.allFields = this.allFieldsConfig.reduce(flattenFields, []);
         },
         addSelectedColumn(rawField){
+            // Don't add if already present
+            if (this.getColumnIndex(rawField) != -1){
+                return;
+            }
             this.selectedColumns.push({
                 "type": "raw",
                 "field name": rawField,
