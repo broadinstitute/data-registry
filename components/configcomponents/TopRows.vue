@@ -7,17 +7,30 @@
             <div class="label">
                 Select rows
             </div>
-            <ul class="dr-byor-data-columns">
-                <li v-for="field in availableFields" class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" :value="field" 
-                            id="flexCheckDefault" v-model="selectedFields"/>
-                        <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
-                </li>
-            </ul>
+            <tr>
+                <th>
+                    <input class="form-check-input" type="checkbox" 
+                        v-model="selectAll" @change="toggleSelectAll()"/>
+                </th>
+                <th>
+                    <div class="label">
+                        Select rows
+                    </div>
+                </th>
+            </tr>
+            <tr v-for="field in availableFields">
+                <td>
+                    <input class="form-check-input" type="checkbox" :value="field" 
+                        id="flexCheckDefault" v-model="selectedFields"/>
+                </td>
+                <td>
+                    <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
+                </td>
+            </tr>
         </div>
         <div class="col-md-6 col">
         <div class="label">
-            Selected rows | Change order
+            Set order
         </div>
         <tbody class="dr-byor-data-columns">
             <tr v-for="field, index in selectedFields" class="arrow-button-list">
@@ -53,7 +66,8 @@
     const store = useConfigBuilderStore();
     const emit = defineEmits(["topRowsChanged"]);
     const availableFields = computed(()=> store.allFields);
-    const selectedFields = ref([]); 
+    const selectedFields = ref([]);
+    const selectAll = ref(false);
     const fieldNameOld = computed(() => store.latestFieldRename[0]);
     const fieldNameNew = computed(() => store.latestFieldRename[1]);
     watch([availableFields, fieldNameOld], (newValues, oldValues) => {
@@ -76,9 +90,8 @@
 		selectedFields.value.splice(index, 1);
         selectedFields.value.splice(index-1, 0, risingItem);
 	}
-    function selectAll(toggleOn){
-        selectedFields.value = !!toggleOn ? 
-            JSON.parse(JSON.stringify(availableFields.value)) : []; // Deep copy
+    function toggleSelectAll(){
+        selectedFields.value = !!selectAll.value ? availableFields.value.slice() : []; // Deep copy
     }
     watch(selectedFields, () => emit("topRowsChanged", selectedFields.value));
 </script>

@@ -10,20 +10,30 @@
             <input type="text" class="form-control input-default" v-model="currentFeatureName"/>
         </div>
         <div class="col-md-3 col">
-                <div class="label">
-                    Select rows
-                </div>
-                <ul class="dr-byor-data-columns">
-                    <li v-for="field in availableFields" class="form-check form-check-inline">
+                    <tr>
+                        <th>
+                            <input class="form-check-input" type="checkbox" 
+                                v-model="selectAll" @change="toggleSelectAll"/>
+                        </th>
+                        <th>
+                            <div class="label">
+                                Select fields
+                            </div>
+                        </th>
+                    </tr>
+                    <tr v-for="field in availableFields">
+                        <td>
                             <input class="form-check-input" type="checkbox" :value="field" 
                                 id="flexCheckDefault" v-model="currentSelectedFields"/>
+                        </td>
+                        <td>
                             <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
-                    </li>
-                </ul>
+                        </td>
+                    </tr>
             </div>
             <div class="col-md-5 col">
                 <div class="label">
-                    Selected rows | Change order
+                    Set order
                 </div>
                 <tbody class="dr-byor-data-columns">
                     <tr v-for="field, index in currentSelectedFields" class="arrow-button-list">
@@ -90,6 +100,7 @@
     const currentSelectedFields = ref([]);
     const editingFeatureIndex = ref(-1);
     const saveErrorMsg = ref("");
+    const selectAll = ref(false);
     const allFeaturesConfig = ref({
         "features": []
     });
@@ -116,6 +127,9 @@
         list.splice(index - 1, 0, risingItem);
         allFeaturesConfig.value["features"] = list;
         emitFeatures();
+    }
+    function toggleSelectAll(){
+        currentSelectedFields.value = !!selectAll.value ? availableFields.value.slice() : [];
     }
     function saveFeature(){
         let trimmedName = currentFeatureName.value.trim();
