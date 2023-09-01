@@ -47,9 +47,13 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
         renameColumn(rawField, newName){
             let index = this.getColumnIndex(rawField);
             let columnEntry = this.selectedColumns[index];
+            let oldName = columnEntry["field name"];
             columnEntry["field name"] = newName;
             this.selectedColumns[index] = columnEntry;
             this.latestColumnRename = [rawField, newName];
+            if (!columnEntry.converted){
+                this.latestFieldRename = [oldName, newName];
+            }
             this.updateAllFields();
         },
         setConvertedFields(newConvertedFields){
