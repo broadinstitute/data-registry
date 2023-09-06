@@ -30,7 +30,7 @@
 		</div>
 		<div class="col-md-3 col">
 			<div class="label">
-				Selected options | Change format order
+				Set format order
 			</div>
 			<tbody class="dr-byor-data-columns">
 				<tr v-for="option, index in selectedOptions" class="arrow-button-list">
