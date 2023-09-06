@@ -158,7 +158,6 @@
 	</div>
 </template>
 <script setup>
-	import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 	import SelectColumns from "@/components/configcomponents/SelectColumns.vue";
 	import DataConvert from "@/components/configcomponents/DataConvert.vue";
 	import TopRows from "@/components/configcomponents/TopRows.vue";
