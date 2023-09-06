@@ -24,7 +24,7 @@ async function savePhenotype(dataset_id, pType) {
   const formData = new FormData();
   formData.append("file", pType.file);
   const { data } = await configuredAxios.post(getPhenotypeDataSetUploadUrl(dataset_id, pType),
-    formData, { headers: { "Content-Type": "multipart/form-data" } })
+    formData, { headers: { "Content-Type": "multipart/form-data", "Filename": pType.fileName } })
   return data.phenotype_data_set_id;
 }
 
@@ -32,7 +32,7 @@ async function saveCredibleSet(saved_phenotype_id, cs) {
   const formData = new FormData();
   formData.append("file", cs.credibleSetFile);
   const { data } = await configuredAxios.post(`/api/crediblesetupload/${saved_phenotype_id}/${cs.name}`,
-    formData, { headers: { "Content-Type": "multipart/form-data" }})
+    formData, { headers: { "Content-Type": "multipart/form-data", "Filename": cs.fileName }})
   return data.credible_set_id;
 }
 
