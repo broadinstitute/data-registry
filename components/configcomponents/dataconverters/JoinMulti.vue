@@ -2,40 +2,61 @@
     <div class="row" id="joinMultiConfig">
 		<div class="col-md-4 col">
 			<div class="label">
-				Join multi | Select field(s)
+				Select fields
 			</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="rawField in rawFields" class="form-check form-check-inline">
-						<input class="form-check-input" type="checkbox" :value="rawField" 
-							id="flexCheckDefault" v-model="selectedFields"
+			<tbody>
+                <tr>
+                    <th>
+                        <input class="form-check-input" type="checkbox" 
+                            v-model="selectAll" @change="toggleSelectAll()"/>
+                    </th>
+                    <th>
+                        <div class="label">
+                            Select fields
+                        </div>
+                    </th>
+                </tr>
+                <tr v-for="field in fieldColumnNames">
+                    <td>
+                        <input class="form-check-input" type="checkbox" :value="field['raw field']" 
+                            id="flexCheckDefault" v-model="selectedFields" 
 							@change="(event)=>removeJoinEntry(event)"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
-				</li>
-			</ul>
-			<button @click="()=>clearAll()" class="btn btn-primary">Clear selection</button>
+                    </td>
+                    <td>
+                        <span class="form-check-label" for="flexCheckDefault">{{ field["field name"] }}</span>
+                    </td>
+                </tr>
+            </tbody>
+		</div>
+		<div class="col-md-4">
+			<div class="label">
+				New field name
+				<input type="text" class="form-control input-default" v-model="latestFieldName">
+			</div>
 		</div>
 		<div class="col-md-4 col">
-			<div class="label">
-				Selected fields | Join by
-			</div>
 			<tbody class="dr-byor-data-columns">
+				<tr>
+					<th colspan="3"></th>
+					<th><div class="label">Join by</div></th>
+				</tr>
 				<tr v-for="field, index in selectedFields" class="arrow-button-list">
-					<td>{{ field }}</td>
+					<td>{{ getColumnName(field) }}</td>
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button arrow-button-up" 
-							:disabled="index == 0" @click="moveUpDown(index)">
+							:disabled="index === 0" @click="moveUpDown(index)">
 							&uarr;
 						</button>
 					</td>
 					<td class="arrow-button-holder">
 						<button class="btn btn-primary arrow-button"
-						:disabled="index == selectedFields.length - 1" @click="moveUpDown(index, true)">
+						:disabled="index === selectedFields.length - 1" @click="moveUpDown(index, true)">
 						&darr;
 						</button>
 					</td>
 					<td class="arrow-button-holder">
-						<input v-if="index != selectedFields.length - 1" 
-							type="text" class="form-control input-default arrow-field"
+						<input v-if="index !== selectedFields.length - 1" 
+							type="text" size="5" class="form-control input-default arrow-field"
 							:value="!!joinBy[index]? joinBy[index] : ''"
 							@change="(event)=>getInput(index, event.target.value)"/>
 					</td>
@@ -45,25 +66,32 @@
 	</div>
 </template>
 <script setup>
-	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
+	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+
+	const store = useConfigBuilderStore();
+	const props = defineProps({loadConfig: String});
+	const fieldColumnNames = computed(() => store.selectedColumns);
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
+	const selectAll = ref(false);
 	const joinBy = ref([]);
-	const latestFieldName = computed(()=>{
-        return props.newFieldName;
-    });
+	const latestFieldName = ref("");
 	const joinMultiConfig = ref({
         "type": "join multi",
         "field name": latestFieldName,
 		"fields to join": selectedFields,
-		"join by": joinBy
+		"join by": joinBy,
+		"create new": true
     });
-	let readySaveMsg = "";
 	function emitConfig(){
-		emit('configChanged', joinMultiConfig.value, readyToSave(), readySaveMsg);
+		emit('configChanged', joinMultiConfig.value, preSaveCheck());
 	}
-	if (props.loadConfig != "{}"){
+	function getColumnName(field){
+		return field === null ? "" : store.getColumnName(field);
+	}
+	if (props.loadConfig !== "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
+		latestFieldName.value = oldConfig["field name"];
         selectedFields.value = oldConfig["fields to join"];
 		joinBy.value = oldConfig["join by"];
 		
@@ -87,32 +115,32 @@
 			emitConfig();
 		}
 	}
-	function clearAll(){
-		selectedFields.value = [];
-		joinBy.value = [];
-		emitConfig();
+	function toggleSelectAll(){
+		selectedFields.value = !!selectAll.value ? fieldColumnNames.value.map(field => field["raw field"]) : [];
 	}
-	
-    function readyToSave(){
+    function preSaveCheck(){
+		let check = {
+			ready: false,
+			msg: ""
+		};
 		let fieldsLength = joinMultiConfig.value["fields to join"].length;
 		let joinLength = joinMultiConfig.value["join by"].length;
-		if (joinMultiConfig.value["fields to join"].length < 2){
-			readySaveMsg = "Select some fields to join.";
-			return false;
+		if (fieldsLength < 2){
+			check.msg = "Select some fields to join.";
+			return check;
 		}
-		if (joinLength != fieldsLength - 1){
-			readySaveMsg = "Specify join separators.";
-			return false;
+		if (joinLength !== fieldsLength - 1){
+			check.msg ="Specify join separators.";
+			return check;
 		}
-		for (let i = 0; i < joinLength; i++){
-			let joinEntry = joinMultiConfig.value["join by"][i];
+		for (const joinEntry of joinMultiConfig.value["join by"]){
 			if (joinEntry.includes(",")){
-				readySaveMsg = "Commas may not be used in field joins.";
-				return false;
+				check.msg = "Commas may not be used in field joins.";
+				return check;
 			}
 		}
-		readySaveMsg = "";
-        return true;
+		check.ready = true;
+		return check;
     }
 	watch([latestFieldName, selectedFields, joinBy], ()=>{
         emitConfig();

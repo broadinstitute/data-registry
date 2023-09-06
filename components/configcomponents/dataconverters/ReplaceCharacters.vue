@@ -1,23 +1,17 @@
 <template>
     <div class="row" id="replaceCharactersConfig">
-		<div class="col-md-6 col">
-			<div class="label">
-				Replace characters | Select field
-			</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="rawField in rawFields" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="replace" :value="rawField" 
-						id="flexCheckDefault" v-model="selectedField"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
-				</li>													
-			</ul>
-		</div>
+		<CreateNewField :selectedField="selectedField"
+			:fieldIsLoaded="fieldIsLoaded"
+			:loadedFieldCreateNew="defaultCreateNew"
+			:loadedFieldName="latestFieldName"
+			@fieldNameSet="fieldInfo => processFieldInfo(fieldInfo)">
+		</CreateNewField>
 		<div class="col-md-4 col">
 			<table>
-					<tr>
-						<th>Replace</th>
-						<th>With</th>
-					</tr>
+				<tr>
+					<th><div class="label">Replace</div></th>
+					<th><div class="label">With</div></th>
+				</tr>
 				<tr v-for="entry, index in replaceChars">
 					<td>
 						<input type="text" class="form-control input-default"
@@ -41,31 +35,28 @@
 	</div>
 </template>
 <script setup>
-	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
+	import CreateNewField from '@/components/configcomponents/CreateNewField.vue';
+	const props = defineProps({loadConfig: String});
     const emit = defineEmits(['configChanged']);
     const selectedField = ref(null);
-	const numReplaces = ref(1);
-    const latestFieldName = computed(()=>{
-        return props.newFieldName;
-    });
+	const fieldIsLoaded = ref(false);
+    const latestFieldName = ref("");
+	const createNewField = ref(false);
+	const defaultCreateNew = ref(false);
 	const replaceChars = ref([
 		{
 			"from": "",
 			"to": ""
 		}
 	]);
-	const replaceCharConfig = ref({
-        "type": "replace characters",
-        "field name": latestFieldName,
-        "raw field": selectedField,
-		"replace": replaceChars
-    });
-	let readySaveMsg = "";
-    if (props.loadConfig != "{}"){
+    if (props.loadConfig !== "{}"){
+		fieldIsLoaded.value = true;
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
 		replaceChars.value = oldConfig["replace"];
-		
+		latestFieldName.value = oldConfig["field name"];
+		createNewField.value = oldConfig["create new"];
+		defaultCreateNew.value = oldConfig["create new"];
     }
 	function addEntry(){
 		replaceChars.value.push({
@@ -87,33 +78,41 @@
     watch([latestFieldName, selectedField, replaceChars], ()=>{
 		emitConfig();
     });
-	function emitConfig(){
-        emit('configChanged', replaceCharConfig.value, readyToSave(), readySaveMsg);
-	}
-    function readyToSave(){
-		if(!replaceCharConfig.value["raw field"]){
-			readySaveMsg = "Select a raw field.";
-            return false;
+    function preSaveCheck(){
+		let check = {
+			ready: false,
+			msg: ""
+		};
+		if(selectedField.value === null){
+            check.msg = "Select a raw field.";
+			return check;
 		}
-		let emptyEntries = false;
-		let foundCommas = false;
-		replaceCharConfig.value["replace"].forEach(entry => {
-			if(entry["from"] == ""){
-				emptyEntries = true;
+		for (const entry of replaceChars.value){
+			if (entry.from === ""){
+				check.msg = "Fill in all 'Replace' entries.";
+				return check;
 			}
-			if(entry["to"].includes(",")){
-				foundCommas = true;
+			if (entry.to.includes(",")){
+				check.msg = "Commas may not be used in character replacements.";
+				return check;
 			}
-		});
-		if (emptyEntries){
-			readySaveMsg = "Fill in all 'Replace' entries.";
-			return;
 		}
-		if (foundCommas){
-			readySaveMsg = "Commas may not be used in character replacements.";
-			return;
-		}
-		readySaveMsg = "";
-        return true;
+		check.ready = true;
+		return check;
     }
+	function emitConfig(){
+		let replaceCharConfig = {
+        	"type": "replace characters",
+        	"field name": latestFieldName.value,
+        	"raw field": selectedField.value,
+			"replace": replaceChars.value,
+			"create new": createNewField.value
+    	};
+        emit('configChanged', replaceCharConfig, preSaveCheck());
+	}
+	function processFieldInfo(fieldInfo){
+		createNewField.value = fieldInfo["create new"];
+		latestFieldName.value = fieldInfo["field name"];
+		selectedField.value = fieldInfo["raw field"];
+	}
 </script>

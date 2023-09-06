@@ -68,18 +68,18 @@
 											</td>			
 											<td class="arrow-button-holder">
 												<button class="btn btn-primary arrow-button arrow-button-up" 
-													:disabled="index == 0" @click="moveUpDown(index)">
+													:disabled="index === 0" @click="moveUpDown(index)">
 														&uarr;
 												</button>
 											</td>
 											<td class="arrow-button-holder">
 												<button class="btn btn-primary arrow-button"
-												:disabled="index == allFilters.length - 1" @click="moveUpDown(index, true)">
+												:disabled="index === allFilters.length - 1" @click="moveUpDown(index, true)">
 													&darr;
 												</button>
 											</td>
 											<td>
-												<span class="editing-large" v-if="editingFilterIndex == index">Editing</span>
+												<span class="editing-large" v-if="editingFilterIndex === index">Editing</span>
                    								<a v-else @click="editFilter(index)"><span class="edit-large">Edit</span></a>
 											</td>
 										</tr>
@@ -107,10 +107,12 @@
 		</div>
 </template>
 <script setup>
-    const props = defineProps({fields: Array, fieldNameUpdate: Array});
-    const availableFields = computed(() => props.fields);
-    const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
-    const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
+	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+
+	const store = useConfigBuilderStore();
+    const availableFields = computed(() => store.allFields);
+    const fieldNameOld = computed(() => store.latestFieldRename[0]);
+    const fieldNameNew = computed(() => store.latestFieldRename[1]);
 	const message = ref("");
 	const editingFilterIndex = ref(-1);
 	const selectedField = ref(null);
@@ -134,11 +136,11 @@
 	};
 	const allFilters = ref([]);
     watch(fieldNameOld, () => {
-		if (selectedField.value == fieldNameOld.value){
+		if (selectedField.value === fieldNameOld.value){
 			selectedField.value = fieldNameNew.value;
 		}
 		allFilters.value.forEach(item => {
-			if(item.field == fieldNameOld.value){
+			if(item.field === fieldNameOld.value){
 				item.field = fieldNameNew.value;
 			}
 		});
@@ -146,24 +148,24 @@
 	watch(selectedField, () => singleFilterConfig.value["field"] = selectedField.value);
 	watch(filterLabel, () => singleFilterConfig.value["label"] = filterLabel.value.trim());
 	watch(selectedFilterType, () => singleFilterConfig.value["type"] = 
-		selectedFilterType.value == null ? "" : selectedFilterType.value.toLowerCase());
+		selectedFilterType.value === null ? "" : selectedFilterType.value.toLowerCase());
 	watch(labelInBubble, () => singleFilterConfig.value["label in bubble"] = `${labelInBubble.value}`);
 	function saveFilter(){
-		if (singleFilterConfig.value["field"] == null){
+		if (singleFilterConfig.value["field"] === null){
 			message.value = "Select a field to filter.";
 			return;
 		}
-		if (singleFilterConfig.value["label"] == ""){
+		if (singleFilterConfig.value["label"] === ""){
 			message.value = "Enter a filter label.";
 			return;
 		}
-		if (singleFilterConfig.value["type"] == null || 
-				singleFilterConfig.value["type"] == ""){
+		if (singleFilterConfig.value["type"] === null || 
+				singleFilterConfig.value["type"] === ""){
 			message.value = "Select a filter type.";
 			return;
 		}
 		let thisFilter = JSON.parse(JSON.stringify(singleFilterConfig.value)); // Deep copy
-		if (editingFilterIndex.value != -1){
+		if (editingFilterIndex.value !== -1){
 			allFilters.value[editingFilterIndex.value] = thisFilter;
 		} else {
 			allFilters.value.push(thisFilter);
@@ -184,11 +186,11 @@
 		selectedField.value = filterContent.field;
 		filterLabel.value = filterContent.label;
 		selectedFilterType.value = filterTypeOptions[filterContent.type];
-		labelInBubble.value = filterContent["label in bubble"] == "true";
+		labelInBubble.value = filterContent["label in bubble"] === "true";
 	}
 
 	function deleteFilter(){
-		if (editingFilterIndex.value != -1){
+		if (editingFilterIndex.value !== -1){
 			allFilters.value.splice(editingFilterIndex.value, 1);
 		}
 		clearAll();

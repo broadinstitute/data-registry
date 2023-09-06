@@ -1,18 +1,12 @@
 <template>
     <div class="row" id="calculateConfig">
-		<div class="col-md-6 col">
-			<div class="label">
-				Calculate | Select field
-			</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="rawField in rawFields" class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="calculate" :value="rawField" 
-					id="flexCheckDefault" v-model="selectedField"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
-				</li>													
-			</ul>
-		</div>
-		<div class="col-md-6 col">
+		<CreateNewField :selectedField="selectedField"
+			:fieldIsLoaded="fieldIsLoaded"
+			:loadedFieldCreateNew="defaultCreateNew"
+			:loadedFieldName="latestFieldName"
+			@fieldNameSet="fieldInfo => processFieldInfo(fieldInfo)">
+		</CreateNewField>
+		<div class="col-md-4 col">
 			<div class="label">
 				Calculate
 			</div>
@@ -23,42 +17,53 @@
 	</div>
 </template>
 <script setup>
-	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
+	import CreateNewField from '@/components/configcomponents/CreateNewField.vue';
+	const props = defineProps({newFieldName: String, loadConfig: String});
     const emit = defineEmits(['configChanged']);
     const selectedField = ref(null);
+	const fieldIsLoaded = ref(false);
 	const calcType = ref("-log10");
-    const latestFieldName = computed(()=>{
-        return props.newFieldName;
-    });
-	const calcConfig = ref({
-        "type": "calculate",
-        "field name": latestFieldName,
-        "raw field": selectedField,
-		"calculation type": calcType
-    });
-	let readySaveMsg = "";
-    if (props.loadConfig != "{}"){
+    const latestFieldName = ref("");
+	const createNewField = ref(false);
+	const defaultCreateNew = ref(false);
+	
+    if (props.loadConfig !== "{}"){
+		fieldIsLoaded.value = true;
         let oldConfig = JSON.parse(props.loadConfig);
         selectedField.value = oldConfig["raw field"];
 		calcType.value = oldConfig["calculation type"];
-		
+		latestFieldName.value = oldConfig["field name"];
+		createNewField.value = oldConfig["create new"];
+		defaultCreateNew.value = oldConfig["create new"];
     }
     watch([latestFieldName, selectedField, calcType], ()=>{
         emitConfig();
     })
-    function readyToSave(){
-		if (!calcConfig.value["raw field"]){
-			readySaveMsg = "Select a raw field.";
-            return false;
+    function preSaveCheck(){
+		let check = {
+			ready: false,
+			msg: ""
+		};
+		if (selectedField.value === null){
+			check.msg = "Select a field.";
+			return check;
 		}
-		if (!calcConfig.value["calculation type"]){
-			readySaveMsg = "Select a calculation type.";
-			return false;
-		}
-		readySaveMsg = "";
-		return true;
+		check.ready = true;
+		return check;
     }
 	function emitConfig(){
-		emit('configChanged', calcConfig.value, readyToSave(), readySaveMsg);
+		let calcConfig = {
+			"type": "calculate",
+			"field name": latestFieldName.value,
+			"raw field": selectedField.value,
+			"calculation type": calcType.value,
+			"create new": createNewField.value
+    	};
+		emit('configChanged', calcConfig, preSaveCheck());
+	}
+	function processFieldInfo(fieldInfo){
+		createNewField.value = fieldInfo["create new"];
+		latestFieldName.value = fieldInfo["field name"];
+		selectedField.value = fieldInfo["raw field"];
 	}
 </script>

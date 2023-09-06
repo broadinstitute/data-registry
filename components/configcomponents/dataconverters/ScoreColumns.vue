@@ -1,28 +1,45 @@
 <template>
     <div class="row" id="scoreColumnsConfig">
 		<div class="col-md-4 col">
-			<div class="label">
-				Join multi | Select field(s) (Boolean)
-			</div>
-			<ul class="dr-byor-data-columns">
-				<li v-for="rawField in rawFields" class="form-check form-check-inline">
-						<input class="form-check-input" type="checkbox" :value="rawField" 
-							id="flexCheckDefault" v-model="selectedFields"
+			<tbody>
+                <tr>
+                    <th>
+                        <input class="form-check-input" type="checkbox" 
+                            v-model="selectAll" @change="toggleSelectAll()"/>
+                    </th>
+                    <th>
+                        <div class="label">
+                            Select fields
+                        </div>
+                    </th>
+                </tr>
+                <tr v-for="field in fieldColumnNames">
+                    <td>
+                        <input class="form-check-input" type="checkbox" :value="field['raw field']" 
+                            id="flexCheckDefault" v-model="selectedFields" 
 							@change="(event)=>addRemoveEntry(event)"/>
-						<span class="form-check-label" for="flexCheckDefault">{{ rawField }}</span>
-				</li>
-			</ul>
-			<button @click="()=>clearAll()" class="btn btn-primary">Clear selection</button>
+                    </td>
+                    <td>
+                        <span class="form-check-label" for="flexCheckDefault">{{ field["field name"] }}</span>
+                    </td>
+                </tr>
+            </tbody>
 		</div>
-		<div class="col-md-6 col">
+		<div class="col-md-4 col">
+			<div class="label">
+				New field name
+				<input type="text" class="form-control input-default" v-model="latestFieldName">
+			</div>
+		</div>
+		<div class="col-md-4 col">
 			<table class="dr-byor-data-columns">
 				<tr>
-					<th>Selected fields</th>
-					<th>Score true</th>
-					<th>Score false</th>
+					<th></th>
+					<th><div class="label">Score true</div></th>
+					<th><div class="label">Score false</div></th>
 				</tr>
 				<tr v-for="field in selectedFields">
-					<td>{{ field }}</td>
+					<td>{{ getColumnName(field) }}</td>
 					<td>
 						<input type="number" class="form-control input-default" 
 							:value="!!scores[field] ? scores[field]['value to score']['yes'] : 1"
@@ -36,26 +53,30 @@
 					</td>
 				</tr>
 			</table>
-		</div>
+		</div>		
 	</div>
 </template>
 <script setup>
-	const props = defineProps({rawFields: Array, newFieldName: String, loadConfig: String});
+	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+
+	const store = useConfigBuilderStore();
+	const props = defineProps({loadConfig: String});
+	const fieldColumnNames = computed(() => store.selectedColumns);
 	const emit = defineEmits(['configChanged']);
 	const selectedFields = ref([]);
+	const selectAll = ref(false);
 	const scores = ref({});
-	const latestFieldName = computed(()=>{
-        return props.newFieldName;
-    });
+	const latestFieldName = ref("");
 	const scoreColumnsConfig = ref({
         "type": "score columns",
         "field name": latestFieldName,
 		"fields to score": selectedFields,
-		"score by": scores
+		"score by": scores,
+		"create new": true
     });
-	let readySaveMsg = "";
-	if (props.loadConfig != "{}"){
+	if (props.loadConfig !== "{}"){
         let oldConfig = JSON.parse(props.loadConfig);
+		latestFieldName.value = oldConfig["field name"];
 		let fields = oldConfig["fields to score"];
         selectedFields.value = fields;
 		fields.forEach(field => {
@@ -65,6 +86,9 @@
 		});
 		
     }
+	function getColumnName(field){
+		return field === null ? "" : store.getColumnName(field);
+	}
 	function addRemoveEntry(event){
 		let box = event.target.value;
 		let boxes = event.target._modelValue;
@@ -90,38 +114,44 @@
 		scores.value[field] = newEntry;
 	}
 	function updateScore(field, yesOrNo, value){
-		if (value == "" || value == null){
+		let scoreValue = parseInt(value);
+		if (value === "" || value === null || typeof(scoreValue) !== 'number'){
 			// Force emit a value of false for ready to save
-			emit('configChanged', scoreColumnsConfig.value, false, "Specify values for score calculation.");
+			emit('configChanged', scoreColumnsConfig.value, {
+				ready: false,
+				msg: "Scores must be numerical."
+			});
 		} else {
-			scores.value[field]["value to score"][yesOrNo] = parseInt(value);
+			scores.value[field]["value to score"][yesOrNo] = scoreValue;
 			emitConfig();
 		}
 		
 	}
-	function clearAll(){
-		selectedFields.value = [];
-		scores.value= {};
-		emitConfig();
+	function toggleSelectAll(){
+		selectedFields.value = !!selectAll.value ? fieldColumnNames.value.map(field => field["raw field"]) : [];
 	}
 	watch([latestFieldName, selectedFields, scores], ()=>{
         emitConfig();
     })
 	function emitConfig(){
-		emit('configChanged', scoreColumnsConfig.value, readyToSave(), readySaveMsg);
+		emit('configChanged', scoreColumnsConfig.value, preSaveCheck());
 	}
-    function readyToSave(){
+    function preSaveCheck(){
+		let check = {
+			ready: false,
+			msg: ""
+		};
 		if (scoreColumnsConfig.value["fields to score"].length < 1){
-			readySaveMsg = "Select fields to score.";
-			return false;
+			check.msg = "Select fields to score.";
+			return check;
 		}
-		scoreColumnsConfig.value["fields to score"].forEach(field => {
+		for (const field of scoreColumnsConfig.value["fields to score"]){
 			if (!scoreColumnsConfig.value["score by"][field]){
-				readySaveMsg = "Specify values for score calculation.";
-				return false;
+				check.msg = "Specify values for score calculation.";
+				return check;
 			}
-		});
-		readySaveMsg = "";
-        return true;
+		}
+        check.ready = true;
+		return check;
     }
 </script>

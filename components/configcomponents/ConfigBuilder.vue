@@ -11,14 +11,11 @@
 				</div>
 			</div>
 			<!--DataLoader goes here-->
-			<DataTableFormat 
-				@fieldsUpdated="(updatedFields) => processFields(updatedFields)"
-				@fieldRenamed="(latestRename) => processFieldRename(latestRename)">
-			</DataTableFormat>
+			<DataTableFormat></DataTableFormat>
 			<!--DataComparison goes here-->
   			<div class="card mdkp-card">
 				<div class="card-body dr-form">
-					<Filters :fields="fieldsList" :fieldNameUpdate="fieldRename"></Filters>
+					<Filters></Filters>
 				</div>
 				<!-- Visualizer goes here-->
 				<div class="card-body">
@@ -43,12 +40,7 @@
 <script setup>
 	import DataTableFormat from "@/components/configcomponents/DataTableFormat.vue";
 	import Filters from "@/components/configcomponents/Filters.vue";
-	const fieldsList = ref([]);
-	const fieldRename = ref([null, null]);
-	function processFields(updatedFields){
-		fieldsList.value = updatedFields;
-	}
-	function processFieldRename(latestRename){
-		fieldRename.value = latestRename;
-	}
+	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+
+	const store = useConfigBuilderStore();
 </script>

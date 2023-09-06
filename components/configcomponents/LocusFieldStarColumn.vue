@@ -27,14 +27,25 @@
 		</div>
 </template>
 <script setup>
-	const props = defineProps({fields: Array, fieldNameUpdate: Array});
-    const emit = defineEmits(["locusStarChanged"]);
-	const availableFields = computed(()=> props.fields);
-	const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
-    const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
+	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+
+	const store = useConfigBuilderStore();
+    const emit = defineEmits(["locusChanged", "starChanged"]);
+    const availableFields = computed(()=> store.allFields);
+    const fieldNameOld = computed(() => store.latestFieldRename[0]);
+    const fieldNameNew = computed(() => store.latestFieldRename[1]);
 	const locus = ref("");
 	const star = ref("");
-	watch (availableFields, () => {
+	watch ([availableFields, fieldNameOld], () => {
+		// Handle name changes first
+		if (locus.value === fieldNameOld.value){
+			locus.value = fieldNameNew.value;
+		}
+		if (star.value === fieldNameOld.value){
+			star.value = fieldNameNew.value;
+		}
+
+		// Then handle deletions
         if (!availableFields.value.includes(locus.value)){
 			locus.value = "";
 		}
@@ -42,16 +53,6 @@
 			star.value = "";
 		}
     });
-	watch(fieldNameOld, () => {
-        if (locus.value == fieldNameOld.value){
-			locus.value = fieldNameNew.value;
-		}
-		if (star.value == fieldNameOld.value){
-			star.value = fieldNameNew.value;
-		}
-    });
-	watch([locus, star], () => { emitLocusStar() });
-	function emitLocusStar (){
-		emit("locusStarChanged", [locus.value, star.value]);
-	}
+	watch(locus, () => { emit("locusChanged", locus.value) });
+	watch(star, () => { emit("starChanged", star.value) });
 </script>

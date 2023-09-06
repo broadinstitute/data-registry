@@ -20,20 +20,32 @@
 								</div>
 								<div class="accordion" id="dataTableAccordion">
 									<div class="accordion-item">
-										<h5 class="accordion-header" id="dataConvertHeading">
+										<h5 class="accordion-header" id="selectColumnsHeading">
 											<button class="accordion-button" type="button" data-bs-toggle="collapse"
-												data-bs-target="#dataconvertbody" aria-expanded="true"
+												data-bs-target="#selectcolumnsbody" aria-expanded="true"
+												aria-controls="selectcolumnsbody">
+													Select columns
+											</button>
+										</h5>
+										<div id="selectcolumnsbody" class="accordion-collapse collapse show"
+											aria-labelledby="selectColumnsHeading" data-bs-parent="#dataTableAccordion">
+											<div class="accordion-body">
+												<SelectColumns></SelectColumns>
+											</div>
+										</div>
+									</div>
+									<div class="accordion-item">
+										<h5 class="accordion-header" id="dataConvertHeading">
+											<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+												data-bs-target="#dataconvertbody" aria-expanded="false"
 												aria-controls="dataconvertbody">
 													Data convert
 											</button>
 										</h5>
-										<div id="dataconvertbody" class="accordion-collapse collapse show"
+										<div id="dataconvertbody" class="accordion-collapse collapse"
 											aria-labelledby="dataConvertHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<DataConvert :raw-fields="rawFields" 
-													@dc-changed="(configs, fields) => updateDataConvert(configs, fields)"
-													@field-name-changed="(oldName, newName) => changeFieldName(oldName, newName)">
-												</DataConvert>
+												<DataConvert></DataConvert>
 											</div>
 										</div>
 									</div>
@@ -48,8 +60,8 @@
 										<div id="columnformattingbody" class="accordion-collapse collapse"
 											aria-labelledby="columnFormattingHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<ColumnFormatting :fields="convertedFields" :fieldNameUpdate="nameChange"
-													@col-format-changed="(config) => updateColumnFormatting(config)">
+												<ColumnFormatting
+													@colFormatChanged="(config) => updateFormat('column formatting', config)">
 												</ColumnFormatting>
 											</div>
 										</div>
@@ -65,8 +77,8 @@
 										<div id="toprowsbody" class="accordion-collapse collapse"
 											aria-labelledby="topRowsHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<TopRows :fields="convertedFields" :fieldNameUpdate="nameChange"
-													@top-rows-changed="(fields) => updateTopRows(fields)">
+												<TopRows
+													@topRowsChanged="(fields) => updateFormat('top rows', fields)">
 												</TopRows>
 											</div>
 										</div>
@@ -82,8 +94,8 @@
 										<div id="featuresbody" class="accordion-collapse collapse"
 											aria-labelledby="featuresHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<Features :fields="convertedFields" :fieldNameUpdate="nameChange"
-													@features-changed="(updatedFeatures) => updateFeatures(updatedFeatures)">
+												<Features
+													@featuresChanged="(features) => updateFormat('features', features)">
 												</Features>
 											</div>
 										</div>
@@ -99,8 +111,8 @@
 										<div id="tooltipsbody" class="accordion-collapse collapse"
 											aria-labelledby="toolTipsHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<ToolTips :fields="convertedFields" :fieldNameUpdate="nameChange"
-													@tool-tips-changed="(updatedToolTips) => updateToolTips(updatedToolTips)">
+												<ToolTips
+													@toolTipsChanged="(toolTips) => updateFormat('tool tips', toolTips)">
 												</ToolTips>
 											</div>
 										</div>
@@ -116,8 +128,9 @@
 										<div id="locusstarbody" class="accordion-collapse collapse"
 											aria-labelledby="locusStarHeading" data-bs-parent="#dataTableAccordion">
 											<div class="accordion-body">
-												<LocusFieldStarColumn :fields="convertedFields" :fieldNameUpdate="nameChange"
-													@locus-star-changed="(updatedLocusStar) => updateLocusStar(updatedLocusStar)">
+												<LocusFieldStarColumn
+													@locusChanged="(locus) => updateFormat('locus', locus)"
+													@starChanged="(star) => updateFormat('star', star)">
 												</LocusFieldStarColumn>
 											</div>
 										</div>
@@ -145,99 +158,41 @@
 	</div>
 </template>
 <script setup>
+	import SelectColumns from "@/components/configcomponents/SelectColumns.vue";
 	import DataConvert from "@/components/configcomponents/DataConvert.vue";
 	import TopRows from "@/components/configcomponents/TopRows.vue";
 	import ToolTips from "@/components/configcomponents/ToolTips.vue";
 	import Features from "@/components/configcomponents/Features.vue";
 	import ColumnFormatting from "@/components/configcomponents/ColumnFormatting.vue";
 	import LocusFieldStarColumn from "./LocusFieldStarColumn.vue";
+	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 
-	const emit = defineEmits(["fieldsUpdated", "fieldRenamed"]);
-	const dataTableFormat = ref({});
-	const dataTableFormatString = computed(() => JSON.stringify(dataTableFormat.value));
-	const dataConvert = ref([]);
-	const rawFields = ref([]);
-	const convertedFields = ref([]);
-	const topRows = ref([]);
-	const toolTips = ref({});
-	const nameChange = ref([null, null]);
+	const store = useConfigBuilderStore();
+	const dataTableFormatString = computed(() => JSON.stringify(config.value));
+	const dataConvert = computed(() => store.allFieldsConfig);
 	const pastedData = ref("");
-	const featureConfig = ref({ "features": [] });
-	const locus = ref("");
-	const star = ref("");
-	const columnFormatting = ref({});
-	function outputDataTableFormat(){
-		let format = {};
-		if (dataConvert.value.length > 0){
-			format["data convert"] = dataConvert.value;
+	const config = ref({});
+	function updateFormat(target, content){
+		if (target === "features"){
+			let oldFeatures = !!config.value["features"] ? config.value["features"] : [];
+			oldFeatures.forEach(feature => delete config.value[feature]);
+			Object.keys(content).forEach(featureKey => 
+				config.value[featureKey] = content[featureKey]); 
+		} else {
+			config.value[target] = content;
 		}
-		if (Object.keys(columnFormatting.value).length > 0){
-			format["column formatting"] = columnFormatting.value;
-		}
-		if (topRows.value.length > 0){
-			format["top rows"] = topRows.value;
-		}
-		if (featureConfig.value["features"].length > 0){
-			let featureKeys = Object.keys(featureConfig.value);
-			featureKeys.forEach(featureKey => 
-				format[featureKey] = featureConfig.value[featureKey]);
-		}
-		let toolTipCount = Object.keys(toolTips.value).length;
-		if (toolTipCount > 0){
-			format["tool tips"] = toolTips.value;
-		}
-		if (locus.value != ""){
-			format["locus field"] = locus.value;
-		}
-		if (star.value != ""){
-			format["star column"] = star.value;
-		}
-		dataTableFormat.value = format;
-	}
-	function updateDataConvert(configs, fields){
-		dataConvert.value = configs;
-		convertedFields.value = fields;
-		outputDataTableFormat();
-	}
-	function updateTopRows(fields){
-		topRows.value = fields;
-		outputDataTableFormat();
-	}
-	function updateFeatures(updatedFeatures){
-		featureConfig.value = updatedFeatures;
-		outputDataTableFormat();
-	}
-	function updateColumnFormatting(config){
-		columnFormatting.value = config;
-		outputDataTableFormat();
-	}
-	function updateToolTips(updatedToolTips){
-		toolTips.value = updatedToolTips;
-		outputDataTableFormat();
-	}
-	function updateLocusStar(updatedLocusStar){
-		locus.value = updatedLocusStar[0];
-		star.value = updatedLocusStar[1];
-		outputDataTableFormat();
-	}
-	function changeFieldName(oldName, newName){
-		nameChange.value = [oldName, newName];
-		emit("fieldRenamed", nameChange.value);
-	}
-	function getRawFields (){
-		let topLine = pastedData.value.split("\n")[0];
-		rawFields.value = topLine.split(",");
 	}
 	watch(pastedData, ()=>{
 		pastedData.value = pastedData.value.trim();
-		getRawFields();
+		let topLine = pastedData.value.split("\n")[0];
+		let rawFields = topLine.split(",");
+		if (pastedData.value === "") {
+			rawFields = [];
+		}
+		store.setRawFields(rawFields);
 	});
+	watch(dataConvert, () => config.value["data convert"] = dataConvert.value);
 	function copyConfig(){
 		navigator.clipboard.writeText(dataTableFormatString.value);
 	}
-	watch(convertedFields, (newFields, oldFields) => {
-		if (JSON.stringify(newFields) != JSON.stringify(oldFields)){
-			emit("fieldsUpdated", convertedFields.value);
-		}
-	});
 </script>

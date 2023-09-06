@@ -11,7 +11,7 @@
                 <li v-for="field in availableFields">
                     <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
                     <input type="text" class="form-control input-default"
-						placeholder="tool tip" 
+						placeholder="tool tip" :value="toolTipConfig[field]"
                         @change="(event) => updateToolTips(field, event.target.value)"/>
                 </li>
             </ul>
@@ -19,39 +19,41 @@
     </div>
 </template>
 <script setup>
-    const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+
+    const store = useConfigBuilderStore();
     const emit = defineEmits(["toolTipsChanged"]);
-    const availableFields = computed(()=> props.fields);
-    const fieldNameOld = computed(() => props.fieldNameUpdate[0]);
-    const fieldNameNew = computed(() => props.fieldNameUpdate[1]);
+    const availableFields = computed(()=> store.allFields);
+    const fieldNameOld = computed(() => store.latestFieldRename[0]);
+    const fieldNameNew = computed(() => store.latestFieldRename[1]);
     const toolTipConfig = ref({});
     function updateToolTips(field, text){
-        if (text == ""){
+        if (text === ""){
             delete toolTipConfig.value[field];
         } else {
             toolTipConfig.value[field] = text;
         }
         emitToolTips();
     }
-    watch (availableFields, (newFields, oldFields)=> {
-        if (newFields.length < oldFields.length){
-            oldFields.forEach((oldField)=>{
-                if (!newFields.includes(oldField)){
-                    delete toolTipConfig.value[oldField];
-                }
-            });
-            emitToolTips();
-        }
-    });
-    watch(fieldNameOld, () => {
-        // Field names are already updated within the list of available fields.
-        // We need to update it in the list of selected fields.
+    watch ([availableFields, fieldNameOld], (newValues, oldValues)=> {
+        // Handle name changes first
         if (!!toolTipConfig.value[fieldNameOld.value]){
             let toolTip = toolTipConfig.value[fieldNameOld.value];
-            delete toolTipConfig.value[fieldNameOld.value];
+            // do we need to do this part?
+            if (!availableFields.value.includes(fieldNameOld.value)){
+                delete toolTipConfig.value[fieldNameOld.value];
+            }
             toolTipConfig.value[fieldNameNew.value] = toolTip;
-            emitToolTips();
         }
+        // Then handle deletions
+        let oldFields = oldValues[0];
+        let newFields = newValues[0];
+        oldFields.forEach((oldField)=>{
+            if (!newFields.includes(oldField)){
+                delete toolTipConfig.value[oldField];
+            }
+        });
+
     });
     function emitToolTips(){
         emit("toolTipsChanged", toolTipConfig.value);
