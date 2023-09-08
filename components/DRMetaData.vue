@@ -105,12 +105,12 @@ const props = defineProps({
       //to that study without a full page refresh
       const newStudy = {
         label: data.name,
-        value: data.study_id,
+        value: data.id,
         institution: institution.value,
       };
       store.addStudy(newStudy)
       study.value = newStudy
-      await saveDataset(data.study_id)
+      await saveDataset(data.id)
     }
 
   }

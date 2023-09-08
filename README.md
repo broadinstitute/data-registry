@@ -19,7 +19,7 @@ If you're running the API server locally and want to access it from your local f
 server, in your `.env` file set `NUXT_PUBLIC_API_BASE_URL=http://local.kpndatregistry.org:5000`
 
 If you're only making front end changes and want to use the qa deployed api server, set 
-`NUXT_PUBLIC_API_BASE_URL='http://dev.kpndataregistry.org'`  
+`NUXT_PUBLIC_API_BASE_URL='http://api.kpndataregistry.org'`  
 
 In either case, use `http://local.kpndataregistry.org:3000` to access your local server.
 
@@ -34,7 +34,7 @@ Deployment is via Jenkins. The Jenkins jobs are located here:
 A sample .env file is provided, `.env-sample`. It should be copied to the root directory and renamed to .env. The following environment variables are required:
 
 ```
-NUXT_PUBLIC_API_SECRET=??1
+NUXT_PUBLIC_API_SECRET=??
 NUXT_PUBLIC_API_BASE_URL=??
 NUXT_PUBLIC_PHENOTYPES_URL=??
 ```
