@@ -151,7 +151,7 @@ export const useDatasetStore = defineStore('DatasetStore', {
         await configuredAxios.patch("/api/datasets", JSON.stringify(dataset))
       } else {
         const { data } = await configuredAxios.post("/api/datasets", JSON.stringify(dataset))
-        this.savedDataSetId = data.dataset_id
+        this.savedDataSetId = data.id
       }
       if(this.combinedPhenotypesAndCredibleSets.length === 0){
         this.addPhenoBlankDataset()
