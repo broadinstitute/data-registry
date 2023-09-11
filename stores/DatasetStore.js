@@ -14,8 +14,7 @@ const configuredAxios = useAxios(config, undefined, (error) => {
 
 function onUpload(progressEvent) {
   const store = useDatasetStore();
-  const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-  store.uploadProgress = percentCompleted;
+  store.uploadProgress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
 }
 
 
