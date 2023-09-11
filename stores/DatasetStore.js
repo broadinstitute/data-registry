@@ -6,7 +6,7 @@ const configuredAxios = useAxios(config, undefined, (error) => {
   console.log(JSON.stringify(error))
   const store = useDatasetStore()
   store.processing = false
-  store.errorMessage = error.errorMessage
+  store.errorMessage = error.message || error.errorMessage
   store.serverSuccess = false
   store.showNotification = true
   throw new Error("Server error")
