@@ -58,7 +58,7 @@
       </div>
     </div>
   </div>
-  <Modal :status-message="store.modalMsg" v-if="store.processing" />
+  <Modal :status-message="store.modalMsg" v-if="store.processing" :progress="store.uploadProgress" :show-progress="store.showProgressBar"/>
 </template>
 
 <style scoped>

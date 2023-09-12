@@ -6,11 +6,17 @@ const configuredAxios = useAxios(config, undefined, (error) => {
   console.log(JSON.stringify(error))
   const store = useDatasetStore()
   store.processing = false
-  store.errorMessage = error.errorMessage
+  store.errorMessage = error.message || error.errorMessage
   store.serverSuccess = false
   store.showNotification = true
   throw new Error("Server error")
 });
+
+function onUpload(progressEvent) {
+  const store = useDatasetStore();
+  store.uploadProgress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+}
+
 
 function getPhenotypeDataSetUploadUrl(dataset_id, pType) {
   let url = `/api/uploadfile/${dataset_id}/${pType.name}/${pType.dichotomous}/${pType.sampleSize}`;
@@ -24,7 +30,8 @@ async function savePhenotype(dataset_id, pType) {
   const formData = new FormData();
   formData.append("file", pType.file);
   const { data } = await configuredAxios.post(getPhenotypeDataSetUploadUrl(dataset_id, pType),
-    formData, { headers: { "Content-Type": "multipart/form-data", "Filename": pType.fileName } })
+    formData, { headers: { "Content-Type": "multipart/form-data", "Filename": pType.fileName },
+      onUploadProgress: onUpload })
   return data.phenotype_data_set_id;
 }
 
@@ -32,7 +39,8 @@ async function saveCredibleSet(saved_phenotype_id, cs) {
   const formData = new FormData();
   formData.append("file", cs.credibleSetFile);
   const { data } = await configuredAxios.post(`/api/crediblesetupload/${saved_phenotype_id}/${cs.name}`,
-    formData, { headers: { "Content-Type": "multipart/form-data", "Filename": cs.fileName }})
+    formData, { headers: { "Content-Type": "multipart/form-data", "Filename": cs.fileName },
+      onUploadProgress: onUpload })
   return data.credible_set_id;
 }
 
@@ -85,6 +93,8 @@ export const useDatasetStore = defineStore('DatasetStore', {
       processing: false,
       modalMsg: '',
       savedDataSetId: null,
+      uploadProgress: 0,
+      showProgressBar: false,
     }
   },
   getters: {
@@ -146,7 +156,8 @@ export const useDatasetStore = defineStore('DatasetStore', {
     },
     async saveDataset(dataset) {
       this.processing = true
-      this.modalMsg = "Saving dataset metadata"
+      this.modalMsg = "Saving dataset metadata";
+      this.showProgressBar = false;
       if (dataset.id) {
         await configuredAxios.patch("/api/datasets", JSON.stringify(dataset))
       } else {
@@ -162,15 +173,19 @@ export const useDatasetStore = defineStore('DatasetStore', {
       this.successMessage = "Metadata saved, you can now upload files."
     },
     async uploadFiles(dataset_id) {
-      this.processing = true
+      this.processing = true;
+      this.showProgressBar = true;
       for (const phenotype of this.savedDataSets) {
-        this.modalMsg = `Uploading data for ${phenotype.description}`
         if(!phenotype.id){
+          this.modalMsg = `Uploading data for ${phenotype.description}`;
+          this.uploadProgress = 0;
           phenotype.id  = await savePhenotype(dataset_id.replaceAll('-', ''), phenotype)
         }
         for (const cs of phenotype.credibleSets) {
           if (!cs.id && cs.credibleSetFile) {
-            cs.id = await saveCredibleSet(phenotype.id.replaceAll('-', ''), cs)
+            this.modalMsg = `Uploading credible set ${cs.name}`;
+            this.uploadProgress = 0;
+            cs.id = await saveCredibleSet(phenotype.id.replaceAll('-', ''), cs);
           }
         }
         if(Object.keys(phenotype.credibleSets[0]).length === 0 && phenotype.credibleSets.length === 1){
