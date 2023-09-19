@@ -10,6 +10,8 @@
 </template>
 
 <script setup>
+import { useDatasetStore } from '~/stores/DatasetStore';
+const store = useDatasetStore();
 const props = defineProps(
     {errorMessage: String,
       success: Boolean,
@@ -24,9 +26,11 @@ const isVisible = ref(true);
 
 watch(() => props.showNotification, (newValue) => {
   if (newValue) {
+    console.log("showing notification")
     isVisible.value = true;
     setTimeout(() => {
       isVisible.value = false;
+      store.showNotification = false;
     }, props.displayNotificationSeconds * 1000);
   }
 });

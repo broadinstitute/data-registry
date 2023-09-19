@@ -63,7 +63,7 @@
                     ></i>
                 </td>
             </tr>
-            <tr v-if="dataset.showFiles">
+            <tr v-if="dataset.showFiles && dataset.files.length > 0">
               <td colspan="12">
               <table class="table table-striped table-hover">
                <thead>
@@ -101,6 +101,13 @@
               </table>
               </td>
             </tr>
+            <tr v-else>
+              <td colspan="12">
+                <div>
+                  No files uploaded.
+                </div>
+              </td>
+            </tr>
             </template>
         </tbody>
     </table>
@@ -130,9 +137,6 @@ async function toggleFiles(dataSet) {
     dataSet.files = (await axios.get(`/api/filelist/${dataSet.id}`)).data
     for (const file of dataSet.files) {
       file.phenotype = store.phenotypes[file.phenotype] ? store.phenotypes[file.phenotype].description : file.phenotype
-      const urlParts = file.path.split('/')
-      urlParts[2] = encodeURIComponent(file.phenotype)
-      file.path = urlParts.join('/')
       file.copyMsg = ''
     }
   }
