@@ -101,7 +101,7 @@
               </table>
               </td>
             </tr>
-            <tr v-else>
+            <tr v-else-if="dataset.showFiles && dataset.files.length === 0">
               <td colspan="12">
                 <div>
                   No files uploaded.
