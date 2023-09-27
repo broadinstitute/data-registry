@@ -24,7 +24,6 @@
                                             <!--<option>Score</option>-->
                                             <option value="volcano">Volcano</option>
                                         </select>
-                                        <pre>{{ configString }}</pre>
                                     </div>
                                     <div class="col-md-6 col">
                                         <div class="label">
@@ -33,22 +32,22 @@
                                         <Manhattan v-if="visType == 'manhattan'"
                                             :fields="availableFields"
                                             :fieldNameUpdate="fieldUpdate"
-                                            @update-visualizer="(newConfig) => showConfig(newConfig)">
+                                            @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Manhattan>
                                         <Heatmap v-if="visType == 'heatmap'"
                                             :fields="availableFields"
                                             :fieldNameUpdate="fieldUpdate"
-                                            @update-visualizer="(newConfig) => showConfig(newConfig)">
+                                            @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Heatmap>
                                         <Phewas v-if="visType == 'phewas'"
                                             :fields="availableFields"
                                             :fieldNameUpdate="fieldUpdate"
-                                            @update-visualizer="(newConfig) => showConfig(newConfig)">
+                                            @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Phewas> 
                                         <Region v-if="visType == 'region'"
                                             :fields="availableFields"
                                             :fieldNameUpdate="fieldUpdate"
-                                            @update-visualizer="(newConfig) => showConfig(newConfig)">
+                                            @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Region>
                                         <Volcano v-if="visType == 'volcano'"
                                             :fields="availableFields"
@@ -67,6 +66,11 @@
                                         </button>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <pre>{{ configString }}</pre>
                             </div>
                         </div>
                     </div>
@@ -267,7 +271,11 @@
     const fieldUpdate = computed(() => props.fieldNameUpdate);
     const visType = ref("");
     const configString = ref("{}");
-    function showConfig(newConfigString){
+    function showConfig(newConfigString, saveCheck){
+        if (!saveCheck.ready){
+            console.log(saveCheck.msg);
+            return;
+        }
         configString.value = newConfigString; 
     }
 </script>

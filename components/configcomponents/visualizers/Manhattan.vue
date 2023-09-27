@@ -83,14 +83,19 @@
             Height:
         </div>
         <div class="col-md-9">
-            <input type="number" class="form-control input-default form-control-sm" v-model="height"/>
+            <input type="number" class="form-control input-default form-control-sm" v-model="height"
+            @change="parseHeight()"/>
         </div>
     </div>
 </template>
 <script setup>
+	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+    const store = useConfigBuilderStore();
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
-    const availableFields = computed(() => props.fields);
+    const availableFields = computed(()=> store.allFields);
+    const fieldNameOld = computed(() => store.latestFieldRename[0]);
+    const fieldNameNew = computed(() => store.latestFieldRename[1]);
     const graphicFormat = ref("Vector");
     const xAxisField = ref("");
     const yAxisField = ref("");
@@ -102,7 +107,7 @@
     const hoverContent = ref([]);
     // Do we want to bother checking that they aren't the same field?
     const configObject = computed(() => {
-        let type = graphicFormat.value == "Vector" ? "manhattan plot" : "manhattan bitmap plot";
+        let type = graphicFormat.value === "Vector" ? "manhattan plot" : "manhattan bitmap plot";
         let config = {
             "type": type,
             "x axis field": xAxisField.value,
@@ -116,7 +121,35 @@
         };
         return config;
     });
+    function readyToSave(){
+        let check = {
+			ready: false,
+			msg: ""
+		};
+        if (xAxisField.value === "" || yAxisField.value === ""){
+            check.msg = "Specify fields for both axes.";
+            return check;
+        }
+        if (renderBy.value === ""){
+            check.msg = "Specify field to render by.";
+            return check;
+        }
+        if (xAxisLabel.value === "" || yAxisLabel.value === ""){
+            check.msg = "Specify labels for both axes.";
+            return check;
+        }
+        check.ready = true;
+        return check;
+    }
+    function parseHeight(){
+        let numHeight = parseInt(height.value);
+        if (isNaN(numHeight)){
+            height.value = 250;
+            return;
+        }
+        height.value = numHeight;
+    }
     watch(configObject, () =>{
-        emit('updateVisualizer', JSON.stringify(configObject.value));
+        emit('updateVisualizer', JSON.stringify(configObject.value), readyToSave());
     });
 </script>
