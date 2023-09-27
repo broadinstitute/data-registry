@@ -11,7 +11,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row dr-builder-ui">
-                                    <div class="col-md-4 col">
+                                    <div class="col-md-2 col">
                                         <div class="label">
                                             Select visualizer
                                         </div>
@@ -25,7 +25,7 @@
                                             <option value="volcano">Volcano</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-6 col">
+                                    <div class="col-md-8 col">
                                         <div class="label">
                                             Set parameters
                                         </div>
@@ -55,7 +55,8 @@
                                         </Volcano>
                                     </div>
                                     <div class="col-md-2 col">
-                                        <button class="btn btn-primary btn-sm" type="button">
+                                        <button class="btn btn-primary btn-sm" type="button"
+                                            @click="saveVisualization">
                                             Save
                                         </button>
                                         <button class="btn btn-warning btn-sm" type="button">
@@ -64,13 +65,18 @@
                                         <button class="btn btn-danger btn-sm" type="button">
                                             Delete
                                         </button>
+                                        <div class="failed-save" v-if="showMsg">{{ failedSaveMsg }}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
-                                <pre>{{ configString }}</pre>
+                            <div class="col-md-12 col text-center dr-bubbles-wrapper">
+                                <div class="dr-format-bubble" v-if="!!savedViz.type">
+                                    <span class="type">{{ savedViz.type }}</span>
+                                    <span class="editing" v-if="!!editing">Editing</span>
+                                    <a v-else @click="editVisualization()"><span class="edit">Edit</span></a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -267,15 +273,32 @@
     import Region from "@/components/configcomponents/visualizers/Region.vue";
     import Volcano from "@/components/configcomponents/visualizers/Volcano.vue";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
+    const emit = defineEmits(["visualizationSaved"])
     const availableFields = computed(() => props.fields);
     const fieldUpdate = computed(() => props.fieldNameUpdate);
     const visType = ref("");
-    const configString = ref("{}");
-    function showConfig(newConfigString, saveCheck){
-        if (!saveCheck.ready){
-            console.log(saveCheck.msg);
+    const config = ref({});
+    const savedViz = ref({});
+    const failedSaveMsg = ref("");
+    const readyToSave = ref(false);
+    const showMsg = ref(false);
+    function showConfig(newConfig, saveCheck){
+        showMsg.value = false;
+        config.value = newConfig;
+        readyToSave.value = saveCheck.ready;
+        failedSaveMsg.value = saveCheck.msg;
+    }
+    function saveVisualization(){
+        if (!readyToSave.value){
+            showMsg.value = true;
             return;
         }
-        configString.value = newConfigString; 
+        showMsg.value = false;
+        savedViz.value = config.value;
+        visType.value = "";
+    }
+    function editVisualization(){
+        config.value = savedViz.value;
+        visType.value = config.value.type.split(" ")[0];
     }
 </script>
