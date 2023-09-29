@@ -86,7 +86,7 @@
         <div class="row card-body">
             <div class="col-md-12">
                 <div class="row">
-                    
+                    <pre class="output">{{ JSON.stringify(savedViz) }}</pre>
                 </div>
             </div>
         </div>
@@ -279,6 +279,7 @@
     const visType = ref("");
     const config = ref({});
     const savedViz = ref({});
+    const savedVizString = computed(() => JSON.stringify(savedViz));
     const failedSaveMsg = ref("");
     const readyToSave = ref(false);
     const showMsg = ref(false);
