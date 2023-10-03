@@ -51,7 +51,8 @@
                                         </Region>
                                         <Volcano v-if="visType == 'volcano'"
                                             :fields="availableFields"
-                                            :fieldNameUpdate="fieldUpdate">
+                                            :fieldNameUpdate="fieldUpdate"
+                                            @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Volcano>
                                     </div>
                                     <div class="col-md-2 col">

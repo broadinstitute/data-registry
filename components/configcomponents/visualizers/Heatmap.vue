@@ -99,7 +99,7 @@
     </div>
     <div class="col-md-4">
         <input class="column-select form-control input-default" 
-            id="mainLow" type="number" value="0"
+            id="mainLow" type="number" :value="0"
             @change="event => fixNumber('mainLow', event.target.value)"/>
     </div>
 </div>
@@ -109,7 +109,7 @@
     </div>
     <div class="col-md-4">
         <input class="column-select form-control input-default" 
-            id="mainMid" type="number" value="0"
+            id="mainMid" type="number" :value="0"
             @change="event => fixNumber('mainMid', event.target.value)"/>
     </div>
 </div>
@@ -119,7 +119,7 @@
         </div>
         <div class="col-md-4">
             <input class="column-select form-control input-default" 
-                id="mainHigh" type="number" value="0"
+                id="mainHigh" type="number" :value="0"
                 @change="event => fixNumber('mainHigh', event.target.value)"/>
         </div>
     </div>

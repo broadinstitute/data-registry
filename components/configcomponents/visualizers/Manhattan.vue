@@ -59,14 +59,6 @@
         <div class="col-md-2">
             Hover content:
         </div>
-<!--         <div class="col-md-10">
-            <ul v-for="field in availableFields" class="form-check form-check-inline">
-                <li>
-                    <input class="form-check-input" type="checkbox" :value="field" id="flexCheckDefault" v-model="hoverContent"/>
-                    <label class="form-check-label" for="flexCheckDefault">{{ field }}</label>
-                </li>
-            </ul>
-        </div> -->
         <table class="col-md-10">
             <tr>
                 <th>
@@ -83,7 +75,7 @@
             </tr>
         </table>
     </div>
-    <div class="row">
+    <div class="row" v-if="graphicFormat === 'vector'">
         <div class="col-md-2">
             Link to:
         </div>

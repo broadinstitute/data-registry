@@ -1,47 +1,53 @@
 <template>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
+            Label:
+        </div>
+        <div class="col-md-10">
+            <input type="text"
+                class="form-control input-default form-control-sm"
+            />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
             X Axis field:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="xAxisField">
                 <option value="">Select a field</option>
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             X Axis label:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <input type="text" class="form-control input-default form-control-sm" v-model="xAxisLabel"/>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Y Axis field:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="yAxisField">
                 <option value="">Select a field</option>
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Y Axis label:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <input type="text" class="form-control input-default form-control-sm" v-model="yAxisLabel"/>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Render by:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="renderBy">
                 <option value="">Select a field</option>
                 <option v-for="field in availableFields">{{ field }}</option>
@@ -52,10 +58,10 @@
         X axis field condition
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Condition:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="xAxisCondition">
                 <option value="greater than">Greater than</option>
                 <option value="lower than">Less than</option>
@@ -65,70 +71,60 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2" v-if="xAxisCondition != 'lower than'">
+            Greater than
         </div>
-        <div class="col-md-9">
-            <div class="form-group row" v-if="xAxisCondition != 'lower than'">
-                <label for="xGT" class="col-sm-6 form-check-label">
-                    Greater than
-                </label>
-                <div class="col-sm-6">
-                    <input type="text" id="xGT" class="form-control input-default form-control-sm" v-model="xGT"/>
-                </div>
-            </div>
-            <div class="form-group row" v-if="xAxisCondition != 'greater than'">
-                <label for="xLT" class="col-sm-6 form-check-label">
-                        Less than
-                </label>
-                <div class="col-sm-6">
-                    <input type="text" id="xLT" class="form-control input-default form-control-sm" v-model="xLT"/>
-                </div>
-            </div>
+        <div class="col-md-4" v-if="xAxisCondition != 'lower than'">
+            <input type="number" id="xGT" class="form-control input-default form-control-sm" :value="0"
+                @change="event => fixNumber('xGT', event.target.value)"/>
+        </div>
+
+        <div class="col-md-2" v-if="xAxisCondition != 'greater than'">
+            Less than
+        </div>
+        <div class="col-md-4" v-if="xAxisCondition != 'greater than'">
+            <input type="number" id="xLT" class="form-control input-default form-control-sm" :value="0"
+                @change="event => fixNumber('xLT', event.target.value)"/>
         </div>
     </div>
     <div class="label">
         Y axis field condition
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Condition:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="yAxisCondition">
                 <option value="greater than">Greater than</option>
-                <option value="less than">Less than</option>
+                <option value="lower than">Less than</option>
                 <option value="and">AND</option>
                 <option value="or">OR</option>
             </select>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2" v-if="yAxisCondition != 'lower than'">
+            Greater than
         </div>
-        <div class="col-md-9">
-            <div class="form-group row" v-if="yAxisCondition != 'lower than'">
-                <label for="yGT" class="col-sm-6 form-check-label">
-                    Greater than
-                </label>
-                <div class="col-sm-6">
-                    <input type="text" id="yGT" class="form-control input-default form-control-sm" v-model="yGT"/>
-                </div>
-            </div>
-            <div class="form-group row" v-if="yAxisCondition != 'greater than'">
-                <label for="yLT" class="col-sm-6 form-check-label">
-                    Less than
-                </label>
-                <div class="col-sm-6">
-                    <input type="text" id="yLT" class="form-control input-default form-control-sm" v-model="yLT"/>
-                </div>
-            </div>
+        <div class="col-md-4" v-if="yAxisCondition != 'lower than'">
+            <input type="number" id="yGT" class="form-control input-default form-control-sm" :value="0"
+                @change="event => fixNumber('yGT', event.target.value)"/>
+        </div>
+
+        <div class="col-md-2" v-if="yAxisCondition != 'greater than'">
+            Less than
+        </div>
+        <div class="col-md-4" v-if="yAxisCondition != 'greater than'">
+            <input type="number" id="yLT" class="form-control input-default form-control-sm" :value="0"
+                @change="event => fixNumber('yLT', event.target.value)"/>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Label dots if meet:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="dotLabelScore">
                 <option :value="1">1 condition</option>
                 <option :value="2">2 conditions</option>
@@ -136,45 +132,31 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Width:
         </div>
-        <div class="col-md-9">
-            <input type="number" class="form-control input-default form-control-sm" v-model="width"/>
+        <div class="col-md-4">
+            <input type="number" class="form-control input-default form-control-sm" id="width" :value="800"
+                @change="event => fixNumber('width', event.target.value)"/>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Height:
         </div>
-        <div class="col-md-9">
-            <input type="number" class="form-control input-default form-control-sm" v-model="height"/>
+        <div class="col-md-4">
+            <input type="number" class="form-control input-default form-control-sm" id="height" :value="400"
+                @change="event => fixNumber('height', event.target.value)"/>
         </div>
     </div>
-<div class="row">
-    <div class="col-md-3">
-        Label:
-    </div>
-    <div class="col-md-9">
-        <input type="text"
-            class="form-control input-default form-control-sm"
-        />
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-3">
-        In plot legend:
-    </div>
-    <div class="col-md-9">
-        <textarea rows="6" class="form-control">
-        </textarea>
-    </div>
-</div>
 </template>
 <script setup>
+    import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+    const store = useConfigBuilderStore();
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
-    const availableFields = computed(() => props.fields);
+    const availableFields = computed(()=> store.allFields);
+    const fieldNameOld = computed(() => store.latestFieldRename[0]);
+    const fieldNameNew = computed(() => store.latestFieldRename[1]);
+    const label = ref("");
     const xAxisField = ref("");
     const xAxisLabel = ref("");
     const yAxisField = ref("");
@@ -182,37 +164,38 @@
     const renderBy = ref("");
     const dotLabelScore = ref(1);
     const xAxisCondition = ref("greater than");
-    const xGT = ref(0);
-    const xLT = ref(0);
     const yAxisCondition = ref("greater than");
-    const yGT = ref(0);
-    const yLT = ref(0);
-    const width = ref(800);
-    const height = ref(400);
+    const numbers = ref({
+        "xGT": 0,
+        "xLT": 0,
+        "yGT": 0,
+        "yLT": 0,
+        "width": 0,
+        "height": 0
+    });
     const configObject = computed(() => {
         let config = {
             "type":"volcano plot",
+            "label": label.value.trim(),
             "x axis field": xAxisField.value,
-            "x axis label": xAxisLabel.value,
+            "x axis label": xAxisLabel.value.trim(),
             "y axis field": yAxisField.value,
-            "y axis label": yAxisField.value,
+            "y axis label": yAxisField.value.trim(),
             "render by": renderBy.value,
             "x condition": {
                 "combination": xAxisCondition.value,
-                "greater than": parseFloat(xGT.value),
-                "lower than": parseFloat(xLT.value)
+                "greater than": numbers.value.xGT,
+                "lower than": numbers.value.xLT
             },
             "y condition": {
                 "combination": yAxisCondition.value,
-                "greater than": parseFloat(yGT.value),
-                "lower than": parseFloat(yLT.value)
+                "greater than": numbers.value.yGT,
+                "lower than": numbers.value.yLT
             },
             "dot label score": dotLabelScore.value,
-            "width": parseInt(width.value),
-            "height": parseInt(height.value),
-            "label": "Volcano Plot of Differentially Expressed Genes - High-risk vs Low-risk APOL1 genotype",
-            "legend": "<span class='volcano-score-0'>&nbsp;</span> NS <span class='volcano-score-1'>&nbsp;</span> Log<sub>2</sub> FC <span class='volcano-score-2'>&nbsp;</span> p-value and log<sub>2</sub> FC<br>Genes with positive fold change are upregulated in high-risk samples",
-            };
+            "width": numbers.value.width,
+            "height": numbers.value.height,
+        };
         if (xAxisCondition.value == 'greater than'){
             delete config["x condition"]["lower than"];
         }
@@ -226,5 +209,50 @@
             delete config["y condition"]["greater than"];
         }
         return config;
+    });
+    function readyToSave(){
+        let check = {
+            ready: false,
+            msg: ""
+        };
+        if (label.value.trim() === ""){
+            check.msg = "Specify a label for the plot.";
+            return check;
+        }
+        if (xAxisField.value === "" || yAxisField.value === ""){
+            check.msg = "Specify fields for both axes.";
+            return check;
+        }
+        if (xAxisLabel.value.trim() === "" || yAxisLabel.value.trim() === ""){
+            check.msg = "Specify labels for both axes.";
+            return check;
+        }
+        if (renderBy.value === ""){
+            check.msg = "Specify field to render by.";
+            return check;
+        }
+        if (xAxisCondition.value === "and" && numbers.value.xGT >= numbers.value.xLT){
+            check.msg = "X-axis 'AND' condition must be corrected.";
+            return check;
+        }
+        if (yAxisCondition.value === "and" && numbers.value.yGT >= numbers.value.yLT){
+            check.msg = "Y-axis 'AND' condition must be corrected.";
+            return check;
+        }
+        check.ready = true;
+        return check;
+    }
+    function fixNumber(field, input){
+        let numValue = parseFloat(input);
+        if (isNaN(numValue)){
+            numValue = 0;
+        }
+        let inputField = document.querySelector(`input#${field}`);
+        inputField.value = numValue;
+        numbers.value[field] = numValue;
+    }
+    watch(configObject, () =>{
+        console.log(JSON.stringify(configObject.value));
+        emit('updateVisualizer', configObject.value, readyToSave());
     });
 </script>
