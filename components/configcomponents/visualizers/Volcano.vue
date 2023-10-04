@@ -4,7 +4,7 @@
             Label:
         </div>
         <div class="col-md-10">
-            <input type="text"
+            <input type="text" v-model="label"
                 class="form-control input-default form-control-sm"
             />
         </div>
@@ -170,8 +170,8 @@
         "xLT": 0,
         "yGT": 0,
         "yLT": 0,
-        "width": 0,
-        "height": 0
+        "width": 800,
+        "height": 400
     });
     const configObject = computed(() => {
         let config = {
@@ -180,7 +180,7 @@
             "x axis field": xAxisField.value,
             "x axis label": xAxisLabel.value.trim(),
             "y axis field": yAxisField.value,
-            "y axis label": yAxisField.value.trim(),
+            "y axis label": yAxisLabel.value.trim(),
             "render by": renderBy.value,
             "x condition": {
                 "combination": xAxisCondition.value,
@@ -252,7 +252,6 @@
         numbers.value[field] = numValue;
     }
     watch(configObject, () =>{
-        console.log(JSON.stringify(configObject.value));
         emit('updateVisualizer', configObject.value, readyToSave());
     });
 </script>
