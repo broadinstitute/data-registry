@@ -244,8 +244,8 @@
                 "label": subLabel.value, 
                 "type": subRenderType.value, 
                 "direction": subDirection.value, 
-                "value range": [0.001, 0.05] // figure this out!
-            }
+                "value range": thresholds.value.subSteps
+            };
             config["sub"] = sub;
         }
         return config;
