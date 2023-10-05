@@ -1,63 +1,47 @@
 <template>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Y axis field:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="yAxisField">
                 <option value="">Select a field</option>
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
-        </div>
-        <div class="col-md-9">
-            <div class="form-check form-check-inline">
-                <input
-                    class="form-check-input" type="checkbox" :value="false"
-                    id="flexCheckDefault" v-model="convertLog"/>
-                <label class="form-check-label" for="flexCheckDefault">
-                    <small>
-                        Convert y axis value to -log10
-                    </small>
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
-        </div>
-        <div class="col-md-9">
-            <div class="row">
-                <div class="col-md-8">
-                    <small>
-                        Places to render after decimal point:
-                    </small>
-                </div>
-                <div class="col-md-4">
-                    <input type="number" v-model="yDecimal"
-                        class="form-control input-default form-control-sm"/>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Y axis label:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <input type="text" v-model="yLabel"
                 class="form-control input-default form-control-sm"/>
         </div>
     </div>
     <div class="row">
+        <div class="col-md-2">
+            Places after decimal:
+        </div>
+        <div class="col-md-4">
+            <input type="number" v-model="yDecimal"
+                        class="form-control input-default form-control-sm"/>
+        </div>
         <div class="col-md-3">
+            <div class="form-check form-check-inline">
+                <input
+                    class="form-check-input" type="checkbox" :value="false"
+                    id="flexCheckDefault" v-model="convertLog"/>
+                <label class="form-check-label" for="flexCheckDefault">
+                        Convert Y axis value to -log10
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
             Beta field
             <small>(Direction)</small>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <select class="form-control form-control-sm">
                 <option value="">None</option>
                 <option v-for="field in availableFields">{{ field }}</option>
@@ -65,10 +49,10 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Render by:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="renderBy">
                 <option value="">Select a field</option>
                 <option v-for="field in availableFields">{{ field }}</option>
@@ -76,10 +60,10 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Group by:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="groupBy">
                 <option value="">Select a field</option>
                 <option v-for="field in availableFields">{{ field }}</option>
@@ -87,14 +71,28 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
-            Thresholds
-            <small>(separate with ,)</small>
+            <div class="col-md-2">
+                Thresholds
+            </div>
+            <div class="col-md-4 col">
+			<table>
+				<tr v-for="entry, index in thresholds.subSteps">
+					<td>
+						<input type="number" class="form-control input-default"
+							:value="entry" :id="`subSteps_${index}`"
+							@change="(event)=>fixNumber(`subSteps_${index}`, event.target.value)"/>
+					</td>
+					<td>
+						<button class="btn btn-secondary replace-chars-button delete-button"
+							v-if="thresholds.subSteps.length > 1" 
+                            @click="thresholds.subSteps.splice(index, 1);">&times;
+						</button>
+					</td>
+				</tr>
+			</table>
+			<button class="btn btn-primary" @click="thresholds.subSteps.push(0)">Add</button>
+		</div>
         </div>
-        <div class="col-md-9">
-            <input type="text" v-model="thresholds" class="form-control input-default form-control-sm"/>
-        </div>
-    </div>
     <div class="row">
         <div class="col-md-3">
             Hover content:
@@ -107,10 +105,10 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             Height:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-4">
             <input type="number" v-model="height" class="form-control input-default form-control-sm"/>
         </div>
     </div>

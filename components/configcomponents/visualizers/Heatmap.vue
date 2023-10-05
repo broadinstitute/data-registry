@@ -137,15 +137,15 @@
                 <option v-for="field in availableFields" :value="field">{{ field }}</option>
             </select>
         </div>
-        <div class="col-md-2" v-if="subField != ''">
+        <div class="col-md-2" v-if="subField !== ''">
             Label
         </div>
-        <div class="col-md-4" v-if="subField != ''">
+        <div class="col-md-4" v-if="subField !== ''">
             <input type="text" v-model="subLabel"
                 class="form-control input-default form-control-sm"/>
         </div>
     </div>
-    <div v-if="subField != ''">
+    <div v-if="subField !== ''">
         <div class="row">
             <div class="col-md-2">
                 Render type
@@ -238,7 +238,7 @@
                 "high": thresholds.value.mainHigh,
                 }
             };
-        if (subField.value != ""){
+        if (subField.value !== ""){
             let sub = {
                 "field": subField.value, 
                 "label": subLabel.value, 
