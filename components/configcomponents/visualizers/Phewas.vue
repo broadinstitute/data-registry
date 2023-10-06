@@ -76,21 +76,21 @@
             </div>
             <div class="col-md-4 col">
 			<table>
-				<tr v-for="entry, index in thresholds.subSteps">
+				<tr v-for="entry, index in thresholds">
 					<td>
 						<input type="number" class="form-control input-default"
-							:value="entry" :id="`subSteps_${index}`"
-							@change="(event)=>fixNumber(`subSteps_${index}`, event.target.value)"/>
+							:value="entry" :id="`thresholds_${index}`"
+							@change="(event)=>fixNumber(index, event.target.value)"/>
 					</td>
 					<td>
 						<button class="btn btn-secondary replace-chars-button delete-button"
-							v-if="thresholds.subSteps.length > 1" 
-                            @click="thresholds.subSteps.splice(index, 1);">&times;
+							v-if="thresholds.length > 1" 
+                            @click="thresholds.splice(index, 1);">&times;
 						</button>
 					</td>
 				</tr>
 			</table>
-			<button class="btn btn-primary" @click="thresholds.subSteps.push(0)">Add</button>
+			<button class="btn btn-primary" @click="thresholds.push(0)">Add</button>
 		</div>
         </div>
     <div class="row">
@@ -126,7 +126,7 @@
     const hoverContent = ref([]);
     const betaField = ref("");
     const height = ref(500);
-    const thresholds = ref("");
+    const thresholds = ref([0,0]);
     const configObject = computed(() => {
         let config =  {
             "type":"phewas plot",
@@ -146,6 +146,15 @@
         }
         return config;
     });
+    function fixNumber(field, input){
+        let numValue = parseFloat(input);
+        if (isNaN(numValue)){
+            numValue = 0;
+        }
+        let inputField = document.querySelector(`input#thresholds_${field}`);
+        inputField.value = numValue;
+        thresholds.value[field] = numValue;
+    }
     watch(configObject, () =>{
         emit('updateVisualizer', JSON.stringify(configObject.value));
     });
