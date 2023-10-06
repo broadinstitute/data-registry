@@ -109,7 +109,8 @@
             Height:
         </div>
         <div class="col-md-4">
-            <input type="number" v-model="height" class="form-control input-default form-control-sm"/>
+            <input type="number" id="height" class="form-control input-default form-control-sm" value="500"
+                @change="(event)=>fixNumber('height', event.target.value)"/>
         </div>
     </div>
 </template>
@@ -151,8 +152,13 @@
         if (isNaN(numValue)){
             numValue = 0;
         }
-        let inputField = document.querySelector(`input#thresholds_${field}`);
+        let query = field === "height" ? "height" :`thresholds_${field}`;
+        let inputField = document.querySelector(`input#${query}`);
         inputField.value = numValue;
+        if (field === "height"){
+            height.value = numValue;
+            return;
+        }
         thresholds.value[field] = numValue;
     }
     watch(configObject, () =>{
