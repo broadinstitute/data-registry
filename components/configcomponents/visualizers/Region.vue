@@ -52,6 +52,8 @@
                 <th>
                     <input class="form-check-input" type="checkbox" 
                         v-model="selectAllBox" @change="toggleSelectAll()"/>
+                </th>
+                <th>
                     Select fields
                 </th>
             </tr>
@@ -80,14 +82,6 @@
                 <option value="">Select a field</option>
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
-        </div>
-        <div class="col-md-2">
-            Zoom:
-        </div>
-        <div class="col-md-4">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" v-model="zoom" id="flexCheckDefault"/>
-            </div>
         </div>
     </div>
     <div class="label">
@@ -139,258 +133,13 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            Populations type:
+            Fixed population:
         </div>
         <div class="col-md-4">
-            <select class="form-control form-control-sm" v-model="popType">
-                <option value="static">Static</option>
-                <option value="dynamic">Dynamic</option>
+            <select class="form-control form-control-sm" v-model="refVarField">
+                <option value="">Select a population</option>
+                <option v-for="field in availableFields">{{ field }}</option>
             </select>
-        </div>
-    </div>
-    <div v-if="popType == 'dynamic'">
-        <div class="row">
-            <div class="col-md-2">
-                Populations parameter:
-            </div>
-            <div class="col-md-4">
-                <input type="text" class="form-control input-default form-control-sm" v-model="popParam"/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-2">
-                Populations ids:
-            </div>
-        <div class="col-md-4">
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popAll" class="col-sm-2 form-check-label">
-                    ALL
-                </label>
-                <div class="col-sm-3">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popAll"
-                    />
-                </div>
-            </div>
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popEur" class="col-sm-2 form-check-label">
-                    EUR
-                </label>
-                <div class="col-sm-7">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popEur"
-                    />
-                </div>
-            </div>
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popAfr" class="col-sm-2 form-check-label">
-                    AFR
-                </label>
-                <div class="col-sm-7">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popAfr"
-                    />
-                </div>
-            </div>
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popEas" class="col-sm-2 form-check-label">
-                    EAS
-                </label>
-                <div class="col-sm-7">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popEas"
-                    />
-                </div>
-            </div>
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popAmr" class="col-sm-2 form-check-label">
-                    AMR
-                </label>
-                <div class="col-sm-7">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popAmr"
-                    />
-                </div>
-            </div>
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popSas" class="col-sm-2 form-check-label">
-                    SAS
-                </label>
-                <div class="col-sm-7">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popSas"
-                    />
-                </div>
-            </div>
-        </div>
-</div>
-    </div>
-    <div class="row" v-else>
-        <div class="col-md-3">
-            Populations ids:
-        </div>
-        <div class="col-md-9">
-            <div>
-                <label class="form-check-label">
-                    Check only 1 if type static
-                </label>
-            </div>
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popAll" class="col-sm-2 form-check-label">
-                    ALL
-                </label>
-                <div class="col-sm-7">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popAll"
-                    />
-                </div>
-            </div>
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popEur" class="col-sm-2 form-check-label">
-                    EUR
-                </label>
-                <div class="col-sm-7">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popEur"
-                    />
-                </div>
-            </div>
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popAfr" class="col-sm-2 form-check-label">
-                    AFR
-                </label>
-                <div class="col-sm-7">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popAfr"
-                    />
-                </div>
-            </div>
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popEas" class="col-sm-2 form-check-label">
-                    EAS
-                </label>
-                <div class="col-sm-7">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popEas"
-                    />
-                </div>
-            </div>
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popAmr" class="col-sm-2 form-check-label">
-                    AMR
-                </label>
-                <div class="col-sm-7">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popAmr"
-                    />
-                </div>
-            </div>
-            <div class="form-group row">
-                <input
-                    class="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="flexCheckDefault"
-                />
-                <label for="popSas" class="col-sm-2 form-check-label">
-                    SAS
-                </label>
-                <div class="col-sm-7">
-                    <input
-                        type="text"
-                        class="form-control input-default form-control-sm"
-                        id="popSas"
-                    />
-                </div>
-            </div>
         </div>
     </div>
 <div class="label">
@@ -467,10 +216,9 @@
     const refField = ref("");
     const altField = ref("");
     const refVarField = ref("");
-    const popField = ref("");
-    const popType = ref("dynamic");
-    const popParam = ref("");
+    const fixedPop = ref("");
     const configObject = computed(() => {
+        // Dynamic population has been removed as an option for now - we're working on it.
         let config = {
             "type":"region plot",
             "x axis field": xAxisField.value,
@@ -478,19 +226,19 @@
             "y axis field": yAxisField.value,
             "y axis label": yAxisLabel.value,
             "render by": renderBy.value,
-            "hover content": hoverContent.value,
             "height": parseInt(height.value),
-            "zoom": zoom.value ? "true" : false,
             "star key": starKey.value,
             "ld server": {
                 "pos": positionField.value,
                 "ref": refField.value,
                 "alt": altField.value,
                 "ref variant field": refVarField.value,
-        "populations field":"Ancestry",
                 "populations type": popType.value,
     "populations":{"Mixed":"ALL","EU":"EUR","AA":"AFR","EA":"EAS","HS":"AMR","SA":"SAS"}},
     "genes track":{"input type":"dynamic","dynamic parameter":"region"}
+            }
+            if (hoverContent.value.length !== 0){
+                config["hover content"] = hoverContent.value;
             }
         return config;
     });
