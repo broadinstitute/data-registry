@@ -162,6 +162,6 @@
         thresholds.value[field] = numValue;
     }
     watch(configObject, () =>{
-        emit('updateVisualizer', JSON.stringify(configObject.value));
+        emit('updateVisualizer', configObject.value, readyToSave());
     });
 </script>

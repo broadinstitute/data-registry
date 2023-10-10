@@ -47,20 +47,18 @@
         <div class="col-md-2">
             Hover content:
         </div>
-        <table class="col-md-10">
+        <table class="col-md-10" id="hover">
             <tr>
                 <th>
                     <input class="form-check-input" type="checkbox" 
                         v-model="selectAllBox" @change="toggleSelectAll()"/>
-                </th>
-                <th>
-                    Select fields
+                    <label class="form-check-label">Select fields</label>
                 </th>
             </tr>
             <tr v-for="field in availableFields">
                 <td>
-                    <input class="form-check-input" type="checkbox" :value="field" id="flexCheckDefault" v-model="hoverContent"/>
-                    <label class="form-check-label" for="flexCheckDefault">{{ field }}</label>
+                    <input class="form-check-input" type="checkbox" :value="field" v-model="hoverContent"/>
+                    <label class="form-check-label">{{ field }}</label>
                 </td>
             </tr>
         </table>
@@ -200,6 +198,8 @@
 </div>
 </template>
 <script setup>
+    import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+    const store = useConfigBuilderStore();
     const runtimeConfig = useRuntimeConfig();
     const axios = useAxios(runtimeConfig, undefined, (error) => {
         console.log(error);
@@ -207,13 +207,14 @@
     });
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
-    const availableFields = computed(() => props.fields);
+    const availableFields = computed(()=> store.allFields);
     const selectAllBox = ref(false);
     const xAxisField = ref("");
     const xAxisLabel = ref("");
     const yAxisField = ref("");
     const yAxisLabel = ref("");
     const renderBy = ref("");
+    const inputType = ref("");
     const hoverContent = ref([]);
     const height = ref(200);
     const starKey = ref("");
@@ -248,12 +249,18 @@
             }
         return config;
     });
+    function readyToSave(){
+        let check = {
+            ready: false,
+            msg: ""
+        };
+        return check;
+    }
     onMounted(async () => {
-        console.log("Loading population options");
         await loadPopulationOptions();
     });
     watch(configObject, () =>{
-        emit('updateVisualizer', JSON.stringify(configObject.value));
+        emit('updateVisualizer', configObject.value, readyToSave());
     });
     async function loadPopulationOptions(){
         let populations = (await axios.get(POPULATIONS_URL)).data;
@@ -261,6 +268,12 @@
         popOptions.value = popListStart.concat(populations.data.filter(item => item !== "ALL"));
     }
     function toggleSelectAll(){
-        console.log("Select all");
+        hoverContent.value = !selectAllBox.value ? [] : availableFields.value.slice();
     }
 </script>
+<style>
+    #hover input {
+        margin-left: 16px;
+        margin-right: 10px;
+    }
+</style>
