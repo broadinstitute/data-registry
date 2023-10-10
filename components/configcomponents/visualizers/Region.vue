@@ -138,7 +138,7 @@
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="refVarField">
                 <option value="">Select a population</option>
-                <option v-for="field in availableFields">{{ field }}</option>
+                <option v-for="item in popOptions">{{ item }}</option>
             </select>
         </div>
     </div>
@@ -200,9 +200,15 @@
 </div>
 </template>
 <script setup>
+    const runtimeConfig = useRuntimeConfig();
+    const axios = useAxios(runtimeConfig, undefined, (error) => {
+        console.log(error);
+        throw new Error("Server Error");
+    });
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
     const availableFields = computed(() => props.fields);
+    const selectAllBox = ref(false);
     const xAxisField = ref("");
     const xAxisLabel = ref("");
     const yAxisField = ref("");
@@ -217,6 +223,8 @@
     const altField = ref("");
     const refVarField = ref("");
     const fixedPop = ref("");
+    const popOptions = ref([]);
+    const POPULATIONS_URL = "https://portaldev.sph.umich.edu/ld/genome_builds/GRCh37/references/1000G/populations";
     const configObject = computed(() => {
         // Dynamic population has been removed as an option for now - we're working on it.
         let config = {
@@ -233,16 +241,26 @@
                 "ref": refField.value,
                 "alt": altField.value,
                 "ref variant field": refVarField.value,
-                "populations type": popType.value,
-    "populations":{"Mixed":"ALL","EU":"EUR","AA":"AFR","EA":"EAS","HS":"AMR","SA":"SAS"}},
-    "genes track":{"input type":"dynamic","dynamic parameter":"region"}
             }
+        }
             if (hoverContent.value.length !== 0){
                 config["hover content"] = hoverContent.value;
             }
         return config;
     });
+    onMounted(async () => {
+        console.log("Loading population options");
+        await loadPopulationOptions();
+    });
     watch(configObject, () =>{
         emit('updateVisualizer', JSON.stringify(configObject.value));
     });
+    async function loadPopulationOptions(){
+        let populations = (await axios.get(POPULATIONS_URL)).data;
+        let popListStart = populations.data.includes("ALL") ? ["ALL"] : [];
+        popOptions.value = popListStart.concat(populations.data.filter(item => item !== "ALL"));
+    }
+    function toggleSelectAll(){
+        console.log("Select all");
+    }
 </script>
