@@ -81,6 +81,9 @@
             </tr>
         </table>
     </div>
+    <div class="label">
+        Set region
+    </div>
     <div class="row">
         <div class="col-md-2">
             Input type<sup class="required"> *</sup>
@@ -119,7 +122,7 @@
             Position field<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
-            <select class="form-control form-control-sm" v-model="ldPositionField">
+            <select class="form-control form-control-sm" v-model="posField">
                 <option value="">Select a field</option>
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
@@ -197,7 +200,6 @@
     const starKey = ref("");
     const chrField = ref("");
     const posField = ref("");
-    const ldPositionField = ref("");
     const refField = ref("");
     const altField = ref("");
     const refVarField = ref("");
@@ -210,14 +212,14 @@
         let config = {
             "type":"region plot",
             "x axis field": xAxisField.value,
-            "x axis label": xAxisLabel.value,
+            "x axis label": xAxisLabel.value.trim(),
             "y axis field": yAxisField.value,
-            "y axis label": yAxisLabel.value,
+            "y axis label": yAxisLabel.value.trim(),
             "render by": renderBy.value,
             "height": parseInt(height.value),
             "star key": starKey.value,
             "ld server": {
-                "pos": ldPositionField.value,
+                "pos": posField.value,
                 "ref": refField.value,
                 "alt": altField.value,
                 "ref variant field": refVarField.value,
@@ -251,6 +253,34 @@
             ready: false,
             msg: ""
         };
+        if (xAxisField.value === "" || yAxisField.value === "" ){
+            check.msg = "Specify fields for both axes.";
+            return check;
+        }
+        if (xAxisLabel.value.trim() === "" || yAxisLabel.value === ""){
+            check.msg = "Specify labels for both axes.";
+            return check;
+        }
+        if (renderBy.value  === ""){
+            check.msg = "Specify field to render by.";
+            return check;
+        }
+        if (inputType.value === "from data" && chrField.value === ""){
+            check.msg = "Specify chromosome field.";
+            return check;
+        }
+        if (posField.value === "" ||
+            refField.value === "" ||
+            altField.value === "" ||
+            refVarField.value === ""){
+                check.msg = "Specify position, ref, alt, and reference variant fields.";
+                return check;
+            }
+        if (fixedPop.value === ""){
+            check.msg = "Specify fixed population.";
+            return check;
+        }
+        check.ready = true;
         return check;
     }
     onMounted(async () => {
