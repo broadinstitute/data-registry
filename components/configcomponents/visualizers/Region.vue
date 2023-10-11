@@ -302,12 +302,3 @@
         hoverContent.value = !selectAllBox.value ? [] : availableFields.value.slice();
     }
 </script>
-<style>
-    #hover input {
-        margin-left: 16px;
-        margin-right: 10px;
-    }
-    sup.required{
-        color: red !important;
-    }
-</style>

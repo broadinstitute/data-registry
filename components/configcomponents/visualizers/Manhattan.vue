@@ -1,9 +1,9 @@
 <template>
     <div class="row">
         <div class="col-md-2">
-            Graphic format:
+            Graphic format<sup class="required"> *</sup>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="graphicFormat">
                 <option>Vector</option>
                 <option>Bitmap</option>
@@ -12,7 +12,7 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            X axis field:
+            X axis field<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="xAxisField">
@@ -21,7 +21,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            X axis label:
+            X axis label<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <input type="text" class="form-control input-default form-control-sm" v-model="xAxisLabel"/>
@@ -29,7 +29,7 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            Y axis field:
+            Y axis field<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="yAxisField">
@@ -38,7 +38,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            Y axis label:
+            Y axis label<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <input type="text" class="form-control input-default form-control-sm" v-model="yAxisLabel"/>
@@ -46,25 +46,40 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            Render by:
+            Render by<sup class="required"> *</sup>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="renderBy">
                 <option value="">Select a field</option>
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
         </div>
+        <div class="col-md-2">
+            Height
+        </div>
+        <div class="col-md-4">
+            <input type="number" class="form-control input-default form-control-sm" v-model="height"
+            @keydown="event => preventNonNumeric(event)"/>
+        </div>
+    </div>
+    <div class="row" v-if="graphicFormat === 'Vector'">
+        <div class="col-md-2">
+            Link to
+        </div>
+        <div class="col-md-10">
+            <input type="text" class="form-control input-default form-control-sm" v-model="linkTo"/>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-2">
-            Hover content:
+            Hover content
         </div>
-        <table class="col-md-10">
+        <table class="col-md-10" id="hover">
             <tr>
                 <th>
                     <input class="form-check-input" type="checkbox" 
                         v-model="selectAllBox" @change="toggleSelectAll()"/>
-                    Select fields
+                    <label class="label form-check-label">Select fields</label>
                 </th>
             </tr>
             <tr v-for="field in availableFields">
@@ -75,23 +90,7 @@
             </tr>
         </table>
     </div>
-    <div class="row" v-if="graphicFormat === 'vector'">
-        <div class="col-md-2">
-            Link to:
-        </div>
-        <div class="col-md-10">
-            <input type="text" class="form-control input-default form-control-sm" v-model="linkTo"/>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-2">
-            Height:
-        </div>
-        <div class="col-md-10">
-            <input type="number" class="form-control input-default form-control-sm" v-model="height"
-            @change="parseHeight()"/>
-        </div>
-    </div>
+    
 </template>
 <script setup>
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
@@ -108,9 +107,12 @@
     const renderBy = ref("");
     const xAxisLabel = ref("");
     const yAxisLabel = ref("");
-    const height = ref(250);
+    const height = ref("");
     const linkTo = ref("");
     const hoverContent = ref([]);
+    const NUMBER_KEYS = [
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Backspace"
+    ];
     // Do we want to bother checking that they aren't the same field?
     const configObject = computed(() => {
         let type = graphicFormat.value === "Vector" ? "manhattan plot" : "manhattan bitmap plot";
@@ -121,10 +123,16 @@
             "render by": renderBy.value,
             "x axis label": xAxisLabel.value,
             "y axis label": yAxisLabel.value,
-            "height": height.value,
-            "link to": linkTo.value, // is this optional?
-            "hover content": hoverContent.value
         };
+        if (typeof parseInt(height.value) === "number"){
+            config["height"] = parseInt(height.value);
+        }
+        if (linkTo.value !== ""){
+            config["link to"] = linkTo.value;
+        }
+        if (hoverContent.value.length > 0){
+            config["hover content"] = hoverContent.value;
+        }
         return config;
     });
     function readyToSave(){
@@ -157,6 +165,11 @@
     }
     function toggleSelectAll(){
         hoverContent.value = !!selectAllBox.value ? availableFields.value : [];
+    }
+    function preventNonNumeric(event){
+        if (!NUMBER_KEYS.includes(event.key)){
+            event.preventDefault();
+        }
     }
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());
