@@ -11,7 +11,7 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            X Axis field:
+            X axis field:
         </div>
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="xAxisField">
@@ -20,7 +20,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            X Axis label:
+            X axis label:
         </div>
         <div class="col-md-4">
             <input type="text" class="form-control input-default form-control-sm" v-model="xAxisLabel"/>
@@ -28,7 +28,7 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            Y Axis field:
+            Y axis field:
         </div>
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="yAxisField">
@@ -37,7 +37,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            Y Axis label:
+            Y axis label:
         </div>
         <div class="col-md-4">
             <input type="text" class="form-control input-default form-control-sm" v-model="yAxisLabel"/>

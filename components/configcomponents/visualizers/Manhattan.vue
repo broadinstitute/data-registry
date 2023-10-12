@@ -58,8 +58,7 @@
             Height
         </div>
         <div class="col-md-4">
-            <input type="number" class="form-control input-default form-control-sm" v-model="height"
-            @keydown="event => preventNonNumeric(event)"/>
+            <NumberField @inputReceived="input => height = input"></NumberField>
         </div>
     </div>
     <div class="row" v-if="graphicFormat === 'Vector'">
@@ -94,6 +93,7 @@
 </template>
 <script setup>
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+    import NumberField from '../NumberField.vue';
     const store = useConfigBuilderStore();
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
@@ -107,12 +107,10 @@
     const renderBy = ref("");
     const xAxisLabel = ref("");
     const yAxisLabel = ref("");
-    const height = ref("");
+    const height = ref(null);
     const linkTo = ref("");
     const hoverContent = ref([]);
-    const NUMBER_KEYS = [
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Backspace"
-    ];
+    //const NUMBER_KEYS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Backspace"];
     // Do we want to bother checking that they aren't the same field?
     const configObject = computed(() => {
         let type = graphicFormat.value === "Vector" ? "manhattan plot" : "manhattan bitmap plot";
@@ -124,8 +122,8 @@
             "x axis label": xAxisLabel.value,
             "y axis label": yAxisLabel.value,
         };
-        if (typeof parseInt(height.value) === "number"){
-            config["height"] = parseInt(height.value);
+        if (height.value !== null){
+            config["height"] = height.value;
         }
         if (linkTo.value !== ""){
             config["link to"] = linkTo.value;
@@ -155,22 +153,14 @@
         check.ready = true;
         return check;
     }
-    function parseHeight(){
-        let numHeight = parseInt(height.value);
-        if (isNaN(numHeight)){
-            height.value = 250;
-            return;
-        }
-        height.value = numHeight;
-    }
     function toggleSelectAll(){
         hoverContent.value = !!selectAllBox.value ? availableFields.value : [];
     }
-    function preventNonNumeric(event){
+    /* function preventNonNumeric(event){
         if (!NUMBER_KEYS.includes(event.key)){
             event.preventDefault();
         }
-    }
+    } */
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());
     });
