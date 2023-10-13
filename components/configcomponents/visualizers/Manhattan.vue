@@ -156,11 +156,6 @@
     function toggleSelectAll(){
         hoverContent.value = !!selectAllBox.value ? availableFields.value : [];
     }
-    /* function preventNonNumeric(event){
-        if (!NUMBER_KEYS.includes(event.key)){
-            event.preventDefault();
-        }
-    } */
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());
     });

@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-md-2">
-            Plot label:
+            Plot label<sup class="required"> *</sup>
         </div>
         <div class="col-md-10">
             <input type="text" v-model="plotLabel"
@@ -10,7 +10,7 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            Column field:
+            Column field<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="columnField">
@@ -19,7 +19,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            Column label:
+            Column label<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <input type="text" v-model="columnLabel"
@@ -28,7 +28,7 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            Row field:
+            Row field<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="rowField">
@@ -37,7 +37,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            Row label:
+            Row label<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <input type="text" v-model="rowLabel"
@@ -46,11 +46,10 @@
     </div>
 <div class="row">
     <div class="col-md-2">
-        Font size
+        Font size<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
-        <input type="number" v-model="fontSize"
-            class="form-control input-default form-control-sm"/>
+        <NumberField :startingValue="12" @inputReceived="input => fontSize = input"></NumberField>
     </div>
 </div>
 <div class="label">
@@ -58,7 +57,7 @@
 </div>
 <div class="row">
     <div class="col-md-2">
-        Field:
+        Field<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
         <select class="form-control form-control-sm" v-model="mainField">
@@ -67,7 +66,7 @@
         </select>
     </div>
     <div class="col-md-2">
-        Label
+        Label<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
         <input type="text" v-model="mainLabel"
@@ -76,7 +75,7 @@
 </div>
 <div class="row">
     <div class="col-md-2">
-        Render type
+        Render type<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
         <select class="form-control form-control-sm" v-model="mainRenderType">
@@ -84,7 +83,7 @@
         </select>
     </div>
     <div class="col-md-2">
-        Direction
+        Direction<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
         <select class="form-control form-control-sm" v-model="mainDirection">
@@ -95,41 +94,34 @@
 </div>
 <div class="row">
     <div class="col-md-2">
-        Lowest value
+        Lowest value<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
-        <input class="column-select form-control input-default" 
-            id="mainLow" type="number" :value="0"
-            @change="event => fixNumber('mainLow', event.target.value)"/>
+        <NumberField :startingValue="0" @inputReceived="input => mainLow = input"></NumberField>
     </div>
 </div>
 <div class="row">
     <div class="col-md-2">
-        Middle value
+        Middle value<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
-        <input class="column-select form-control input-default" 
-            id="mainMid" type="number" :value="0"
-            @change="event => fixNumber('mainMid', event.target.value)"/>
+        <NumberField :startingValue="0" @inputReceived="input => mainMid = input"></NumberField>
     </div>
 </div>
     <div class="row">
         <div class="col-md-2">
-            Highest value
+            Highest value<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
-            <input class="column-select form-control input-default" 
-                id="mainHigh" type="number" :value="0"
-                @change="event => fixNumber('mainHigh', event.target.value)"/>
+            <NumberField :startingValue="0" @inputReceived="input => mainHigh = input"></NumberField>
         </div>
     </div>
-<!-- TABLE LIKE THE ONE FROM SELECT COLUMNS?-->
     <div class="label">
-        Sub circle (optional)
+        Sub circle
     </div>
     <div class="row">
         <div class="col-md-2">
-            Field:
+            Field
         </div>
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="subField">
@@ -138,7 +130,7 @@
             </select>
         </div>
         <div class="col-md-2" v-if="subField !== ''">
-            Label
+            Label<sup class="required"> *</sup>
         </div>
         <div class="col-md-4" v-if="subField !== ''">
             <input type="text" v-model="subLabel"
@@ -148,7 +140,7 @@
     <div v-if="subField !== ''">
         <div class="row">
             <div class="col-md-2">
-                Render type
+                Render type<sup class="required"> *</sup>
             </div>
             <div class="col-md-4">
                 <select class="form-control form-control-sm" v-model="subRenderType">
@@ -156,7 +148,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                Direction
+                Direction<sup class="required"> *</sup>
             </div>
             <div class="col-md-4">
                 <select class="form-control form-control-sm" v-model="subDirection">
@@ -167,32 +159,32 @@
         </div>
         <div class="row" v-if="subRenderType == 'steps'">
             <div class="col-md-2">
-                Value steps
-                <small>(separate with ,)</small>
+                Value steps<sup class="required"> *</sup>
             </div>
             <div class="col-md-4 col">
 			<table>
-				<tr v-for="entry, index in thresholds.subSteps">
+				<tr v-for="entry, index in subSteps">
 					<td>
-						<input type="number" class="form-control input-default"
-							:value="entry" :id="`subSteps_${index}`"
-							@change="(event)=>fixNumber(`subSteps_${index}`, event.target.value)"/>
+                        <NumberField :startingValue="subSteps[index]" 
+                            @inputReceived="input => getSubStep(index, input)">
+                        </NumberField>
 					</td>
 					<td>
 						<button class="btn btn-secondary replace-chars-button delete-button"
-							v-if="thresholds.subSteps.length > 1" 
-                            @click="thresholds.subSteps.splice(index, 1);">&times;
+							v-if="subSteps.length > 1" 
+                            @click="subSteps.splice(index, 1);">&times;
 						</button>
 					</td>
 				</tr>
 			</table>
-			<button class="btn btn-primary" @click="thresholds.subSteps.push(0)">Add</button>
+			<button class="btn btn-primary" @click="subSteps.push(0)">Add</button>
 		</div>
         </div>
     </div>
 </template>
 <script setup>
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+    import NumberField from '../NumberField.vue';
     const store = useConfigBuilderStore();
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
@@ -209,12 +201,10 @@
     const mainLabel = ref("");
     const mainRenderType = ref("scale");
     const mainDirection = ref("positive");
-    const thresholds = ref({
-        mainLow: 0,
-        mainMid: 0,
-        mainHigh: 0,
-        subSteps: [0,0]
-    });
+    const mainLow = ref(0);
+    const mainMid = ref(0);
+    const mainHigh = ref(0);
+    const subSteps = ref([0,0]);
     const subField = ref("");
     const subLabel = ref("");
     const subRenderType = ref("steps");
@@ -227,15 +217,15 @@
             "column label": columnLabel.value,
             "row field": rowField.value,
             "row label": rowLabel.value,
-            "font size": parseInt(fontSize.value),
+            "font size": fontSize.value,
             "main": {
                 "field": mainField.value, 
                 "label": mainLabel.value,
                 "type": mainRenderType.value, 
                 "direction": mainDirection.value, 
-                "low": thresholds.value.mainLow, 
-                "middle": thresholds.value.mainMid, 
-                "high": thresholds.value.mainHigh,
+                "low": mainLow.value, 
+                "middle": mainMid.value, 
+                "high": mainHigh.value,
                 }
             };
         if (subField.value !== ""){
@@ -244,7 +234,7 @@
                 "label": subLabel.value, 
                 "type": subRenderType.value, 
                 "direction": subDirection.value, 
-                "value range": thresholds.value.subSteps
+                "value range": subSteps.value
             };
             config["sub"] = sub;
         }
@@ -275,9 +265,11 @@
             check.msg = "Specify main label.";
             return check;
         }
+        if (typeof fontSize.value !== "number"){
+            check.msg = "Specify font size.";
+        }
         // Render type and direction will never be blank
-        if (!(thresholds.value.mainLow <= thresholds.value.mainMid 
-            && thresholds.value.mainMid <= thresholds.value.mainHigh)){
+        if (!(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value)){
                 check.msg = "Assign low, middle, and high values in order";
                 return check;
             }
@@ -290,20 +282,10 @@
         check.ready = true;
         return check;
     }
-    function fixNumber(field, input){
-        let numValue = parseFloat(input);
-        if (isNaN(numValue)){
-            numValue = 0;
-        }
-        let inputField = document.querySelector(`input#${field}`);
-        inputField.value = numValue;
-        let fieldSplit = field.split("_");
-        if (fieldSplit[0] === "subSteps"){
-            let index = parseInt(fieldSplit[1]); 
-            thresholds.value.subSteps[index] = numValue;
-            return;
-        }
-        thresholds.value[field] = numValue;
+    function getSubStep(index, stepValue){
+        let inputField = document.querySelector(`input#subSteps_${index}`);
+        inputField.value = stepValue;
+        subSteps.value[index] = stepValue;
     }
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());
