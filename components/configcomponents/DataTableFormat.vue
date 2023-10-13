@@ -177,7 +177,10 @@
 			let oldFeatures = !!config.value["features"] ? config.value["features"] : [];
 			oldFeatures.forEach(feature => delete config.value[feature]);
 			Object.keys(content).forEach(featureKey => 
-				config.value[featureKey] = content[featureKey]); 
+				config.value[featureKey] = content[featureKey]);
+			if (config.value.features.length === 0){
+				delete config.value.features;
+			}
 		} else {
 			config.value[target] = content;
 		}
