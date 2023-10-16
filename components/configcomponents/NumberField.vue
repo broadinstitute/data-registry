@@ -6,21 +6,19 @@
     const emit = defineEmits(["inputReceived"]);
     const props = defineProps({startingValue: Number, integerOnly: Boolean, positiveOnly: Boolean});
     const numberValue = ref(props.startingValue === undefined ? "" : props.startingValue);
-    const NUMBER_KEYS = [
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Backspace", "e", ".", "-"
+    const LICIT_KEYS = [
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
+        "e", "E", ".", "-", "Backspace", "Delete", "Insert", "ArrowLeft", "ArrowRight"
     ];
     function numericInput(event){
-        if (characterNotLicit(event.key)){
+        if (!LICIT_KEYS.includes(event.key)){
             event.preventDefault();
         }
-    }
-    function characterNotLicit(key){
-        return !NUMBER_KEYS.includes(key);
     }
    // What to do about bad input like starting with an e?
     watch(numberValue, () => {
         let floatValue = parseFloat(numberValue.value);
-        floatValue = typeof floatValue === "number" ? floatValue : null;
+        floatValue = Number.isNaN(floatValue) ? null : floatValue;
         emit("inputReceived", floatValue);
     });
 </script>
