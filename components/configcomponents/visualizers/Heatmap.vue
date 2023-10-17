@@ -53,7 +53,7 @@
     </div>
 </div>
 <div class="label">
-    Main box
+    Box color coding
 </div>
 <div class="row">
     <div class="col-md-2">
@@ -117,7 +117,7 @@
         </div>
     </div>
     <div class="label">
-        Sub circle
+        Sub circle scaling
     </div>
     <div class="row">
         <div class="col-md-2">
@@ -281,9 +281,6 @@
         }
         check.ready = true;
         return check;
-    }
-    function deleteSubStep(index){
-        subSteps.value.splice(index, 1);
     }
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());
