@@ -172,7 +172,7 @@
 					<td>
 						<button class="btn btn-secondary replace-chars-button delete-button"
 							v-if="subSteps.length > 1" 
-                            @click="deleteSubStep(index)">&times;
+                            @click="subSteps.splice(index, 1)">&times;
 						</button>
 					</td>
 				</tr>
@@ -283,9 +283,7 @@
         return check;
     }
     function deleteSubStep(index){
-        console.log(JSON.stringify(subSteps.value));
         subSteps.value.splice(index, 1);
-        console.log(JSON.stringify(subSteps.value));
     }
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());
