@@ -110,8 +110,6 @@
     const height = ref(null);
     const linkTo = ref("");
     const hoverContent = ref([]);
-    //const NUMBER_KEYS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Backspace"];
-    // Do we want to bother checking that they aren't the same field?
     const configObject = computed(() => {
         let type = graphicFormat.value === "Vector" ? "manhattan plot" : "manhattan bitmap plot";
         let config = {

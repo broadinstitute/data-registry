@@ -280,13 +280,9 @@
     const visType = ref("");
     const config = ref({});
     const savedViz = ref({});
-    const savedVizString = computed(() => JSON.stringify(savedViz));
     const failedSaveMsg = ref("");
     const readyToSave = ref(false);
     const showMsg = ref(false);
-    const NUMBER_KEYS = [
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "Backspace", "e", ".", "-"
-    ];
     function showConfig(newConfig, saveCheck){
         showMsg.value = false;
         config.value = newConfig;
@@ -305,10 +301,5 @@
     function editVisualization(){
         config.value = savedViz.value;
         visType.value = config.value.type.split(" ")[0];
-    }
-    function preventNonNumeric(event){
-        if (!NUMBER_KEYS.includes(event.key)){
-            event.preventDefault();
-        }
     }
 </script>
