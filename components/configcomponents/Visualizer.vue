@@ -34,7 +34,7 @@
                                             :fieldNameUpdate="fieldUpdate"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Manhattan>
-                                        <Heatmap v-if="visType == 'heatmap'"
+                                        <!-- <Heatmap v-if="visType == 'heatmap'"
                                             :fields="availableFields"
                                             :fieldNameUpdate="fieldUpdate"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
@@ -53,7 +53,7 @@
                                             :fields="availableFields"
                                             :fieldNameUpdate="fieldUpdate"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
-                                        </Volcano>
+                                        </Volcano> -->
                                     </div>
                                     <div class="col-md-2 col">
                                         <button class="btn btn-primary btn-sm" type="button"
@@ -269,10 +269,10 @@
 </template>
 <script setup>
     import Manhattan from "@/components/configcomponents/visualizers/Manhattan.vue";
-    import Heatmap from "@/components/configcomponents/visualizers/Heatmap.vue";
+/*     import Heatmap from "@/components/configcomponents/visualizers/Heatmap.vue";
     import Phewas from "@/components/configcomponents/visualizers/Phewas.vue";
     import Region from "@/components/configcomponents/visualizers/Region.vue";
-    import Volcano from "@/components/configcomponents/visualizers/Volcano.vue";
+    import Volcano from "@/components/configcomponents/visualizers/Volcano.vue"; */
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["visualizationSaved"])
     const availableFields = computed(() => props.fields);
