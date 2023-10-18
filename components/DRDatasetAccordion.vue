@@ -56,7 +56,19 @@
           </div>
         </div>
       </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingThree">
+          <button class="accordion-button collapsed large-accordion-heading dataset-accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#drindex" aria-expanded="false" aria-controls="drindex">
+            Query API
+          </button>
+        </h2>
+        <div id="drindex" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#dsAccordion">
+          <div class="accordion-body">
+            <DRIndex :dataset-id="store.dataSetId" />
+          </div>
+        </div>
     </div>
+  </div>
   </div>
   <Modal :status-message="store.modalMsg" v-if="store.processing" :progress="store.uploadProgress" :show-progress="store.showProgressBar"/>
 </template>
