@@ -72,21 +72,19 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2" v-if="xAxisCondition === 'greater than' || xAxisCondition === 'and' || xAxisCondition === 'or'">
+        <div class="col-md-2" v-if="GREATER_THANS.includes(xAxisCondition)">
             Greater than<sup class="required"> *</sup>
         </div>
-        <div class="col-md-4" v-if="xAxisCondition === 'greater than' || xAxisCondition === 'and' || xAxisCondition === 'or'">
-            <input type="number" id="xGT" class="form-control input-default form-control-sm" :value="0"
-                @change="event => fixNumber('xGT', event.target.value)"/>
+        <div class="col-md-4" v-if="GREATER_THANS.includes(xAxisCondition)">
+            <NumberField :startingValue="0" @inputReceived="input => xGT = input"></NumberField>
         </div>
         <div class="col-md-2">
             <span v-if="xAxisCondition === 'lower than'">Less than<sup class="required"> *</sup></span>
             <span v-else-if="xAxisCondition === 'and'">AND less than<sup class="required"> *</sup></span>
             <span v-else-if="xAxisCondition === 'or'">OR less than<sup class="required"> *</sup></span>
         </div>
-        <div class="col-md-4" v-if="xAxisCondition === 'lower than' || xAxisCondition === 'and' || xAxisCondition === 'or'">
-            <input type="number" id="xLT" class="form-control input-default form-control-sm" :value="0"
-                @change="event => fixNumber('xLT', event.target.value)"/>
+        <div class="col-md-4" v-if="LOWER_THANS.includes(xAxisCondition)">
+            <NumberField :startingValue="0" @inputReceived="input => xLT = input"></NumberField>
         </div>
     </div>
     <div class="label">
@@ -107,21 +105,19 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2" v-if="yAxisCondition === 'greater than' || yAxisCondition === 'and' || yAxisCondition === 'or'">
+        <div class="col-md-2" v-if="GREATER_THANS.includes(yAxisCondition)">
             Greater than<sup class="required"> *</sup>
         </div>
-        <div class="col-md-4" v-if="yAxisCondition === 'greater than' || yAxisCondition === 'and' || yAxisCondition === 'or'">
-            <input type="number" id="yGT" class="form-control input-default form-control-sm" :value="0"
-                @change="event => fixNumber('yGT', event.target.value)"/>
+        <div class="col-md-4" v-if="GREATER_THANS.includes(yAxisCondition)">
+            <NumberField :startingValue="0" @inputReceived="input => yGT = input"></NumberField>
         </div>
         <div class="col-md-2">
             <span v-if="yAxisCondition === 'lower than'">Less than<sup class="required"> *</sup></span>
             <span v-else-if="yAxisCondition === 'and'">AND less than<sup class="required"> *</sup></span>
             <span v-else-if="yAxisCondition === 'or'">OR less than<sup class="required"> *</sup></span>
         </div>
-        <div class="col-md-4" v-if="yAxisCondition === 'lower than' || yAxisCondition === 'and' || yAxisCondition === 'or'">
-            <input type="number" id="yLT" class="form-control input-default form-control-sm" :value="0"
-                @change="event => fixNumber('yLT', event.target.value)"/>
+        <div class="col-md-4" v-if="LOWER_THANS.includes(yAxisCondition)">
+            <NumberField :startingValue="0" @inputReceived="input => yLT = input"></NumberField>
         </div>
     </div>
     <div class="row">
@@ -140,20 +136,19 @@
             Width
         </div>
         <div class="col-md-4">
-            <input type="number" class="form-control input-default form-control-sm" id="width" :value="800"
-                @change="event => fixNumber('width', event.target.value)"/>
+            <NumberField @inputReceived="input => width = input"></NumberField>
         </div>
         <div class="col-md-2">
             Height
         </div>
         <div class="col-md-4">
-            <input type="number" class="form-control input-default form-control-sm" id="height" :value="400"
-                @change="event => fixNumber('height', event.target.value)"/>
+            <NumberField @inputReceived="input => height = input"></NumberField>
         </div>
     </div>
 </template>
 <script setup>
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+    import NumberField from '../NumberField.vue';
     const store = useConfigBuilderStore();
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
@@ -169,14 +164,14 @@
     const dotLabelScore = ref(1);
     const xAxisCondition = ref("");
     const yAxisCondition = ref("");
-    const numbers = ref({
-        "xGT": 0,
-        "xLT": 0,
-        "yGT": 0,
-        "yLT": 0,
-        "width": 800,
-        "height": 400
-    });
+    const GREATER_THANS = ["greater than", "and", "or"];
+    const LOWER_THANS = ["lower than", "and", "or"];
+    const xGT = ref(0);
+    const xLT = ref(0);
+    const yGT = ref(0);
+    const yLT = ref(0);
+    const width = ref("");
+    const height = ref("");
     const configObject = computed(() => {
         let config = {
             "type":"volcano plot",
@@ -188,29 +183,29 @@
             "render by": renderBy.value,
             "x condition": {
                 "combination": xAxisCondition.value,
-                "greater than": numbers.value.xGT,
-                "lower than": numbers.value.xLT
             },
             "y condition": {
                 "combination": yAxisCondition.value,
-                "greater than": numbers.value.yGT,
-                "lower than": numbers.value.yLT
             },
             "dot label score": dotLabelScore.value,
-            "width": numbers.value.width,
-            "height": numbers.value.height,
         };
-        if (xAxisCondition.value == 'greater than'){
-            delete config["x condition"]["lower than"];
+        if (GREATER_THANS.includes(xAxisCondition.value)){
+            config["x condition"]["greater than"] = xGT.value;
         }
-        if (xAxisCondition.value == 'lower than'){
-            delete config["x condition"]["greater than"];
+        if (LOWER_THANS.includes(xAxisCondition.value)){
+            config["x condition"]["lower than"] = xLT.value;
         }
-        if (yAxisCondition.value == 'greater than'){
-            delete config["y condition"]["lower than"];
+        if (GREATER_THANS.includes(yAxisCondition.value)){
+            config["y condition"]["greater than"] = yGT.value;
         }
-        if (yAxisCondition.value == 'lower than'){
-            delete config["y condition"]["greater than"];
+        if (LOWER_THANS.includes(yAxisCondition.value)){
+            config["y condition"]["lower than"] = yGT.value;
+        }
+        if (width.value !== null){
+            config["width"] = width.value;
+        }
+        if (height.value !== null){
+            config["height"] = height.value;
         }
         return config;
     });
@@ -235,25 +230,36 @@
             check.msg = "Specify field to render by.";
             return check;
         }
-        if (xAxisCondition.value === "and" && numbers.value.xGT >= numbers.value.xLT){
-            check.msg = "X-axis 'AND' condition must be corrected.";
+        if (xAxisCondition.value === "" || yAxisCondition.value === ""){
+            check.msg = "Specify conditions for both axes.";
             return check;
         }
-        if (yAxisCondition.value === "and" && numbers.value.yGT >= numbers.value.yLT){
-            check.msg = "Y-axis 'AND' condition must be corrected.";
+        if (GREATER_THANS.includes(xAxisCondition.value) && xGT.value === null){
+            check.msg = "Specify greater-than threshold for X axis.";
+            return check;
+        }
+        if (LOWER_THANS.includes(xAxisCondition.value) && xLT.value === null){
+            check.msg = "Specify less-than threshold for X axis.";
+            return check;
+        }
+        if (GREATER_THANS.includes(yAxisCondition.value) && yGT.value === null){
+            check.msg = "Specify greater-than threshold for Y axis.";
+            return check;
+        }
+        if (LOWER_THANS.includes(yAxisCondition.value) && yLT.value === null){
+            check.msg = "Specify less-than threshold for Y axis.";
+            return check;
+        }
+        if (xAxisCondition.value === "and" && xGT.value >= xLT.value){
+            check.msg = "X axis 'AND' condition must be corrected.";
+            return check;
+        }
+        if (yAxisCondition.value === "and" && yGT.value >= yLT.value){
+            check.msg = "Y axis 'AND' condition must be corrected.";
             return check;
         }
         check.ready = true;
         return check;
-    }
-    function fixNumber(field, input){
-        let numValue = parseFloat(input);
-        if (isNaN(numValue)){
-            numValue = 0;
-        }
-        let inputField = document.querySelector(`input#${field}`);
-        inputField.value = numValue;
-        numbers.value[field] = numValue;
     }
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());
