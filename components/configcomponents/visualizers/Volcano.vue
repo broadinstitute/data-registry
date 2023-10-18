@@ -75,19 +75,16 @@
         <div class="col-md-2" v-if="xAxisCondition === 'greater than' || xAxisCondition === 'and' || xAxisCondition === 'or'">
             Greater than<sup class="required"> *</sup>
         </div>
-        <div class="col-md-2" v-if="xAxisCondition === 'greater than' || xAxisCondition === 'and' || xAxisCondition === 'or'">
+        <div class="col-md-4" v-if="xAxisCondition === 'greater than' || xAxisCondition === 'and' || xAxisCondition === 'or'">
             <input type="number" id="xGT" class="form-control input-default form-control-sm" :value="0"
                 @change="event => fixNumber('xGT', event.target.value)"/>
         </div>
-        <div class="col-md-1" v-if="xAxisCondition !== 'lower than'"></div>
-        <div class="col-md-1" v-if="xAxisCondition !== 'lower than'">
-            <span v-if="xAxisCondition === 'and'">AND</span>
-            <span v-if="xAxisCondition === 'or'">OR</span>
+        <div class="col-md-2">
+            <span v-if="xAxisCondition === 'lower than'">Less than<sup class="required"> *</sup></span>
+            <span v-else-if="xAxisCondition === 'and'">AND less than<sup class="required"> *</sup></span>
+            <span v-else-if="xAxisCondition === 'or'">OR less than<sup class="required"> *</sup></span>
         </div>
-        <div class="col-md-2" v-if="xAxisCondition === 'lower than' || xAxisCondition === 'and' || xAxisCondition === 'or'">
-            Less than<sup class="required"> *</sup>
-        </div>
-        <div class="col-md-2" v-if="xAxisCondition === 'lower than' || xAxisCondition === 'and' || xAxisCondition === 'or'">
+        <div class="col-md-4" v-if="xAxisCondition === 'lower than' || xAxisCondition === 'and' || xAxisCondition === 'or'">
             <input type="number" id="xLT" class="form-control input-default form-control-sm" :value="0"
                 @change="event => fixNumber('xLT', event.target.value)"/>
         </div>
@@ -113,19 +110,16 @@
         <div class="col-md-2" v-if="yAxisCondition === 'greater than' || yAxisCondition === 'and' || yAxisCondition === 'or'">
             Greater than<sup class="required"> *</sup>
         </div>
-        <div class="col-md-2" v-if="yAxisCondition === 'greater than' || yAxisCondition === 'and' || yAxisCondition === 'or'">
+        <div class="col-md-4" v-if="yAxisCondition === 'greater than' || yAxisCondition === 'and' || yAxisCondition === 'or'">
             <input type="number" id="yGT" class="form-control input-default form-control-sm" :value="0"
                 @change="event => fixNumber('yGT', event.target.value)"/>
         </div>
-        <div class="col-md-1" v-if="yAxisCondition !== 'lower than'"></div>
-        <div class="col-md-1" v-if="yAxisCondition !== 'lower than'">
-            <span v-if="yAxisCondition === 'and'">AND</span>
-            <span v-if="yAxisCondition === 'or'">OR</span>
+        <div class="col-md-2">
+            <span v-if="yAxisCondition === 'lower than'">Less than<sup class="required"> *</sup></span>
+            <span v-else-if="yAxisCondition === 'and'">AND less than<sup class="required"> *</sup></span>
+            <span v-else-if="yAxisCondition === 'or'">OR less than<sup class="required"> *</sup></span>
         </div>
-        <div class="col-md-2" v-if="yAxisCondition === 'lower than' || yAxisCondition === 'and' || yAxisCondition === 'or'">
-            Less than<sup class="required"> *</sup>
-        </div>
-        <div class="col-md-2" v-if="yAxisCondition === 'lower than' || yAxisCondition === 'and' || yAxisCondition === 'or'">
+        <div class="col-md-4" v-if="yAxisCondition === 'lower than' || yAxisCondition === 'and' || yAxisCondition === 'or'">
             <input type="number" id="yLT" class="form-control input-default form-control-sm" :value="0"
                 @change="event => fixNumber('yLT', event.target.value)"/>
         </div>
