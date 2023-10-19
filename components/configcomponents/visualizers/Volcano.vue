@@ -199,7 +199,7 @@
             config["y condition"]["greater than"] = yGT.value;
         }
         if (LOWER_THANS.includes(yAxisCondition.value)){
-            config["y condition"]["lower than"] = yGT.value;
+            config["y condition"]["lower than"] = yLT.value;
         }
         if (width.value !== null){
             config["width"] = width.value;
