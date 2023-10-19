@@ -163,7 +163,7 @@
             </div>
             <div class="col-md-4 col">
 			<table>
-				<tr v-for="entry, index in subSteps">
+				<tr v-for="(, index) in subSteps">
 					<td>
                         <NumberField :startingValue="subSteps[index]" 
                             @inputReceived="input => subSteps[index] = input">
@@ -189,8 +189,6 @@
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
     const availableFields = computed(()=> store.allFields);
-    const fieldNameOld = computed(() => store.latestFieldRename[0]);
-    const fieldNameNew = computed(() => store.latestFieldRename[1]);
     const plotLabel = ref("");
     const columnField = ref("");
     const columnLabel = ref("");
