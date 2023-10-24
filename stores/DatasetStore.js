@@ -183,6 +183,7 @@ export const useDatasetStore = defineStore('DatasetStore', {
       this.showNotification = true;
       this.isServerSuccess = true;
       this.processing = false;
+      this.successMessage = "Bioindex updated or created successfully."
     },
     async uploadFiles(dataset_id) {
       this.processing = true;
