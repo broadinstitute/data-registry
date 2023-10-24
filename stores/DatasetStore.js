@@ -172,6 +172,18 @@ export const useDatasetStore = defineStore('DatasetStore', {
       this.isServerSuccess = true
       this.successMessage = "Metadata saved, you can now upload files."
     },
+    async createBioIndex(dataset_id, schema){
+      this.processing = true;
+      this.showProgressBar = false;
+      this.modalMsg = `Creating bioindex....`;
+      await configuredAxios.post("/api/createbioindex", {
+        dataset_id: dataset_id,
+        schema_desc: schema
+      });
+      this.showNotification = true;
+      this.isServerSuccess = true;
+      this.processing = false;
+    },
     async uploadFiles(dataset_id) {
       this.processing = true;
       this.showProgressBar = true;

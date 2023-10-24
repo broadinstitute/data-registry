@@ -26,7 +26,6 @@ const isVisible = ref(true);
 
 watch(() => props.showNotification, (newValue) => {
   if (newValue) {
-    console.log("showing notification")
     isVisible.value = true;
     setTimeout(() => {
       isVisible.value = false;

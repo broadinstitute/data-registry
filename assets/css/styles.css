@@ -28,6 +28,12 @@ ul {
   padding-left: 0;
 }
 
+.file-list {
+  list-style-type: disc;
+  padding-left: 1em;
+  margin: 0;
+}
+
 .label {
   font-weight: 700;
   font-size: 14px;
