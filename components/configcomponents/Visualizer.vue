@@ -107,7 +107,13 @@
                 <div class="col-md-12 col filter-col-md">
                     <div class="label">
                         Visualizer legend
+                    <div class="label">
+                        Visualizer legend
                     </div>
+                    <textarea rows="3" class="form-control"></textarea>
+                </div>
+            </div>
+        </div>
                     <textarea rows="3" class="form-control"></textarea>
                 </div>
             </div>

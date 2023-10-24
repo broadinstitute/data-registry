@@ -53,7 +53,7 @@
     </div>
 </div>
 <div class="label">
-    Main box
+    Box color coding
 </div>
 <div class="row">
     <div class="col-md-2">
@@ -117,7 +117,7 @@
         </div>
     </div>
     <div class="label">
-        Sub circle
+        Sub circle scaling
     </div>
     <div class="row">
         <div class="col-md-2">
@@ -166,13 +166,13 @@
 				<tr v-for="entry, index in subSteps">
 					<td>
                         <NumberField :startingValue="subSteps[index]" 
-                            @inputReceived="input => getSubStep(index, input)">
+                            @inputReceived="input => subSteps[index] = input">
                         </NumberField>
 					</td>
 					<td>
 						<button class="btn btn-secondary replace-chars-button delete-button"
 							v-if="subSteps.length > 1" 
-                            @click="subSteps.splice(index, 1);">&times;
+                            @click="subSteps.splice(index, 1)">&times;
 						</button>
 					</td>
 				</tr>
@@ -265,7 +265,7 @@
             check.msg = "Specify main label.";
             return check;
         }
-        if (typeof fontSize.value !== "number"){
+        if (fontSize.value === null){
             check.msg = "Specify font size.";
         }
         // Render type and direction will never be blank
@@ -281,11 +281,6 @@
         }
         check.ready = true;
         return check;
-    }
-    function getSubStep(index, stepValue){
-        let inputField = document.querySelector(`input#subSteps_${index}`);
-        inputField.value = stepValue;
-        subSteps.value[index] = stepValue;
     }
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());
