@@ -11,18 +11,18 @@
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
         "e", "E", ".", "-", "Backspace", "Delete", "Insert", "ArrowLeft", "ArrowRight", "Tab"
     ]);
+    onMounted(() => emitValue());
+    function emitValue(){
+        let floatValue = parseFloat(numberValue.value);
+        floatValue = Number.isNaN(floatValue) ? null : floatValue;
+        emit("inputReceived", floatValue);
+    }
     function numericInput(event){
         if (!LICIT_KEYS.has(event.key)){
             event.preventDefault();
         }
     }
    // What to do about bad input like starting with an e?
-    watch(numberValue, () => {
-        let floatValue = parseFloat(numberValue.value);
-        floatValue = Number.isNaN(floatValue) ? null : floatValue;
-        emit("inputReceived", floatValue);
-    });
-    watch(startingValue, () => {
-        numberValue.value = startingValue.value;
-    });
+    watch(numberValue, () => emitValue());
+    watch(startingValue, () => numberValue.value = startingValue.value);
 </script>
