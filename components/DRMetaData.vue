@@ -1,7 +1,6 @@
 <script setup>
 import * as Bootstrap from 'bootstrap'
 import { useDatasetStore } from '~/stores/DatasetStore'
-import { toNumber } from '~/utils'
 
 
 const props = defineProps({
