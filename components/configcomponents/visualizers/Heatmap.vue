@@ -49,7 +49,8 @@
         Font size<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
-        <NumberField :startingValue="12" @inputReceived="input => fontSize = input"></NumberField>
+        <input class="form-control form-control-sm" v-model="fontSize" 
+                @change="$event => fontSize = toNumber($event.target.value)"/>
     </div>
 </div>
 <div class="label">
@@ -97,7 +98,8 @@
         Lowest value<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
-        <NumberField :startingValue="0" @inputReceived="input => mainLow = input"></NumberField>
+        <input class="form-control form-control-sm" v-model="mainLow"
+                @change="$event => mainLow = toNumber($event.target.value)"/>
     </div>
 </div>
 <div class="row">
@@ -105,7 +107,8 @@
         Middle value<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
-        <NumberField :startingValue="0" @inputReceived="input => mainMid = input"></NumberField>
+        <input class="form-control form-control-sm" v-model="mainMid"
+                @change="$event => mainMid = toNumber($event.target.value)"/>
     </div>
 </div>
     <div class="row">
@@ -113,7 +116,8 @@
             Highest value<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
-            <NumberField :startingValue="0" @inputReceived="input => mainHigh = input"></NumberField>
+            <input class="form-control form-control-sm" v-model="mainHigh" 
+                @change="$event => mainHigh = toNumber($event.target.value)"/>
         </div>
     </div>
     <div class="label">
@@ -165,9 +169,8 @@
 			<table>
 				<tr v-for="(, index) in subSteps">
 					<td>
-                        <NumberField :startingValue="subSteps[index]" 
-                            @inputReceived="input => subSteps[index] = input">
-                        </NumberField>
+                        <input class="form-control form-control-sm" :value="subSteps[index]"
+                            @change="$event => subSteps[index] = toNumber($event.target.value)"/>
 					</td>
 					<td>
 						<button class="btn btn-secondary replace-chars-button delete-button"
@@ -184,7 +187,6 @@
 </template>
 <script setup>
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-    import NumberField from '../NumberField.vue';
     const store = useConfigBuilderStore();
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
@@ -279,6 +281,10 @@
         }
         check.ready = true;
         return check;
+    }
+    function toNumber(input){
+        let floatInput = parseFloat(input);
+        return Number.isNaN(floatInput) ? null : floatInput;
     }
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());

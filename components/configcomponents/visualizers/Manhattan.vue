@@ -58,7 +58,8 @@
             Height
         </div>
         <div class="col-md-4">
-            <NumberField @inputReceived="input => height = input"></NumberField>
+            <input class="form-control form-control-sm" v-model="height" 
+                @change="$event => height = toNumber($event.target.value)"/>
         </div>
     </div>
     <div class="row" v-if="graphicFormat === 'Vector'">
@@ -155,4 +156,8 @@
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());
     });
+    function toNumber(input){
+        let floatInput = parseFloat(input);
+        return Number.isNaN(floatInput) ? null : floatInput;
+    }
 </script>
