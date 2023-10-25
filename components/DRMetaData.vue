@@ -1,6 +1,7 @@
 <script setup>
 import * as Bootstrap from 'bootstrap'
 import { useDatasetStore } from '~/stores/DatasetStore'
+import { toNumber } from '~/utils'
 
 
 const props = defineProps({
@@ -177,6 +178,11 @@ const props = defineProps({
       return s.label.toLowerCase().includes(q.toLowerCase())
     });
   }
+
+  console.log(toNumber("11"));
+  console.log(toNumber("a11a"));
+  console.log(toNumber("Boo"));
+  console.log(toNumber("чᄰ"));
 
 </script>
 
