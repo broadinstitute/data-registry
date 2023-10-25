@@ -98,8 +98,6 @@
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
     const availableFields = computed(()=> store.allFields);
-    const fieldNameOld = computed(() => store.latestFieldRename[0]);
-    const fieldNameNew = computed(() => store.latestFieldRename[1]);
     const selectAllBox = ref(false);
     const graphicFormat = ref("Vector");
     const xAxisField = ref("");
