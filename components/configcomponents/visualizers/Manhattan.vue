@@ -94,9 +94,7 @@
 </template>
 <script setup>
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-    import NumberField from '../NumberField.vue';
     const store = useConfigBuilderStore();
-    const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
     const availableFields = computed(()=> store.allFields);
     const selectAllBox = ref(false);

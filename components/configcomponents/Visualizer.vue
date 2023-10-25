@@ -30,28 +30,18 @@
                                             Set parameters
                                         </div>
                                         <Manhattan v-if="visType == 'manhattan'"
-                                            :fields="availableFields"
-                                            :fieldNameUpdate="fieldUpdate"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Manhattan>
                                         <Heatmap v-if="visType == 'heatmap'"
-                                            :fields="availableFields"
-                                            :fieldNameUpdate="fieldUpdate"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Heatmap>
                                         <!--<Phewas v-if="visType == 'phewas'"
-                                            :fields="availableFields"
-                                            :fieldNameUpdate="fieldUpdate"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Phewas> 
                                         <Region v-if="visType == 'region'"
-                                            :fields="availableFields"
-                                            :fieldNameUpdate="fieldUpdate"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Region>
                                         <Volcano v-if="visType == 'volcano'"
-                                            :fields="availableFields"
-                                            :fieldNameUpdate="fieldUpdate"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Volcano> -->
                                     </div>

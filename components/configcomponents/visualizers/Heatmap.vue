@@ -188,7 +188,6 @@
 <script setup>
     import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
     const store = useConfigBuilderStore();
-    const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
     const availableFields = computed(()=> store.allFields);
     const plotLabel = ref("");
