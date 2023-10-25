@@ -281,10 +281,6 @@
         check.ready = true;
         return check;
     }
-    function toNumber(input){
-        let floatInput = parseFloat(input);
-        return Number.isNaN(floatInput) ? null : floatInput;
-    }
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());
     });

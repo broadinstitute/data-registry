@@ -154,8 +154,4 @@
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());
     });
-    function toNumber(input){
-        let floatInput = parseFloat(input);
-        return Number.isNaN(floatInput) ? null : floatInput;
-    }
 </script>
