@@ -254,3 +254,10 @@ pre.output{
 .column-format-label {
 	margin-right: 10px;
 }
+#hover input {
+	margin-left: 16px;
+	margin-right: 10px;
+}
+sup.required{
+	color: red !important;
+}
