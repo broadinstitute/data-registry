@@ -58,7 +58,8 @@
             Height
         </div>
         <div class="col-md-4">
-            <NumberField @inputReceived="input => height = input"></NumberField>
+            <input class="form-control form-control-sm" v-model="height" 
+                @change="$event => height = toNumber($event.target.value)"/>
         </div>
     </div>
     <div class="row" v-if="graphicFormat === 'Vector'">
@@ -93,9 +94,7 @@
 </template>
 <script setup>
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-    import NumberField from '../NumberField.vue';
     const store = useConfigBuilderStore();
-    const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["updateVisualizer"]);
     const availableFields = computed(()=> store.allFields);
     const selectAllBox = ref(false);
