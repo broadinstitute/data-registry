@@ -40,10 +40,10 @@
                                         </Phewas> 
                                         <Region v-if="visType == 'region'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
-                                        </Region>
+                                        </Region>-->
                                         <Volcano v-if="visType == 'volcano'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
-                                        </Volcano> -->
+                                        </Volcano>
                                     </div>
                                     <div class="col-md-2 col">
                                         <button class="btn btn-primary btn-sm" type="button"
