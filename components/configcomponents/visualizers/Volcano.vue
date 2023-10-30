@@ -227,7 +227,7 @@
             { condition: () => yAxisCondition.value === "and" && yGT.value >= yLT.value, msg: "Y axis 'AND' condition must be corrected."}
         ];
             for (let validator of validators){
-                if (!validator.condition){
+                if (validator.condition()){
                     return { ready: false, msg: validator.msg};
                 }
             }
