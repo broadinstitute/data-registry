@@ -42,7 +42,7 @@
                 </li>
             </ul>
 
-            <span class="navbar-text dropdown text-end">
+            <span class="navbar-text dropdown text-end"  v-if="userStore.user">
                 <a
                     href="#"
                     class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
@@ -71,9 +71,9 @@
 <script setup>
 import { useUserStore } from '~/stores/UserStore'
 
+const userStore = useUserStore();
 
 function signOut() {
-  const userStore = useUserStore()
   userStore.logout()
 }
 
