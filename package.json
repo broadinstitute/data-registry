@@ -2,7 +2,8 @@
     "private": true,
     "scripts": {
         "build": "nuxt build",
-        "dev": "nuxt dev --host local.kpndataregistry.org"
+        "dev": "NUXT_PUBLIC_SKIP_AUTH=true nuxt dev --host local.kpndataregistry.org",
+        "dev-auth": "nuxt dev --host local.kpndataregistry.org"
     },
     "devDependencies": {
         "@nuxt/devtools": "^1.0.0",
