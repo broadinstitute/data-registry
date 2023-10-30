@@ -261,8 +261,8 @@
     import Manhattan from "@/components/configcomponents/visualizers/Manhattan.vue";
     import Heatmap from "@/components/configcomponents/visualizers/Heatmap.vue";
     /*import Phewas from "@/components/configcomponents/visualizers/Phewas.vue";
-    import Region from "@/components/configcomponents/visualizers/Region.vue";
-    import Volcano from "@/components/configcomponents/visualizers/Volcano.vue"; */
+    import Region from "@/components/configcomponents/visualizers/Region.vue";*/
+    import Volcano from "@/components/configcomponents/visualizers/Volcano.vue";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["visualizationSaved"])
     const availableFields = computed(() => props.fields);

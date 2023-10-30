@@ -5,8 +5,7 @@
         </div>
         <div class="col-md-10">
             <input type="text" v-model="label"
-                class="form-control input-default form-control-sm"
-            />
+                class="form-control input-default form-control-sm"/>
         </div>
     </div>
     <div class="row">
@@ -126,7 +125,7 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            Label dots if meet<sup class="required"> *</sup>
+            Label dots meeting<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="dotLabelScore">
@@ -179,11 +178,11 @@
     const configObject = computed(() => {
         let config = {
             "type":"volcano plot",
-            "label": label.value.trim(),
+            "label": label.value,
             "x axis field": xAxisField.value,
-            "x axis label": xAxisLabel.value.trim(),
+            "x axis label": xAxisLabel.value,
             "y axis field": yAxisField.value,
-            "y axis label": yAxisLabel.value.trim(),
+            "y axis label": yAxisLabel.value,
             "render by": renderBy.value,
             "x condition": {
                 "combination": xAxisCondition.value,
@@ -218,7 +217,7 @@
             ready: false,
             msg: ""
         };
-        if (label.value.trim() === ""){
+        if (label.value === ""){
             check.msg = "Specify a label for the plot.";
             return check;
         }
@@ -226,7 +225,7 @@
             check.msg = "Specify fields for both axes.";
             return check;
         }
-        if (xAxisLabel.value.trim() === "" || yAxisLabel.value.trim() === ""){
+        if (xAxisLabel.value === "" || yAxisLabel.value === ""){
             check.msg = "Specify labels for both axes.";
             return check;
         }
