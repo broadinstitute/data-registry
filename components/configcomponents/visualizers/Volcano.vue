@@ -213,56 +213,25 @@
         return config;
     });
     function readyToSave(){
-        let check = {
-            ready: false,
-            msg: ""
-        };
-        if (label.value === ""){
-            check.msg = "Specify a label for the plot.";
-            return check;
-        }
-        if (xAxisField.value === "" || yAxisField.value === ""){
-            check.msg = "Specify fields for both axes.";
-            return check;
-        }
-        if (xAxisLabel.value === "" || yAxisLabel.value === ""){
-            check.msg = "Specify labels for both axes.";
-            return check;
-        }
-        if (renderBy.value === ""){
-            check.msg = "Specify field to render by.";
-            return check;
-        }
-        if (xAxisCondition.value === "" || yAxisCondition.value === ""){
-            check.msg = "Specify conditions for both axes.";
-            return check;
-        }
-        if (GREATER_THANS.includes(xAxisCondition.value) && xGT.value === null){
-            check.msg = "Specify greater-than threshold for X axis.";
-            return check;
-        }
-        if (LOWER_THANS.includes(xAxisCondition.value) && xLT.value === null){
-            check.msg = "Specify less-than threshold for X axis.";
-            return check;
-        }
-        if (GREATER_THANS.includes(yAxisCondition.value) && yGT.value === null){
-            check.msg = "Specify greater-than threshold for Y axis.";
-            return check;
-        }
-        if (LOWER_THANS.includes(yAxisCondition.value) && yLT.value === null){
-            check.msg = "Specify less-than threshold for Y axis.";
-            return check;
-        }
-        if (xAxisCondition.value === "and" && xGT.value >= xLT.value){
-            check.msg = "X axis 'AND' condition must be corrected.";
-            return check;
-        }
-        if (yAxisCondition.value === "and" && yGT.value >= yLT.value){
-            check.msg = "Y axis 'AND' condition must be corrected.";
-            return check;
-        }
-        check.ready = true;
-        return check;
+        let validators = [
+            { condition: () => label.value === "", msg : "Specify a label for the plot."},
+            { condition: () => xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes."},
+            { condition: () => xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes."},
+            { condition: () => renderBy.value === "", msg: "Specify field to render by."},
+            { condition: () => xAxisCondition.value === "" || yAxisCondition.value === "", msg: "Specify conditions for both axes."},
+            { condition: () => GREATER_THANS.includes(xAxisCondition.value) && xGT.value === null, msg: "Specify greater-than threshold for X axis."},
+            { condition: () => LOWER_THANS.includes(xAxisCondition.value) && xLT.value === null, msg: "Specify less-than threshold for X axis."},
+            { condition: () => GREATER_THANS.includes(yAxisCondition.value) && yGT.value === null, msg: "Specify greater-than threshold for Y axis."},
+            { condition: () => LOWER_THANS.includes(yAxisCondition.value) && yLT.value === null, msg: "Specify less-than threshold for Y axis."},
+            { condition: () => xAxisCondition.value === "and" && xGT.value >= xLT.value, msg: "X axis 'AND' condition must be corrected."},
+            { condition: () => yAxisCondition.value === "and" && yGT.value >= yLT.value, msg: "Y axis 'AND' condition must be corrected."}
+        ];
+            for (let validator of validators){
+                if (!validator.condition){
+                    return { ready: false, msg: validator.msg};
+                }
+            }
+        return { ready: true, msg: ""};
     }
     watch(configObject, () =>{
         emit('updateVisualizer', configObject.value, readyToSave());

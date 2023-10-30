@@ -29,19 +29,19 @@
                                         <div class="label">
                                             Set parameters
                                         </div>
-                                        <Manhattan v-if="visType == 'manhattan'"
+                                        <Manhattan v-if="visType === 'manhattan'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Manhattan>
-                                        <Heatmap v-if="visType == 'heatmap'"
+                                        <Heatmap v-if="visType === 'heatmap'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Heatmap>
-                                        <!--<Phewas v-if="visType == 'phewas'"
+                                        <!--<Phewas v-if="visType === 'phewas'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Phewas> 
-                                        <Region v-if="visType == 'region'"
+                                        <Region v-if="visType === 'region'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Region>-->
-                                        <Volcano v-if="visType == 'volcano'"
+                                        <Volcano v-if="visType === 'volcano'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Volcano>
                                     </div>
