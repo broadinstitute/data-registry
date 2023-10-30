@@ -173,8 +173,8 @@
     const xLT = ref(0);
     const yGT = ref(0);
     const yLT = ref(0);
-    const width = ref("");
-    const height = ref("");
+    const width = ref(null);
+    const height = ref(null);
     const configObject = computed(() => {
         let config = {
             "type":"volcano plot",
