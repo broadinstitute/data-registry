@@ -29,21 +29,21 @@
                                         <div class="label">
                                             Set parameters
                                         </div>
-                                        <Manhattan v-if="visType == 'manhattan'"
+                                        <Manhattan v-if="visType === 'manhattan'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Manhattan>
-                                        <Heatmap v-if="visType == 'heatmap'"
+                                        <Heatmap v-if="visType === 'heatmap'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Heatmap>
-                                        <!--<Phewas v-if="visType == 'phewas'"
+                                        <!--<Phewas v-if="visType === 'phewas'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Phewas> 
-                                        <Region v-if="visType == 'region'"
+                                        <Region v-if="visType === 'region'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
-                                        </Region>
-                                        <Volcano v-if="visType == 'volcano'"
+                                        </Region>-->
+                                        <Volcano v-if="visType === 'volcano'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
-                                        </Volcano> -->
+                                        </Volcano>
                                     </div>
                                     <div class="col-md-2 col">
                                         <button class="btn btn-primary btn-sm" type="button"
@@ -261,8 +261,8 @@
     import Manhattan from "@/components/configcomponents/visualizers/Manhattan.vue";
     import Heatmap from "@/components/configcomponents/visualizers/Heatmap.vue";
     /*import Phewas from "@/components/configcomponents/visualizers/Phewas.vue";
-    import Region from "@/components/configcomponents/visualizers/Region.vue";
-    import Volcano from "@/components/configcomponents/visualizers/Volcano.vue"; */
+    import Region from "@/components/configcomponents/visualizers/Region.vue";*/
+    import Volcano from "@/components/configcomponents/visualizers/Volcano.vue";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["visualizationSaved"])
     const availableFields = computed(() => props.fields);
@@ -270,7 +270,7 @@
     const visType = ref("");
     const config = ref({});
     const savedViz = ref({});
-    const failedSaveMsg = ref("");
+    const failedSaveMsg = ref("Specify a label for the plot.");
     const readyToSave = ref(false);
     const showMsg = ref(false);
     function showConfig(newConfig, saveCheck){
