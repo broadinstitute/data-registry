@@ -17,7 +17,7 @@
 				<div class="card-body dr-form">
 					<Filters></Filters>
 				</div>
-				<!-- Visualizer goes here-->
+				<Visualizer></Visualizer>
 				<div class="card-body">
 					<div class="row dr-submit-section">
 						<div class="col-md-12 col filter-col-md">
@@ -40,7 +40,7 @@
 <script setup>
 	import DataTableFormat from "@/components/configcomponents/DataTableFormat.vue";
 	import Filters from "@/components/configcomponents/Filters.vue";
+	import Visualizer from "@/components/configcomponents/Visualizer.vue";
 	import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-
 	const store = useConfigBuilderStore();
 </script>
