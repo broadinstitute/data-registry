@@ -239,49 +239,17 @@
         }
         return config;
     });
-    function readyToSave(){
-        let check = {
-			ready: false,
-			msg: ""
-		};
-        if (plotLabel.value === ""){
-            check.msg = "Specify a label for the plot.";
-            return check;
-        }
-        if (columnField.value === "" || rowField.value === ""){
-            check.msg = "Specify column and row fields.";
-            return check;
-        }
-        if (columnLabel.value === "" || rowLabel.value === ""){
-            check.msg = "Specify column and row labels.";
-            return check;
-        }
-        if (mainField.value === ""){
-            check.msg = "Specify main field.";
-            return check;
-        }
-        if (mainLabel.value === ""){
-            check.msg = "Specify main label.";
-            return check;
-        }
-        if (fontSize.value === null){
-            check.msg = "Specify font size.";
-        }
-        // Render type and direction will never be blank
-        if (!(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value)){
-                check.msg = "Assign low, middle, and high values in order";
-                return check;
-            }
-        if (subField.value !== ""){
-            if (subLabel.value === ""){
-                check.msg = "Specify a label for the sub circle";
-                return check;
-            }
-        }
-        check.ready = true;
-        return check;
-    }
+    const VALIDATORS = [
+        { condition: () => plotLabel.value === "", msg: "Specify a label for the plot."},
+        { condition: () => columnField.value === "" || rowField.value === "", msg: "Specify column and row fields."},
+        { condition: () => columnLabel.value === "" || rowLabel.value === "", msg: "Specify column and row labels."},
+        { condition: () => mainField.value === "", msg: "Specify main field."},
+        { condition: () => mainLabel.value === "", msg: "Specify main label."},
+        { condition: () => fontSize.value === null, msg: "Specify font size."},
+        { condition: () => !(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value), msg: "Assign low, middle, and high values in order"},
+        { condition: () => subField.value !== "" && subLabel.value === "", msg: "Specify a label for the sub circle"},
+    ];
     watch(configObject, () =>{
-        emit('updateVisualizer', configObject.value, readyToSave());
+        emit('updateVisualizer', configObject.value, readyToSave(VALIDATORS));
     });
 </script>

@@ -128,30 +128,15 @@
         }
         return config;
     });
-    function readyToSave(){
-        let check = {
-			ready: false,
-			msg: ""
-		};
-        if (xAxisField.value === "" || yAxisField.value === ""){
-            check.msg = "Specify fields for both axes.";
-            return check;
-        }
-        if (renderBy.value === ""){
-            check.msg = "Specify field to render by.";
-            return check;
-        }
-        if (xAxisLabel.value === "" || yAxisLabel.value === ""){
-            check.msg = "Specify labels for both axes.";
-            return check;
-        }
-        check.ready = true;
-        return check;
-    }
+    const VALIDATORS = [
+        { condition: () => xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes."},
+        { condition: () => renderBy.value === "", msg: "Specify field to render by."},
+        { condition: () => xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes."}
+    ];
     function toggleSelectAll(){
         hoverContent.value = !!selectAllBox.value ? availableFields.value : [];
     }
     watch(configObject, () =>{
-        emit('updateVisualizer', configObject.value, readyToSave());
+        emit('updateVisualizer', configObject.value, readyToSave(VALIDATORS));
     });
 </script>
