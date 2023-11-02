@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-md-2">
-            Y axis field:
+            Y axis field <sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="yAxisField">
@@ -10,7 +10,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            Y axis label:
+            Y axis label <sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <input type="text" v-model="yLabel"
@@ -19,38 +19,28 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            Places after decimal:
+            Decimal places<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <input type="number" v-model="yDecimal"
                         class="form-control input-default form-control-sm"/>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-6">
             <div class="form-check form-check-inline">
-                <input
-                    class="form-check-input" type="checkbox" :value="false"
-                    id="flexCheckDefault" v-model="convertLog"/>
                 <label class="form-check-label" for="flexCheckDefault">
                         Convert Y axis value to -log10
                 </label>
+                <input
+                    class="form-check-input" type="checkbox" :value="false"
+                    id="flexCheckDefault" v-model="convertLog"/>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2">
-            Beta field
-            <small>(Direction)</small>
-        </div>
-        <div class="col-md-4">
-            <select class="form-control form-control-sm">
-                <option value="">None</option>
-                <option v-for="field in availableFields">{{ field }}</option>
-            </select>
-        </div>
     </div>
     <div class="row">
         <div class="col-md-2">
-            Render by:
+            Render by<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="renderBy">
@@ -58,14 +48,24 @@
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
         </div>
-    </div>
-    <div class="row">
         <div class="col-md-2">
-            Group by:
+            Group by<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
             <select class="form-control form-control-sm" v-model="groupBy">
                 <option value="">Select a field</option>
+                <option v-for="field in availableFields">{{ field }}</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            Beta field
+            <small>(direction)</small>
+        </div>
+        <div class="col-md-4">
+            <select class="form-control form-control-sm">
+                <option value="">None</option>
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
         </div>
@@ -76,11 +76,11 @@
             </div>
             <div class="col-md-4 col">
 			<table>
-				<tr v-for="entry, index in thresholds">
+				<tr v-for="(,index) in thresholds">
 					<td>
-						<input type="number" class="form-control input-default"
-							:value="entry" :id="`thresholds_${index}`"
-							@change="(event)=>fixNumber(index, event.target.value)"/>
+						<input class="form-control form-control-sm input-default"
+							:value="thresholds[index]"
+                            @change="thresholds[index] = toNumber($event.target.value)"/>
 					</td>
 					<td>
 						<button class="btn btn-secondary replace-chars-button delete-button"
@@ -95,7 +95,7 @@
         </div>
     <div class="row">
         <div class="col-md-3">
-            Hover content:
+            Hover content
         </div>
         <div class="col-md-9">
             <div v-for="field in availableFields" class="form-check form-check-inline">
@@ -106,11 +106,11 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            Height:
+            Height
         </div>
         <div class="col-md-4">
-            <input type="number" id="height" class="form-control input-default form-control-sm" value="500"
-                @change="(event)=>fixNumber('height', event.target.value)"/>
+            <input v-model="height" class="form-control input-default form-control-sm"
+                @change="height = toNumber($event.target.value)"/>
         </div>
     </div>
 </template>
@@ -126,8 +126,9 @@
     const renderBy = ref("");
     const hoverContent = ref([]);
     const betaField = ref("");
-    const height = ref(500);
-    const thresholds = ref([0,0]);
+    const height = ref(null);
+    const thresholds = ref([null]);
+    const VALIDATORS = [];
     const configObject = computed(() => {
         let config =  {
             "type":"phewas plot",
@@ -147,21 +148,7 @@
         }
         return config;
     });
-    function fixNumber(field, input){
-        let numValue = parseFloat(input);
-        if (isNaN(numValue)){
-            numValue = 0;
-        }
-        let query = field === "height" ? "height" :`thresholds_${field}`;
-        let inputField = document.querySelector(`input#${query}`);
-        inputField.value = numValue;
-        if (field === "height"){
-            height.value = numValue;
-            return;
-        }
-        thresholds.value[field] = numValue;
-    }
     watch(configObject, () =>{
-        emit('updateVisualizer', configObject.value, readyToSave());
+        emit('updateVisualizer', configObject.value, readyToSave(VALIDATORS));
     });
 </script>
