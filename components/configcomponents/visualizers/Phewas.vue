@@ -110,7 +110,7 @@
         </div>
         <div class="col-md-4">
             <input v-model="height" class="form-control input-default form-control-sm"
-                @change="height = toNumber($event.target.value)"/>
+                @change="$event => height = toNumber($event.target.value)"/>
         </div>
     </div>
 </template>
