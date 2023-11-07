@@ -107,7 +107,7 @@
     const height = ref(null);
     const linkTo = ref("");
     const hoverContent = ref([]);
-    const configObject = computed(() => {
+    const configString = computed(() => {
         let type = graphicFormat.value === "Vector" ? "manhattan plot" : "manhattan bitmap plot";
         let config = {
             "type": type,
@@ -126,7 +126,7 @@
         if (hoverContent.value.length > 0){
             config["hover content"] = hoverContent.value;
         }
-        return config;
+        return JSON.stringify(config);
     });
     const VALIDATORS = [
         { condition: () => xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes."},
@@ -136,7 +136,7 @@
     function toggleSelectAll(){
         hoverContent.value = !!selectAllBox.value ? availableFields.value : [];
     }
-    watch(configObject, () =>{
-        emit('updateVisualizer', configObject.value, readyToSave(VALIDATORS));
+    watch(configString, () =>{
+        emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
     });
 </script>

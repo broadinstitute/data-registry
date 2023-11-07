@@ -268,7 +268,7 @@
     const availableFields = computed(() => props.fields);
     const fieldUpdate = computed(() => props.fieldNameUpdate);
     const visType = ref("");
-    const config = ref({});
+    const config = ref("");
     const savedViz = ref({});
     const failedSaveMsg = ref("Specify a label for the plot.");
     const readyToSave = ref(false);
@@ -285,11 +285,11 @@
             return;
         }
         showMsg.value = false;
-        savedViz.value = config.value;
+        savedViz.value = JSON.parse(config.value);
         visType.value = "";
     }
     function editVisualization(){
-        config.value = savedViz.value;
-        visType.value = config.value.type.split(" ")[0];
+        visType.value = savedViz.value.type.split(" ")[0];
+        config.value = JSON.stringify(savedViz.value);
     }
 </script>

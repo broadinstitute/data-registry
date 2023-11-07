@@ -166,22 +166,23 @@
                 Value steps<sup class="required"> *</sup>
             </div>
             <div class="col-md-4 col">
-			<table>
-				<tr v-for="(, index) in subSteps">
-					<td>
-                        <input class="form-control form-control-sm" :value="subSteps[index]"
-                            @change="$event => subSteps[index] = toNumber($event.target.value)"/>
-					</td>
-					<td>
-						<button class="btn btn-secondary replace-chars-button delete-button"
-							v-if="subSteps.length > 1" 
-                            @click="subSteps.splice(index, 1)">&times;
-						</button>
-					</td>
-				</tr>
-			</table>
-			<button class="btn btn-primary" @click="subSteps.push(0)">Add</button>
-		</div>
+                <table>
+                    <tr v-for="(, index) in subSteps">
+                        <td>
+                            <input class="form-control form-control-sm" :value="subSteps[index]"
+                                :id="`substep_${index}`"
+                                @change="updateSubSteps(index, $event.target.value)"/>
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary replace-chars-button delete-button"
+                                v-if="subSteps.length > 1" 
+                                @click="subSteps.splice(index, 1)">&times;
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <button class="btn btn-primary" @click="subSteps.push(0)">Add</button>
+            </div>
         </div>
     </div>
 </template>
@@ -208,7 +209,7 @@
     const subLabel = ref("");
     const subRenderType = ref("steps");
     const subDirection = ref("positive");
-    const configObject = computed(() => {
+    const configString = computed(() => {
         let config = {
             "type":"heat map",
             "label": plotLabel.value,
@@ -237,7 +238,9 @@
             };
             config["sub"] = sub;
         }
-        return config;
+
+        // tracking the string rather than the object picks up changes within arrays
+        return JSON.stringify(config);
     });
     const VALIDATORS = [
         { condition: () => plotLabel.value === "", msg: "Specify a label for the plot."},
@@ -248,8 +251,15 @@
         { condition: () => fontSize.value === null, msg: "Specify font size."},
         { condition: () => !(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value), msg: "Assign low, middle, and high values in order"},
         { condition: () => subField.value !== "" && subLabel.value === "", msg: "Specify a label for the sub circle"},
+        { condition: () => subField.value !== "" && hasNullValues(subSteps.value), msg: "Specify steps for the sub circle."}
     ];
-    watch(configObject, () =>{
-        emit('updateVisualizer', configObject.value, readyToSave(VALIDATORS));
+    function updateSubSteps(index, str){
+        let numberValue = toNumber(str);
+        subSteps.value[index] = numberValue;
+        let inputField = document.getElementById(`substep_${index}`);
+        inputField.value = numberValue;
+    }
+    watch(configString, () =>{
+        emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
     });
 </script>

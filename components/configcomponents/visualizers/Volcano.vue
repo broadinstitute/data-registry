@@ -188,7 +188,7 @@
             { condition: () => xAxisCondition.value === "and" && xGT.value >= xLT.value, msg: "X axis 'AND' condition must be corrected."},
             { condition: () => yAxisCondition.value === "and" && yGT.value >= yLT.value, msg: "Y axis 'AND' condition must be corrected."}
         ];
-    const configObject = computed(() => {
+    const configString = computed(() => {
         let config = {
             "type":"volcano plot",
             "label": label.value,
@@ -223,9 +223,9 @@
         if (height.value !== null){
             config["height"] = height.value;
         }
-        return config;
+        return JSON.stringify(config);
     });
-    watch(configObject, () =>{
-        emit('updateVisualizer', configObject.value, readyToSave(VALIDATORS));
+    watch(configString, () =>{
+        emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
     });
 </script>

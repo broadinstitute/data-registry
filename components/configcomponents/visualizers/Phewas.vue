@@ -127,9 +127,9 @@
     const hoverContent = ref([]);
     const betaField = ref("");
     const height = ref(null);
-    const thresholds = ref([null]);
+    const thresholds = ref([0]);
     const VALIDATORS = [];
-    const configObject = computed(() => {
+    const configString = computed(() => {
         let config =  {
             "type":"phewas plot",
             "group by": groupBy.value,
@@ -146,9 +146,9 @@
         if (betaField.value != ""){
             config["beta field"] = betaField.value;
         }
-        return config;
+        return JSON.stringify(config);
     });
-    watch(configObject, () =>{
-        emit('updateVisualizer', configObject.value, readyToSave(VALIDATORS));
+    watch(configString, () =>{
+        emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
     });
 </script>
