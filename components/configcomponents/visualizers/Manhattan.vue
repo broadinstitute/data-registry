@@ -77,8 +77,8 @@
         <table class="col-md-10" id="hover">
             <tr>
                 <th>
-                    <input class="form-check-input" type="checkbox" 
-                        v-model="selectAllBox" @change="toggleSelectAll()"/>
+                    <input class="form-check-input" type="checkbox" v-model="selectAllBox"
+                        @change="hoverContent = !selectAllBox ? [] : availableFields"/>
                     <label class="label form-check-label">Select fields</label>
                 </th>
             </tr>
@@ -133,9 +133,6 @@
         { condition: () => renderBy.value === "", msg: "Specify field to render by."},
         { condition: () => xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes."}
     ];
-    function toggleSelectAll(){
-        hoverContent.value = !!selectAllBox.value ? availableFields.value : [];
-    }
     watch(configString, () =>{
         emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
     });

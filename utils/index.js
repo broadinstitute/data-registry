@@ -1,5 +1,5 @@
-export const toNumber = function (str){
-    const num = parseFloat(str);
+export const toNumber = function (str, int=false){
+    const num = !int ? parseFloat(str) : parseInt(str);
     // Safeguards against odd behavior like '11a' parsing as 11
     if (Number.isNaN(num) || num.toString() !== stripZeroes(str)){
         console.log("not a number");
