@@ -42,7 +42,6 @@ runs:
     - name: Deploy with Fabric
       shell: bash
       run: |
-        cd deploy
         if [[ -n "${{ inputs.tag-name }}" ]]; then
           fab deploy --env=${{ inputs.deploy-environment }} -H ec2-user@${{ inputs.host }} --commit=${{ inputs.tag-name }}
         else
