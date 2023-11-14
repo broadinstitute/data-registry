@@ -38,9 +38,9 @@
                                         <Phewas v-if="visType === 'phewas'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Phewas> 
-                                        <!---<Region v-if="visType === 'region'"
+                                        <Region v-if="visType === 'region'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
-                                        </Region>-->
+                                        </Region>
                                         <Volcano v-if="visType === 'volcano'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Volcano>
@@ -261,7 +261,7 @@
     import Manhattan from "@/components/configcomponents/visualizers/Manhattan.vue";
     import Heatmap from "@/components/configcomponents/visualizers/Heatmap.vue";
     import Phewas from "@/components/configcomponents/visualizers/Phewas.vue";
-    //import Region from "@/components/configcomponents/visualizers/Region.vue";
+    import Region from "@/components/configcomponents/visualizers/Region.vue";
     import Volcano from "@/components/configcomponents/visualizers/Volcano.vue";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["visualizationSaved"])

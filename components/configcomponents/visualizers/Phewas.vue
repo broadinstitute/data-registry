@@ -144,7 +144,7 @@
         { condition: () => yDecimal.value === null, msg: "Specify decimal places"},
         { condition: () => renderBy.value === "", msg: "Specify field to render by"},
         { condition: () => groupBy.value === "", msg: "Specify field to group by"},
-        { condition: () => hasNullValues(thresholds.value), msg: "Fill in missing threshold value"}
+        { condition: () => thresholds.value.includes(null), msg: "Fill in missing threshold value"}
     ];
     const configString = computed(() => {
         let config =  {
