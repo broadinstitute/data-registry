@@ -25,9 +25,13 @@ In either case, use `http://local.kpndataregistry.org:3000` to access your local
 
 
 ## Deployment
-Deployment is via Jenkins. The Jenkins jobs are located here:
-- [Dev](http://107.22.69.235:8080/view/Data%20Registry/job/DR%20-%20Frontend%20-%20Dev)
-- [Prod](http://107.22.69.235:8080/view/Data%20Registry/job/DR%20-%20Frontend%20-%20Prod)
+Deploy to QA occurs automatically upon push to the `main` branch via [github actions](.github/workflows/continuous-integration.yml). 
+You can deploy to Production by pushing a semantic version tag to the repo. 
+The tag should be of the form `V#.#.#`, and ideally the tag should point to a commit on the `main` branch.
+You can use the [next_release.py](./next_release.py) script to determine what the next tag should be.
+`python next_release.py` and choose your release type (major, minor, or patch) at the prompt. 
+You can read more about creating and publishing tags [here](https://git-scm.com/book/en/v2/Git-Basics-Tagging).
+
 
 ## Sample .env
 
