@@ -58,8 +58,7 @@
             Height
         </div>
         <div class="col-md-4">
-            <input class="form-control form-control-sm" v-model="height" 
-                @change="$event => height = toNumber($event.target.value)"/>
+            <input class="form-control form-control-sm" v-model="height" type="number"/>
         </div>
     </div>
     <div class="row" v-if="graphicFormat === 'Vector'">
@@ -104,7 +103,7 @@
     const renderBy = ref("");
     const xAxisLabel = ref("");
     const yAxisLabel = ref("");
-    const height = ref(null);
+    const height = ref("");
     const linkTo = ref("");
     const hoverContent = ref([]);
     const configString = computed(() => {
@@ -117,7 +116,7 @@
             "x axis label": xAxisLabel.value,
             "y axis label": yAxisLabel.value,
         };
-        if (height.value !== null){
+        if (height.value !== ""){
             config["height"] = height.value;
         }
         if (linkTo.value !== ""){
