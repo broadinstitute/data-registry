@@ -58,8 +58,7 @@
             Height
         </div>
         <div class="col-md-4">
-            <input v-model="height" class="form-control input-default form-control-sm"
-                @change="$event => height = toNumber($event.target.value)"/>
+            <input v-model="height" class="form-control input-default form-control-sm" type="number"/>
         </div>
     </div>
     <div class="row">
@@ -218,7 +217,6 @@
             "y axis field": yAxisField.value,
             "y axis label": yAxisLabel.value.trim(),
             "render by": renderBy.value,
-            "height": parseInt(height.value),
             "star key": starKey.value,
             "ld server": {
                 "pos": posField.value,
@@ -227,27 +225,30 @@
                 "ref variant field": refVarField.value,
             }
         }
-            if (hoverContent.value.length !== 0){
-                config["hover content"] = hoverContent.value;
+        if (height.value !== ""){
+            config["height"] != height.value;
+        }
+        if (hoverContent.value.length !== 0){
+            config["hover content"] = hoverContent.value;
+        }
+        if (inputType.value === "from data"){
+            config["region fields"] = {
+                "chromosome": chrField.value,
+                "position": posField.value
+            }
+        }
+        if (!!showGenesTrack.value) {
+            let genesTrack = {
+                "input type": inputType.value
+            }
+            if (inputType.value === "dynamic"){
+                genesTrack["dynamic parameter"] = "region";
             }
             if (inputType.value === "from data"){
-                config["region fields"] = {
-                    "chromosome": chrField.value,
-                    "position": posField.value
-                }
+                genesTrack["region fields"] = config["region fields"];
             }
-            if (!!showGenesTrack.value) {
-                let genesTrack = {
-                    "input type": inputType.value
-                }
-                if (inputType.value === "dynamic"){
-                    genesTrack["dynamic parameter"] = "region";
-                }
-                if (inputType.value === "from data"){
-                    genesTrack["region fields"] = config["region fields"];
-                }
-                config["genes track"] = genesTrack;
-            }
+            config["genes track"] = genesTrack;
+        }
         return config;
     });
     function readyToSave(){
