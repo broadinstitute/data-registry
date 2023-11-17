@@ -3,12 +3,15 @@
     "scripts": {
         "build": "nuxt build",
         "dev": "NUXT_PUBLIC_SKIP_AUTH=true nuxt dev --host local.kpndataregistry.org",
-        "dev-auth": "nuxt dev --host local.kpndataregistry.org"
+        "dev-auth": "nuxt dev --host local.kpndataregistry.org",
+        "test": "vitest --run"
     },
     "devDependencies": {
         "@nuxt/devtools": "^1.0.0",
+        "@nuxt/test-utils": "^3.8.1",
         "@vitejs/plugin-vue": "^4.2.3",
         "nuxt": "^3.6.5",
+        "vitest": "^0.33.0",
         "vue-router": "^4.2.4"
     },
     "dependencies": {

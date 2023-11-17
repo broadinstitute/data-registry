@@ -8,8 +8,26 @@ on:
       - 'V*.*.*'
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm run test
 
   deploy-qa:
+    needs: [ test ]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     name: Deploy to QA
     runs-on: ubuntu-latest
@@ -22,6 +40,7 @@ jobs:
           private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
   deploy-prod:
+    needs: [ test ]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/V')
     name: Deploy to Prod
     runs-on: ubuntu-latest
