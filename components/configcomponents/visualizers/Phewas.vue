@@ -22,9 +22,8 @@
             Decimal places<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
-            <input v-model="yDecimal"
-                class="form-control input-default form-control-sm"
-                @change="$event => yDecimal = toNumber($event.target.value, true)"/>
+            <input v-model="yDecimal" type="number"
+                class="form-control input-default form-control-sm"/>
         </div>
         <div class="col-md-6">
             <div class="form-check form-check-inline">
@@ -77,9 +76,8 @@
                 <table>
                     <tr v-for="(, index) in thresholds">
                         <td>
-                            <input class="form-control form-control-sm" :value="thresholds[index]"
-                                :id="`threshold_${index}`"
-                                @change="updateThresholds(index, $event.target.value)"/>
+                            <input class="form-control form-control-sm" v-model="thresholds[index]"
+                                type="number"/>
                         </td>
                         <td>
                             <button class="btn btn-secondary replace-chars-button delete-button"
@@ -96,8 +94,7 @@
             Height
         </div>
         <div class="col-md-4">
-            <input v-model="height" class="form-control input-default form-control-sm"
-                @change="$event => height = toNumber($event.target.value)"/>
+            <input v-model="height" class="form-control input-default form-control-sm" type="number"/>
         </div>
     </div>
     <div class="row">
@@ -136,12 +133,12 @@
     const renderBy = ref("");
     const hoverContent = ref([]);
     const betaField = ref("");
-    const height = ref(null);
+    const height = ref("");
     const thresholds = ref([null]);
     const VALIDATORS = [
         { condition: () => yAxisField.value === "", msg: "Specify Y axis field"},
         { condition: () => yLabel.value === "", msg: "Specify Y axis label"},
-        { condition: () => yDecimal.value === null, msg: "Specify decimal places"},
+        { condition: () => yDecimal.value === "" || yDecimal.value < 0, msg: "Specify decimal places"},
         { condition: () => renderBy.value === "", msg: "Specify field to render by"},
         { condition: () => groupBy.value === "", msg: "Specify field to group by"},
         { condition: () => thresholds.value.includes(null), msg: "Fill in missing threshold value"}
@@ -151,14 +148,14 @@
             "type":"phewas plot",
             "y axis field": yAxisField.value,
             "y axis label": yLabel.value,
-            "y ticks decimal point": yDecimal.value,
+            "y ticks decimal point": parseInt(yDecimal.value),
             "render by": renderBy.value,
             "group by": groupBy.value,
             "convert y -log10": `${convertLog.value}`,
             "hover content": hoverContent.value,
             }
         // Phenotype map can only be added administratively.
-        if (height.value !== null){
+        if (height.value !== ""){
             config["height"] = height.value;
         }
         if (betaField.value !== ""){
@@ -169,12 +166,6 @@
         }
         return JSON.stringify(config);
     });
-    function updateThresholds(index, str){
-        let numberValue = toNumber(str);
-        thresholds.value[index] = numberValue;
-        let inputField = document.getElementById(`threshold_${index}`);
-        inputField.value = numberValue;
-    }
     watch(configString, () =>{
         emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
     });
