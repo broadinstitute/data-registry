@@ -30,7 +30,7 @@
 					</td>
 				</tr>
 			</table>
-			<button class="btn btn-primary" @click="addEntry()">Add</button>
+			<button class="btn btn-primary add-button" @click="addEntry()">Add</button>
 		</div>
 	</div>
 </template>

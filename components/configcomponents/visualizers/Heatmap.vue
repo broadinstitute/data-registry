@@ -176,7 +176,7 @@
                         </td>
                     </tr>
                 </table>
-                <button class="btn btn-primary" @click="subSteps.push('')">Add</button>
+                <button class="btn btn-primary add-button" @click="subSteps.push('')">Add</button>
             </div>
         </div>
     </div>
