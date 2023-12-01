@@ -106,25 +106,25 @@
             <tr>
                 <td>Top</td>
                 <td>
-                    <input class="form-control input-default form-control=sm" type="number" v-model="margin['top']">
+                    <input class="form-control input-default form-control-sm" type="number" v-model="margin['top']">
                 </td>
             </tr>
             <tr>
                 <td>Bottom</td>
                 <td>
-                    <input class="form-control input-default form-control=sm" type="number" v-model="margin['bottom']">
+                    <input class="form-control input-default form-control-sm" type="number" v-model="margin['bottom']">
                 </td>
             </tr>
             <tr>
                 <td>Left</td>
                 <td>
-                    <input class="form-control input-default form-control=sm" type="number" v-model="margin['left']">
+                    <input class="form-control input-default form-control-sm" type="number" v-model="margin['left']">
                 </td>
             </tr>
             <tr>
                 <td>Right</td>
                 <td>
-                    <input class="form-control input-default form-control=sm" type="number" v-model="margin['right']">
+                    <input class="form-control input-default form-control-sm" type="number" v-model="margin['right']">
                 </td>
             </tr>
         </div>

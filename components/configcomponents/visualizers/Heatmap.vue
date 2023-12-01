@@ -244,7 +244,7 @@
         { condition: () => mainField.value === "", msg: "Specify main field."},
         { condition: () => mainLabel.value === "", msg: "Specify main label."},
         { condition: () => fontSize.value === "", msg: "Specify font size."},
-        { condition: () => !(mainLow.value < mainMid.value && mainMid.value < mainHigh.value), msg: "Assign low, middle, and high values in order"},
+        { condition: () => !(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value), msg: "Assign low, middle, and high values in order"},
         { condition: () => subField.value !== "" && subLabel.value === "", msg: "Specify a label for the sub circle"},
         { condition: () => subField.value !== "" && 
             (subSteps.value.length === 0 || subSteps.value.includes("")), msg: "Specify steps for the sub circle."}

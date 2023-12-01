@@ -159,6 +159,15 @@
     </div>
     <div class="row">
         <div class="col-md-2">
+            Populations field
+        </div>
+        <div class="col-md-4">
+            <select class="form-control form-control-sm" v-model="refVarField">
+                <option value="">Select a field</option>
+                <option v-for="field in availableFields">{{ field }}</option>
+            </select>
+        </div>
+        <div class="col-md-2">
             Fixed population<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
@@ -203,12 +212,24 @@
     const refField = ref("");
     const altField = ref("");
     const refVarField = ref("");
+    const popField = ref("");
     const showGenesTrack = ref(true);
     const fixedPop = ref("");
     const popOptions = ref([]);
     const POPULATIONS_URL = "https://portaldev.sph.umich.edu/ld/genome_builds/GRCh37/references/1000G/populations";
-    const VALIDATORS = [];
-    const configObject = computed(() => {
+    // TODO SUPPLY ALL THESE VALIDATORS!!!
+    const VALIDATORS = [
+        { condition: xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes."},
+        { condition: xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes."},
+        { condition: renderBy.value  === "", msg: "Specify field to render by."},
+        { condition: inputType.value === "from data" && chrField.value === "", msg: "Specify chromosome field."},
+        { condition: posField.value === "" || refField.value === "" ||
+            altField.value === "" || refVarField.value === "",
+            msg: "Specify position, ref, alt, and reference variant fields."},
+        { condition: popField.value === "", msg: "Specify population field."},
+        //{ condition: fixedPop.value === "", msg: "Specify fixed population."}
+    ];
+    const configString = computed(() => {
         // Dynamic population has been removed as an option for now - we're working on it.
         let config = {
             "type":"region plot",
@@ -223,6 +244,11 @@
                 "ref": refField.value,
                 "alt": altField.value,
                 "ref variant field": refVarField.value,
+                "populations field": popField.value,
+                "populations type": "fixed",
+                "populations": {
+                    "ALL": "ALL"
+                }
             }
         }
         if (height.value !== ""){
@@ -244,53 +270,19 @@
             if (inputType.value === "dynamic"){
                 genesTrack["dynamic parameter"] = "region";
             }
+            // From data is the only option we're using currently
             if (inputType.value === "from data"){
                 genesTrack["region fields"] = config["region fields"];
             }
             config["genes track"] = genesTrack;
         }
-        return config;
+        return JSON.stringify(config);
     });
-    function readyToSave(){
-        let check = {
-            ready: false,
-            msg: ""
-        };
-        if (xAxisField.value === "" || yAxisField.value === "" ){
-            check.msg = "Specify fields for both axes.";
-            return check;
-        }
-        if (xAxisLabel.value.trim() === "" || yAxisLabel.value === ""){
-            check.msg = "Specify labels for both axes.";
-            return check;
-        }
-        if (renderBy.value  === ""){
-            check.msg = "Specify field to render by.";
-            return check;
-        }
-        if (inputType.value === "from data" && chrField.value === ""){
-            check.msg = "Specify chromosome field.";
-            return check;
-        }
-        if (posField.value === "" ||
-            refField.value === "" ||
-            altField.value === "" ||
-            refVarField.value === ""){
-                check.msg = "Specify position, ref, alt, and reference variant fields.";
-                return check;
-            }
-        if (fixedPop.value === ""){
-            check.msg = "Specify fixed population.";
-            return check;
-        }
-        check.ready = true;
-        return check;
-    }
     onMounted(async () => {
         await loadPopulationOptions();
     });
-    watch(configObject, () =>{
-        emit('updateVisualizer', configObject.value, readyToSave());
+    watch(configString, () =>{
+        emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
     });
     async function loadPopulationOptions(){
         let populations = (await axios.get(POPULATIONS_URL)).data;
