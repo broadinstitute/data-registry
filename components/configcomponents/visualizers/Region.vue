@@ -219,11 +219,11 @@
     const POPULATIONS_URL = "https://portaldev.sph.umich.edu/ld/genome_builds/GRCh37/references/1000G/populations";
     // TODO SUPPLY ALL THESE VALIDATORS!!!
     const VALIDATORS = [
-        { condition: xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes."},
-        { condition: xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes."},
-        { condition: renderBy.value  === "", msg: "Specify field to render by."},
-        { condition: inputType.value === "from data" && chrField.value === "", msg: "Specify chromosome field."},
-        { condition: posField.value === "" || refField.value === "" ||
+        { condition: () => xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes."},
+        { condition: () => xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes."},
+        { condition: () => renderBy.value  === "", msg: "Specify field to render by."},
+        { condition: () => inputType.value === "from data" && chrField.value === "", msg: "Specify chromosome field."},
+        { condition: () => posField.value === "" || refField.value === "" ||
             altField.value === "" || refVarField.value === "",
             msg: "Specify position, ref, alt, and reference variant fields."},
         { condition: popField.value === "", msg: "Specify population field."},
@@ -252,7 +252,7 @@
             }
         }
         if (height.value !== ""){
-            config["height"] != height.value;
+            config["height"] = height.value;
         }
         if (hoverContent.value.length !== 0){
             config["hover content"] = hoverContent.value;
@@ -292,8 +292,5 @@
             fixedPop.value = "ALL";
         }
         popOptions.value = popListStart.concat(populations.data.filter(item => item !== "ALL"));
-    }
-    function toggleSelectAll(){
-        hoverContent.value = !selectAllBox.value ? [] : availableFields.value.slice();
     }
 </script>
