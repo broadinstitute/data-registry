@@ -75,8 +75,8 @@
             </tr>
             <tr v-for="field in availableFields">
                 <td>
-                    <input class="form-check-input" type="checkbox" :value="field" id="flexCheckDefault" v-model="hoverContent"/>
-                    <label class="form-check-label" for="flexCheckDefault">{{ field }}</label>
+                    <input class="form-check-input" type="checkbox" :value="field" v-model="hoverContent"/>
+                    <label class="form-check-label">{{ field }}</label>
                 </td>
             </tr>
         </table>
@@ -93,8 +93,6 @@
                 <option value="from data">From data</option>
             </select>
         </div>
-    </div>
-    <div v-if="inputType == 'from data'" class="row">
         <div class="col-md-2">
             Chromosome field<sup class="required"> *</sup>
         </div>
@@ -104,6 +102,9 @@
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
         </div>
+    </div>
+    <div v-if="inputType == 'from data'" class="row">
+        
         <div class="col-md-2">
             Position field<sup class="required"> *</sup>
         </div>
@@ -119,15 +120,6 @@
     </div>
     <div class="row">
         <div class="col-md-2">
-            Position field<sup class="required"> *</sup>
-        </div>
-        <div class="col-md-4">
-            <select class="form-control form-control-sm" v-model="posField">
-                <option value="">Select a field</option>
-                <option v-for="field in availableFields">{{ field }}</option>
-            </select>
-        </div>
-        <div class="col-md-2">
             Reference allele<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
@@ -136,8 +128,6 @@
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
         </div>
-    </div>
-    <div class="row">
         <div class="col-md-2">
             Alternative allele<sup class="required"> *</sup>
         </div>
@@ -147,6 +137,8 @@
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
         </div>
+    </div>
+    <div class="row">
         <div class="col-md-2">
             Reference variant field<sup class="required"> *</sup>
         </div>
@@ -156,17 +148,17 @@
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
         </div>
-    </div>
-    <div class="row">
         <div class="col-md-2">
             Populations field
         </div>
         <div class="col-md-4">
-            <select class="form-control form-control-sm" v-model="refVarField">
+            <select class="form-control form-control-sm" v-model="popField">
                 <option value="">Select a field</option>
                 <option v-for="field in availableFields">{{ field }}</option>
             </select>
         </div>
+    </div>
+    <div class="row">
         <div class="col-md-2">
             Fixed population<sup class="required"> *</sup>
         </div>
@@ -226,7 +218,7 @@
         { condition: () => posField.value === "" || refField.value === "" ||
             altField.value === "" || refVarField.value === "",
             msg: "Specify position, ref, alt, and reference variant fields."},
-        { condition: popField.value === "", msg: "Specify population field."},
+        { condition: () => popField.value === "", msg: "Specify population field."},
         //{ condition: fixedPop.value === "", msg: "Specify fixed population."}
     ];
     const configString = computed(() => {
