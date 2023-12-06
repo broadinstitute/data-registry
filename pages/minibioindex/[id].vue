@@ -50,7 +50,7 @@ const intervalId = setInterval(async () => {
 
     if (status.value === 'FAILED' || status.value === 'FINISHED') {
       clearInterval(intervalId)
-      if(status.value === 'FINISHED'){
+      if(status.value === 'SUCCEEDED'){
         const {data: {url}} = await axios.get(`/api/bioindex/${id}`);
         apiUrl.value = url;
       }
