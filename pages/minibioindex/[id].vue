@@ -30,7 +30,6 @@ const status = ref('');
 
 const createdAt = ref('');
 const schema = ref('');
-let websocket = null;
 
 onMounted(async () => {
  const {data} = await axios.get(`/api/trackbioindex/${id}`);
@@ -39,49 +38,20 @@ onMounted(async () => {
   schema.value = data.column;
 });
 
-function initializeWebSocket(ipAddress) {
-  console.log('Initializing WebSocket');
-  websocket = new WebSocket(`ws://${ipAddress}:8765`);
-  websocket.addEventListener('message', (event) => {
-    console.log('Message from server:', event.data);
-  });
-  websocket.addEventListener('open', (event) => {
-    console.log('WebSocket connection established');
-    console.log(JSON.stringify(event));
-  });
-  websocket.addEventListener('error', (error) => {
-    console.error('WebSocket error:', error);
-  });
-  websocket.addEventListener('close', (event) => {
-    console.log(JSON.stringify(event));
-    console.log('WebSocket connection closed');
-  });
-}
 
 const intervalId = setInterval(async () => {
   try {
-    const { data } = await axios.get(`/api/trackbioindex/${id}`);
-    status.value = data.status;
+    const { data } = await axios.get(`/api/trackbioindex/${id}`)
+    status.value = data.status
 
-    if (data.ip_address && !websocket && status.value !== 'FAILED' && status.value !== 'FINISHED') {
-      clearInterval(intervalId);
-      initializeWebSocket(data.ip_address);
-    } else if (status.value === 'FAILED' || status.value === 'FINISHED') {
-      clearInterval(intervalId);
-      if (websocket) {
-        console.log("Closing websocket due to status change");
-        websocket.close();
-      }
+    if (status.value === 'FAILED' || status.value === 'FINISHED') {
+      clearInterval(intervalId)
     }
   } catch (error) {
-    console.error('Error fetching data:', error);
-    clearInterval(intervalId);
-    if (websocket) {
-      console.log("Closing websocket due to error");
-      websocket.close();
-    }
+    console.error('Error fetching data:', error)
+    clearInterval(intervalId)
   }
-}, 10000);
+}, 10000)
 
 
 </script>
