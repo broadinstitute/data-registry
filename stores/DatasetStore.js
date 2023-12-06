@@ -151,10 +151,14 @@ export const useDatasetStore = defineStore('DatasetStore', {
       return data
     },
     async sampleTextFile(file) {
+      this.showProgressBar = false;
+      this.processing = true;
+      this.modalMsg = "Sampling File";
       const formData = new FormData();
       formData.append("file", file);
       const { data } = await configuredAxios.post("/api/preview-delimited-file",
         formData, { headers: { "Content-Type": "multipart/form-data" }})
+      this.processing = false;
       return data;
     },
     async trackBioindex(request) {
@@ -169,7 +173,7 @@ export const useDatasetStore = defineStore('DatasetStore', {
        "name": id,
        "column": schema,
        "already_sorted": alreadySorted,
-       "status": "SUBMITTED FOR PREPROCESSING",
+       "status": "SUBMITTED FOR PROCESSING",
        "s3_path": s3_path,
        "data_types": mapping,
       }
