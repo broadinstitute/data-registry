@@ -150,6 +150,44 @@ export const useDatasetStore = defineStore('DatasetStore', {
       this.combinedPhenotypesAndCredibleSets = mapCredibleSets()
       return data
     },
+    async sampleTextFile(file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      const { data } = await configuredAxios.post("/api/preview-delimited-file",
+        formData, { headers: { "Content-Type": "multipart/form-data" }})
+      return data;
+    },
+    async trackBioindex(request) {
+      const { data } = await configuredAxios.post("/api/trackbioindex", JSON.stringify(request));
+      return data;
+    },
+    async updateBioindexCreationStatus(id, status) {
+      await configuredAxios.patch(`/api/trackbioindex/${id}/${status}`);
+    },
+    async enqueueCsvProcess(id, s3_path, schema, alreadySorted, mapping) {
+      const request = {
+       "name": id,
+       "column": schema,
+       "already_sorted": alreadySorted,
+       "status": "SUBMITTED FOR PREPROCESSING",
+       "s3_path": s3_path,
+       "data_types": mapping,
+      }
+      await configuredAxios.post("/api/enqueue-csv-process", JSON.stringify(request));
+    },
+    async uploadFileForBioindex(file, fileName) {
+      this.showProgressBar = true;
+      this.processing = true;
+      this.modalMsg = "Uploading File";
+      this.uploadProgress = 0;
+      const formData = new FormData();
+      formData.append("file", file);
+      const {data} = await configuredAxios.post("/api/upload-csv", formData,
+        { headers: { "Content-Type": "multipart/form-data", "FileName": fileName },
+          onUploadProgress: onUpload})
+      this.processing = false;
+      return data;
+    },
     async fetchPubInfo(pubId) {
       const { data } = await configuredAxios.get(`/api/publications?pub_id=${pubId.trim()}`)
       return data
