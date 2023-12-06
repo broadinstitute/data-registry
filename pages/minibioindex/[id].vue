@@ -8,6 +8,7 @@
         <th scope="col">Requested At</th>
         <th scope="col">Column</th>
         <th scope="col">Status</th>
+        <th scope="col">API Endpoint</th>
       </tr>
       </thead>
       <tbody class="table-group-divider">
@@ -16,6 +17,7 @@
         <td>{{createdAt}}</td>
         <td>{{schema}}</td>
         <td>{{status}}</td>
+        <td class="small">{{apiUrl}}</td>
       </tr>
       </tbody>
     </table>
@@ -27,7 +29,7 @@ const route = useRoute();
 const axios = useAxios(config);
 const id = route.params.id;
 const status = ref('');
-
+const apiUrl = ref('Working on it...');
 const createdAt = ref('');
 const schema = ref('');
 
@@ -36,6 +38,8 @@ onMounted(async () => {
   status.value = data.status;
   createdAt.value = data.created_at;
   schema.value = data.column;
+  const {data: {url}} = await axios.get(`/api/bioindex/${id}`);
+  apiUrl.value = url;
 });
 
 
@@ -46,6 +50,10 @@ const intervalId = setInterval(async () => {
 
     if (status.value === 'FAILED' || status.value === 'FINISHED') {
       clearInterval(intervalId)
+      if(status.value === 'FINISHED'){
+        const {data: {url}} = await axios.get(`/api/bioindex/${id}`);
+        apiUrl.value = url;
+      }
     }
   } catch (error) {
     console.error('Error fetching data:', error)
