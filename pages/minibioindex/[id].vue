@@ -48,7 +48,7 @@ const intervalId = setInterval(async () => {
     const { data } = await axios.get(`/api/trackbioindex/${id}`)
     status.value = data.status
 
-    if (status.value === 'FAILED' || status.value === 'FINISHED') {
+    if (status.value === 'FAILED' || status.value === 'SUCCEEDED') {
       clearInterval(intervalId)
       if(status.value === 'SUCCEEDED'){
         const {data: {url}} = await axios.get(`/api/bioindex/${id}`);
