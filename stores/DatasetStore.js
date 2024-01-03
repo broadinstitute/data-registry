@@ -26,6 +26,15 @@ function getPhenotypeDataSetUploadUrl(dataset_id, pType) {
   return url + `?controls=${pType.controls}&cases=${pType.cases}`;
 }
 
+function readFilePart(file, partSize) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file.slice(0, partSize));
+  });
+}
+
 async function savePhenotype(dataset_id, pType) {
   const formData = new FormData();
   formData.append("file", pType.file);
@@ -154,10 +163,13 @@ export const useDatasetStore = defineStore('DatasetStore', {
       this.showProgressBar = false;
       this.processing = true;
       this.modalMsg = "Sampling File";
+      const part = await readFilePart(file, 2048);
       const formData = new FormData();
-      formData.append("file", file);
-      const { data } = await configuredAxios.post("/api/preview-delimited-file",
-        formData, { headers: { "Content-Type": "multipart/form-data" }})
+      formData.append("file", new Blob([part]), file.name);
+
+      const { data } = await configuredAxios.post("/api/preview-delimited-file", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
       this.processing = false;
       return data;
     },
