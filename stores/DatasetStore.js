@@ -177,9 +177,6 @@ export const useDatasetStore = defineStore('DatasetStore', {
       const { data } = await configuredAxios.post("/api/trackbioindex", JSON.stringify(request));
       return data;
     },
-    async updateBioindexCreationStatus(id, status) {
-      await configuredAxios.patch(`/api/trackbioindex/${id}/${status}`);
-    },
     async enqueueCsvProcess(id, s3_path, schema, alreadySorted, mapping) {
       const request = {
        "name": id,
