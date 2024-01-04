@@ -26,6 +26,15 @@ function getPhenotypeDataSetUploadUrl(dataset_id, pType) {
   return url + `?controls=${pType.controls}&cases=${pType.cases}`;
 }
 
+function readFilePart(file, partSize) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file.slice(0, partSize));
+  });
+}
+
 async function savePhenotype(dataset_id, pType) {
   const formData = new FormData();
   formData.append("file", pType.file);
@@ -149,6 +158,48 @@ export const useDatasetStore = defineStore('DatasetStore', {
       this.savedDataSetId = data.dataset.id
       this.combinedPhenotypesAndCredibleSets = mapCredibleSets()
       return data
+    },
+    async sampleTextFile(file) {
+      this.showProgressBar = false;
+      this.processing = true;
+      this.modalMsg = "Sampling File";
+      const part = await readFilePart(file, 2048);
+      const formData = new FormData();
+      formData.append("file", new Blob([part]), file.name);
+
+      const { data } = await configuredAxios.post("/api/preview-delimited-file", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      this.processing = false;
+      return data;
+    },
+    async trackBioindex(request) {
+      const { data } = await configuredAxios.post("/api/trackbioindex", JSON.stringify(request));
+      return data;
+    },
+    async enqueueCsvProcess(id, s3_path, schema, alreadySorted, mapping) {
+      const request = {
+       "name": id,
+       "column": schema,
+       "already_sorted": alreadySorted,
+       "status": "SUBMITTED FOR PROCESSING",
+       "s3_path": s3_path,
+       "data_types": mapping,
+      }
+      await configuredAxios.post("/api/enqueue-csv-process", JSON.stringify(request));
+    },
+    async uploadFileForBioindex(file, fileName) {
+      this.showProgressBar = true;
+      this.processing = true;
+      this.modalMsg = "Uploading File";
+      this.uploadProgress = 0;
+      const formData = new FormData();
+      formData.append("file", file);
+      const {data} = await configuredAxios.post("/api/upload-csv", formData,
+        { headers: { "Content-Type": "multipart/form-data", "FileName": fileName },
+          onUploadProgress: onUpload})
+      this.processing = false;
+      return data;
     },
     async fetchPubInfo(pubId) {
       const { data } = await configuredAxios.get(`/api/publications?pub_id=${pubId.trim()}`)
