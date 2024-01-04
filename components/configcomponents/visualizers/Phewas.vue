@@ -174,12 +174,7 @@
     const starKey = ref("");
     const height = ref("");
     const thresholds = ref([]);
-    const margin = ref({
-                "top": "",
-                "bottom": "",
-                "left": "",
-                "right": ""
-        });
+    const margin = ref({});
     const VALIDATORS = [
         { condition: () => yAxisField.value === "", msg: "Specify Y axis field"},
         { condition: () => yLabel.value === "", msg: "Specify Y axis label"},
@@ -197,7 +192,6 @@
             "render by": renderBy.value,
             "group by": groupBy.value,
             "convert y -log10": `${convertLog.value}`,
-            "plot margin": margin.value
             }
         // Phenotype map can only be added administratively.
         if (height.value !== ""){
@@ -215,13 +209,8 @@
         if (hoverContent.value.length > 0){
             config["hover content"] = hoverContent.value;
         }
-        Object.keys(config["plot margin"]).forEach(key => {
-            if (config["plot margin"][key] === ""){
-                delete config["plot margin"][key];
-            }
-        });
-        if (Object.keys(config["plot margin"]).length === 0){
-            delete config["plot margin"];
+        if (Object.keys(margin.value).length > 0){
+            config["plot margin"] = margin.value;
         }
         return JSON.stringify(config);
     });

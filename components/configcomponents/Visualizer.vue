@@ -5,9 +5,9 @@
                 <h4>Visualizer</h4>
                 <div class="row">
                     <div class="col filter-col-md">
-                        <div class="label">
-                            Visualizer configuration
-                        </div>
+                        <a href="https://hugeampkpncms.org/node/48" target="_blank" class="tutorial-link">
+                            Visualizer tutorial
+                        </a>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row dr-builder-ui">
@@ -65,8 +65,8 @@
                             <div class="col-md-12 col text-center dr-bubbles-wrapper">
                                 <div class="dr-format-bubble" v-if="!!savedViz.type">
                                     <span class="type">{{ savedViz.type }}</span>
-                                    <span class="editing" v-if="!!editing">Editing</span>
-                                    <a v-else @click="editVisualization()"><span class="edit">Edit</span></a>
+                                    <!--span class="editing" v-if="!!editing">Editing</span-->
+                                    <a @click="editVisualization()"><span class="edit">Edit</span></a>
                                 </div>
                             </div>
                         </div>

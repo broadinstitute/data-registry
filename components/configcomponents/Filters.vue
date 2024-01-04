@@ -3,7 +3,7 @@
 		Filters
 	</h4>
 	<a href="https://hugeampkpncms.org/node/53" target="_blank" class="tutorial-link">
-        Data Convert tutorial
+        Filter tutorial
     </a>
 	<div class="row">
 		<div class="col-md-12 col">
