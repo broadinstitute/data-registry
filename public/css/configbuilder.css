@@ -261,3 +261,7 @@ pre.output{
 sup.required{
 	color: red !important;
 }
+.add-button {
+	font-size: smaller;
+	padding: 5px;
+}

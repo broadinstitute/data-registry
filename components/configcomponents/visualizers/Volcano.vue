@@ -75,8 +75,7 @@
             Greater than<sup class="required"> *</sup>
         </div>
         <div class="col-md-4" v-if="GREATER_THANS.includes(xAxisCondition)">
-            <input class="form-control form-control-sm" v-model="xGT"
-                @change="$event => xGT = toNumber($event.target.value)"/>
+            <input class="form-control form-control-sm" v-model="xGT" type="number"/>
         </div>
         <div class="col-md-2">
             <span v-if="xAxisCondition === 'lower than'">Less than<sup class="required"> *</sup></span>
@@ -84,8 +83,7 @@
             <span v-else-if="xAxisCondition === 'or'">OR less than<sup class="required"> *</sup></span>
         </div>
         <div class="col-md-4" v-if="LOWER_THANS.includes(xAxisCondition)">
-            <input class="form-control form-control-sm" v-model="xLT"
-                @change="$event => xLT = toNumber($event.target.value)"/>
+            <input class="form-control form-control-sm" v-model="xLT" type="number"/>
         </div>
     </div>
     <div class="label">
@@ -110,8 +108,7 @@
             Greater than<sup class="required"> *</sup>
         </div>
         <div class="col-md-4" v-if="GREATER_THANS.includes(yAxisCondition)">
-            <input class="form-control form-control-sm" v-model="yGT"
-                @change="$event => yGT = toNumber($event.target.value)"/>
+            <input class="form-control form-control-sm" v-model="yGT" type="number"/>
         </div>
         <div class="col-md-2">
             <span v-if="yAxisCondition === 'lower than'">Less than<sup class="required"> *</sup></span>
@@ -119,8 +116,7 @@
             <span v-else-if="yAxisCondition === 'or'">OR less than<sup class="required"> *</sup></span>
         </div>
         <div class="col-md-4" v-if="LOWER_THANS.includes(yAxisCondition)">
-            <input class="form-control form-control-sm" v-model="yLT"
-                @change="$event => yLT = toNumber($event.target.value)"/>
+            <input class="form-control form-control-sm" v-model="yLT" type="number">
         </div>
     </div>
     <div class="row">
@@ -139,15 +135,13 @@
             Width
         </div>
         <div class="col-md-4">
-            <input class="form-control form-control-sm" v-model="width"
-                @change="$event => width = toNumber($event.target.value)"/>
+            <input class="form-control form-control-sm" v-model="width" type="number"/>
         </div>
         <div class="col-md-2">
             Height
         </div>
         <div class="col-md-4">
-            <input class="form-control form-control-sm" v-model="height"
-                @change="$event => height = toNumber($event.target.value)"/>
+            <input class="form-control form-control-sm" v-model="height" type="number"/>
         </div>
     </div>
 </template>
@@ -188,7 +182,7 @@
             { condition: () => xAxisCondition.value === "and" && xGT.value >= xLT.value, msg: "X axis 'AND' condition must be corrected."},
             { condition: () => yAxisCondition.value === "and" && yGT.value >= yLT.value, msg: "Y axis 'AND' condition must be corrected."}
         ];
-    const configObject = computed(() => {
+    const configString = computed(() => {
         let config = {
             "type":"volcano plot",
             "label": label.value,
@@ -223,9 +217,9 @@
         if (height.value !== null){
             config["height"] = height.value;
         }
-        return config;
+        return JSON.stringify(config);
     });
-    watch(configObject, () =>{
-        emit('updateVisualizer', configObject.value, readyToSave(VALIDATORS));
+    watch(configString, () =>{
+        emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
     });
 </script>

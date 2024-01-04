@@ -58,8 +58,7 @@
             Height
         </div>
         <div class="col-md-4">
-            <input class="form-control form-control-sm" v-model="height" 
-                @change="$event => height = toNumber($event.target.value)"/>
+            <input class="form-control form-control-sm" v-model="height" type="number"/>
         </div>
     </div>
     <div class="row" v-if="graphicFormat === 'Vector'">
@@ -77,8 +76,8 @@
         <table class="col-md-10" id="hover">
             <tr>
                 <th>
-                    <input class="form-check-input" type="checkbox" 
-                        v-model="selectAllBox" @change="toggleSelectAll()"/>
+                    <input class="form-check-input" type="checkbox" v-model="selectAllBox"
+                        @change="hoverContent = !selectAllBox ? [] : availableFields"/>
                     <label class="label form-check-label">Select fields</label>
                 </th>
             </tr>
@@ -104,10 +103,10 @@
     const renderBy = ref("");
     const xAxisLabel = ref("");
     const yAxisLabel = ref("");
-    const height = ref(null);
+    const height = ref("");
     const linkTo = ref("");
     const hoverContent = ref([]);
-    const configObject = computed(() => {
+    const configString = computed(() => {
         let type = graphicFormat.value === "Vector" ? "manhattan plot" : "manhattan bitmap plot";
         let config = {
             "type": type,
@@ -117,7 +116,7 @@
             "x axis label": xAxisLabel.value,
             "y axis label": yAxisLabel.value,
         };
-        if (height.value !== null){
+        if (height.value !== ""){
             config["height"] = height.value;
         }
         if (linkTo.value !== ""){
@@ -126,17 +125,14 @@
         if (hoverContent.value.length > 0){
             config["hover content"] = hoverContent.value;
         }
-        return config;
+        return JSON.stringify(config);
     });
     const VALIDATORS = [
         { condition: () => xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes."},
         { condition: () => renderBy.value === "", msg: "Specify field to render by."},
         { condition: () => xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes."}
     ];
-    function toggleSelectAll(){
-        hoverContent.value = !!selectAllBox.value ? availableFields.value : [];
-    }
-    watch(configObject, () =>{
-        emit('updateVisualizer', configObject.value, readyToSave(VALIDATORS));
+    watch(configString, () =>{
+        emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
     });
 </script>

@@ -49,8 +49,7 @@
         Font size<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
-        <input class="form-control form-control-sm" v-model="fontSize" 
-                @change="$event => fontSize = toNumber($event.target.value)"/>
+        <input class="form-control form-control-sm" v-model="fontSize" type="number"/>
     </div>
 </div>
 <div class="label">
@@ -98,8 +97,7 @@
         Lowest value<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
-        <input class="form-control form-control-sm" v-model="mainLow"
-                @change="$event => mainLow = toNumber($event.target.value)"/>
+        <input class="form-control form-control-sm" v-model="mainLow" type="number"/>
     </div>
 </div>
 <div class="row">
@@ -107,8 +105,7 @@
         Middle value<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
-        <input class="form-control form-control-sm" v-model="mainMid"
-                @change="$event => mainMid = toNumber($event.target.value)"/>
+        <input class="form-control form-control-sm" v-model="mainMid" type="number"/>
     </div>
 </div>
     <div class="row">
@@ -116,8 +113,7 @@
             Highest value<sup class="required"> *</sup>
         </div>
         <div class="col-md-4">
-            <input class="form-control form-control-sm" v-model="mainHigh" 
-                @change="$event => mainHigh = toNumber($event.target.value)"/>
+            <input class="form-control form-control-sm" v-model="mainHigh" type="number"/>
         </div>
     </div>
     <div class="label">
@@ -166,22 +162,22 @@
                 Value steps<sup class="required"> *</sup>
             </div>
             <div class="col-md-4 col">
-			<table>
-				<tr v-for="(, index) in subSteps">
-					<td>
-                        <input class="form-control form-control-sm" :value="subSteps[index]"
-                            @change="$event => subSteps[index] = toNumber($event.target.value)"/>
-					</td>
-					<td>
-						<button class="btn btn-secondary replace-chars-button delete-button"
-							v-if="subSteps.length > 1" 
-                            @click="subSteps.splice(index, 1)">&times;
-						</button>
-					</td>
-				</tr>
-			</table>
-			<button class="btn btn-primary" @click="subSteps.push(0)">Add</button>
-		</div>
+                <table>
+                    <tr v-for="(, index) in subSteps">
+                        <td>
+                            <input class="form-control form-control-sm" type="number"
+                                v-model="subSteps[index]"/>
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary replace-chars-button delete-button"
+                                v-if="subSteps.length > 1" 
+                                @click="subSteps.splice(index, 1)">&times;
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <button class="btn btn-primary add-button" @click="subSteps.push('')">Add</button>
+            </div>
         </div>
     </div>
 </template>
@@ -200,15 +196,15 @@
     const mainLabel = ref("");
     const mainRenderType = ref("scale");
     const mainDirection = ref("positive");
-    const mainLow = ref(0);
-    const mainMid = ref(0);
-    const mainHigh = ref(0);
-    const subSteps = ref([0,0]);
+    const mainLow = ref("");
+    const mainMid = ref("");
+    const mainHigh = ref("");
+    const subSteps = ref([""]);
     const subField = ref("");
     const subLabel = ref("");
     const subRenderType = ref("steps");
     const subDirection = ref("positive");
-    const configObject = computed(() => {
+    const configString = computed(() => {
         let config = {
             "type":"heat map",
             "label": plotLabel.value,
@@ -237,7 +233,9 @@
             };
             config["sub"] = sub;
         }
-        return config;
+
+        // tracking the string rather than the object picks up changes within arrays
+        return JSON.stringify(config);
     });
     const VALIDATORS = [
         { condition: () => plotLabel.value === "", msg: "Specify a label for the plot."},
@@ -245,11 +243,13 @@
         { condition: () => columnLabel.value === "" || rowLabel.value === "", msg: "Specify column and row labels."},
         { condition: () => mainField.value === "", msg: "Specify main field."},
         { condition: () => mainLabel.value === "", msg: "Specify main label."},
-        { condition: () => fontSize.value === null, msg: "Specify font size."},
+        { condition: () => fontSize.value === "", msg: "Specify font size."},
         { condition: () => !(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value), msg: "Assign low, middle, and high values in order"},
         { condition: () => subField.value !== "" && subLabel.value === "", msg: "Specify a label for the sub circle"},
+        { condition: () => subField.value !== "" && 
+            (subSteps.value.length === 0 || subSteps.value.includes("")), msg: "Specify steps for the sub circle."}
     ];
-    watch(configObject, () =>{
-        emit('updateVisualizer', configObject.value, readyToSave(VALIDATORS));
+    watch(configString, () =>{
+        emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
     });
 </script>

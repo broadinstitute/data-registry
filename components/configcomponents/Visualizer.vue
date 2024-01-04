@@ -5,9 +5,9 @@
                 <h4>Visualizer</h4>
                 <div class="row">
                     <div class="col filter-col-md">
-                        <div class="label">
-                            Visualizer configuration
-                        </div>
+                        <a href="https://hugeampkpncms.org/node/48" target="_blank" class="tutorial-link">
+                            Visualizer tutorial
+                        </a>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row dr-builder-ui">
@@ -35,12 +35,12 @@
                                         <Heatmap v-if="visType === 'heatmap'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Heatmap>
-                                        <!--<Phewas v-if="visType === 'phewas'"
+                                        <Phewas v-if="visType === 'phewas'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Phewas> 
                                         <Region v-if="visType === 'region'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
-                                        </Region>-->
+                                        </Region>
                                         <Volcano v-if="visType === 'volcano'"
                                             @updateVisualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)">
                                         </Volcano>
@@ -65,8 +65,8 @@
                             <div class="col-md-12 col text-center dr-bubbles-wrapper">
                                 <div class="dr-format-bubble" v-if="!!savedViz.type">
                                     <span class="type">{{ savedViz.type }}</span>
-                                    <span class="editing" v-if="!!editing">Editing</span>
-                                    <a v-else @click="editVisualization()"><span class="edit">Edit</span></a>
+                                    <!--span class="editing" v-if="!!editing">Editing</span-->
+                                    <a @click="editVisualization()"><span class="edit">Edit</span></a>
                                 </div>
                             </div>
                         </div>
@@ -260,15 +260,15 @@
 <script setup>
     import Manhattan from "@/components/configcomponents/visualizers/Manhattan.vue";
     import Heatmap from "@/components/configcomponents/visualizers/Heatmap.vue";
-    /*import Phewas from "@/components/configcomponents/visualizers/Phewas.vue";
-    import Region from "@/components/configcomponents/visualizers/Region.vue";*/
+    import Phewas from "@/components/configcomponents/visualizers/Phewas.vue";
+    import Region from "@/components/configcomponents/visualizers/Region.vue";
     import Volcano from "@/components/configcomponents/visualizers/Volcano.vue";
     const props = defineProps({fields: Array, fieldNameUpdate: Array});
     const emit = defineEmits(["visualizationSaved"])
     const availableFields = computed(() => props.fields);
     const fieldUpdate = computed(() => props.fieldNameUpdate);
     const visType = ref("");
-    const config = ref({});
+    const config = ref("");
     const savedViz = ref({});
     const failedSaveMsg = ref("Specify a label for the plot.");
     const readyToSave = ref(false);
@@ -285,11 +285,11 @@
             return;
         }
         showMsg.value = false;
-        savedViz.value = config.value;
+        savedViz.value = JSON.parse(config.value);
         visType.value = "";
     }
     function editVisualization(){
-        config.value = savedViz.value;
-        visType.value = config.value.type.split(" ")[0];
+        visType.value = savedViz.value.type.split(" ")[0];
+        config.value = JSON.stringify(savedViz.value);
     }
 </script>
