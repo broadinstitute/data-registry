@@ -21,7 +21,7 @@
             </div>
           </th>
         </tr>
-        <tr v-for="entry, index in replaceChars">
+        <tr v-for="(entry, index) in replaceChars" :key="index">
           <td>
             <input
               type="text"

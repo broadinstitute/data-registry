@@ -23,7 +23,7 @@
             </div>
           </th>
         </tr>
-        <tr v-for="entry, index in newFieldNames">
+        <tr v-for="(entry, index) in newFieldNames" :key="index">
           <td>
             <input
               type="text"

@@ -53,7 +53,7 @@
             </div>
           </th>
         </tr>
-        <tr v-for="field, index in selectedFields" class="arrow-button-list">
+        <tr v-for="(field, index) in selectedFields" class="arrow-button-list" :key="index">
           <td>{{ getColumnName(field) }}</td>
           <td class="arrow-button-holder">
             <button

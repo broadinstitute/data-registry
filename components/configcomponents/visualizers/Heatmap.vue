@@ -20,7 +20,7 @@
         <option value="">
           Select a field
         </option>
-        <option v-for="field in availableFields">
+        <option v-for="field in availableFields" :key="field">
           {{ field }}
         </option>
       </select>
@@ -45,7 +45,7 @@
         <option value="">
           Select a field
         </option>
-        <option v-for="field in availableFields">
+        <option v-for="field in availableFields" :key="field">
           {{ field }}
         </option>
       </select>
@@ -81,7 +81,7 @@
         <option value="">
           Select a field
         </option>
-        <option v-for="field in availableFields">
+        <option v-for="field in availableFields" :key="field">
           {{ field }}
         </option>
       </select>
@@ -158,7 +158,7 @@
         <option value="">
           None
         </option>
-        <option v-for="field in availableFields" :value="field">
+        <option v-for="field in availableFields" :value="field" :key="field">
           {{ field }}
         </option>
       </select>
