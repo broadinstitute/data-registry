@@ -29,7 +29,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="(value, key) in mapping.headers">
+                <tr v-for="key in Object.keys(mapping.headers)">
                   <td>{{ key }}</td>
                   <td>
                     <select class="form-control" v-model="mapping.headers[key]">
@@ -37,7 +37,6 @@
                       <option value="INTEGER">INTEGER</option>
                       <option value="DECIMAL">DECIMAL</option>
                     </select>
-                    <!--                    <div v-else style="height: calc(1.5em + .75rem + 2px); text-align: left; padding: .375rem .75rem;">TEXT</div>-->
                   </td>
                 </tr>
                 </tbody>
