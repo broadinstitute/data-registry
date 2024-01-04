@@ -1,5 +1,5 @@
 <template>
   <div class="hello">
-    <PostNewContent></PostNewContent>
+    <PostNewContent />
   </div>
 </template>

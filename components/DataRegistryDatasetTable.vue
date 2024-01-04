@@ -1,72 +1,94 @@
 <template>
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Description</th>
-                <th scope="col">Pub Id</th>
-                <th scope="col">Data Type</th>
-                <th scope="col">Ancestry</th>
-                <th scope="col">Sex</th>
-                <th scope="col">Samples</th>
-                <th scope="col">Status</th>
-                <th scope="col">Submitter</th>
-                <th scope="col">Files</th>
-                <th scope="col">Uploaded</th>
-                <th>&nbsp;</th>
-            </tr>
-        </thead>
-        <tbody class="table-group-divider">
-            <template v-for="dataset in datasets" :key="dataset.id">
-              <tr>
-                <td>
-                    <a class="link-primary" @click="route.push({ path: `/datasets/${dataset.id}` })">{{ dataset.name }}</a>
-                </td>
-                <td>
-                    {{
-                        dataset.description.length <= 20
-                            ? dataset.description
-                            : dataset.description.substring(0, 20) + "..."
-                    }}
-                </td>
-                <td v-html="formatPubLink(dataset.pub_id)"></td>
-                <td>{{ dataset.data_type }}</td>
-                <td>{{ dataset.ancestry }}</td>
-                <td v-html="formatSex(dataset.sex)"></td>
-                <td>{{ dataset.global_sample_size }}</td>
-                <td>{{ dataset.status }}</td>
-                <td>{{ dataset.data_submitter }}</td>
-                <td v-if="dataset.publicly_available">
-                  <button class="btn btn-secondary btn-sm" @click="toggleFiles(dataset)">
-                    {{ dataset.showFiles ? "Hide" : "Show" }} Files
-                  </button>
-                </td>
-                <td v-else>
-                  Not Shared
-                </td>
-                <td>
-                    {{
-                        dataset.created_at
-                            ? dataset.created_at.split("T")[0]
-                            : ""
-                    }}
-                </td>
-                <td>
-                    <nuxt-link :to="`/datasets/${dataset.id}?edit=true`"
-                        ><i class="bi bi-pencil" style="cursor: pointer"></i>
-                    </nuxt-link>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col">
+          Name
+        </th>
+        <th scope="col">
+          Description
+        </th>
+        <th scope="col">
+          Pub Id
+        </th>
+        <th scope="col">
+          Data Type
+        </th>
+        <th scope="col">
+          Ancestry
+        </th>
+        <th scope="col">
+          Sex
+        </th>
+        <th scope="col">
+          Samples
+        </th>
+        <th scope="col">
+          Status
+        </th>
+        <th scope="col">
+          Submitter
+        </th>
+        <th scope="col">
+          Files
+        </th>
+        <th scope="col">
+          Uploaded
+        </th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody class="table-group-divider">
+      <template v-for="dataset in datasets" :key="dataset.id">
+        <tr>
+          <td>
+            <a class="link-primary" @click="route.push({ path: `/datasets/${dataset.id}` })">{{ dataset.name }}</a>
+          </td>
+          <td>
+            {{
+              dataset.description.length <= 20
+                ? dataset.description
+                : dataset.description.substring(0, 20) + "..."
+            }}
+          </td>
+          <td v-html="formatPubLink(dataset.pub_id)" />
+          <td>{{ dataset.data_type }}</td>
+          <td>{{ dataset.ancestry }}</td>
+          <td v-html="formatSex(dataset.sex)" />
+          <td>{{ dataset.global_sample_size }}</td>
+          <td>{{ dataset.status }}</td>
+          <td>{{ dataset.data_submitter }}</td>
+          <td v-if="dataset.publicly_available">
+            <button class="btn btn-secondary btn-sm" @click="toggleFiles(dataset)">
+              {{ dataset.showFiles ? "Hide" : "Show" }} Files
+            </button>
+          </td>
+          <td v-else>
+            Not Shared
+          </td>
+          <td>
+            {{
+              dataset.created_at
+                ? dataset.created_at.split("T")[0]
+                : ""
+            }}
+          </td>
+          <td>
+            <nuxt-link :to="`/datasets/${dataset.id}?edit=true`">
+              <i class="bi bi-pencil" style="cursor: pointer" />
+            </nuxt-link>
                     &nbsp;
-                    <i
-                        @click="deleteDataSet(dataset.id)"
-                        class="bi bi-trash"
-                        style="cursor: pointer; color: red"
-                    ></i>
-                </td>
-            </tr>
-            <tr v-if="dataset.showFiles && dataset.files.length > 0">
-              <td colspan="12">
-              <table class="table table-striped table-hover">
-               <thead>
+            <i
+              class="bi bi-trash"
+              style="cursor: pointer; color: red"
+              @click="deleteDataSet(dataset.id)"
+            />
+          </td>
+        </tr>
+        <tr v-if="dataset.showFiles && dataset.files.length > 0">
+          <td colspan="12">
+            <table class="table table-striped table-hover">
+              <thead>
                 <tr>
                   <th>File</th>
                   <th>Phenotype</th>
@@ -77,110 +99,119 @@
                   <th>Access</th>
                   <th>Access Credentials</th>
                 </tr>
-               </thead>
-                <tbody class="table-group-divider">
-                <tr v-for="file in dataset.files">
+              </thead>
+              <tbody class="table-group-divider">
+                <tr v-for="file in dataset.files" :key="file">
                   <td>{{ file.name }}</td>
                   <td>{{ file.phenotype }}</td>
-                  <td>{{ file.type}}</td>
+                  <td>{{ file.type }}</td>
                   <td>{{ file.size }}</td>
-                  <td><button class="btn btn-secondary btn-sm" @click="copyToClip(file)">{{ file.copyMsg ? file.copyMsg : 'Copy'}}</button></td>
+                  <td>
+                    <button class="btn btn-secondary btn-sm" @click="copyToClip(file)">
+                      {{ file.copyMsg ? file.copyMsg : 'Copy' }}
+                    </button>
+                  </td>
                   <td>{{ file.createdAt }}</td>
                   <td>
                     <select class="form-select form-select-sm" disabled title="will be enabled later">
-                      <option value="private">Private</option>
-                      <option value="public">Public</option>
-                      <option value="review">Review</option>
+                      <option value="private">
+                        Private
+                      </option>
+                      <option value="public">
+                        Public
+                      </option>
+                      <option value="review">
+                        Review
+                      </option>
                     </select>
                   </td>
                   <td>
-                    <button class="btn btn-secondary btn-sm" disabled title="will be enabled later">Set</button>
+                    <button class="btn btn-secondary btn-sm" disabled title="will be enabled later">
+                      Set
+                    </button>
                   </td>
                 </tr>
-                </tbody>
-              </table>
-              </td>
-            </tr>
-            <tr v-else-if="dataset.showFiles && dataset.files.length === 0">
-              <td colspan="12">
-                <div>
-                  No files uploaded.
-                </div>
-              </td>
-            </tr>
-            </template>
-        </tbody>
-    </table>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr v-else-if="dataset.showFiles && dataset.files.length === 0">
+          <td colspan="12">
+            <div>
+              No files uploaded.
+            </div>
+          </td>
+        </tr>
+      </template>
+    </tbody>
+  </table>
 </template>
 
 <script setup>
-import { useDatasetStore } from '~/stores/DatasetStore'
-
+import { useDatasetStore } from '~/stores/DatasetStore';
 
 const route = useRouter();
 const config = useRuntimeConfig();
-const store = useDatasetStore()
+const store = useDatasetStore();
 const datasets = ref([]);
 
 const axios = useAxios(config, undefined, (error) => {
-    console.log(error)
-    throw new Error("Server Error")
-})
-
-onMounted(async () => {
-    await fetchDataSets();
-    await store.fetchPhenotypes()
+  console.log(error);
+  throw new Error("Server Error");
 });
 
-async function toggleFiles(dataSet) {
-  if(!dataSet.files) {
-    dataSet.files = (await axios.get(`/api/filelist/${dataSet.id}`)).data
+onMounted(async () => {
+  await fetchDataSets();
+  await store.fetchPhenotypes();
+});
+
+async function toggleFiles (dataSet) {
+  if (!dataSet.files) {
+    dataSet.files = (await axios.get(`/api/filelist/${dataSet.id}`)).data;
     for (const file of dataSet.files) {
-      file.phenotype = store.phenotypes[file.phenotype] ? store.phenotypes[file.phenotype].description : file.phenotype
-      file.copyMsg = ''
+      file.phenotype = store.phenotypes[file.phenotype] ? store.phenotypes[file.phenotype].description : file.phenotype;
+      file.copyMsg = '';
     }
   }
-  dataSet.showFiles = !dataSet.showFiles
+  dataSet.showFiles = !dataSet.showFiles;
 }
-async function copyToClip(file){
-  const fullPath = `${config.public['apiBaseUrl']}/api/${file.path}`
-  await navigator.clipboard.writeText(fullPath)
-  file.copyMsg = 'Copied!'
+async function copyToClip (file) {
+  const fullPath = `${config.public.apiBaseUrl}/api/${file.path}`;
+  await navigator.clipboard.writeText(fullPath);
+  file.copyMsg = 'Copied!';
 
   setTimeout(() => {
-    file.copyMsg = ''
-  }, 2000)
+    file.copyMsg = '';
+  }, 2000);
 }
 
-async function deleteDataSet(id) {
-    await axios.delete(`/api/datasets/${id}`)
-    datasets.value = datasets.value.filter((dataset) => dataset.id !== id);
+async function deleteDataSet (id) {
+  await axios.delete(`/api/datasets/${id}`);
+  datasets.value = datasets.value.filter(dataset => dataset.id !== id);
 }
 
-async function fetchDataSets() {
-  datasets.value = (await axios.get(`/api/datasets`)).data.map(ds => {return {...ds, showFiles: false}})
+async function fetchDataSets () {
+  datasets.value = (await axios.get(`/api/datasets`)).data.map((ds) => { return { ...ds, showFiles: false }; });
 }
-function formatSex(gender) {
-    if (!gender) return "";
-    else {
-        switch (gender) {
-            case "female":
-                return '<span class="badge rounded-pill bg-info"><i class="bi bi-gender-female"></i> Female</span>';
-            case "male":
-                return '<span class="badge rounded-pill bg-warning"><i class="bi bi-gender-male"></i> Male</span>';
-            case "mixed":
-                return '<span class="badge rounded-pill bg-danger"><i class="bi bi-gender-ambiguous"></i> Mixed</span>';
-            default:
-                return "";
-        }
+function formatSex (gender) {
+  if (!gender) { return ""; } else {
+    switch (gender) {
+      case "female":
+        return '<span class="badge rounded-pill bg-info"><i class="bi bi-gender-female"></i> Female</span>';
+      case "male":
+        return '<span class="badge rounded-pill bg-warning"><i class="bi bi-gender-male"></i> Male</span>';
+      case "mixed":
+        return '<span class="badge rounded-pill bg-danger"><i class="bi bi-gender-ambiguous"></i> Mixed</span>';
+      default:
+        return "";
     }
+  }
 }
 
-function formatPubLink(pubId) {
-    if (!pubId) return "";
-    else {
-        return `<a href="https://pubmed.ncbi.nlm.nih.gov/${pubId}" target="_blank">${pubId}</a>`;
-    }
+function formatPubLink (pubId) {
+  if (!pubId) { return ""; } else {
+    return `<a href="https://pubmed.ncbi.nlm.nih.gov/${pubId}" target="_blank">${pubId}</a>`;
+  }
 }
 </script>
 <style scoped>

@@ -13,20 +13,21 @@
 import { useDatasetStore } from '~/stores/DatasetStore';
 const store = useDatasetStore();
 const props = defineProps(
-    {errorMessage: String,
-      success: Boolean,
-      successMessage: String,
-      displayNotificationSeconds: {
-        type: Number,
-        default: 7
-      },
-      showNotification: Boolean})
+  {
+    errorMessage: String,
+    success: Boolean,
+    successMessage: String,
+    displayNotificationSeconds: {
+      type: Number,
+      default: 7
+    },
+    showNotification: Boolean
+  });
 const isVisible = ref(true);
-
 
 watch(() => props.showNotification, (newValue) => {
   if (newValue) {
-    console.log("showing notification")
+    console.log("showing notification");
     isVisible.value = true;
     setTimeout(() => {
       isVisible.value = false;
@@ -35,7 +36,4 @@ watch(() => props.showNotification, (newValue) => {
   }
 });
 
-
 </script>
-
-
