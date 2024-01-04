@@ -6,9 +6,27 @@ module.exports = {
   extends: [
     "eslint:recommended",
     "plugin:vue/vue3-essential",
-    "@nuxtjs",
-    "plugin:nuxt/recommended",
   ],
+  globals: {
+    "useAxios": "readonly",
+    "useStore": "readonly",
+    "useRouter": "readonly",
+    "useRuntimeConfig": "readonly",
+    "defineNuxtPlugin": "readonly",
+    "navigateTo": "readonly",
+    "ref": "readonly",
+    "useFormValidation": "readonly",
+    "onMounted": "readonly",
+    "useRoute": "readonly",
+    "useFetch": "readonly",
+    "watch": "readonly",
+    "computed": "readonly",
+    "readyToSave": "readonly",
+    "nextTick": "readonly",
+    "toRef": "readonly",
+    "useNuxtApp": "readonly",
+    "defineNuxtRouteMiddleware": "readonly",
+  },
   overrides: [
     {
       env: {
@@ -29,5 +47,7 @@ module.exports = {
     semi: ["error", "always"],
     quotes: "off",
     "comma-dangle": "off",
+    camelcase: "off",
+    "vue/multi-word-component-names": 'off',
   },
 };
