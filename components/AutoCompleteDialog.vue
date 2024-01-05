@@ -2,34 +2,35 @@
 <template>
   <div :id="wrapperId" class="simple-typeahead">
     <input
-        ref="inputRef"
-        :id="id"
-        class="form-control"
-        type="text"
-        required
-        :placeholder="placeholder"
-        v-model="input"
-        @input="onInput"
-        @focus="onFocus"
-        @blur="onBlur"
-        @keydown.down.prevent="onArrowDown"
-        @keydown.up.prevent="onArrowUp"
-        @keydown.enter.prevent="selectCurrentSelection"
-        @keydown.esc.prevent="onEscape"
-        autocomplete="off"
-        :disabled="disabled"
-    />
+      :id="id"
+      ref="inputRef"
+      v-model="input"
+      class="form-control"
+      type="text"
+      required
+      :placeholder="placeholder"
+      autocomplete="off"
+      :disabled="disabled"
+      @input="onInput"
+      @focus="onFocus"
+      @blur="onBlur"
+      @keydown.down.prevent="onArrowDown"
+      @keydown.up.prevent="onArrowUp"
+      @keydown.enter.prevent="selectCurrentSelection"
+      @keydown.esc.prevent="onEscape"
+    >
     <div v-if="isListVisible" class="simple-typeahead-list">
-      <div class="simple-typeahead-list-header"></div>
+      <div class="simple-typeahead-list-header" />
       <div
-          class="simple-typeahead-list-item"
-          :class="{ 'bg-primary text-white': currentSelectionIndex === index }"
-          v-for="(item, index) in filteredItems"
-          :key="index"
-          @mousedown.prevent
-          @click="selectItem(item)"
-          @mouseenter="currentSelectionIndex = index">
-        {{props.itemDisplay(item)}}
+        v-for="(item, index) in filteredItems"
+        :key="index"
+        class="simple-typeahead-list-item"
+        :class="{ 'bg-primary text-white': currentSelectionIndex === index }"
+        @mousedown.prevent
+        @click="selectItem(item)"
+        @mouseenter="currentSelectionIndex = index"
+      >
+        {{ props.itemDisplay(item) }}
       </div>
     </div>
   </div>
@@ -84,7 +85,7 @@ const props = defineProps({
     default: true,
   }
 });
-const emit = defineEmits(['blur'])
+const emit = defineEmits(['blur']);
 const input = ref('');
 const inputVal = ref(null);
 const inputRef = ref(null);
@@ -96,41 +97,40 @@ const isInputFocused = ref(false);
 const currentSelectionIndex = ref(0);
 const currentSelection = computed(() => isListVisible.value && currentSelectionIndex.value < filteredItems.value.length ? filteredItems.value[currentSelectionIndex.value] : undefined);
 const isListVisible = computed(() => isInputFocused.value && input.value.length >= props.minInputLength && filteredItems.value.length > props.minItemLength);
-function onFocus() {
+function onFocus () {
   isInputFocused.value = true;
 }
 
 watch(initialInput, (val) => {
   input.value = val;
-}, {immediate: true});
+}, { immediate: true });
 
-
-function onBlur() {
+function onBlur () {
   isInputFocused.value = false;
-  emit('blur', {value: inputVal.value ?? input.value, id: props.id});
+  emit('blur', { value: inputVal.value ?? input.value, id: props.id });
 }
 
-function onArrowDown() {
+function onArrowDown () {
   if (isListVisible.value && currentSelectionIndex.value < filteredItems.value.length - 1) {
     currentSelectionIndex.value++;
   }
   scrollSelectionIntoView();
 }
 
-function onArrowUp() {
+function onArrowUp () {
   if (isListVisible.value && currentSelectionIndex.value > 0) {
     currentSelectionIndex.value--;
   }
   scrollSelectionIntoView();
 }
 
-function selectCurrentSelection() {
+function selectCurrentSelection () {
   if (currentSelection.value) {
     selectItem(currentSelection.value);
   }
 }
 
-function scrollSelectionIntoView() {
+function scrollSelectionIntoView () {
   setTimeout(() => {
     const list_node = document.querySelector(`#${wrapperId.value} .simple-typeahead-list`);
     const active_node = document.querySelector(`#${wrapperId.value} .simple-typeahead-list-item.bg-primary.text-white`);
@@ -146,21 +146,20 @@ function scrollSelectionIntoView() {
   });
 }
 
-function selectItem(item) {
+function selectItem (item) {
   input.value = props.itemDisplay(item);
   inputVal.value = item;
   inputRef.value.blur();
 }
 
-function onInput() {
+function onInput () {
   currentSelectionIndex.value = 0;
   inputVal.value = null;
 }
 
-function onEscape() {
+function onEscape () {
   inputRef.value.blur();
 }
-
 
 </script>
 

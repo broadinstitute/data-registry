@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <ConfigBuilder />
-    </div>
+  <div>
+    <ConfigBuilder />
+  </div>
 </template>
 <script setup>
 import ConfigBuilder from "@/components/configcomponents/ConfigBuilder.vue";

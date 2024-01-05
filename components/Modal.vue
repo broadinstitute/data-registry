@@ -2,9 +2,16 @@
   <div class="dr-modal">
     <div class="dr-container">
       <div class="dr-modal-body">
-        <p>{{props.statusMessage}}</p>
-        <div class="progress" v-if="showProgress">
-          <div class="progress-bar" role="progressbar" :aria-valuenow="props.progress" aria-valuemin="0" aria-valuemax="100" :style="progressWidth"></div>
+        <p>{{ props.statusMessage }}</p>
+        <div v-if="showProgress" class="progress">
+          <div
+            class="progress-bar"
+            role="progressbar"
+            :aria-valuenow="props.progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            :style="progressWidth"
+          />
         </div>
       </div>
     </div>
@@ -12,13 +19,13 @@
 </template>
 
 <script setup>
-const props = defineProps({statusMessage: String, progress: Number, showProgress: Boolean})
+const props = defineProps({ statusMessage: String, progress: Number, showProgress: Boolean });
 
 const progressWidth = computed(() => {
   return {
     width: `${props.progress}%`
-  }
-})
+  };
+});
 </script>
 
 <style>
