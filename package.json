@@ -6,7 +6,7 @@
         "dev-auth": "nuxt dev --host local.kpndataregistry.org",
         "test": "vitest --run",
         "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-        "lintfix": "eslint --fix --ext .js,.vue --ignore-path .gitignore .",
+        "lintfix": "eslint --fix --ext .js,.vue --ignore-path .gitignore ."
     },
     "devDependencies": {
         "@nuxt/devtools": "^1.0.0",
