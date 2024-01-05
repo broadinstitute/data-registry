@@ -45,6 +45,7 @@ module.exports = {
   plugins: ["vue"],
   rules: {
     semi: ["error", "always"],
+    eqeqeq: ["error", "always"],
     quotes: "off",
     "comma-dangle": "off",
     camelcase: "off",

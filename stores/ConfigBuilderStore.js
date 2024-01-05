@@ -36,7 +36,7 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
     },
     addSelectedColumn (rawField) {
       // Don't add if already present
-      if (this.getColumnIndex(rawField) != -1) {
+      if (this.getColumnIndex(rawField) !== -1) {
         return;
       }
       this.selectedColumns.push({
