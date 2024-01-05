@@ -17,7 +17,7 @@
                     Select field
                   </div>
                   <select v-model="selectedField" class="form-control">
-                    <option v-for="field in availableFields">
+                    <option v-for="field in availableFields" :key="field">
                       {{ field }}
                     </option>
                   </select>
@@ -27,7 +27,7 @@
                     Filter type
                   </div>
                   <select v-model="selectedFilterType" class="form-control">
-                    <option v-for="item in Object.keys(filterTypeOptions)" :value="item">
+                    <option v-for="item in Object.keys(filterTypeOptions)" :value="item" :key="item">
                       {{ filterTypeOptions[item] }}
                     </option>
                   </select>
@@ -68,7 +68,7 @@
                     Filter order
                   </div>
                   <tbody class="dr-byor-data-columns">
-                    <tr v-for="filter, index in allFilters" class="arrow-button-list filter-row">
+                    <tr v-for="(filter, index) in allFilters" class="arrow-button-list filter-row" :key="index">
                       <td>
                         {{ filter.label }}
                       </td>

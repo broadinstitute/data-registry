@@ -212,7 +212,7 @@
       <div class="label">
         URL to the page
         <sup class="optional">ex.
-          /research.html?pageid=kp_variant_sifter&phenotype=T2D&region=17:40719090-40725257
+          /research.html?pageid=kp_variant_sifter&phenotype=T2D&amp;region=17:40719090-40725257
         </sup>
       </div>
       <input type="text" class="form-control input-default" placeholder="URL">
