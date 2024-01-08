@@ -265,3 +265,13 @@ sup.required{
 	font-size: smaller;
 	padding: 5px;
 }
+#viz-gui{
+	margin: 10px;
+	background-color: white;
+	border: 5px solid white;
+	border-radius: 5px;
+}
+#viz-gui img {
+	width: 85%;
+	margin-left: 10%;
+}

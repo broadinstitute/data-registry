@@ -1,5 +1,10 @@
 <template>
   <div class="row">
+      <div id="viz-gui" class="col-md-12">
+        <img src="assets/images/mockup-bg-crop.jpg"/>
+      </div>
+    </div>
+  <div class="row">
     <div class="col-md-2">
       Graphic format<sup class="required"> *</sup>
     </div>
@@ -107,47 +112,55 @@
   </div>
 </template>
 <script setup>
-import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-const store = useConfigBuilderStore();
-const emit = defineEmits(["updateVisualizer"]);
-const availableFields = computed(() => store.allFields);
-const selectAllBox = ref(false);
-const graphicFormat = ref("Vector");
-const xAxisField = ref("");
-const yAxisField = ref("");
-const renderBy = ref("");
-const xAxisLabel = ref("");
-const yAxisLabel = ref("");
-const height = ref("");
-const linkTo = ref("");
-const hoverContent = ref([]);
-const configString = computed(() => {
-  const type = graphicFormat.value === "Vector" ? "manhattan plot" : "manhattan bitmap plot";
-  const config = {
-    type,
-    "x axis field": xAxisField.value,
-    "y axis field": yAxisField.value,
-    "render by": renderBy.value,
-    "x axis label": xAxisLabel.value,
-    "y axis label": yAxisLabel.value,
-  };
-  if (height.value !== "") {
-    config.height = height.value;
+  import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  import * as d3 from "d3";
+  const store = useConfigBuilderStore();
+  const emit = defineEmits(["updateVisualizer"]);
+  const availableFields = computed(() => store.allFields);
+  const selectAllBox = ref(false);
+  const graphicFormat = ref("Vector");
+  const xAxisField = ref("");
+  const yAxisField = ref("");
+  const renderBy = ref("");
+  const xAxisLabel = ref("");
+  const yAxisLabel = ref("");
+  const height = ref("");
+  const linkTo = ref("");
+  const hoverContent = ref([]);
+  const configString = computed(() => {
+    const type = graphicFormat.value === "Vector" ? "manhattan plot" : "manhattan bitmap plot";
+    const config = {
+      type,
+      "x axis field": xAxisField.value,
+      "y axis field": yAxisField.value,
+      "render by": renderBy.value,
+      "x axis label": xAxisLabel.value,
+      "y axis label": yAxisLabel.value,
+    };
+    if (height.value !== "") {
+      config.height = height.value;
+    }
+    if (linkTo.value !== "") {
+      config["link to"] = linkTo.value;
+    }
+    if (hoverContent.value.length > 0) {
+      config["hover content"] = hoverContent.value;
+    }
+    return JSON.stringify(config);
+  });
+  const VALIDATORS = [
+    { condition: () => xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes." },
+    { condition: () => renderBy.value === "", msg: "Specify field to render by." },
+    { condition: () => xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes." }
+  ];
+  watch(configString, () => {
+    emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
+  });
+  function createGui (){
+    d3.select("#viz-gui")
+      .on("mouseover", () => console.log("This is the backdrop"));
   }
-  if (linkTo.value !== "") {
-    config["link to"] = linkTo.value;
-  }
-  if (hoverContent.value.length > 0) {
-    config["hover content"] = hoverContent.value;
-  }
-  return JSON.stringify(config);
-});
-const VALIDATORS = [
-  { condition: () => xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes." },
-  { condition: () => renderBy.value === "", msg: "Specify field to render by." },
-  { condition: () => xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes." }
-];
-watch(configString, () => {
-  emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
-});
+  onMounted(() =>{
+    createGui();
+  });
 </script>
