@@ -267,9 +267,9 @@ sup.required{
 }
 #viz-gui{
 	margin: 10px;
-	background-color: white;
 	border: 5px solid white;
 	border-radius: 5px;
+	background-image: url("assets/images/mockup-bg-crop.jpg");
 }
 #viz-gui img {
 	width: 85%;

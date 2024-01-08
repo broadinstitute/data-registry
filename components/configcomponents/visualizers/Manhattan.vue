@@ -1,7 +1,7 @@
 <template>
   <div class="row">
       <div id="viz-gui" class="col-md-12">
-        <img src="assets/images/mockup-bg-crop.jpg"/>
+        <!-- <img src="assets/images/mockup-bg-crop.jpg"/> -->
       </div>
     </div>
   <div class="row">
@@ -158,6 +158,13 @@
   });
   function createGui (){
     d3.select("#viz-gui")
+      .append("svg")
+      .attr("width", 800)
+      .attr("height", 300)
+      .append("rect")
+      .attr("width", 50)
+      .attr("height", 50)
+      .attr("stroke", "red")
       .on("mouseover", () => console.log("This is the backdrop"));
   }
   onMounted(() =>{
