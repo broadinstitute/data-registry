@@ -258,20 +258,19 @@ pre.output{
 	margin-left: 16px;
 	margin-right: 10px;
 }
-sup.required{
+sup.required {
 	color: red !important;
 }
 .add-button {
 	font-size: smaller;
 	padding: 5px;
 }
-#viz-gui{
-	margin: 10px;
-	border: 5px solid white;
-	border-radius: 5px;
-	background-image: url("assets/images/mockup-bg-crop.jpg");
-}
-#viz-gui img {
-	width: 85%;
-	margin-left: 10%;
+#viz-gui {
+	margin: 20px;
+	background-clip: padding-box;
+	background-image: url("assets/images/manhattan_model_crop.jpg");
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-color: white;
 }

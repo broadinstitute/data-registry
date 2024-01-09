@@ -1,7 +1,6 @@
 <template>
   <div class="row">
       <div id="viz-gui" class="col-md-12">
-        <!-- <img src="assets/images/mockup-bg-crop.jpg"/> -->
       </div>
     </div>
   <div class="row">
@@ -157,15 +156,23 @@
     emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
   });
   function createGui (){
-    d3.select("#viz-gui")
+    let guiDiv = document.getElementById("viz-gui");
+    let guiWidth = guiDiv.clientWidth;
+    let guiHeight = 300;
+    let gui = d3.select("#viz-gui")
       .append("svg")
-      .attr("width", 800)
-      .attr("height", 300)
-      .append("rect")
-      .attr("width", 50)
-      .attr("height", 50)
-      .attr("stroke", "red")
-      .on("mouseover", () => console.log("This is the backdrop"));
+      .attr("width", guiWidth)
+      .attr("height", guiHeight);
+    let yAxisBox = gui.append("rect")
+      .attr("x", 5)
+      .attr("y", guiHeight/2 - 5)
+      .attr("height", 20)
+      .attr("width", 100);
+    let xAxisBox = gui.append("rect")
+      .attr("x", guiWidth/2 - 50)
+      .attr("y", guiHeight - 40)
+      .attr("height", 20)
+      .attr("width", 100);
   }
   onMounted(() =>{
     createGui();
