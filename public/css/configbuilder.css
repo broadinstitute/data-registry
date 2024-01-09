@@ -266,6 +266,7 @@ sup.required {
 	padding: 5px;
 }
 #viz-gui {
+	min-height: 300px;
 	margin: 20px;
 	background-clip: padding-box;
 	background-image: url("assets/images/manhattan_model_crop.jpg");

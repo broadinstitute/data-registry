@@ -1,6 +1,23 @@
 <template>
   <div class="row">
       <div id="viz-gui" class="col-md-12">
+        <button id="y-button" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('y-button')">
+          Y-axis field
+        </button>
+        <button id="x-button" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('x-button')">
+          X-axis field</button>
+        <div v-if="editingFieldset !== ''" id="popup-fields">
+         <div v-if="editingFieldset === 'x-button'">
+          <select v-model="xAxisField" class="form-control form-control-sm">
+            <option value="">
+              Select a field
+            </option>
+            <option v-for="field in availableFields" :key="field">
+              {{ field }}
+            </option>
+          </select>
+         </div> 
+        </div>
       </div>
     </div>
   <div class="row">
@@ -19,14 +36,7 @@
       X axis field<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
-      <select v-model="xAxisField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
+      
     </div>
     <div class="col-md-2">
       X axis label<sup class="required"> *</sup>
@@ -115,6 +125,7 @@
   import * as d3 from "d3";
   const store = useConfigBuilderStore();
   const emit = defineEmits(["updateVisualizer"]);
+  const editingFieldset = ref("");
   const availableFields = computed(() => store.allFields);
   const selectAllBox = ref(false);
   const graphicFormat = ref("Vector");
@@ -155,26 +166,32 @@
   watch(configString, () => {
     emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
   });
-  function createGui (){
-    let guiDiv = document.getElementById("viz-gui");
-    let guiWidth = guiDiv.clientWidth;
-    let guiHeight = 300;
-    let gui = d3.select("#viz-gui")
-      .append("svg")
-      .attr("width", guiWidth)
-      .attr("height", guiHeight);
-    let yAxisBox = gui.append("rect")
-      .attr("x", 5)
-      .attr("y", guiHeight/2 - 5)
-      .attr("height", 20)
-      .attr("width", 100);
-    let xAxisBox = gui.append("rect")
-      .attr("x", guiWidth/2 - 50)
-      .attr("y", guiHeight - 40)
-      .attr("height", 20)
-      .attr("width", 100);
+  function editFieldset(fieldsetId){
+    editingFieldset.value = fieldsetId;
   }
-  onMounted(() =>{
-    createGui();
-  });
 </script>
+<style>
+  .gui-btn, #popup-fields {
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+    border-radius: 15px;
+    color: #333333;
+  }
+  #y-button {
+    position: relative;
+    top: 135px;
+    left: 5px;
+  }
+  #x-button {
+    position: relative;
+    top: 260px;
+    left: 350px;
+  }
+  #popup-fields {
+    position: relative;
+    width: 250px;
+    min-height: 100px;
+    top: -5px;
+    left: 275px;
+  }
+</style>
