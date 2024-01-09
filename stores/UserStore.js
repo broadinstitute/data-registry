@@ -29,6 +29,12 @@ export const useUserStore = defineStore('UserStore', {
         return false;
       }
     },
+    async loginWithGoogle (code) {
+      if (!this.axios) {
+        this.init();
+      }
+      await this.axios.post('/api/google-login', JSON.stringify({ code }));
+    },
     async login (email, password) {
       if (!this.axios) {
         this.init();

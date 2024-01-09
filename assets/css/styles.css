@@ -48,3 +48,17 @@ ul {
   color: #ffffff !important;
   opacity: .65 !important;
 }
+
+.google-signin-btn {
+  background-color: #fff; /* White background */
+  color: #757575; /* Google's recommended text color for the sign-in button */
+  border: 1px solid #757575; /* Light grey border */
+  display: inline-flex; /* Aligns the icon and text inline */
+  align-items: center; /* Vertically centers the icon and text */
+  justify-content: center; /* Horizontally centers the icon and text */
+  text-transform: none;
+}
+
+.google-signin-btn img {
+  margin-right: 10px; /* Adds spacing between the icon and the text */
+}
