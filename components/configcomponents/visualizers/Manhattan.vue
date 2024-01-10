@@ -5,10 +5,14 @@
           Y-axis field
         </button>
         <button id="x-button" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('x-button')">
-          X-axis field</button>
+          X-axis field
+        </button>
+        <button id="render-by" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('render-by')">
+          Render by
+        </button>
         <div v-if="editingFieldset !== ''" id="popup-fields">
           <div v-if="editingFieldset === 'x-button'">
-            <tbody>
+            <tbody class="pad-field">
               <tr>
                 <td class="popup-field-label">
                   X-axis field:
@@ -31,7 +35,77 @@
                 <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
               </td>
             </tbody>
-          </div> 
+          </div>
+          <div v-else-if="editingFieldset === 'y-button'">
+            <tbody class="pad-field">
+              <tr>
+                <td class="popup-field-label">
+                  Y-axis field:
+                </td>
+                <td>
+                  <select v-model="yAxisField" class="form-control form-control-sm">
+                    <option value="">
+                      Select a field
+                    </option>
+                    <option v-for="field in availableFields" :key="field">
+                      {{ field }}
+                    </option>
+                  </select>
+                </td>
+              </tr>
+              <td class="popup-field-label">
+                Label:
+              </td>
+              <td>
+                <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
+              </td>
+            </tbody>
+          </div>
+          <div v-else-if="editingFieldset === 'render-by'">
+            <tbody>
+              <tr class="pad-field">
+                <td class="popup-field-label">
+                  Render by:
+                </td>
+                <td>
+                  <select v-model="renderBy" class="form-control form-control-sm">
+                    <option value="">
+                      Select a field
+                    </option>
+                    <option v-for="field in availableFields" :key="field">
+                      {{ field }}
+                    </option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="popup-field-label">
+                  Hover content:
+                </td>
+              </tr>
+              <tr class="compact">
+                <td class="popup-field-label small-label">
+                  Select all fields
+                </td>
+                <td>
+                  <input
+                  v-model="selectAllBox"
+                  class="form-check-input"
+                  type="checkbox"
+                  @change="hoverContent = !selectAllBox ? [] : availableFields"
+                  >
+                </td>
+              </tr>
+              <tr v-for="field in availableFields" :key="field" class="compact">
+                <td class="popup-field-label small-label">
+                  {{ field }}
+                </td>
+                <td>
+                  <input id="flexCheckDefault" v-model="hoverContent" class="form-check-input" type="checkbox" :value="field">
+                </td>
+              </tr>
+            </tbody>
+          </div>
         </div>
       </div>
     </div>
@@ -44,41 +118,6 @@
         <option>Vector</option>
         <option>Bitmap</option>
       </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      X axis field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      
-    </div>
-    <div class="col-md-2">
-      X axis label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Y axis field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="yAxisField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Y axis label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
     </div>
   </div>
   <div class="row">
@@ -115,29 +154,12 @@
       Hover content
     </div>
     <table id="hover" class="col-md-10">
-      <tr>
-        <th>
-          <input
-            v-model="selectAllBox"
-            class="form-check-input"
-            type="checkbox"
-            @change="hoverContent = !selectAllBox ? [] : availableFields"
-          >
-          <label class="label form-check-label">Select fields</label>
-        </th>
-      </tr>
-      <tr v-for="field in availableFields" :key="field">
-        <td>
-          <input id="flexCheckDefault" v-model="hoverContent" class="form-check-input" type="checkbox" :value="field">
-          <label class="form-check-label" for="flexCheckDefault">{{ field }}</label>
-        </td>
-      </tr>
+      
     </table>
   </div>
 </template>
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-  import * as d3 from "d3";
   const store = useConfigBuilderStore();
   const emit = defineEmits(["updateVisualizer"]);
   const editingFieldset = ref("");
@@ -202,18 +224,25 @@
     top: 260px;
     left: 350px;
   }
+  #render-by {
+    position: relative;
+    top: 165px;
+    left: 160px;
+  }
   #popup-fields {
     position: relative;
     width: 350px;
-    min-height: 100px;
     top: -20px;
     left: 225px;
     padding: 5px;
   }
-  td {
+  .pad-field td {
     padding: 5px;
   }
   .popup-field-label {
     text-align: right;
+  }
+  .compact td {
+    font-size: smaller;
   }
 </style>
