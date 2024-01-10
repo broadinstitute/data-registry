@@ -10,6 +10,9 @@
         <button id="render-by" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('render-by')">
           Render by
         </button>
+        <button id="graphic-format" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('graphic-format')">
+          Graphic format
+        </button>
         <div v-if="editingFieldset !== ''" id="popup-fields">
           <div v-if="editingFieldset === 'x-button'">
             <tbody class="pad-field">
@@ -28,12 +31,14 @@
                   </select>
                 </td>
               </tr>
-              <td class="popup-field-label">
-                Label:
-              </td>
-              <td>
-                <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
-              </td>
+              <tr>
+                <td class="popup-field-label">
+                  Label:
+                </td>
+                <td>
+                  <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
+                </td>
+              </tr>
             </tbody>
           </div>
           <div v-else-if="editingFieldset === 'y-button'">
@@ -53,12 +58,14 @@
                   </select>
                 </td>
               </tr>
-              <td class="popup-field-label">
-                Label:
-              </td>
-              <td>
-                <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
-              </td>
+              <tr>
+                <td class="popup-field-label">
+                  Label:
+                </td>
+                <td>
+                  <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
+                </td>
+              </tr>
             </tbody>
           </div>
           <div v-else-if="editingFieldset === 'render-by'">
@@ -106,57 +113,40 @@
               </tr>
             </tbody>
           </div>
+          <div v-else-if="editingFieldset === 'graphic-format'">
+            <tbody class="pad-field">
+              <tr>
+                <td class="popup-field-label">
+                  Graphic format:
+                </td>
+                <td>
+                  <select v-model="graphicFormat" class="form-control form-control-sm">
+                    <option>Vector</option>
+                    <option>Bitmap</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="popup-field-label">
+                  Link to:
+                </td>
+                <td>
+                  <input v-if="graphicFormat === 'Vector'" v-model="linkTo" type="text" class="form-control input-default form-control-sm">
+                </td>
+              </tr>
+              <tr>
+                <td class="popup-field-label">
+                  Plot height:
+                </td>
+                <td>
+                  <input v-model="height" class="form-control form-control-sm" type="number">
+                </td>
+              </tr>
+            </tbody>
+          </div>
         </div>
       </div>
     </div>
-  <div class="row">
-    <div class="col-md-2">
-      Graphic format<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="graphicFormat" class="form-control form-control-sm">
-        <option>Vector</option>
-        <option>Bitmap</option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Render by<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="renderBy" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Height
-    </div>
-    <div class="col-md-4">
-      <input v-model="height" class="form-control form-control-sm" type="number">
-    </div>
-  </div>
-  <div v-if="graphicFormat === 'Vector'" class="row">
-    <div class="col-md-2">
-      Link to
-    </div>
-    <div class="col-md-10">
-      <input v-model="linkTo" type="text" class="form-control input-default form-control-sm">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Hover content
-    </div>
-    <table id="hover" class="col-md-10">
-      
-    </table>
-  </div>
 </template>
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
@@ -229,20 +219,31 @@
     top: 165px;
     left: 160px;
   }
+  #graphic-format {
+    position: relative;
+    top: 11px;
+    left: -260px;
+  }
   #popup-fields {
     position: relative;
-    width: 350px;
+    width: 360px;
     top: -20px;
     left: 225px;
     padding: 5px;
+    overflow: scroll;
+    max-height: 150px;
   }
   .pad-field td {
     padding: 5px;
   }
   .popup-field-label {
     text-align: right;
+    min-width: 125px;
   }
   .compact td {
     font-size: smaller;
+  }
+  .compact input {
+    margin-left: 5px;
   }
 </style>
