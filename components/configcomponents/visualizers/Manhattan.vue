@@ -212,18 +212,18 @@
   }
   #y-button {
     position: relative;
-    top: 135px;
-    left: 5px;
+    top: 165px;
+    left: 10px;
   }
   #x-button {
     position: relative;
-    top: 260px;
-    left: 350px;
+    top: 240px;
+    left: 330px;
   }
   #render-by {
     position: relative;
     top: 160px;
-    left: 160px;
+    left: 115px;
   }
   #graphic-format {
     position: relative;
@@ -257,8 +257,8 @@
     margin: 20px;
     background-clip: padding-box;
     background-image: url("assets/images/manhattan_model_crop.jpg");
-    background-size: contain;
-    background-position: center;
+    background-size: 800px;
+    background-position: left;
     background-repeat: no-repeat;
     background-color: white;
   }

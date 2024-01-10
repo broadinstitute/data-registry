@@ -265,13 +265,3 @@ sup.required {
 	font-size: smaller;
 	padding: 5px;
 }
-#viz-gui {
-	min-height: 300px;
-	margin: 20px;
-	background-clip: padding-box;
-	background-image: url("assets/images/manhattan_model_crop.jpg");
-	background-size: contain;
-	background-position: center;
-	background-repeat: no-repeat;
-	background-color: white;
-}
