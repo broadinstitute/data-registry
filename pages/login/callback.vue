@@ -7,20 +7,18 @@ const userStore = useUserStore();
 
 onMounted(async () => {
   const code = route.query.code;
-  console.log("Hello");
   if (code) {
-    // try {
-    console.log(code);
+    try {
       await userStore.loginWithGoogle(code);
-    //   if (route.query.state) {
-    //     navigateTo(route.query.state);
-    //   } else {
-    //     navigateTo('/');
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-      // navigateTo('/login');
-    // }
+      if (route.query.state) {
+        navigateTo(route.query.state);
+      } else {
+        navigateTo('/');
+      }
+    } catch (error) {
+      console.log(error);
+      navigateTo('/login');
+    }
   }
 });
 
