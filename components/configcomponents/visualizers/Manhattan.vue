@@ -126,12 +126,12 @@
                   </select>
                 </td>
               </tr>
-              <tr>
+              <tr v-if="graphicFormat === 'Vector'">
                 <td class="popup-field-label">
                   Link to:
                 </td>
                 <td>
-                  <input v-if="graphicFormat === 'Vector'" v-model="linkTo" type="text" class="form-control input-default form-control-sm">
+                  <input v-model="linkTo" type="text" class="form-control input-default form-control-sm">
                 </td>
               </tr>
               <tr>
@@ -155,7 +155,7 @@
   const editingFieldset = ref("");
   const availableFields = computed(() => store.allFields);
   const selectAllBox = ref(false);
-  const graphicFormat = ref("Vector");
+  const graphicFormat = ref("Bitmap");
   const xAxisField = ref("");
   const yAxisField = ref("");
   const renderBy = ref("");
@@ -216,7 +216,7 @@
   }
   #render-by {
     position: relative;
-    top: 165px;
+    top: 160px;
     left: 160px;
   }
   #graphic-format {
@@ -245,5 +245,15 @@
   }
   .compact input {
     margin-left: 5px;
+  }
+  #viz-gui {
+    min-height: 300px;
+    margin: 20px;
+    background-clip: padding-box;
+    background-image: url("assets/images/manhattan_model_crop.jpg");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: white;
   }
 </style>
