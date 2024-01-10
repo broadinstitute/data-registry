@@ -17,7 +17,7 @@ onMounted(async () => {
       }
     } catch (error) {
       console.log(error);
-      navigateTo('/login');
+      // navigateTo('/login');
     }
   }
 });
