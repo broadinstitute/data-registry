@@ -144,6 +144,7 @@
               </tr>
             </tbody>
           </div>
+          <button id="gui-save-btn" class="btn btn-primary btn-sm" @click="saveFieldset(editingFieldset)">Save</button>
         </div>
       </div>
     </div>
@@ -195,6 +196,11 @@
   });
   function editFieldset(fieldsetId){
     editingFieldset.value = fieldsetId;
+  }
+  function saveFieldset(fieldsetId){
+    let currentButton = document.getElementById(fieldsetId);
+    currentButton.classList.add("done");
+    editingFieldset.value = "";
   }
 </script>
 <style>
@@ -255,5 +261,10 @@
     background-position: center;
     background-repeat: no-repeat;
     background-color: white;
+  }
+  .done {
+    background-color: green;
+    border: 1px solid darkgreen;
+    color: white;
   }
 </style>
