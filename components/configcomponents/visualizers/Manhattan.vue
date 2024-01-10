@@ -7,16 +7,31 @@
         <button id="x-button" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('x-button')">
           X-axis field</button>
         <div v-if="editingFieldset !== ''" id="popup-fields">
-         <div v-if="editingFieldset === 'x-button'">
-          <select v-model="xAxisField" class="form-control form-control-sm">
-            <option value="">
-              Select a field
-            </option>
-            <option v-for="field in availableFields" :key="field">
-              {{ field }}
-            </option>
-          </select>
-         </div> 
+          <div v-if="editingFieldset === 'x-button'">
+            <tbody>
+              <tr>
+                <td class="popup-field-label">
+                  X-axis field:
+                </td>
+                <td>
+                  <select v-model="xAxisField" class="form-control form-control-sm">
+                    <option value="">
+                      Select a field
+                    </option>
+                    <option v-for="field in availableFields" :key="field">
+                      {{ field }}
+                    </option>
+                  </select>
+                </td>
+              </tr>
+              <td class="popup-field-label">
+                Label:
+              </td>
+              <td>
+                <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
+              </td>
+            </tbody>
+          </div> 
         </div>
       </div>
     </div>
@@ -42,7 +57,7 @@
       X axis label<sup class="required"> *</sup>
     </div>
     <div class="col-md-4">
-      <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
+      
     </div>
   </div>
   <div class="row">
@@ -189,9 +204,16 @@
   }
   #popup-fields {
     position: relative;
-    width: 250px;
+    width: 350px;
     min-height: 100px;
-    top: -5px;
-    left: 275px;
+    top: -20px;
+    left: 225px;
+    padding: 5px;
+  }
+  td {
+    padding: 5px;
+  }
+  .popup-field-label {
+    text-align: right;
   }
 </style>
