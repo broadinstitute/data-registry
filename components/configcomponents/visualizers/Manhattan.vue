@@ -144,7 +144,6 @@
               </tr>
             </tbody>
           </div>
-          <button id="gui-save-btn" class="btn btn-primary btn-sm" @click="saveFieldset(editingFieldset)">Save</button>
         </div>
       </div>
     </div>
@@ -186,21 +185,37 @@
     }
     return JSON.stringify(config);
   });
-  const VALIDATORS = [
-    { condition: () => xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes." },
-    { condition: () => renderBy.value === "", msg: "Specify field to render by." },
-    { condition: () => xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes." }
-  ];
+  const CHECK_DONE = {
+    "x-button": {
+        condition: () => xAxisField.value === "" || xAxisLabel.value === "",
+        msg: "Specify field and label for X-axis."
+      },
+    "y-button": {
+        condition: () => yAxisField.value === "" || yAxisLabel.value === "",
+        msg: "Specify field and label for Y-axis."
+      },
+    "render-by": {
+      condition: () => renderBy.value === "",
+      msg: "Specify field to render by."
+    }
+  };
+  const VALIDATORS = Object.values(CHECK_DONE);
   watch(configString, () => {
+    // Add and remove 'done' flags from gui buttons
+    Object.keys(CHECK_DONE).forEach((buttonId) => {
+      console.log(buttonId);
+      let thisButton = document.getElementById(buttonId);
+      if (!CHECK_DONE[buttonId].condition()){
+        console.log(`${buttonId} is done`);
+        thisButton.classList.add("done");
+      } else {
+        thisButton.classList.remove("done");
+      }
+    });
     emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
   });
   function editFieldset(fieldsetId){
     editingFieldset.value = fieldsetId;
-  }
-  function saveFieldset(fieldsetId){
-    let currentButton = document.getElementById(fieldsetId);
-    currentButton.classList.add("done");
-    editingFieldset.value = "";
   }
 </script>
 <style>
