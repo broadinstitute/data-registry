@@ -5,6 +5,7 @@ export const useUserStore = defineStore('UserStore', {
     return {
       user: null,
       axios: null,
+      loginError: null
     };
   },
   actions: {
@@ -35,11 +36,11 @@ export const useUserStore = defineStore('UserStore', {
       }
       await this.axios.post('/api/google-login', JSON.stringify({ code }));
     },
-    async login (email, password) {
+    async login (name, password) {
       if (!this.axios) {
         this.init();
       }
-      await this.axios.post('/api/login', JSON.stringify({ email, password }));
+      await this.axios.post('/api/login', JSON.stringify({ name, password }));
     }
   }
 });

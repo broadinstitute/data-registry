@@ -8,9 +8,9 @@ const errorMessage = ref('');
 
 const route = useRoute();
 const config = useRuntimeConfig();
+const userStore = useUserStore();
 const submitForm = async () => {
   try {
-    const userStore = useUserStore();
     await userStore.login(email.value, password.value);
     navigateTo(route.query.redirect !== '/' ? route.query.redirect : '/');
   } catch (error) {
@@ -34,6 +34,10 @@ function loginWithGoogle () {
 
 onMounted(() => {
   document.getElementById('email').focus();
+  if(userStore.loginError){
+    errorMessage.value = userStore.loginError;
+    userStore.loginError = null;
+  }
 });
 </script>
 <template>

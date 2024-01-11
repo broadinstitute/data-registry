@@ -6,6 +6,6 @@ const store = useUserStore();
 <template>
   <div class="container">
     <h6>User: {{ store.user.name }}</h6>
-    <h6>Role: {{ store.user.role }}</h6>
+    <h6>Roles: {{ store.user.roles.join(', ') }}</h6>
   </div>
 </template>

@@ -16,7 +16,9 @@ onMounted(async () => {
         navigateTo('/');
       }
     } catch (error) {
-      console.log(error);
+      if (error.response && error.response.status === 401) {
+        userStore.loginError = "Your Google account is not registered with us.";
+      }
       navigateTo('/login');
     }
   }
