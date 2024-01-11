@@ -2,15 +2,23 @@
   <div class="row">
       <div id="viz-gui" class="col-md-12">
         <button id="y-button" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('y-button')">
+          <span class="item-done" hidden>&check;</span>
+          <span class="item-undone" hidden>&#9888;</span>
           Y-axis field
         </button>
         <button id="x-button" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('x-button')">
+          <span class="item-done" hidden>&check;</span>
+          <span class="item-undone" hidden>&#9888;</span>
           X-axis field
         </button>
         <button id="render-by" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('render-by')">
+          <span class="item-done" hidden>&check;</span>
+          <span class="item-undone" hidden>&#9888;</span>
           Render by
         </button>
         <button id="graphic-format" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('graphic-format')">
+          <span class="item-done" hidden></span>
+          <span class="item-undone" hidden>&#9888;</span>
           Graphic format
         </button>
         <div v-if="editingFieldset !== ''" id="popup-fields">
@@ -203,13 +211,17 @@
   watch(configString, () => {
     // Add and remove 'done' flags from gui buttons
     Object.keys(CHECK_DONE).forEach((buttonId) => {
-      console.log(buttonId);
       let thisButton = document.getElementById(buttonId);
       if (!CHECK_DONE[buttonId].condition()){
-        console.log(`${buttonId} is done`);
         thisButton.classList.add("done");
-      } else {
+        thisButton.classList.remove("undone");
+        thisButton.getElementsByClassName("item-done")[0].hidden = false;
+        thisButton.getElementsByClassName("item-undone")[0].hidden = true;
+      } else if (thisButton.classList.contains("done")){
         thisButton.classList.remove("done");
+        thisButton.classList.add("undone");
+        thisButton.getElementsByClassName("item-done")[0].hidden = true;
+        thisButton.getElementsByClassName("item-undone")[0].hidden = false;
       }
     });
     emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
@@ -281,5 +293,10 @@
     background-color: green;
     border: 1px solid darkgreen;
     color: white;
+  }
+  .undone {
+    background-color: orange;
+    border: 1px solid orangered;
+    color: black;
   }
 </style>
