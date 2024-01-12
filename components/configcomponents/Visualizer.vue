@@ -11,7 +11,7 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="row dr-builder-ui">
-                  <div class="col-md-2 col">
+                  <!-- <div class="col-md-2 col">
                     <div class="label">
                       Select visualizer
                     </div>
@@ -31,13 +31,13 @@
                       <option value="region">
                         Region
                       </option>
-                      <!--<option>Score</option>-->
+                        Score</option>
                       <option value="volcano">
                         Volcano
                       </option>
                     </select>
-                  </div>
-                  <div class="col-md-8 col">
+                  </div> -->
+                  <div class="col-md-10 col">
                     <div class="label">
                       Set parameters
                     </div>
@@ -291,7 +291,7 @@ import Heatmap from "@/components/configcomponents/visualizers/Heatmap.vue";
 import Phewas from "@/components/configcomponents/visualizers/Phewas.vue";
 import Region from "@/components/configcomponents/visualizers/Region.vue";
 import Volcano from "@/components/configcomponents/visualizers/Volcano.vue";
-const visType = ref("");
+const visType = ref("manhattan");
 const config = ref("");
 const savedViz = ref({});
 const failedSaveMsg = ref("Specify a label for the plot.");
