@@ -38,7 +38,7 @@
                       </option>
                     </select>
                   </div>
-                    <div class="label">
+                    <div class="label" v-if="visType !== ''">
                       Set parameters
                     </div>
                     <Manhattan

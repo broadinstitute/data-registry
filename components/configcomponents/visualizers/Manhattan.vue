@@ -136,21 +136,25 @@
     </div>
     <div id="viz-gui" class="col-md-9">
       <button id="y-button" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('y-button')">
+        <span class="pencil">&#9998;</span>
         <span class="item-done" hidden>&check;</span>
         <span class="item-undone" hidden>&#9888;</span>
         Y-axis field
       </button>
       <button id="x-button" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('x-button')">
+        <span class="pencil">&#9998;</span>
         <span class="item-done" hidden>&check;</span>
         <span class="item-undone" hidden>&#9888;</span>
         X-axis field
       </button>
       <button id="render-by" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('render-by')">
+        <span class="pencil">&#9998;</span>
         <span class="item-done" hidden>&check;</span>
         <span class="item-undone" hidden>&#9888;</span>
         Render by
       </button>
       <button id="graphic-format" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('graphic-format')">
+        <span class="pencil">&#9998;</span>
         <span class="item-done" hidden></span>
         <span class="item-undone" hidden>&#9888;</span>
         Graphic format
@@ -219,11 +223,13 @@
         thisButton.classList.remove("undone");
         thisButton.getElementsByClassName("item-done")[0].hidden = false;
         thisButton.getElementsByClassName("item-undone")[0].hidden = true;
+        thisButton.getElementsByClassName("pencil")[0].hidden = true;
       } else if (thisButton.classList.contains("done")){
         thisButton.classList.remove("done");
         thisButton.classList.add("undone");
         thisButton.getElementsByClassName("item-done")[0].hidden = true;
         thisButton.getElementsByClassName("item-undone")[0].hidden = false;
+        thisButton.getElementsByClassName("pencil")[0].hidden = true;
       }
     });
     emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
@@ -241,23 +247,23 @@
   }
   #y-button {
     position: relative;
-    top: 165px;
+    top: 110px;
     left: -5px;
   }
   #x-button {
     position: relative;
-    top: 240px;
+    top: 200px;
     left: 330px;
   }
   #render-by {
     position: relative;
-    top: 160px;
-    left: 115px;
+    top: 110px;
+    left: 155px;
   }
   #graphic-format {
     position: relative;
-    top: 11px;
-    left: -270px;
+    top: 20px;
+    left: -315px;
   }
   .pad-field td {
     padding: 5px;
@@ -269,12 +275,10 @@
     margin-left: 5px;
   }
   #viz-gui {
-    min-height: 300px;
-    background-image: url("assets/images/manhattan_model_crop.jpg");
-    background-size: 800px;
+    height: 250px;
+    background-image: url("assets/images/manhattan_model_tight_crop.jpg");
     background-position: left;
     background-repeat: no-repeat;
-    background-color: white;
   }
   #leftFieldWrapper {
     width: 25%;
