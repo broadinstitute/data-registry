@@ -265,3 +265,7 @@ sup.required {
 	font-size: smaller;
 	padding: 5px;
 }
+#viz-selector{
+	width: 200px !important;
+	margin-bottom: 20px;
+}

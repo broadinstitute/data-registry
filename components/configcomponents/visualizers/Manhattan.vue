@@ -1,135 +1,137 @@
 <template>
   <div class="row">
-    <div class="col-md-2" id="leftField">
-      <div v-if="editingFieldset === 'x-button'">
-        <tbody class="pad-field">
-          <tr>
-            <td class="popup-field-label">
-              X-axis field:
-            </td>
-            <td>
-              <select v-model="xAxisField" class="form-control form-control-sm">
-                <option value="">
-                  Select a field
-                </option>
-                <option v-for="field in availableFields" :key="field">
-                  {{ field }}
-                </option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td class="popup-field-label">
-              Label:
-            </td>
-            <td>
-              <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
-            </td>
-          </tr>
-        </tbody>
-      </div>
-      <div v-else-if="editingFieldset === 'y-button'">
-        <tbody class="pad-field">
-          <tr>
-            <td class="popup-field-label">
-              Y-axis field:
-            </td>
-            <td>
-              <select v-model="yAxisField" class="form-control form-control-sm">
-                <option value="">
-                  Select a field
-                </option>
-                <option v-for="field in availableFields" :key="field">
-                  {{ field }}
-                </option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td class="popup-field-label">
-              Label:
-            </td>
-            <td>
-              <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
-            </td>
-          </tr>
-        </tbody>
-      </div>
-      <div v-else-if="editingFieldset === 'render-by'">
-        <tbody>
-          <tr class="pad-field">
-            <td class="popup-field-label">
-              Render by:
-            </td>
-            <td>
-              <select v-model="renderBy" class="form-control form-control-sm">
-                <option value="">
-                  Select a field
-                </option>
-                <option v-for="field in availableFields" :key="field">
-                  {{ field }}
-                </option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td class="popup-field-label">
-              Hover content:
-            </td>
-          </tr>
-          <tr class="compact">
-            <td class="popup-field-label small-label">
-              Select all fields
-            </td>
-            <td>
-              <input
-              v-model="selectAllBox"
-              class="form-check-input"
-              type="checkbox"
-              @change="hoverContent = !selectAllBox ? [] : availableFields"
-              >
-            </td>
-          </tr>
-          <tr v-for="field in availableFields" :key="field" class="compact">
-            <td class="popup-field-label small-label">
-              {{ field }}
-            </td>
-            <td>
-              <input id="flexCheckDefault" v-model="hoverContent" class="form-check-input" type="checkbox" :value="field">
-            </td>
-          </tr>
-        </tbody>
-      </div>
-      <div v-else-if="editingFieldset === 'graphic-format'">
-        <tbody class="pad-field">
-          <tr>
-            <td class="popup-field-label">
-              Graphic format:
-            </td>
-            <td>
-              <select v-model="graphicFormat" class="form-control form-control-sm">
-                <option>Vector</option>
-                <option>Bitmap</option>
-              </select>
-            </td>
-          </tr>
-          <tr v-if="graphicFormat === 'Vector'">
-            <td class="popup-field-label">
-              Link to:
-            </td>
-            <td>
-              <input v-model="linkTo" type="text" class="form-control input-default form-control-sm">
-            </td>
-          </tr>
-          <tr>
-            <td class="popup-field-label">
-              Plot height:
-            </td>
-            <td>
-              <input v-model="height" class="form-control form-control-sm" type="number">
-            </td>
-          </tr>
-        </tbody>
+    <div class="col-md-2" id="leftFieldWrapper">
+      <div id="leftField" v-if="editingFieldset !== ''">
+        <div v-if="editingFieldset === 'x-button'">
+          <tbody class="pad-field">
+            <tr>
+              <td class="popup-field-label">
+                X-axis field:
+              </td>
+              <td>
+                <select v-model="xAxisField" class="form-control form-control-sm">
+                  <option value="">
+                    Select a field
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="popup-field-label">
+                Label:
+              </td>
+              <td>
+                <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === 'y-button'">
+          <tbody class="pad-field">
+            <tr>
+              <td class="popup-field-label">
+                Y-axis field:
+              </td>
+              <td>
+                <select v-model="yAxisField" class="form-control form-control-sm">
+                  <option value="">
+                    Select a field
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="popup-field-label">
+                Label:
+              </td>
+              <td>
+                <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === 'render-by'">
+          <tbody>
+            <tr class="pad-field">
+              <td class="popup-field-label">
+                Render by:
+              </td>
+              <td>
+                <select v-model="renderBy" class="form-control form-control-sm">
+                  <option value="">
+                    Select a field
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="popup-field-label">
+                Hover content:
+              </td>
+            </tr>
+            <tr class="compact">
+              <td class="popup-field-label small-label">
+                Select all fields
+              </td>
+              <td>
+                <input
+                v-model="selectAllBox"
+                class="form-check-input"
+                type="checkbox"
+                @change="hoverContent = !selectAllBox ? [] : availableFields"
+                >
+              </td>
+            </tr>
+            <tr v-for="field in availableFields" :key="field" class="compact">
+              <td class="popup-field-label small-label">
+                {{ field }}
+              </td>
+              <td>
+                <input id="flexCheckDefault" v-model="hoverContent" class="form-check-input" type="checkbox" :value="field">
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === 'graphic-format'">
+          <tbody class="pad-field">
+            <tr>
+              <td class="popup-field-label">
+                Graphic format:
+              </td>
+              <td>
+                <select v-model="graphicFormat" class="form-control form-control-sm">
+                  <option>Vector</option>
+                  <option>Bitmap</option>
+                </select>
+              </td>
+            </tr>
+            <tr v-if="graphicFormat === 'Vector'">
+              <td class="popup-field-label">
+                Link to:
+              </td>
+              <td>
+                <input v-model="linkTo" type="text" class="form-control input-default form-control-sm">
+              </td>
+            </tr>
+            <tr>
+              <td class="popup-field-label">
+                Plot height:
+              </td>
+              <td>
+                <input v-model="height" class="form-control form-control-sm" type="number">
+              </td>
+            </tr>
+          </tbody>
+        </div>
       </div>
     </div>
     <div id="viz-gui" class="col-md-9">
@@ -231,7 +233,7 @@
   }
 </script>
 <style>
-  .gui-btn, #popup-fields {
+  .gui-btn {
     background-color: #eeeeee;
     border: 1px solid #dddddd;
     border-radius: 15px;
@@ -240,7 +242,7 @@
   #y-button {
     position: relative;
     top: 165px;
-    left: 10px;
+    left: -5px;
   }
   #x-button {
     position: relative;
@@ -255,7 +257,7 @@
   #graphic-format {
     position: relative;
     top: 11px;
-    left: -260px;
+    left: -270px;
   }
   .pad-field td {
     padding: 5px;
@@ -274,8 +276,15 @@
     background-repeat: no-repeat;
     background-color: white;
   }
-  #leftField {
+  #leftFieldWrapper {
     width: 25%;
+  }
+  #leftField {
+    margin-top: 20px;
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 15px;
+    padding: 5px;
   }
   .done {
     background-color: green;

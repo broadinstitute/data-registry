@@ -11,11 +11,12 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="row dr-builder-ui">
-                  <!-- <div class="col-md-2 col">
+                  <div class="col-md-10 col">
+                    <div>
                     <div class="label">
                       Select visualizer
                     </div>
-                    <select v-model="visType" class="form-control">
+                    <select v-model="visType" id="viz-selector" class="form-control">
                       <option value="">
                         Select a visualizer
                       </option>
@@ -31,13 +32,12 @@
                       <option value="region">
                         Region
                       </option>
-                        Score</option>
+                      <!-- <option>Score</option> -->
                       <option value="volcano">
                         Volcano
                       </option>
                     </select>
-                  </div> -->
-                  <div class="col-md-10 col">
+                  </div>
                     <div class="label">
                       Set parameters
                     </div>
@@ -291,7 +291,7 @@ import Heatmap from "@/components/configcomponents/visualizers/Heatmap.vue";
 import Phewas from "@/components/configcomponents/visualizers/Phewas.vue";
 import Region from "@/components/configcomponents/visualizers/Region.vue";
 import Volcano from "@/components/configcomponents/visualizers/Volcano.vue";
-const visType = ref("manhattan");
+const visType = ref("");
 const config = ref("");
 const savedViz = ref({});
 const failedSaveMsg = ref("Specify a label for the plot.");
