@@ -232,7 +232,7 @@ const configString = computed(() => {
     "y ticks decimal point": parseInt(yDecimal.value),
     "render by": renderBy.value,
     "group by": groupBy.value,
-    "convert y -log10": `${convertLog.value}`,
+    "convert y -log10": `${convertLog.value}`
   };
   // Phenotype map can only be added administratively.
   if (height.value !== "") {
