@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
   const nuxtApp = useNuxtApp();
   const userStore = useUserStore();
-  if (userStore.user || to.path === '/login') {
+  if (userStore.user || to.path.startsWith('/login')) {
     return;
   }
   const isLoggedIn = await userStore.isUserLoggedIn();

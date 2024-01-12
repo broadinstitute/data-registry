@@ -7,9 +7,10 @@ const password = ref('');
 const errorMessage = ref('');
 
 const route = useRoute();
+const config = useRuntimeConfig();
+const userStore = useUserStore();
 const submitForm = async () => {
   try {
-    const userStore = useUserStore();
     await userStore.login(email.value, password.value);
     navigateTo(route.query.redirect !== '/' ? route.query.redirect : '/');
   } catch (error) {
@@ -18,8 +19,25 @@ const submitForm = async () => {
   }
 };
 
+function loginWithGoogle () {
+  const clientId = config.public.googleAuthClientId;
+  const redirectUri = encodeURIComponent(config.public.googleAuthRedirectUri);
+  const responseType = 'code';
+  const scope = encodeURIComponent('openid email');
+  const redirectUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}`;
+  if (route.query.redirect) {
+     window.location.href = redirectUrl + `&state=${route.query.redirect}`;
+  } else {
+    window.location.href = redirectUrl;
+  }
+}
+
 onMounted(() => {
   document.getElementById('email').focus();
+  if(userStore.loginError){
+    errorMessage.value = userStore.loginError;
+    userStore.loginError = null;
+  }
 });
 </script>
 <template>
@@ -41,9 +59,16 @@ onMounted(() => {
             <label for="password" class="form-label">Password</label>
             <input id="password" v-model="password" type="password" class="form-control" placeholder="Enter password">
           </div>
-          <button type="submit" class="btn btn-primary btn-block">
-            Login
-          </button>
+          <div class="mb-3">
+            <button type="submit" class="btn btn-primary btn-block">
+              Login
+            </button>
+            or
+            <a class="btn btn-primary btn-block google-signin-btn" role="button" style="text-transform:none" @click="loginWithGoogle()">
+              <img alt="Google sign-in" src="https://img.icons8.com/color/16/000000/google-logo.png" />
+              Login with Google
+            </a>
+          </div>
         </form>
       </div>
     </div>

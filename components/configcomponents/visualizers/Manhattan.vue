@@ -231,6 +231,78 @@
   function editFieldset(fieldsetId){
     editingFieldset.value = fieldsetId;
   }
+  import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  const store = useConfigBuilderStore();
+  const emit = defineEmits(["updateVisualizer"]);
+  const editingFieldset = ref("");
+  const availableFields = computed(() => store.allFields);
+  const selectAllBox = ref(false);
+  const graphicFormat = ref("Bitmap");
+  const xAxisField = ref("");
+  const yAxisField = ref("");
+  const renderBy = ref("");
+  const xAxisLabel = ref("");
+  const yAxisLabel = ref("");
+  const height = ref("");
+  const linkTo = ref("");
+  const hoverContent = ref([]);
+  const configString = computed(() => {
+    const type = graphicFormat.value === "Vector" ? "manhattan plot" : "manhattan bitmap plot";
+    const config = {
+      type,
+      "x axis field": xAxisField.value,
+      "y axis field": yAxisField.value,
+      "render by": renderBy.value,
+      "x axis label": xAxisLabel.value,
+      "y axis label": yAxisLabel.value,
+    };
+    if (height.value !== "") {
+      config.height = height.value;
+    }
+    if (linkTo.value !== "") {
+      config["link to"] = linkTo.value;
+    }
+    if (hoverContent.value.length > 0) {
+      config["hover content"] = hoverContent.value;
+    }
+    return JSON.stringify(config);
+  });
+  const CHECK_DONE = {
+    "x-button": {
+        condition: () => xAxisField.value === "" || xAxisLabel.value === "",
+        msg: "Specify field and label for X-axis."
+      },
+    "y-button": {
+        condition: () => yAxisField.value === "" || yAxisLabel.value === "",
+        msg: "Specify field and label for Y-axis."
+      },
+    "render-by": {
+      condition: () => renderBy.value === "",
+      msg: "Specify field to render by."
+    }
+  };
+  const VALIDATORS = Object.values(CHECK_DONE);
+  watch(configString, () => {
+    // Add and remove 'done' flags from gui buttons
+    Object.keys(CHECK_DONE).forEach((buttonId) => {
+      let thisButton = document.getElementById(buttonId);
+      if (!CHECK_DONE[buttonId].condition()){
+        thisButton.classList.add("done");
+        thisButton.classList.remove("undone");
+        thisButton.getElementsByClassName("item-done")[0].hidden = false;
+        thisButton.getElementsByClassName("item-undone")[0].hidden = true;
+      } else if (thisButton.classList.contains("done")){
+        thisButton.classList.remove("done");
+        thisButton.classList.add("undone");
+        thisButton.getElementsByClassName("item-done")[0].hidden = true;
+        thisButton.getElementsByClassName("item-undone")[0].hidden = false;
+      }
+    });
+    emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
+  });
+  function editFieldset(fieldsetId){
+    editingFieldset.value = fieldsetId;
+  }
 </script>
 <style>
   .gui-btn {

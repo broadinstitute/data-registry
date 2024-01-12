@@ -12,6 +12,8 @@ export default defineNuxtConfig({
       apiBaseUrl: "",
       apiDrupalUrl: "",
       phenotypesUrl: "",
+      googleAuthClientId: "",
+      googleAuthRedirectUri: "",
     },
   },
   modules: ["@nuxt/devtools", "@pinia/nuxt"],

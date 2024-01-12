@@ -47,7 +47,7 @@ module.exports = {
     semi: ["error", "always"],
     eqeqeq: ["error", "always"],
     quotes: "off",
-    "comma-dangle": "off",
+    "comma-dangle": ["error", "never"],
     camelcase: "off",
     "vue/multi-word-component-names": 'off',
   },
