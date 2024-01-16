@@ -270,30 +270,51 @@ sup.required {
 	margin-bottom: 20px;
 }
 .gui-btn {
+	position: relative;
     background-color: #eeeeee;
     border: 1px solid #dddddd;
     border-radius: 15px;
     color: #333333;
   }
-  #y-button {
-    position: relative;
+  #manhattan-y {
     top: 110px;
     left: -6px;
   }
-  #x-button {
-    position: relative;
+  #manhattan-x {
     top: 188px;
     left: 280px;
   }
-  #render-by {
-    position: relative;
+  #manhattan-render {
     top: 110px;
     left: 80px;
   }
-  #graphic-format {
-    position: relative;
+  #manhattan-graphic {
     top: 35px;
     left: -315px;
+  }
+  #heatmap-column {
+	top: 60px;
+	left: 450px;
+  }
+  #heatmap-row {
+	top: 180px;
+	left: 66px;
+  }
+  #heatmap-plot-label {
+	top: 305px;
+	left: 150px;
+  }
+  #heatmap-font-size {
+	top: 85px;
+	left: -300px;
+  }
+  #heatmap-main-wrapper {
+	position: relative;
+	top: -25px;
+  }
+  #heatmap-sub-wrapper {
+	position: relative;
+	top: -15px;
   }
   .pad-field td {
     padding: 5px;
@@ -315,7 +336,7 @@ sup.required {
   }
   #heatmap-gui {
 	background-image: url("assets/images/heatmap_crop_wide.jpg");
-	height: 300px;
+	height: 350px;
   }
   #leftFieldWrapper {
     width: 25%;

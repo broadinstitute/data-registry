@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-2" id="leftFieldWrapper">
       <div id="leftField" v-if="editingFieldset !== ''">
-        <div v-if="editingFieldset === 'x-button'">
+        <div v-if="editingFieldset === 'manhattan-x'">
           <tbody class="pad-field">
             <tr>
               <td class="popup-field-label">
@@ -29,7 +29,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-else-if="editingFieldset === 'y-button'">
+        <div v-else-if="editingFieldset === 'manhattan-y'">
           <tbody class="pad-field">
             <tr>
               <td class="popup-field-label">
@@ -56,7 +56,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-else-if="editingFieldset === 'render-by'">
+        <div v-else-if="editingFieldset === 'manhattan-render'">
           <tbody>
             <tr class="pad-field">
               <td class="popup-field-label">
@@ -101,7 +101,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-else-if="editingFieldset === 'graphic-format'">
+        <div v-else-if="editingFieldset === 'manhattan-graphic'">
           <tbody class="pad-field">
             <tr>
               <td class="popup-field-label">
@@ -135,25 +135,25 @@
       </div>
     </div>
     <div id="manhattan-gui" class="col-md-9 viz-gui">
-      <button id="y-button" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('y-button')">
+      <button id="manhattan-y" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('manhattan-y')">
         <span class="pencil">&#9998;</span>
         <span class="item-done" hidden>&check;</span>
         <span class="item-undone" hidden>&#9888;</span>
         Y-axis field
       </button>
-      <button id="x-button" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('x-button')">
+      <button id="manhattan-x" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('manhattan-x')">
         <span class="pencil">&#9998;</span>
         <span class="item-done" hidden>&check;</span>
         <span class="item-undone" hidden>&#9888;</span>
         X-axis field
       </button>
-      <button id="render-by" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('render-by')">
+      <button id="manhattan-render" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('manhattan-render')">
         <span class="pencil">&#9998;</span>
         <span class="item-done" hidden>&check;</span>
         <span class="item-undone" hidden>&#9888;</span>
         Render by
       </button>
-      <button id="graphic-format" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('graphic-format')">
+      <button id="manhattan-graphic" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('manhattan-graphic')">
         <span class="pencil">&#9998;</span>
         <span class="item-done" hidden></span>
         <span class="item-undone" hidden>&#9888;</span>
@@ -200,15 +200,15 @@
     return JSON.stringify(config);
   });
   const CHECK_DONE = {
-    "x-button": {
+    "manhattan-x": {
         condition: () => xAxisField.value === "" || xAxisLabel.value === "",
         msg: "Specify field and label for X-axis."
       },
-    "y-button": {
+    "manhattan-y": {
         condition: () => yAxisField.value === "" || yAxisLabel.value === "",
         msg: "Specify field and label for Y-axis."
       },
-    "render-by": {
+    "manhattan-render": {
       condition: () => renderBy.value === "",
       msg: "Specify field to render by."
     }

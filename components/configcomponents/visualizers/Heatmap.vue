@@ -261,18 +261,22 @@
         <span class="item-undone" hidden>&#9888;</span>
         Font size
       </button>
-      <button id="heatmap-main" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('heatmap-main')">
-        <span class="pencil">&#9998;</span>
-        <span class="item-done" hidden>&check;</span>
-        <span class="item-undone" hidden>&#9888;</span>
-        Box color coding
-      </button>
-      <button id="heatmap-sub" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('heatmap-sub')">
-        <span class="pencil">&#9998;</span>
-        <span class="item-done" hidden>&check;</span>
-        <span class="item-undone" hidden>&#9888;</span>
-        Sub circle scaling
-      </button>
+      <div id="heatmap-main-wrapper">
+        <button id="heatmap-main" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('heatmap-main')">
+          <span class="pencil">&#9998;</span>
+          <span class="item-done" hidden>&check;</span>
+          <span class="item-undone" hidden>&#9888;</span>
+          Box color coding
+        </button>
+      </div>
+      <div id="heatmap-sub-wrapper">
+        <button id="heatmap-sub" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('heatmap-sub')">
+          <span class="pencil">&#9998;</span>
+          <span class="item-done" hidden>&check;</span>
+          <span class="item-undone" hidden>&#9888;</span>
+          Sub circle scaling
+        </button>
+      </div>
     </div>
   </div>
 </template>
