@@ -75,6 +75,77 @@
           </tr>
         </tbody>
       </div>
+      <div v-else-if="editingFieldset === 'heatmap-main'">
+        <tbody>
+          <tr>
+            <td class="popup-field-label">
+              Field:
+            </td>
+            <td>
+              <select v-model="mainField" class="form-control form-control-sm">
+                <option value="">
+                  Select a field
+                </option>
+                <option v-for="field in availableFields" :key="field">
+                  {{ field }}
+                </option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="popup-field-label">
+              Label:
+            </td>
+            <td>
+              <input
+                v-model="mainLabel"
+                type="text"
+                class="form-control input-default form-control-sm"
+              >
+            </td>
+          </tr>
+          <!-- "Render type" param - only current option is 'scale'-->
+          <tr>
+            <td class="popup-field-label">
+              Direction:
+            </td>
+            <td>
+              <select v-model="mainDirection" class="form-control form-control-sm">
+                <option value="positive">
+                  Positive (higher darker)
+                </option>
+                <option value="negative">
+                  Negative (lower darker)
+                </option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="popup-field-label">
+              Low:
+            </td>
+            <td>
+              <input v-model="mainLow" class="form-control form-control-sm" type="number">
+            </td>
+          </tr>
+          <tr>
+            <td class="popup-field-label">
+              Mid:
+            </td>
+            <td>
+              <input v-model="mainMid" class="form-control form-control-sm" type="number">
+            </td>
+          </tr>
+          <tr>
+            <td class="popup-field-label">
+              High:
+            </td>
+            <td>
+              <input v-model="mainHigh" class="form-control form-control-sm" type="number">
+            </td>
+          </tr>
+        </tbody>
+      </div>
     </div>
     <div id="heatmap-gui" class="col-md-9 viz-gui">
       <button id="heatmap-column" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('heatmap-column')">
@@ -95,6 +166,12 @@
         <span class="item-undone" hidden>&#9888;</span>
         Plot label
       </button>
+      <button id="heatmap-main" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('heatmap-main')">
+        <span class="pencil">&#9998;</span>
+        <span class="item-done" hidden>&check;</span>
+        <span class="item-undone" hidden>&#9888;</span>
+        Box color coding
+      </button>
     </div>
   </div>
   <div class="row">
@@ -103,83 +180,6 @@
     </div>
     <div class="col-md-4">
       <input v-model="fontSize" class="form-control form-control-sm" type="number">
-    </div>
-  </div>
-  <div class="label">
-    Box color coding
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="mainField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input
-        v-model="mainLabel"
-        type="text"
-        class="form-control input-default form-control-sm"
-      >
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Render type<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="mainRenderType" class="form-control form-control-sm">
-        <option value="scale">
-          Scale
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Direction<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="mainDirection" class="form-control form-control-sm">
-        <option value="positive">
-          Positive (higher darker)
-        </option>
-        <option value="negative">
-          Negative (lower darker)
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Lowest value<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input v-model="mainLow" class="form-control form-control-sm" type="number">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Middle value<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input v-model="mainMid" class="form-control form-control-sm" type="number">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Highest value<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input v-model="mainHigh" class="form-control form-control-sm" type="number">
     </div>
   </div>
   <div class="label">
