@@ -52,7 +52,7 @@
                 Row field:
               </td>
               <td>
-                <select v-model="columnField" class="form-control form-control-sm">
+                <select v-model="rowField" class="form-control form-control-sm">
                   <option value="">
                     Select a field
                   </option>
@@ -345,24 +345,53 @@ const configString = computed(() => {
   // tracking the string rather than the object picks up changes within arrays
   return JSON.stringify(config);
 });
-const VALIDATORS = [
-  { condition: () => plotLabel.value === "", msg: "Specify a label for the plot." },
-  { condition: () => columnField.value === "" || rowField.value === "", msg: "Specify column and row fields." },
-  { condition: () => columnLabel.value === "" || rowLabel.value === "", msg: "Specify column and row labels." },
-  { condition: () => mainField.value === "", msg: "Specify main field." },
-  { condition: () => mainLabel.value === "", msg: "Specify main label." },
-  { condition: () => fontSize.value === "", msg: "Specify font size." },
-  { condition: () => !(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value), msg: "Assign low, middle, and high values in order" },
-  { condition: () => subField.value !== "" && subLabel.value === "", msg: "Specify a label for the sub circle" },
-  {
-    condition: () => subField.value !== "" &&
-            (subSteps.value.length === 0 || subSteps.value.includes("")),
-    msg: "Specify steps for the sub circle."
-  }
-];
+const CHECK_DONE = {
+  "heatmap-plot-label": { 
+      condition: () => plotLabel.value === "", 
+      msg: "Specify a label for the plot." 
+    },
+  "heatmap-column": { 
+      condition: () => columnField.value === "" || columnLabel.value === "",
+      msg: "Specify field and label for columns."
+    },
+  "heatmap-row": {
+      condition: () => rowField.value === "" || rowLabel.value === "",
+      msg: "Specify field and label for rows."
+    },
+  "heatmap-font-size": { 
+      condition: () => fontSize.value === "", 
+      msg: "Specify font size." 
+    },
+  "heatmap-main": {
+    condition: () => mainField.value === "" || mainLabel.value === "" || !(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value),
+    msg: "Specify main field, label, and low/mid/high values in order."
+  },
+  "heatmap-sub": { 
+      condition: () => subField.value !== "" && (subLabel.value === "" || subSteps.value.length === 0 || subSteps.value.includes("")), 
+      msg: "Specify a label and steps for the sub circle." 
+    },
+};
+const VALIDATORS = Object.values(CHECK_DONE);
 watch(configString, () => {
-  emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
-});
+    // Add and remove 'done' flags from gui buttons
+    Object.keys(CHECK_DONE).forEach((buttonId) => {
+      let thisButton = document.getElementById(buttonId);
+      if (!CHECK_DONE[buttonId].condition()){
+        thisButton.classList.add("done");
+        thisButton.classList.remove("undone");
+        thisButton.getElementsByClassName("item-done")[0].hidden = false;
+        thisButton.getElementsByClassName("item-undone")[0].hidden = true;
+        thisButton.getElementsByClassName("pencil")[0].hidden = true;
+      } else if (thisButton.classList.contains("done")){
+        thisButton.classList.remove("done");
+        thisButton.classList.add("undone");
+        thisButton.getElementsByClassName("item-done")[0].hidden = true;
+        thisButton.getElementsByClassName("item-undone")[0].hidden = false;
+        thisButton.getElementsByClassName("pencil")[0].hidden = true;
+      }
+    });
+    emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
+  });
 function editFieldset(fieldsetId){
     editingFieldset.value = fieldsetId;
   }
