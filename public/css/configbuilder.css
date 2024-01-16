@@ -312,6 +312,9 @@ sup.required {
 	position: relative;
 	top: -25px;
   }
+  #heatmap-main-wrapper button, #heatmap-sub-wrapper button {
+	margin-right: 20px;
+  }
   #heatmap-sub-wrapper {
 	position: relative;
 	top: -15px;

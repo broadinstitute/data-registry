@@ -268,6 +268,10 @@
           <span class="item-undone" hidden>&#9888;</span>
           Box color coding
         </button>
+          <span>min</span>
+          <img v-if="mainDirection === 'positive'" src="assets/images/heatmap_color_scale.jpg"/>
+          <img v-else src="assets/images/heatmap_color_scale_reversed.jpg"/>
+          <span>max</span>
       </div>
       <div id="heatmap-sub-wrapper">
         <button id="heatmap-sub" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('heatmap-sub')">
@@ -276,6 +280,10 @@
           <span class="item-undone" hidden>&#9888;</span>
           Sub circle scaling
         </button>
+        <span>min</span>
+        <img v-if="subDirection === 'positive'" src="assets/images/heatmap_dot_sizes.jpg"/>
+        <img v-else src="assets/images/heatmap_dot_sizes_reversed.jpg"/>
+        <span>max</span>
       </div>
     </div>
   </div>
