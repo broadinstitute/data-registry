@@ -283,7 +283,7 @@ sup.required {
   #x-button {
     position: relative;
     top: 188px;
-    left: 330px;
+    left: 280px;
   }
   #render-by {
     position: relative;
@@ -305,17 +305,17 @@ sup.required {
     margin-left: 5px;
   }
   .viz-gui {
-    height: 250px;
     background-size: 800px;
-    background-position: left;
     background-repeat: no-repeat;
   }
   #manhattan-gui {
     background-image: url("assets/images/manhattan_model_tight_crop.jpg");
+	height:250px;
+    background-position: left;
   }
   #heatmap-gui {
-	background-image: url("assets/images/heatmap_crop.jpg");
-	background-size: contain !important;
+	background-image: url("assets/images/heatmap_crop_wide.jpg");
+	height: 300px;
   }
   #leftFieldWrapper {
     width: 25%;
