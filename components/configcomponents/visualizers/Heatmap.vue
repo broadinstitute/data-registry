@@ -1,70 +1,100 @@
 <template>
   <div class="row">
     <div class="col-md-2" id="leftFieldWrapper">
-      Coming soon
+      <div v-if="editingFieldset === 'heatmap-plot-label'">
+        <tbody class="pad-field">
+          <tr>
+            <td class="popup-field-label">
+              Plot label:
+            </td>
+            <td>
+              <input v-model="plotLabel" type="text" class="form-control input-default form-control-sm">
+            </td>
+          </tr>
+        </tbody>
+      </div>
+      <div v-else-if="editingFieldset === 'heatmap-column'">
+        <tbody>
+          <tr>
+            <td class="popup-field-label">
+              Column field:
+            </td>
+            <td>
+              <select v-model="columnField" class="form-control form-control-sm">
+                <option value="">
+                  Select a field
+                </option>
+                <option v-for="field in availableFields" :key="field">
+                  {{ field }}
+                </option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="popup-field-label">
+              Column label:
+            </td>
+            <td>
+              <input
+                  v-model="columnLabel"
+                  type="text"
+                  class="form-control input-default form-control-sm"
+                >
+            </td>
+          </tr>
+        </tbody>
+      </div>
+      <div v-else-if="editingFieldset === 'heatmap-row'">
+        <tbody>
+          <tr>
+            <td class="popup-field-label">
+              Row field:
+            </td>
+            <td>
+              <select v-model="columnField" class="form-control form-control-sm">
+                <option value="">
+                  Select a field
+                </option>
+                <option v-for="field in availableFields" :key="field">
+                  {{ field }}
+                </option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="popup-field-label">
+              Row label:
+            </td>
+            <td>
+              <input
+                  v-model="rowLabel"
+                  type="text"
+                  class="form-control input-default form-control-sm"
+                >
+            </td>
+          </tr>
+        </tbody>
+      </div>
     </div>
     <div id="heatmap-gui" class="col-md-9 viz-gui">
-      Coming soon
-    </div>
-    <div class="col-md-2">
-      Plot label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-10">
-      <input
-        v-model="plotLabel"
-        type="text"
-        class="form-control input-default form-control-sm"
-      >
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Column field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="columnField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Column label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input
-        v-model="columnLabel"
-        type="text"
-        class="form-control input-default form-control-sm"
-      >
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Row field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="rowField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Row label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input
-        v-model="rowLabel"
-        type="text"
-        class="form-control input-default form-control-sm"
-      >
+      <button id="heatmap-column" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('heatmap-column')">
+        <span class="pencil">&#9998;</span>
+        <span class="item-done" hidden>&check;</span>
+        <span class="item-undone" hidden>&#9888;</span>
+        Column field
+      </button>
+      <button id="heatmap-row" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('heatmap-row')">
+        <span class="pencil">&#9998;</span>
+        <span class="item-done" hidden>&check;</span>
+        <span class="item-undone" hidden>&#9888;</span>
+        Row field
+      </button>
+      <button id="heatmap-plot-label" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('heatmap-plot-label')">
+        <span class="pencil">&#9998;</span>
+        <span class="item-done" hidden>&check;</span>
+        <span class="item-undone" hidden>&#9888;</span>
+        Plot label
+      </button>
     </div>
   </div>
   <div class="row">
@@ -243,6 +273,7 @@ import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 const store = useConfigBuilderStore();
 const emit = defineEmits(["updateVisualizer"]);
 const availableFields = computed(() => store.allFields);
+const editingFieldset = ref("");
 const plotLabel = ref("");
 const columnField = ref("");
 const columnLabel = ref("");
@@ -312,4 +343,7 @@ const VALIDATORS = [
 watch(configString, () => {
   emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
 });
+function editFieldset(fieldsetId){
+    editingFieldset.value = fieldsetId;
+  }
 </script>
