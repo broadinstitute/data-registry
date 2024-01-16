@@ -269,3 +269,71 @@ sup.required {
 	width: 200px !important;
 	margin-bottom: 20px;
 }
+.gui-btn {
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+    border-radius: 15px;
+    color: #333333;
+  }
+  #y-button {
+    position: relative;
+    top: 110px;
+    left: -6px;
+  }
+  #x-button {
+    position: relative;
+    top: 188px;
+    left: 330px;
+  }
+  #render-by {
+    position: relative;
+    top: 110px;
+    left: 80px;
+  }
+  #graphic-format {
+    position: relative;
+    top: 35px;
+    left: -315px;
+  }
+  .pad-field td {
+    padding: 5px;
+  }
+  .compact td {
+    font-size: smaller;
+  }
+  .compact input {
+    margin-left: 5px;
+  }
+  .viz-gui {
+    height: 250px;
+    background-size: 800px;
+    background-position: left;
+    background-repeat: no-repeat;
+  }
+  #manhattan-gui {
+    background-image: url("assets/images/manhattan_model_tight_crop.jpg");
+  }
+  #heatmap-gui {
+	background-image: url("assets/images/heatmap_crop.jpg");
+	background-size: contain !important;
+  }
+  #leftFieldWrapper {
+    width: 25%;
+  }
+  #leftField {
+    margin-top: 20px;
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 15px;
+    padding: 5px;
+  }
+  .done {
+    background-color: green;
+    border: 1px solid darkgreen;
+    color: white;
+  }
+  .undone {
+    background-color: orange;
+    border: 1px solid orangered;
+    color: black;
+  }

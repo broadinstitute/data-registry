@@ -134,7 +134,7 @@
         </div>
       </div>
     </div>
-    <div id="viz-gui" class="col-md-9">
+    <div id="manhattan-gui" class="col-md-9 viz-gui">
       <button id="y-button" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('y-button')">
         <span class="pencil">&#9998;</span>
         <span class="item-done" hidden>&check;</span>
@@ -238,66 +238,3 @@
     editingFieldset.value = fieldsetId;
   }
 </script>
-<style>
-  .gui-btn {
-    background-color: #eeeeee;
-    border: 1px solid #dddddd;
-    border-radius: 15px;
-    color: #333333;
-  }
-  #y-button {
-    position: relative;
-    top: 110px;
-    left: -5px;
-  }
-  #x-button {
-    position: relative;
-    top: 200px;
-    left: 330px;
-  }
-  #render-by {
-    position: relative;
-    top: 110px;
-    left: 155px;
-  }
-  #graphic-format {
-    position: relative;
-    top: 20px;
-    left: -315px;
-  }
-  .pad-field td {
-    padding: 5px;
-  }
-  .compact td {
-    font-size: smaller;
-  }
-  .compact input {
-    margin-left: 5px;
-  }
-  #viz-gui {
-    height: 250px;
-    background-image: url("assets/images/manhattan_model_tight_crop.jpg");
-    background-position: left;
-    background-repeat: no-repeat;
-  }
-  #leftFieldWrapper {
-    width: 25%;
-  }
-  #leftField {
-    margin-top: 20px;
-    background-color: #ffffff;
-    border: 1px solid #dddddd;
-    border-radius: 15px;
-    padding: 5px;
-  }
-  .done {
-    background-color: green;
-    border: 1px solid darkgreen;
-    color: white;
-  }
-  .undone {
-    background-color: orange;
-    border: 1px solid orangered;
-    color: black;
-  }
-</style>

@@ -1,5 +1,11 @@
 <template>
   <div class="row">
+    <div class="col-md-2" id="leftFieldWrapper">
+      Coming soon
+    </div>
+    <div id="heatmap-gui" class="col-md-9 viz-gui">
+      Coming soon
+    </div>
     <div class="col-md-2">
       Plot label<sup class="required"> *</sup>
     </div>
