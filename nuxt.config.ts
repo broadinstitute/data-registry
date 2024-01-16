@@ -8,9 +8,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       skipAuth: false,
-      apiSecret: "",
       apiBaseUrl: "",
-      apiDrupalUrl: "",
       phenotypesUrl: "",
       googleAuthClientId: "",
       googleAuthRedirectUri: "",

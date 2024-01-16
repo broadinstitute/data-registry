@@ -30,6 +30,12 @@ export const useUserStore = defineStore('UserStore', {
         return false;
       }
     },
+    async changePassword (password) {
+      if (!this.axios) {
+        this.init();
+      }
+      await this.axios.post('/api/change-password', JSON.stringify({ password }));
+    },
     async loginWithGoogle (code) {
       if (!this.axios) {
         this.init();
