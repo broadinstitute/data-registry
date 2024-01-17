@@ -150,13 +150,19 @@
         <div v-else-if="editingFieldset === 'heatmap-sub'">
           <tbody>
             <tr>
+              <td>Include sub circle:</td>
+              <td>
+                <input type="checkbox" v-model="includeSubCircle">
+              </td>
+            </tr>
+            <tr>
               <td class="popup-field-label">
-                Field
+                Field:
               </td>
               <td>
                 <select v-model="subField" class="form-control form-control-sm">
                   <option value="">
-                    None
+                    Select field
                   </option>
                   <option v-for="field in availableFields" :value="field" :key="field">
                     {{ field }}
@@ -165,7 +171,7 @@
               </td>
             </tr>
           </tbody>
-          <tbody v-if="subField !== ''">
+          <tbody v-if="includeSubCircle">
             <tr>
               <td class="popup-field-label">
                 Label:
@@ -218,7 +224,7 @@
               </td>
             </tr>
           </tbody>
-          <button class="btn btn-primary add-button" @click="subSteps.push('')">
+          <button v-if="includeSubCircle" class="btn btn-primary add-button" @click="subSteps.push('')">
             Add
           </button>
         </div>
@@ -299,7 +305,7 @@ const columnField = ref("");
 const columnLabel = ref("");
 const rowField = ref("");
 const rowLabel = ref("");
-const fontSize = ref(12);
+const fontSize = ref("");
 const mainField = ref("");
 const mainLabel = ref("");
 const mainRenderType = ref("scale");
@@ -307,6 +313,7 @@ const mainDirection = ref("positive");
 const mainLow = ref("");
 const mainMid = ref("");
 const mainHigh = ref("");
+const includeSubCircle = ref(true);
 const subSteps = ref([""]);
 const subField = ref("");
 const subLabel = ref("");
@@ -331,7 +338,7 @@ const configString = computed(() => {
       high: mainHigh.value,
     }
   };
-  if (subField.value !== "") {
+  if (includeSubCircle.value) {
     const sub = {
       field: subField.value,
       label: subLabel.value,
@@ -367,8 +374,9 @@ const CHECK_DONE = {
     msg: "Specify main field, label, and low/mid/high values in order."
   },
   "heatmap-sub": { 
-      condition: () => subField.value !== "" && (subLabel.value === "" || subSteps.value.length === 0 || subSteps.value.includes("")), 
-      msg: "Specify a label and steps for the sub circle." 
+      condition: () => includeSubCircle.value && (subField.value === "" || subLabel.value === "" || 
+        subSteps.value.length === 0 || subSteps.value.includes("")), 
+      msg: "Specify field, label, and value steps for the sub circle." 
     },
 };
 const VALIDATORS = Object.values(CHECK_DONE);
