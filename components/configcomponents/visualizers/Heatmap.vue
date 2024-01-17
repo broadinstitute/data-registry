@@ -243,37 +243,25 @@
       </div>
     </div>
     <div id="heatmap-gui" class="col-md-9 viz-gui">
-      <button id="heatmap-column" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('heatmap-column')">
-        <StatusIcon></StatusIcon>
-        Column field
-      </button>
-      <button id="heatmap-row" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('heatmap-row')">
-        <StatusIcon></StatusIcon>
-        Row field
-      </button>
-      <button id="heatmap-plot-label" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('heatmap-plot-label')">
-        <StatusIcon></StatusIcon>
-        Plot label
-      </button>
-      <button id="heatmap-font-size" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('heatmap-font-size')">
-        <StatusIcon></StatusIcon>
-        Font size
-      </button>
+      <GuiButton buttonId="heatmap-column" buttonText="Column field" @editFields="fieldset => editFieldset(fieldset)">
+      </GuiButton>
+      <GuiButton buttonId="heatmap-row" buttonText="Row field" @editFields="fieldset => editFieldset(fieldset)">
+      </GuiButton>
+      <GuiButton buttonId="heatmap-plot-label" buttonText="Plot label" @editFields="fieldset => editFieldset(fieldset)">
+      </GuiButton>
+      <GuiButton buttonId="heatmap-font-size" buttonText="Font size" @editFields="fieldset => editFieldset(fieldset)">
+      </GuiButton>
       <div id="heatmap-main-wrapper">
-        <button id="heatmap-main" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('heatmap-main')">
-          <StatusIcon></StatusIcon>
-          Box color coding
-        </button>
+        <GuiButton buttonId="heatmap-main" buttonText="Box color coding" @editFields="fieldset => editFieldset(fieldset)">
+        </GuiButton>
           <span>min</span>
           <img v-if="mainDirection === 'positive'" src="assets/images/heatmap_color_scale.jpg"/>
           <img v-else src="assets/images/heatmap_color_scale_reversed.jpg"/>
           <span>max</span>
       </div>
       <div id="heatmap-sub-wrapper">
-        <button id="heatmap-sub" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('heatmap-sub')">
-          <StatusIcon></StatusIcon>
-          Sub circle scaling
-        </button>
+        <GuiButton buttonId="heatmap-sub" buttonText="Sub circle scaling" @editFields="fieldset => editFieldset(fieldset)">
+        </GuiButton>
         <span>min</span>
         <img v-if="subDirection === 'positive'" src="assets/images/heatmap_dot_sizes.jpg"/>
         <img v-else src="assets/images/heatmap_dot_sizes_reversed.jpg"/>
@@ -284,6 +272,7 @@
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+import GuiButton from '../GuiButton.vue';
 const store = useConfigBuilderStore();
 const emit = defineEmits(["updateVisualizer"]);
 const availableFields = computed(() => store.allFields);

@@ -135,19 +135,14 @@
       </div>
     </div>
     <div id="manhattan-gui" class="col-md-9 viz-gui">
-      <GuiButton buttonId="manhattan-y" buttonText="Y-axis field" @editFields="fieldset => editFieldset(fieldset)"></GuiButton>
-      <button id="manhattan-x" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-x')">
-        <StatusIcon></StatusIcon>
-        X-axis field
-      </button>
-      <button id="manhattan-render" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-render')">
-        <StatusIcon></StatusIcon>
-        Render by
-      </button>
-      <button id="manhattan-graphic" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-graphic')">
-        <StatusIcon></StatusIcon>
-        Graphic format
-      </button>
+      <GuiButton buttonId="manhattan-y" buttonText="Y-axis field" @editFields="fieldset => editFieldset(fieldset)">
+      </GuiButton>
+      <GuiButton buttonId="manhattan-x" buttonText="X-axis field" @editFields="fieldset => editFieldset(fieldset)">
+      </GuiButton>
+      <GuiButton buttonId="manhattan-render" buttonText="Render by" @editFields="fieldset => editFieldset(fieldset)">
+      </GuiButton>
+      <GuiButton buttonId="manhattan-graphic" buttonText="Graphic format" @editFields="fieldset => editFieldset(fieldset)">
+      </GuiButton>
     </div>
   </div>
 </template>
