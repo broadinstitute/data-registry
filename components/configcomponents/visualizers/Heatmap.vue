@@ -113,10 +113,10 @@
               <td>
                 <select v-model="mainDirection" class="form-control form-control-sm">
                   <option value="positive">
-                    Positive (higher darker)
+                    Positive
                   </option>
                   <option value="negative">
-                    Negative (lower darker)
+                    Negative
                   </option>
                 </select>
               </td>
@@ -155,6 +155,8 @@
                 <input type="checkbox" v-model="includeSubCircle">
               </td>
             </tr>
+          </tbody>
+          <tbody v-if="includeSubCircle">
             <tr>
               <td class="popup-field-label">
                 Field:
@@ -170,8 +172,6 @@
                 </select>
               </td>
             </tr>
-          </tbody>
-          <tbody v-if="includeSubCircle">
             <tr>
               <td class="popup-field-label">
                 Label:
@@ -192,10 +192,10 @@
               <td>
                 <select v-model="subDirection" class="form-control form-control-sm">
                   <option value="positive">
-                    Positive (higher bigger)
+                    Positive
                   </option>
                   <option value="negative">
-                    Negative (lower bigger)
+                    Negative
                   </option>
                 </select>
               </td>
