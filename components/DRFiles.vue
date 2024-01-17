@@ -42,14 +42,25 @@ async function save () {
   if (!useFormValidation("filesForm", credible_set_validation)) {
     return;
   }
-  await store.uploadFiles(props.datasetId);
+  try {
+    await store.uploadFiles(props.datasetId);
+  } catch (e) {
+    console.error(e);
+    return;
+  }
+
   await route.push({ path: '/datasets' });
 }
 
 async function removePhenotypeDataset (e) {
   const pheno = store.savedDataSets[e.id];
   if (pheno.id) {
-    await store.deletePhenotypeDataSet(pheno.id);
+    try {
+      await store.deletePhenotypeDataSet(pheno.id);
+    } catch (e) {
+      console.error(e);
+      return;
+    }
   }
   if (store.savedDataSets.length === 1) {
     store.resetPhenoDatasets();
