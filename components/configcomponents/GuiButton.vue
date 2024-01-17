@@ -1,17 +1,32 @@
 <template>
-  <button :id="buttonId" class="btn btn-primary btn-sm gui-btn neutral" @click="emitEditFieldset()">
-    <span class="pencil">&#9998;</span>
-    <span class="item-done">&check;</span>
-    <span class="item-undone">&#9888;</span>
+  <button :id="fieldsetId" class="btn btn-primary btn-sm gui-btn" :class="status" @click="editFieldset">
+    <span v-if="status === STATUSES.NEUTRAL">&#9998;</span>
+    <span v-if="status === STATUSES.DONE">&check;</span>
+    <span v-if="status === STATUSES.UNDONE">&#9888;</span>
     {{ buttonText }}
   </button>
 </template>
 <script setup>
-  const props = defineProps({buttonId: String, buttonText: String});
-  const emit = defineEmits(["editFields"]);
-  const buttonId = ref(props.buttonId);
-  const buttonText = ref(props.buttonText);
-  function emitEditFieldset(){
-    emit("editFields", buttonId.value);
+  import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  const store = useConfigBuilderStore();
+  const props = defineProps({info: Object});
+  const STATUSES = Object.freeze({
+      NEUTRAL: "neutral",
+      DONE: "done",
+      UNDONE: "undone"
+    });
+  const fieldsetId = ref(props.info.id);
+  const buttonText = ref(props.info.text);
+  const status = ref(STATUSES.NEUTRAL);
+  const condition = computed(() => props.info.condition());
+  function editFieldset(){
+    store.setVizEditingFieldset(fieldsetId.value);
   }
+  watch(condition, () => {
+    if (condition.value){
+        status.value = STATUSES.UNDONE;
+    } else {
+        status.value = STATUSES.DONE;
+    }
+  });
 </script>

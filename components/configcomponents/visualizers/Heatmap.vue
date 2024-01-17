@@ -1,8 +1,8 @@
 <template>
   <div class="row">
     <div class="col-md-2" id="leftFieldWrapper">
-      <div id="leftField" v-if="editingFieldset !== ''">
-        <div v-if="editingFieldset === 'heatmap-plot-label'">
+      <div id="leftField" v-if="editingFieldset">
+        <div v-if="editingFieldset === CHECK_DONE.HEATMAP_PLOT_LABEL.id">
           <tbody class="pad-field">
             <tr>
               <td class="popup-field-label">
@@ -14,7 +14,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-else-if="editingFieldset === 'heatmap-column'">
+        <div v-else-if="editingFieldset === CHECK_DONE.HEATMAP_COLUMN.id">
           <tbody>
             <tr>
               <td class="popup-field-label">
@@ -45,7 +45,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-else-if="editingFieldset === 'heatmap-row'">
+        <div v-else-if="editingFieldset === CHECK_DONE.HEATMAP_ROW.id">
           <tbody>
             <tr>
               <td class="popup-field-label">
@@ -76,7 +76,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-else-if="editingFieldset === 'heatmap-main'">
+        <div v-else-if="editingFieldset === CHECK_DONE.HEATMAP_MAIN.id">
           <tbody>
             <tr>
               <td class="popup-field-label">
@@ -147,7 +147,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-else-if="editingFieldset === 'heatmap-sub'">
+        <div v-else-if="editingFieldset === CHECK_DONE.HEATMAP_SUB.id">
           <tbody>
             <tr>
               <td>Include sub circle:</td>
@@ -228,7 +228,7 @@
             Add
           </button>
         </div>
-        <div v-else-if="editingFieldset === 'heatmap-font-size'">
+        <div v-else-if="editingFieldset === CHECK_DONE.HEATMAP_FONT_SIZE.id">
           <tbody>
             <tr>
               <td class="popup-field-label">
@@ -243,25 +243,19 @@
       </div>
     </div>
     <div id="heatmap-gui" class="col-md-9 viz-gui">
-      <GuiButton buttonId="heatmap-column" buttonText="Column field" @editFields="fieldset => editFieldset(fieldset)">
-      </GuiButton>
-      <GuiButton buttonId="heatmap-row" buttonText="Row field" @editFields="fieldset => editFieldset(fieldset)">
-      </GuiButton>
-      <GuiButton buttonId="heatmap-plot-label" buttonText="Plot label" @editFields="fieldset => editFieldset(fieldset)">
-      </GuiButton>
-      <GuiButton buttonId="heatmap-font-size" buttonText="Font size" @editFields="fieldset => editFieldset(fieldset)">
-      </GuiButton>
+      <GuiButton :info="CHECK_DONE.HEATMAP_COLUMN"></GuiButton>
+      <GuiButton :info="CHECK_DONE.HEATMAP_ROW"></GuiButton>
+      <GuiButton :info="CHECK_DONE.HEATMAP_PLOT_LABEL"></GuiButton>
+      <GuiButton :info="CHECK_DONE.HEATMAP_FONT_SIZE"></GuiButton>
       <div id="heatmap-main-wrapper">
-        <GuiButton buttonId="heatmap-main" buttonText="Box color coding" @editFields="fieldset => editFieldset(fieldset)">
-        </GuiButton>
+        <GuiButton :info="CHECK_DONE.HEATMAP_MAIN"></GuiButton>
           <span>min</span>
           <img v-if="mainDirection === 'positive'" src="assets/images/heatmap_color_scale.jpg"/>
           <img v-else src="assets/images/heatmap_color_scale_reversed.jpg"/>
           <span>max</span>
       </div>
       <div id="heatmap-sub-wrapper">
-        <GuiButton buttonId="heatmap-sub" buttonText="Sub circle scaling" @editFields="fieldset => editFieldset(fieldset)">
-        </GuiButton>
+        <GuiButton :info="CHECK_DONE.HEATMAP_MAIN"></GuiButton>
         <span>min</span>
         <img v-if="subDirection === 'positive'" src="assets/images/heatmap_dot_sizes.jpg"/>
         <img v-else src="assets/images/heatmap_dot_sizes_reversed.jpg"/>
@@ -276,7 +270,7 @@ import GuiButton from '../GuiButton.vue';
 const store = useConfigBuilderStore();
 const emit = defineEmits(["updateVisualizer"]);
 const availableFields = computed(() => store.allFields);
-const editingFieldset = ref("");
+const editingFieldset = computed(() => store.vizEditingFieldset);
 const plotLabel = ref("");
 const columnField = ref("");
 const columnLabel = ref("");
@@ -329,52 +323,47 @@ const configString = computed(() => {
   // tracking the string rather than the object picks up changes within arrays
   return JSON.stringify(config);
 });
-const CHECK_DONE = {
-  "heatmap-plot-label": { 
+const CHECK_DONE = Object.freeze({
+  HEATMAP_PLOT_LABEL: {
+      id: "heatmap-plot-label",
+      text: "Plot label",
       condition: () => plotLabel.value === "", 
       msg: "Specify a label for the plot." 
     },
-  "heatmap-column": { 
+  HEATMAP_COLUMN: {
+      id: "heatmap-column",
+      text: "Column field", 
       condition: () => columnField.value === "" || columnLabel.value === "",
       msg: "Specify field and label for columns."
     },
-  "heatmap-row": {
+  HEATMAP_ROW: {
+      id: "heatmap-row",
+      text: "Row field",
       condition: () => rowField.value === "" || rowLabel.value === "",
       msg: "Specify field and label for rows."
     },
-  "heatmap-font-size": { 
+  HEATMAP_FONT_SIZE: {
+      id: "heatmap-font-size",
+      text: "Font size",
       condition: () => fontSize.value === "", 
       msg: "Specify font size." 
     },
-  "heatmap-main": {
+  HEATMAP_MAIN: {
+    id: "heatmap-main",
+    text: "Box color coding",
     condition: () => mainField.value === "" || mainLabel.value === "" || !(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value),
     msg: "Specify main field, label, and low/mid/high values in order."
   },
-  "heatmap-sub": { 
-      condition: () => includeSubCircle.value && (subField.value === "" || subLabel.value === "" || 
+  HEATMAP_SUB: {
+    id: "heatmap-sub",
+    text: "Sub circle scaling",
+    condition: () => includeSubCircle.value && (subField.value === "" || subLabel.value === "" || 
         subSteps.value.length === 0 || subSteps.value.includes("")), 
-      msg: "Specify field, label, and value steps for the sub circle." 
+    msg: "Specify field, label, and value steps for the sub circle." 
     },
-};
+});
 const VALIDATORS = Object.values(CHECK_DONE);
 watch(configString, () => {
-    // Add and remove 'done' flags from gui buttons
-    Object.keys(CHECK_DONE).forEach((buttonId) => {
-      let thisButton = document.getElementById(buttonId);
-      if (!CHECK_DONE[buttonId].condition()){
-        thisButton.classList.add("done");
-        thisButton.classList.remove("undone");
-        thisButton.classList.remove("neutral");
-      } else if (thisButton.classList.contains("done")){
-        thisButton.classList.remove("done");
-        thisButton.classList.add("undone");
-        thisButton.classList.remove("neutral");
-      }
-    });
     emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
   });
-  function editFieldset(fieldsetId){
-    console.log(fieldsetId);
-    editingFieldset.value = fieldsetId;
-  }
 </script>
