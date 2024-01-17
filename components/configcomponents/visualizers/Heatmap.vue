@@ -284,7 +284,6 @@
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-import StatusIcon from '../StatusIcon.vue';
 const store = useConfigBuilderStore();
 const emit = defineEmits(["updateVisualizer"]);
 const availableFields = computed(() => store.allFields);
@@ -385,7 +384,8 @@ watch(configString, () => {
     });
     emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
   });
-function editFieldset(fieldsetId){
+  function editFieldset(fieldsetId){
+    console.log(fieldsetId);
     editingFieldset.value = fieldsetId;
   }
 </script>

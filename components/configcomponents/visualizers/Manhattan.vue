@@ -135,10 +135,7 @@
       </div>
     </div>
     <div id="manhattan-gui" class="col-md-9 viz-gui">
-      <button id="manhattan-y" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-y')">
-        <StatusIcon></StatusIcon>
-        Y-axis field
-      </button>
+      <GuiButton buttonId="manhattan-y" buttonText="Y-axis field" @editFields="fieldset => editFieldset(fieldset)"></GuiButton>
       <button id="manhattan-x" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-x')">
         <StatusIcon></StatusIcon>
         X-axis field
@@ -156,7 +153,7 @@
 </template>
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-  import StatusIcon from '../StatusIcon.vue';
+  import GuiButton from '../GuiButton.vue';
   const store = useConfigBuilderStore();
   const emit = defineEmits(["updateVisualizer"]);
   const editingFieldset = ref("");
@@ -224,6 +221,7 @@
     emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
   });
   function editFieldset(fieldsetId){
+    console.log(fieldsetId);
     editingFieldset.value = fieldsetId;
   }
 </script>
