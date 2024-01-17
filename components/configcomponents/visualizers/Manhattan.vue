@@ -135,25 +135,25 @@
       </div>
     </div>
     <div id="manhattan-gui" class="col-md-9 viz-gui">
-      <button id="manhattan-y" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('manhattan-y')">
+      <button id="manhattan-y" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-y')">
         <span class="pencil">&#9998;</span>
         <span class="item-done" hidden>&check;</span>
         <span class="item-undone" hidden>&#9888;</span>
         Y-axis field
       </button>
-      <button id="manhattan-x" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('manhattan-x')">
+      <button id="manhattan-x" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-x')">
         <span class="pencil">&#9998;</span>
         <span class="item-done" hidden>&check;</span>
         <span class="item-undone" hidden>&#9888;</span>
         X-axis field
       </button>
-      <button id="manhattan-render" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('manhattan-render')">
+      <button id="manhattan-render" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-render')">
         <span class="pencil">&#9998;</span>
         <span class="item-done" hidden>&check;</span>
         <span class="item-undone" hidden>&#9888;</span>
         Render by
       </button>
-      <button id="manhattan-graphic" class="btn btn-primary btn-sm gui-btn" @click="editFieldset('manhattan-graphic')">
+      <button id="manhattan-graphic" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-graphic')">
         <span class="pencil">&#9998;</span>
         <span class="item-done" hidden></span>
         <span class="item-undone" hidden>&#9888;</span>
