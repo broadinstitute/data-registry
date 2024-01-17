@@ -278,7 +278,7 @@ sup.required {
   }
   #manhattan-y {
     top: 110px;
-    left: -6px;
+    left: -112px;
   }
   #manhattan-x {
     top: 188px;
@@ -356,17 +356,8 @@ sup.required {
     border: 1px solid darkgreen;
     color: white;
   }
-  .done .item-undone, .done .pencil {
-	display: none;
-  }
   .undone {
     background-color: orange;
     border: 1px solid orangered;
     color: black;
-  }
-  .undone .item-done, .undone .pencil {
-	display: none;
-  }
-  .neutral .item-done, .neutral .item-undone {
-	display: none;
   }

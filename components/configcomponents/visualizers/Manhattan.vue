@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-2" id="leftFieldWrapper">
       <div id="leftField" v-if="editingFieldset !== ''">
-        <div v-if="editingFieldset === 'manhattan-x'">
+        <div v-if="editingFieldset === CHECK_DONE.MANHATTAN_X.id">
           <tbody class="pad-field">
             <tr>
               <td class="popup-field-label">
@@ -29,7 +29,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-else-if="editingFieldset === 'manhattan-y'">
+        <div v-else-if="editingFieldset === CHECK_DONE.MANHATTAN_Y.id">
           <tbody class="pad-field">
             <tr>
               <td class="popup-field-label">
@@ -56,7 +56,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-else-if="editingFieldset === 'manhattan-render'">
+        <div v-else-if="editingFieldset === CHECK_DONE.MANHATTAN_RENDER.id">
           <tbody>
             <tr class="pad-field">
               <td class="popup-field-label">
@@ -101,7 +101,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-else-if="editingFieldset === 'manhattan-graphic'">
+        <div v-else-if="editingFieldset === CHECK_DONE.MANHATTAN_GRAPHIC.id">
           <tbody class="pad-field">
             <tr>
               <td class="popup-field-label">
@@ -109,12 +109,12 @@
               </td>
               <td>
                 <select v-model="graphicFormat" class="form-control form-control-sm">
-                  <option>Vector</option>
-                  <option>Bitmap</option>
+                  <option :value="GRAPHIC_FORMATS.VECTOR">Vector</option>
+                  <option :value="GRAPHIC_FORMATS.BITMAP">Bitmap</option>
                 </select>
               </td>
             </tr>
-            <tr v-if="graphicFormat === 'Vector'">
+            <tr v-if="graphicFormat === GRAPHIC_FORMATS.VECTOR">
               <td class="popup-field-label">
                 Link to:
               </td>
@@ -135,14 +135,10 @@
       </div>
     </div>
     <div id="manhattan-gui" class="col-md-9 viz-gui">
-      <GuiButton buttonId="manhattan-y" buttonText="Y-axis field" @editFields="fieldset => editFieldset(fieldset)">
-      </GuiButton>
-      <GuiButton buttonId="manhattan-x" buttonText="X-axis field" @editFields="fieldset => editFieldset(fieldset)">
-      </GuiButton>
-      <GuiButton buttonId="manhattan-render" buttonText="Render by" @editFields="fieldset => editFieldset(fieldset)">
-      </GuiButton>
-      <GuiButton buttonId="manhattan-graphic" buttonText="Graphic format" @editFields="fieldset => editFieldset(fieldset)">
-      </GuiButton>
+      <GuiButton :info="CHECK_DONE.MANHATTAN_X"></GuiButton>
+      <GuiButton :info="CHECK_DONE.MANHATTAN_Y"></GuiButton>
+      <GuiButton :info="CHECK_DONE.MANHATTAN_RENDER"></GuiButton>
+      <GuiButton :info="CHECK_DONE.MANHATTAN_GRAPHIC"></GuiButton>
     </div>
   </div>
 </template>
@@ -151,10 +147,10 @@
   import GuiButton from '../GuiButton.vue';
   const store = useConfigBuilderStore();
   const emit = defineEmits(["updateVisualizer"]);
-  const editingFieldset = ref("");
+  const editingFieldset = computed(() => store.vizEditingFieldset);
   const availableFields = computed(() => store.allFields);
   const selectAllBox = ref(false);
-  const graphicFormat = ref("Bitmap");
+  const graphicFormat = ref("");
   const xAxisField = ref("");
   const yAxisField = ref("");
   const renderBy = ref("");
@@ -163,8 +159,12 @@
   const height = ref("");
   const linkTo = ref("");
   const hoverContent = ref([]);
+  const GRAPHIC_FORMATS = Object.freeze({
+    VECTOR: "vector",
+    BITMAP: "bitmap"
+  });
   const configString = computed(() => {
-    const type = graphicFormat.value === "Vector" ? "manhattan plot" : "manhattan bitmap plot";
+    const type = graphicFormat.value;
     const config = {
       type,
       "x axis field": xAxisField.value,
@@ -185,38 +185,33 @@
     return JSON.stringify(config);
   });
   const CHECK_DONE = {
-    "manhattan-x": {
+    MANHATTAN_X: {
+        id: "manhattan-x",
+        text: "X-axis field",
         condition: () => xAxisField.value === "" || xAxisLabel.value === "",
         msg: "Specify field and label for X-axis."
       },
-    "manhattan-y": {
+    MANHATTAN_Y: {
+        id: "manhattan-y",
+        text: "Y-axis field",
         condition: () => yAxisField.value === "" || yAxisLabel.value === "",
         msg: "Specify field and label for Y-axis."
       },
-    "manhattan-render": {
+    MANHATTAN_RENDER: {
+      id: "manhattan-render",
+      text: "Render by",
       condition: () => renderBy.value === "",
       msg: "Specify field to render by."
+    },
+    MANHATTAN_GRAPHIC: {
+      id: "manhattan-graphic",
+      text: "Graphic format",
+      condition: () => graphicFormat.value === "",
+      msg: "Specify graphic format."
     }
   };
   const VALIDATORS = Object.values(CHECK_DONE);
   watch(configString, () => {
-    // Add and remove 'done' flags from gui buttons
-    Object.keys(CHECK_DONE).forEach((buttonId) => {
-      let thisButton = document.getElementById(buttonId);
-      if (!CHECK_DONE[buttonId].condition()){
-        thisButton.classList.add("done");
-        thisButton.classList.remove("undone");
-        thisButton.classList.remove("neutral");
-      } else if (thisButton.classList.contains("done")){
-        thisButton.classList.remove("done");
-        thisButton.classList.add("undone");
-        thisButton.classList.remove("neutral");
-      }
-    });
     emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
   });
-  function editFieldset(fieldsetId){
-    console.log(fieldsetId);
-    editingFieldset.value = fieldsetId;
-  }
 </script>
