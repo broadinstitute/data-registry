@@ -19,7 +19,7 @@
   </div>
 </template>
 <script setup>
-import { useDatasetStore } from '~/stores/DatasetStore'
+import { useDatasetStore } from '~/stores/DatasetStore';
 
 
 const store = useDatasetStore();
