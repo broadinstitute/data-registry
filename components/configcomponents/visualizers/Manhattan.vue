@@ -136,27 +136,19 @@
     </div>
     <div id="manhattan-gui" class="col-md-9 viz-gui">
       <button id="manhattan-y" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-y')">
-        <span class="pencil">&#9998;</span>
-        <span class="item-done" hidden>&check;</span>
-        <span class="item-undone" hidden>&#9888;</span>
+        <StatusIcon></StatusIcon>
         Y-axis field
       </button>
       <button id="manhattan-x" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-x')">
-        <span class="pencil">&#9998;</span>
-        <span class="item-done" hidden>&check;</span>
-        <span class="item-undone" hidden>&#9888;</span>
+        <StatusIcon></StatusIcon>
         X-axis field
       </button>
       <button id="manhattan-render" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-render')">
-        <span class="pencil">&#9998;</span>
-        <span class="item-done" hidden>&check;</span>
-        <span class="item-undone" hidden>&#9888;</span>
+        <StatusIcon></StatusIcon>
         Render by
       </button>
       <button id="manhattan-graphic" class="btn btn-primary btn-sm gui-btn neutral" @click="editFieldset('manhattan-graphic')">
-        <span class="pencil">&#9998;</span>
-        <span class="item-done" hidden></span>
-        <span class="item-undone" hidden>&#9888;</span>
+        <StatusIcon></StatusIcon>
         Graphic format
       </button>
     </div>
@@ -164,6 +156,7 @@
 </template>
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  import StatusIcon from '../StatusIcon.vue';
   const store = useConfigBuilderStore();
   const emit = defineEmits(["updateVisualizer"]);
   const editingFieldset = ref("");
@@ -221,15 +214,11 @@
       if (!CHECK_DONE[buttonId].condition()){
         thisButton.classList.add("done");
         thisButton.classList.remove("undone");
-        thisButton.getElementsByClassName("item-done")[0].hidden = false;
-        thisButton.getElementsByClassName("item-undone")[0].hidden = true;
-        thisButton.getElementsByClassName("pencil")[0].hidden = true;
+        thisButton.classList.remove("neutral");
       } else if (thisButton.classList.contains("done")){
         thisButton.classList.remove("done");
         thisButton.classList.add("undone");
-        thisButton.getElementsByClassName("item-done")[0].hidden = true;
-        thisButton.getElementsByClassName("item-undone")[0].hidden = false;
-        thisButton.getElementsByClassName("pencil")[0].hidden = true;
+        thisButton.classList.remove("neutral");
       }
     });
     emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
