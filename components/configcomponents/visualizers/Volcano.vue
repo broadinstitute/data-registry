@@ -2,6 +2,56 @@
   <div class="row">
     <div class="col-md-2" id="leftFieldWrapper">
       <div id="leftField" v-if="editingFieldset">
+        <div v-if="editingFieldset === CHECK_DONE.VOLCANO_PLOT_LABEL.id">
+          <tbody>
+            <tr>
+              <td>
+                Plot label:
+              </td>
+              <td>
+                <input
+                  v-model="label"
+                  type="text"
+                  class="form-control input-default form-control-sm"
+                >
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === CHECK_DONE.VOLCANO_X.id">
+          <tbody>
+            <tr>
+              <td>
+                X-axis field:
+              </td>
+              <td>
+                <select v-model="xAxisField" class="form-control form-control-sm">
+                  <option value="">
+                    Select a field
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                X-axis label:
+              </td>
+              <td>
+                <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === CHECK_DONE.VOLCANO_Y.id">
+          <tbody>
+            <tr>
+              
+            </tr>
+          </tbody>
+        </div>
       </div>
     </div>
     <div id="volcano-gui" class="col-md-9 viz-gui">
@@ -9,37 +59,6 @@
       <GuiButton :info="CHECK_DONE.VOLCANO_Y"></GuiButton>
       <GuiButton :info="CHECK_DONE.VOLCANO_PLOT_LABEL"></GuiButton>
       <GuiButton :info=CHECK_DONE.VOLCANO_RENDER_BY></GuiButton>
-    </div>
-    <!-- <div class="col-md-2">
-      Label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-10">
-      <input
-        v-model="label"
-        type="text"
-        class="form-control input-default form-control-sm"
-      >
-    </div> -->
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      X axis field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="xAxisField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      X axis label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
     </div>
   </div>
   <div class="row">
