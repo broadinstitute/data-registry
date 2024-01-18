@@ -1,6 +1,16 @@
 <template>
   <div class="row">
-    <div class="col-md-2">
+    <div class="col-md-2" id="leftFieldWrapper">
+      <div id="leftField" v-if="editingFieldset">
+      </div>
+    </div>
+    <div id="volcano-gui" class="col-md-9 viz-gui">
+      <GuiButton :info="CHECK_DONE.VOLCANO_X"></GuiButton>
+      <GuiButton :info="CHECK_DONE.VOLCANO_Y"></GuiButton>
+      <GuiButton :info="CHECK_DONE.VOLCANO_PLOT_LABEL"></GuiButton>
+      <GuiButton :info=CHECK_DONE.VOLCANO_RENDER_BY></GuiButton>
+    </div>
+    <!-- <div class="col-md-2">
       Label<sup class="required"> *</sup>
     </div>
     <div class="col-md-10">
@@ -9,7 +19,7 @@
         type="text"
         class="form-control input-default form-control-sm"
       >
-    </div>
+    </div> -->
   </div>
   <div class="row">
     <div class="col-md-2">
@@ -186,9 +196,11 @@
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+import GuiButton from '../GuiButton.vue';
 const store = useConfigBuilderStore();
 const emit = defineEmits(["updateVisualizer"]);
 const availableFields = computed(() => store.allFields);
+const editingFieldset = computed(() => store.vizEditingFieldset);
 const label = ref("");
 const xAxisField = ref("");
 const xAxisLabel = ref("");
@@ -200,25 +212,45 @@ const xAxisCondition = ref("");
 const yAxisCondition = ref("");
 const GREATER_THANS = ["greater than", "and", "or"];
 const LOWER_THANS = ["lower than", "and", "or"];
-const xGT = ref(0);
-const xLT = ref(0);
-const yGT = ref(0);
-const yLT = ref(0);
-const width = ref(null);
-const height = ref(null);
-const VALIDATORS = [
-  { condition: () => label.value === "", msg: "Specify a label for the plot." },
-  { condition: () => xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes." },
-  { condition: () => xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes." },
-  { condition: () => renderBy.value === "", msg: "Specify field to render by." },
-  { condition: () => xAxisCondition.value === "" || yAxisCondition.value === "", msg: "Specify conditions for both axes." },
-  { condition: () => GREATER_THANS.includes(xAxisCondition.value) && xGT.value === null, msg: "Specify greater-than threshold for X axis." },
-  { condition: () => LOWER_THANS.includes(xAxisCondition.value) && xLT.value === null, msg: "Specify less-than threshold for X axis." },
-  { condition: () => GREATER_THANS.includes(yAxisCondition.value) && yGT.value === null, msg: "Specify greater-than threshold for Y axis." },
-  { condition: () => LOWER_THANS.includes(yAxisCondition.value) && yLT.value === null, msg: "Specify less-than threshold for Y axis." },
-  { condition: () => xAxisCondition.value === "and" && xGT.value >= xLT.value, msg: "X axis 'AND' condition must be corrected." },
-  { condition: () => yAxisCondition.value === "and" && yGT.value >= yLT.value, msg: "Y axis 'AND' condition must be corrected." }
-];
+const xGT = ref("");
+const xLT = ref("");
+const yGT = ref("");
+const yLT = ref("");
+const width = ref("");
+const height = ref("");
+const CHECK_DONE = Object.freeze({
+  VOLCANO_PLOT_LABEL: {
+    id: "volcano-plot-label",
+    text: "Plot label",
+    condition: () => !label.value, 
+    msg: "Specify a label for the plot."
+  },
+  VOLCANO_X: {
+    id: "volcano-x",
+    text: "X-axis field",
+    condition: () => !xAxisField.value || !xAxisLabel.value || !xAxisCondition.value ||
+      (GREATER_THANS.includes(xAxisCondition.value) && xGT.value === null) ||
+      (LOWER_THANS.includes(xAxisCondition.value) && xLT.value === null) ||
+      (xAxisCondition.value === "and" && xGT.value >= xLT.value),
+    msg: "Specify field, label, condition, and thresholds for X-axis."
+  },
+  VOLCANO_Y: {
+    id: "volcano-y",
+    text: "Y-axis field",
+    condition: () => !yAxisField.value || !yAxisLabel.value || !yAxisCondition.value ||
+      (GREATER_THANS.includes(yAxisCondition.value) && yGT.value === null) ||
+      (LOWER_THANS.includes(yAxisCondition.value) && yLT.value === null) ||
+      (yAxisCondition.value === "and" && yGT.value >= yLT.value),
+    msg: "Specify field, label, and condition for Y-axis."
+  },
+  VOLCANO_RENDER_BY: {
+    id: "volcano-render-by",
+    text: "Render by",
+    condition: () => renderBy.value === "", 
+    msg: "Specify field to render by."  
+  },
+
+});
 const configString = computed(() => {
   const config = {
     type: "volcano plot",
@@ -257,6 +289,6 @@ const configString = computed(() => {
   return JSON.stringify(config);
 });
 watch(configString, () => {
-  emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
+  emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
 });
 </script>

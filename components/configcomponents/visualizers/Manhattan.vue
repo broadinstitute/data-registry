@@ -186,17 +186,17 @@
   });
   const CHECK_DONE = {
     MANHATTAN_X: {
-        id: "manhattan-x",
-        text: "X-axis field",
-        condition: () => xAxisField.value === "" || xAxisLabel.value === "",
-        msg: "Specify field and label for X-axis."
-      },
+      id: "manhattan-x",
+      text: "X-axis field",
+      condition: () => xAxisField.value === "" || xAxisLabel.value === "",
+      msg: "Specify field and label for X-axis."
+    },
     MANHATTAN_Y: {
-        id: "manhattan-y",
-        text: "Y-axis field",
-        condition: () => yAxisField.value === "" || yAxisLabel.value === "",
-        msg: "Specify field and label for Y-axis."
-      },
+      id: "manhattan-y",
+      text: "Y-axis field",
+      condition: () => yAxisField.value === "" || yAxisLabel.value === "",
+      msg: "Specify field and label for Y-axis."
+    },
     MANHATTAN_RENDER: {
       id: "manhattan-render",
       text: "Render by",
@@ -210,8 +210,7 @@
       msg: "Specify graphic format."
     }
   };
-  const VALIDATORS = Object.values(CHECK_DONE);
   watch(configString, () => {
-    emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
+    emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
   });
 </script>

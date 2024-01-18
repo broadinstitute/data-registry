@@ -325,29 +325,29 @@ const configString = computed(() => {
 });
 const CHECK_DONE = Object.freeze({
   HEATMAP_PLOT_LABEL: {
-      id: "heatmap-plot-label",
-      text: "Plot label",
-      condition: () => plotLabel.value === "", 
-      msg: "Specify a label for the plot." 
-    },
+    id: "heatmap-plot-label",
+    text: "Plot label",
+    condition: () => plotLabel.value === "", 
+    msg: "Specify a label for the plot." 
+  },
   HEATMAP_COLUMN: {
-      id: "heatmap-column",
-      text: "Column field", 
-      condition: () => columnField.value === "" || columnLabel.value === "",
-      msg: "Specify field and label for columns."
-    },
+    id: "heatmap-column",
+    text: "Column field", 
+    condition: () => columnField.value === "" || columnLabel.value === "",
+    msg: "Specify field and label for columns."
+  },
   HEATMAP_ROW: {
-      id: "heatmap-row",
-      text: "Row field",
-      condition: () => rowField.value === "" || rowLabel.value === "",
-      msg: "Specify field and label for rows."
-    },
+    id: "heatmap-row",
+    text: "Row field",
+    condition: () => rowField.value === "" || rowLabel.value === "",
+    msg: "Specify field and label for rows."
+  },
   HEATMAP_FONT_SIZE: {
-      id: "heatmap-font-size",
-      text: "Font size",
-      condition: () => fontSize.value === "", 
-      msg: "Specify font size." 
-    },
+    id: "heatmap-font-size",
+    text: "Font size",
+    condition: () => fontSize.value === "", 
+    msg: "Specify font size." 
+  },
   HEATMAP_MAIN: {
     id: "heatmap-main",
     text: "Box color coding",
@@ -360,10 +360,9 @@ const CHECK_DONE = Object.freeze({
     condition: () => includeSubCircle.value && (subField.value === "" || subLabel.value === "" || 
         subSteps.value.length === 0 || subSteps.value.includes("")), 
     msg: "Specify field, label, and value steps for the sub circle." 
-    },
+  },
 });
-const VALIDATORS = Object.values(CHECK_DONE);
 watch(configString, () => {
-    emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
+    emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
   });
 </script>

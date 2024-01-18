@@ -319,6 +319,22 @@ sup.required {
 	position: relative;
 	top: -15px;
   }
+	#volcano-x {
+		top: 340px;
+		left: 410px;
+	}
+	#volcano-y {
+		top: 160px;
+		left: -70px;
+	}
+	#volcano-render-by {
+		top: 62px;
+		left: 2px;
+	}
+	#volcano-plot-label {
+		top: 5px;
+		left: 205px;
+	}
   .pad-field td {
     padding: 5px;
   }
@@ -334,13 +350,17 @@ sup.required {
   }
   #manhattan-gui {
     background-image: url("assets/images/manhattan_model_tight_crop.jpg");
-	height:250px;
+		height:250px;
     background-position: left;
   }
   #heatmap-gui {
-	background-image: url("assets/images/heatmap_crop_wide.jpg");
-	height: 350px;
+		background-image: url("assets/images/heatmap_crop_wide.jpg");
+		height: 350px;
   }
+	#volcano-gui {
+		background-image: url("assets/images/volcano_2.jpg");
+		height: 400px;
+	}
   #leftFieldWrapper {
     width: 25%;
   }
