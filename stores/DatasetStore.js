@@ -235,11 +235,7 @@ export const useDatasetStore = defineStore('DatasetStore', {
         if (!phenotype.id) {
           this.modalMsg = `Uploading data for ${phenotype.description}`;
           this.uploadProgress = 0;
-          try {
-            phenotype.id = await savePhenotype(dataset_id.replaceAll('-', ''), phenotype);
-          } catch(e){
-            throw e;
-          }
+          phenotype.id = await savePhenotype(dataset_id.replaceAll('-', ''), phenotype);
         }
         for (const cs of phenotype.credibleSets) {
           if (!cs.id && cs.credibleSetFile) {
