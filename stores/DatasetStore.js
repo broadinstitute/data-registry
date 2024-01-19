@@ -18,7 +18,7 @@ function onUpload (progressEvent) {
 }
 
 function getPhenotypeDataSetUploadUrl (dataset_id, pType) {
-  const url = `/api/uploadfile/${dataset_id}/${pType.name}/${pType.dichotomous}/${pType.sampleSize}`;
+  const url = `/api/uploadfile/${dataset_id}/${pType.dichotomous}/${pType.sampleSize}?phenotype=${pType.name}`;
   if (!pType.dichotomous) {
     return url;
   }
@@ -235,7 +235,11 @@ export const useDatasetStore = defineStore('DatasetStore', {
         if (!phenotype.id) {
           this.modalMsg = `Uploading data for ${phenotype.description}`;
           this.uploadProgress = 0;
-          phenotype.id = await savePhenotype(dataset_id.replaceAll('-', ''), phenotype);
+          try {
+            phenotype.id = await savePhenotype(dataset_id.replaceAll('-', ''), phenotype);
+          } catch(e){
+            throw e;
+          }
         }
         for (const cs of phenotype.credibleSets) {
           if (!cs.id && cs.credibleSetFile) {
