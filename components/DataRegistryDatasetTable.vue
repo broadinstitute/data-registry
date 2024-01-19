@@ -186,8 +186,13 @@ async function copyToClip (file) {
 }
 
 async function deleteDataSet (id) {
-  await axios.delete(`/api/datasets/${id}`);
-  datasets.value = datasets.value.filter(dataset => dataset.id !== id);
+  try {
+    await store.deleteDataSet(id);
+    datasets.value = datasets.value.filter(dataset => dataset.id !== id);
+  } catch(e) {
+    console.log(e);
+  }
+
 }
 
 async function fetchDataSets () {

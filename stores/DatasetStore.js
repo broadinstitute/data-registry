@@ -9,7 +9,7 @@ const configuredAxios = useAxios(config, undefined, (error) => {
   store.errorMessage = error.message || error.errorMessage;
   store.serverSuccess = false;
   store.showNotification = true;
-  throw new Error("Server error");
+  return Promise.reject(error);
 });
 
 function onUpload (progressEvent) {
@@ -150,6 +150,9 @@ export const useDatasetStore = defineStore('DatasetStore', {
     async saveStudy (study) {
       const { data } = await configuredAxios.post("/api/studies", JSON.stringify(study));
       return data;
+    },
+    async deleteDataSet(dsId){
+      await configuredAxios.delete(`/api/datasets/${dsId}`);
     },
     async fetchExistingDataset (dsId) {
       const { data } = await configuredAxios.get(`/api/datasets/${dsId}`);
