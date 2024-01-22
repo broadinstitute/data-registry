@@ -38,6 +38,9 @@
               </td>
               <td>
                 <select v-model="dotLabelScore" class="form-control form-control-sm">
+                  <option value="">
+                    Select
+                  </option>
                   <option :value="1">
                     1 condition
                   </option>
@@ -197,124 +200,124 @@
   </div>
 </template>
 <script setup>
-import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-import GuiButton from '../GuiButton.vue';
-const store = useConfigBuilderStore();
-const emit = defineEmits(["updateVisualizer"]);
-const availableFields = computed(() => store.allFields);
-const editingFieldset = computed(() => store.vizEditingFieldset);
-const label = ref("");
-const xAxisField = ref("");
-const xAxisLabel = ref("");
-const yAxisField = ref("");
-const yAxisLabel = ref("");
-const renderBy = ref("");
-const dotLabelScore = ref(1);
-const xAxisCondition = ref("");
-const yAxisCondition = ref("");
-const CONDITION_OPTIONS = Object.freeze({
-  GREATER: {
-    text: "greater than",
-    display: "Greater than"
-  },
-  LESS: {
-    text: "lower than",
-    display: "Less than"
-  },
-  AND: {
-    text: "and",
-    display: "AND"
-  },
-  OR: {
-    text: "or",
-    display: "OR"
-  }
-});
-const xGT = ref("");
-const xLT = ref("");
-const yGT = ref("");
-const yLT = ref("");
-const width = ref("");
-const height = ref("");
-const CHECK_DONE = Object.freeze({
-  VOLCANO_PLOT_LABEL: {
-    id: "volcano-plot-label",
-    text: "Plot setup",
-    condition: () => !label.value, 
-    msg: "Specify a label for the plot."
-  },
-  VOLCANO_X: {
-    id: "volcano-x",
-    text: "X-axis field",
-    condition: () => !xAxisField.value || !xAxisLabel.value || !xAxisCondition.value ||
-      (requiresGreaterThan(xAxisCondition.value) && xGT.value === null) ||
-      (requiresLessThan(xAxisCondition.value) && xLT.value === null) ||
-      (xAxisCondition.value === "and" && xGT.value >= xLT.value),
-    msg: "Specify field, label, condition, and thresholds for X-axis."
-  },
-  VOLCANO_Y: {
-    id: "volcano-y",
-    text: "Y-axis field",
-    condition: () => !yAxisField.value || !yAxisLabel.value || !yAxisCondition.value ||
-      (requiresGreaterThan(yAxisCondition.value) && yGT.value === null) ||
-      (requiresLessThan(yAxisCondition.value) && yLT.value === null) ||
-      (yAxisCondition.value === "and" && yGT.value >= yLT.value),
-    msg: "Specify field, label, and condition for Y-axis."
-  },
-  VOLCANO_RENDER_BY: {
-    id: "volcano-render-by",
-    text: "Render by",
-    condition: () => renderBy.value === "", 
-    msg: "Specify field to render by."  
-  },
+  import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  import GuiButton from '../GuiButton.vue';
+  const store = useConfigBuilderStore();
+  const emit = defineEmits(["updateVisualizer"]);
+  const availableFields = computed(() => store.allFields);
+  const editingFieldset = computed(() => store.vizEditingFieldset);
+  const label = ref("");
+  const xAxisField = ref("");
+  const xAxisLabel = ref("");
+  const yAxisField = ref("");
+  const yAxisLabel = ref("");
+  const renderBy = ref("");
+  const dotLabelScore = ref("");
+  const xAxisCondition = ref("");
+  const yAxisCondition = ref("");
+  const CONDITION_OPTIONS = Object.freeze({
+    GREATER: {
+      text: "greater than",
+      display: "Greater than"
+    },
+    LESS: {
+      text: "lower than",
+      display: "Less than"
+    },
+    AND: {
+      text: "and",
+      display: "AND"
+    },
+    OR: {
+      text: "or",
+      display: "OR"
+    }
+  });
+  const xGT = ref("");
+  const xLT = ref("");
+  const yGT = ref("");
+  const yLT = ref("");
+  const width = ref("");
+  const height = ref("");
+  const CHECK_DONE = Object.freeze({
+    VOLCANO_PLOT_LABEL: {
+      id: "volcano-plot-label",
+      text: "Plot setup",
+      condition: () => !label.value || !dotLabelScore.value, 
+      msg: "Specify a plot label and dot labeling conditions."
+    },
+    VOLCANO_X: {
+      id: "volcano-x",
+      text: "X-axis field",
+      condition: () => !xAxisField.value || !xAxisLabel.value || !xAxisCondition.value ||
+        (requiresGreaterThan(xAxisCondition.value) && xGT.value === "") ||
+        (requiresLessThan(xAxisCondition.value) && xLT.value === "") ||
+        (xAxisCondition.value === "and" && xGT.value >= xLT.value),
+      msg: "Specify field, label, condition, and thresholds for X-axis."
+    },
+    VOLCANO_Y: {
+      id: "volcano-y",
+      text: "Y-axis field",
+      condition: () => !yAxisField.value || !yAxisLabel.value || !yAxisCondition.value ||
+        (requiresGreaterThan(yAxisCondition.value) && yGT.value === "") ||
+        (requiresLessThan(yAxisCondition.value) && yLT.value === "") ||
+        (yAxisCondition.value === "and" && yGT.value >= yLT.value),
+      msg: "Specify field, label, and condition for Y-axis."
+    },
+    VOLCANO_RENDER_BY: {
+      id: "volcano-render-by",
+      text: "Render by",
+      condition: () => renderBy.value === "", 
+      msg: "Specify field to render by."  
+    },
 
-});
-const configString = computed(() => {
-  const config = {
-    type: "volcano plot",
-    label: label.value,
-    "x axis field": xAxisField.value,
-    "x axis label": xAxisLabel.value,
-    "y axis field": yAxisField.value,
-    "y axis label": yAxisLabel.value,
-    "render by": renderBy.value,
-    "x condition": {
-      combination: xAxisCondition.value,
-    },
-    "y condition": {
-      combination: yAxisCondition.value,
-    },
-    "dot label score": dotLabelScore.value,
-  };
-  if (requiresGreaterThan(xAxisCondition.value)) {
-    config["x condition"]["greater than"] = xGT.value;
+  });
+  const configString = computed(() => {
+    const config = {
+      type: "volcano plot",
+      label: label.value,
+      "x axis field": xAxisField.value,
+      "x axis label": xAxisLabel.value,
+      "y axis field": yAxisField.value,
+      "y axis label": yAxisLabel.value,
+      "render by": renderBy.value,
+      "x condition": {
+        combination: xAxisCondition.value,
+      },
+      "y condition": {
+        combination: yAxisCondition.value,
+      },
+      "dot label score": dotLabelScore.value,
+    };
+    if (requiresGreaterThan(xAxisCondition.value)) {
+      config["x condition"]["greater than"] = xGT.value;
+    }
+    if (requiresLessThan(xAxisCondition.value)) {
+      config["x condition"]["lower than"] = xLT.value;
+    }
+    if (requiresGreaterThan(yAxisCondition.value)) {
+      config["y condition"]["greater than"] = yGT.value;
+    }
+    if (requiresLessThan(yAxisCondition.value)) {
+      config["y condition"]["lower than"] = yLT.value;
+    }
+    if (width.value) {
+      config.width = width.value;
+    }
+    if (height.value) {
+      config.height = height.value;
+    }
+    return JSON.stringify(config);
+  });
+  function requiresGreaterThan(conditionString){
+    let greaterThans = ["greater than", "and", "or"];
+    return greaterThans.includes(conditionString);
   }
-  if (requiresLessThan(xAxisCondition.value)) {
-    config["x condition"]["lower than"] = xLT.value;
+  function requiresLessThan(conditionString){
+    let lessThans = ["lower than", "and", "or"];
+    return lessThans.includes(conditionString);
   }
-  if (requiresGreaterThan(yAxisCondition.value)) {
-    config["y condition"]["greater than"] = yGT.value;
-  }
-  if (requiresLessThan(yAxisCondition.value)) {
-    config["y condition"]["lower than"] = yLT.value;
-  }
-  if (width.value !== null) {
-    config.width = width.value;
-  }
-  if (height.value !== null) {
-    config.height = height.value;
-  }
-  return JSON.stringify(config);
-});
-function requiresGreaterThan(conditionString){
-  let greaterThans = ["greater than", "and", "or"];
-  return greaterThans.includes(conditionString);
-}
-function requiresLessThan(conditionString){
-  let lessThans = ["lower than", "and", "or"];
-  return lessThans.includes(conditionString);
-}
-watch(configString, () => {
-  emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
-});
+  watch(configString, () => {
+    emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
+  });
 </script>

@@ -296,7 +296,7 @@ const store = useConfigBuilderStore();
 const visType = ref("");
 const config = ref("");
 const savedViz = ref({});
-const failedSaveMsg = ref("Specify a label for the plot.");
+const failedSaveMsg = ref("Specify plot parameters.");
 const readyToSave = ref(false);
 const showMsg = ref(false);
 function showConfig (newConfig, saveCheck) {
