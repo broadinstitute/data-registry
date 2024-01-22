@@ -327,37 +327,37 @@ const CHECK_DONE = Object.freeze({
   HEATMAP_PLOT_LABEL: {
     id: "heatmap-plot-label",
     text: "Plot label",
-    condition: () => plotLabel.value === "", 
+    condition: () => !plotLabel.value, 
     msg: "Specify a label for the plot." 
   },
   HEATMAP_COLUMN: {
     id: "heatmap-column",
     text: "Column field", 
-    condition: () => columnField.value === "" || columnLabel.value === "",
+    condition: () => !columnField.value || !columnLabel.value,
     msg: "Specify field and label for columns."
   },
   HEATMAP_ROW: {
     id: "heatmap-row",
     text: "Row field",
-    condition: () => rowField.value === "" || rowLabel.value === "",
+    condition: () => !rowField.value || !rowLabel.value,
     msg: "Specify field and label for rows."
   },
   HEATMAP_FONT_SIZE: {
     id: "heatmap-font-size",
     text: "Font size",
-    condition: () => fontSize.value === "", 
+    condition: () => !fontSize.value, 
     msg: "Specify font size." 
   },
   HEATMAP_MAIN: {
     id: "heatmap-main",
     text: "Box color coding",
-    condition: () => mainField.value === "" || mainLabel.value === "" || !(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value),
+    condition: () => !mainField.value || !mainLabel.value || !(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value),
     msg: "Specify main field, label, and low/mid/high values in order."
   },
   HEATMAP_SUB: {
     id: "heatmap-sub",
     text: "Sub circle scaling",
-    condition: () => includeSubCircle.value && (subField.value === "" || subLabel.value === "" || 
+    condition: () => includeSubCircle.value && (!subField.value || !subLabel.value || 
         subSteps.value.length === 0 || subSteps.value.includes("")), 
     msg: "Specify field, label, and value steps for the sub circle." 
   },
