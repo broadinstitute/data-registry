@@ -249,6 +249,7 @@
     VOLCANO_X: {
       id: "volcano-x",
       text: "X-axis field",
+      // Empty string comparisons are necessary for number field which accepts zeroes
       condition: () => !xAxisField.value || !xAxisLabel.value || !xAxisCondition.value ||
         (requiresGreaterThan(xAxisCondition.value) && xGT.value === "") ||
         (requiresLessThan(xAxisCondition.value) && xLT.value === "") ||
@@ -258,6 +259,7 @@
     VOLCANO_Y: {
       id: "volcano-y",
       text: "Y-axis field",
+      // Empty string comparisons are necessary for number field which accepts zeroes
       condition: () => !yAxisField.value || !yAxisLabel.value || !yAxisCondition.value ||
         (requiresGreaterThan(yAxisCondition.value) && yGT.value === "") ||
         (requiresLessThan(yAxisCondition.value) && yLT.value === "") ||
@@ -267,7 +269,7 @@
     VOLCANO_RENDER_BY: {
       id: "volcano-render-by",
       text: "Render by",
-      condition: () => renderBy.value === "", 
+      condition: () => !renderBy.value, 
       msg: "Specify field to render by."  
     },
 
