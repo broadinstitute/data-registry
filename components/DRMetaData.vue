@@ -135,7 +135,13 @@ async function saveDataset (study_id) {
   if (store.dataSetId) {
     opts.id = store.dataSetId;
   }
-  await store.saveDataset(opts);
+  try {
+    await store.saveDataset(opts);
+  } catch(error) {
+    console.error("Error saving dataset:", error);
+    return;
+  }
+
   const accordionData = document.getElementById('drfiles');
   const bsCollapse = new Bootstrap.Collapse(accordionData, {
     toggle: false
