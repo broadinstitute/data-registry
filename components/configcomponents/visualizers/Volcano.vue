@@ -16,6 +16,37 @@
                 >
               </td>
             </tr>
+            <tr>
+              <td>
+                Width:
+              </td>
+              <td>
+                <input v-model="width" class="form-control form-control-sm" type="number">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Height:
+              </td>
+              <td>
+                <input v-model="height" class="form-control form-control-sm" type="number">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Label dots meeting:
+              </td>
+              <td>
+                <select v-model="dotLabelScore" class="form-control form-control-sm">
+                  <option :value="1">
+                    1 condition
+                  </option>
+                  <option :value="2">
+                    2 conditions
+                  </option>
+                </select>
+              </td>
+            </tr>
           </tbody>
         </div>
         <div v-else-if="editingFieldset === CHECK_DONE.VOLCANO_X.id">
@@ -164,39 +195,6 @@
       <GuiButton :info=CHECK_DONE.VOLCANO_RENDER_BY></GuiButton>
     </div>
   </div>
-  
-  <div class="row">
-    
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Label dots meeting<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="dotLabelScore" class="form-control form-control-sm">
-        <option :value="1">
-          1 condition
-        </option>
-        <option :value="2">
-          2 conditions
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Width
-    </div>
-    <div class="col-md-4">
-      <input v-model="width" class="form-control form-control-sm" type="number">
-    </div>
-    <div class="col-md-2">
-      Height
-    </div>
-    <div class="col-md-4">
-      <input v-model="height" class="form-control form-control-sm" type="number">
-    </div>
-  </div>
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
@@ -241,7 +239,7 @@ const height = ref("");
 const CHECK_DONE = Object.freeze({
   VOLCANO_PLOT_LABEL: {
     id: "volcano-plot-label",
-    text: "Plot label",
+    text: "Plot setup",
     condition: () => !label.value, 
     msg: "Specify a label for the plot."
   },
