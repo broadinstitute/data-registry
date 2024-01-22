@@ -18,23 +18,10 @@
                     </div>
                     <select v-model="visType" id="viz-selector" class="form-control">
                       <option value="">
-                        Select a visualizer
+                        Select
                       </option>
-                      <option value="manhattan">
-                        Manhattan
-                      </option>
-                      <option value="heatmap">
-                        Heatmap
-                      </option>
-                      <option value="phewas">
-                        PheWAS
-                      </option>
-                      <option value="region">
-                        Region
-                      </option>
-                      <!-- <option>Score</option> -->
-                      <option value="volcano">
-                        Volcano
+                      <option v-for="viz in PLOT_TYPES" :key="viz" :value="viz">
+                        {{ viz }}
                       </option>
                     </select>
                   </div>
@@ -42,23 +29,23 @@
                       Set parameters
                     </div>
                     <Manhattan
-                      v-if="visType === 'manhattan'"
+                      v-if="visType === PLOT_TYPES.MANHATTAN_PLOT"
                       @update-visualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)"
                     />
                     <Heatmap
-                      v-if="visType === 'heatmap'"
+                      v-if="visType === PLOT_TYPES.HEATMAP_PLOT"
                       @update-visualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)"
                     />
                     <Phewas
-                      v-if="visType === 'phewas'"
+                      v-if="visType === PLOT_TYPES.PHEWAS_PLOT"
                       @update-visualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)"
                     />
                     <Region
-                      v-if="visType === 'region'"
+                      v-if="visType === PLOT_TYPES.REGION_PLOT"
                       @update-visualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)"
                     />
                     <Volcano
-                      v-if="visType === 'volcano'"
+                      v-if="visType === PLOT_TYPES.VOLCANO_PLOT"
                       @update-visualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)"
                     />
                   </div>
@@ -299,6 +286,13 @@ const savedViz = ref({});
 const failedSaveMsg = ref("Specify plot parameters.");
 const readyToSave = ref(false);
 const showMsg = ref(false);
+const PLOT_TYPES = Object.freeze({
+  MANHATTAN_PLOT: "Manhattan",
+  HEATMAP_PLOT: "Heatmap",
+  PHEWAS_PLOT: "PheWAS",
+  REGION_PLOT: "Region",
+  VOLCANO_PLOT: "Volcano"
+});
 function showConfig (newConfig, saveCheck) {
   showMsg.value = false;
   config.value = newConfig;
