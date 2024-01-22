@@ -173,10 +173,10 @@
       "x axis label": xAxisLabel.value,
       "y axis label": yAxisLabel.value
     };
-    if (height.value !== "") {
+    if (height.value) {
       config.height = height.value;
     }
-    if (linkTo.value !== "") {
+    if (linkTo.value) {
       config["link to"] = linkTo.value;
     }
     if (hoverContent.value.length > 0) {
@@ -188,25 +188,25 @@
     MANHATTAN_X: {
       id: "manhattan-x",
       text: "X-axis field",
-      condition: () => xAxisField.value === "" || xAxisLabel.value === "",
+      condition: () => !xAxisField.value || !xAxisLabel.value,
       msg: "Specify field and label for X-axis."
     },
     MANHATTAN_Y: {
       id: "manhattan-y",
       text: "Y-axis field",
-      condition: () => yAxisField.value === "" || yAxisLabel.value === "",
+      condition: () => !yAxisField.value || !yAxisLabel.value,
       msg: "Specify field and label for Y-axis."
     },
     MANHATTAN_RENDER: {
       id: "manhattan-render",
       text: "Render by",
-      condition: () => renderBy.value === "",
+      condition: () => !renderBy.value,
       msg: "Specify field to render by."
     },
     MANHATTAN_GRAPHIC: {
       id: "manhattan-graphic",
       text: "Graphic format",
-      condition: () => graphicFormat.value === "",
+      condition: () => !graphicFormat.value,
       msg: "Specify graphic format."
     }
   };
