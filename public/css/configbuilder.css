@@ -344,10 +344,6 @@ sup.required {
   .compact input {
     margin-left: 5px;
   }
-  .viz-gui {
-    background-size: 800px;
-    background-repeat: no-repeat;
-  }
   #manhattan-gui {
     background-image: url("assets/images/manhattan_model_tight_crop.jpg");
 		height:250px;
@@ -361,8 +357,15 @@ sup.required {
 		background-image: url("assets/images/volcano_2.jpg");
 		height: 400px;
 	}
+	/* viz-gui and leftfieldwrapper sum to 100*/
+	.viz-gui {
+		flex: 0 0 auto;
+		width: 70%;
+    background-size: 800px;
+    background-repeat: no-repeat;
+  }
   #leftFieldWrapper {
-    width: 25%;
+    width: 30%;
   }
   #leftField {
     margin-top: 20px;

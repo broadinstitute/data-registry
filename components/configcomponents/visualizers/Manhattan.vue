@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="col-md-2" id="leftFieldWrapper">
+    <div id="leftFieldWrapper">
       <div id="leftField" v-if="editingFieldset !== ''">
         <div v-if="editingFieldset === CHECK_DONE.MANHATTAN_X.id">
           <tbody class="pad-field">
@@ -134,7 +134,7 @@
         </div>
       </div>
     </div>
-    <div id="manhattan-gui" class="col-md-9 viz-gui">
+    <div id="manhattan-gui" class="viz-gui">
       <GuiButton :info="CHECK_DONE.MANHATTAN_X"></GuiButton>
       <GuiButton :info="CHECK_DONE.MANHATTAN_Y"></GuiButton>
       <GuiButton :info="CHECK_DONE.MANHATTAN_RENDER"></GuiButton>

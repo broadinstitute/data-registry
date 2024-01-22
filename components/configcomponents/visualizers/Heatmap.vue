@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="col-md-2" id="leftFieldWrapper">
+    <div id="leftFieldWrapper">
       <div id="leftField" v-if="editingFieldset">
         <div v-if="editingFieldset === CHECK_DONE.HEATMAP_PLOT_LABEL.id">
           <tbody class="pad-field">
@@ -242,7 +242,7 @@
         </div>
       </div>
     </div>
-    <div id="heatmap-gui" class="col-md-9 viz-gui">
+    <div id="heatmap-gui" class="viz-gui">
       <GuiButton :info="CHECK_DONE.HEATMAP_COLUMN"></GuiButton>
       <GuiButton :info="CHECK_DONE.HEATMAP_ROW"></GuiButton>
       <GuiButton :info="CHECK_DONE.HEATMAP_PLOT_LABEL"></GuiButton>

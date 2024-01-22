@@ -286,11 +286,13 @@
   </div>
 </template>
 <script setup>
+import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 import Manhattan from "@/components/configcomponents/visualizers/Manhattan.vue";
 import Heatmap from "@/components/configcomponents/visualizers/Heatmap.vue";
 import Phewas from "@/components/configcomponents/visualizers/Phewas.vue";
 import Region from "@/components/configcomponents/visualizers/Region.vue";
 import Volcano from "@/components/configcomponents/visualizers/Volcano.vue";
+const store = useConfigBuilderStore();
 const visType = ref("");
 const config = ref("");
 const savedViz = ref({});
@@ -316,4 +318,5 @@ function editVisualization () {
   visType.value = savedViz.value.type.split(" ")[0];
   config.value = JSON.stringify(savedViz.value);
 }
+watch(visType, () => store.resetVizEditingFieldset());
 </script>
