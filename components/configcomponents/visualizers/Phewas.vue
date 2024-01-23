@@ -57,7 +57,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-if="editingFieldset === CHECK_DONE.PHEWAS_GROUP.id">
+        <div v-else-if="editingFieldset === CHECK_DONE.PHEWAS_GROUP.id">
           <tbody>
             <tr>
               <td>
@@ -91,7 +91,7 @@
             </tr>
           </tbody>
         </div>
-        <div v-if="editingFieldset === CHECK_DONE.PHEWAS_RENDER.id">
+        <div v-else-if="editingFieldset === CHECK_DONE.PHEWAS_RENDER.id">
           <tbody>
             <tr>
               <td>
@@ -151,22 +151,20 @@
             </tr>
           </tbody>
         </div>
-        <div v-if="editingFieldset === CHECK_DONE.PHEWAS_SETUP.id">
+        <div v-else-if="editingFieldset === CHECK_DONE.PHEWAS_SETUP.id">
           <tbody>
             <tr>
-              <td colspan="2">
+              <td>
                 Height:
               </td>
-              <td colspan="2">
+              <td>
                 <input v-model="height" class="form-control input-default form-control-sm" type="number">
               </td>
             </tr>
             <tr>
-              <td colspan="2">
+              <td>
                 Margins:
               </td>
-              <td></td>
-              <td></td>
             </tr>
             <tr>
               <td class="small-label">
@@ -175,6 +173,8 @@
               <td>
                 <input v-model="margin['top']" class="form-control input-default form-control-sm" type="number">
               </td>
+            </tr>
+            <tr>
               <td class="small-label">
                 Bottom
               </td>
@@ -189,6 +189,8 @@
               <td>
                 <input v-model="margin['left']" class="form-control input-default form-control-sm" type="number">
               </td>
+            </tr>
+            <tr>
               <td class="small-label">
                 Right
               </td>
@@ -196,15 +198,16 @@
                 <input v-model="margin['right']" class="form-control input-default form-control-sm" type="number">
               </td>
             </tr>
-            <tr>
-              <td colspan="2">
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === CHECK_DONE.PHEWAS_THRESHOLDS.id">
+          <tr>
+              <td>
                 Thresholds:
               </td>
-              <td></td>
-              <td></td>
             </tr>
             <tr v-for="(_, index) in thresholds" :key="index">
-              <td colspan="2">
+              <td>
                 <input
                   v-model="thresholds[index]"
                   class="form-control form-control-sm"
@@ -212,7 +215,7 @@
                 >
               </td>
               <td>
-                <button
+                <button v-if="thresholds.length > 1"
                   class="btn btn-secondary replace-chars-button delete-button"
                   @click="thresholds.splice(index, 1)"
                 >
@@ -222,14 +225,12 @@
               <td></td>
             </tr>
             <tr>
-              <td colspan="2"></td>
-              <td colspan="2">
+              <td>
                 <button class="btn btn-primary add-button" @click="thresholds.push('')">
                   Add
                 </button>
               </td>
             </tr>
-          </tbody>
         </div>
       </div>
     </div>
@@ -238,6 +239,7 @@
       <GuiButton :info="CHECK_DONE.PHEWAS_GROUP"></GuiButton>
       <GuiButton :info="CHECK_DONE.PHEWAS_RENDER"></GuiButton>
       <GuiButton :info="CHECK_DONE.PHEWAS_SETUP"></GuiButton>
+      <GuiButton :info="CHECK_DONE.PHEWAS_THRESHOLDS"></GuiButton>
     </div>
   </div>
 </template>
@@ -261,6 +263,7 @@ const starKey = ref("");
 const height = ref("");
 const thresholds = ref([""]);
 const margin = ref({});
+const plotSetupUnedited = ref(true); // Just want to make it turn green without an evaluator condition
 const CHECK_DONE = Object.freeze({
   PHEWAS_Y: {
     id: "phewas-y",
@@ -283,6 +286,13 @@ const CHECK_DONE = Object.freeze({
   PHEWAS_SETUP: {
     id: "phewas-setup",
     text: "Plot setup",
+    condition: () => plotSetupUnedited.value,
+    msg: "Placeholder"
+    
+  },
+  PHEWAS_THRESHOLDS: {
+    id: "phewas-thresholds",
+    text: "Thresholds",
     condition: () => thresholds.value.includes(null) || thresholds.value.includes(""),
     msg: "Fill in missing threshold values."
   }
@@ -320,5 +330,10 @@ const configString = computed(() => {
 });
 watch(configString, () => {
   emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
+});
+watch(editingFieldset, (_, oldVal) => {
+  if (oldVal === CHECK_DONE.PHEWAS_SETUP.id){
+    plotSetupUnedited.value = false;
+  }
 });
 </script>

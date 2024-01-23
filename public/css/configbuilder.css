@@ -334,6 +334,26 @@ sup.required {
 		top: 5px;
 		left: 205px;
 	}
+	#phewas-y {
+		top: 100px;
+		left: -3px;
+	}
+	#phewas-group {
+		top: 220px;
+		left: 240px;
+	}
+	#phewas-render {
+		top: 80px;
+		left: 295px;
+	}
+	#phewas-setup {
+		top: 215px;
+		left: -299px;
+	}
+	#phewas-thresholds {
+		top: 20px;
+		left: -100px;
+	}
   .pad-field td {
     padding: 5px;
   }
@@ -387,7 +407,3 @@ sup.required {
     border: 1px solid orangered;
     color: black;
   }
-	.small-label input {
-		display: inline;
-		width: 100px;
-	}
