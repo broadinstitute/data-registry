@@ -1,208 +1,253 @@
 <template>
   <div class="row">
-    <div class="col-md-2">
-      Y axis field <sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="yAxisField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Y axis label <sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input
-        v-model="yLabel"
-        type="text"
-        class="form-control input-default form-control-sm"
-      >
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Decimal places<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input
-        v-model="yDecimal"
-        type="number"
-        class="form-control input-default form-control-sm"
-      >
-    </div>
-    <div class="col-md-6">
-      <div class="form-check form-check-inline">
-        <label class="form-check-label" for="flexCheckDefault">
-          Convert Y axis value to -log10
-        </label>
-        <input
-          id="flexCheckDefault"
-          v-model="convertLog"
-          class="form-check-input"
-          type="checkbox"
-          :value="false"
-        >
+    <div id="leftFieldWrapper">
+      <div id="leftField" v-if="editingFieldset">
+        <div v-if="editingFieldset === CHECK_DONE.PHEWAS_Y.id">
+          <tbody>
+            <tr>
+              <td>
+                Y-axis field:
+              </td>
+              <td>
+                <select v-model="yAxisField" class="form-control form-control-sm">
+                  <option value="">
+                    Select a field
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Y-axis label:
+              </td>
+              <td>
+                <input
+                  v-model="yLabel"
+                  type="text"
+                  class="form-control input-default form-control-sm"
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Decimal places:
+              </td>
+              <td>
+                <input
+                  v-model="yDecimal"
+                  type="number"
+                  class="form-control input-default form-control-sm"
+                >
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                Convert values to -log10
+                <input
+                  id="flexCheckDefault"
+                  v-model="convertLog"
+                  class="form-check-input"
+                  type="checkbox"
+                  :value="false"
+                >
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-if="editingFieldset === CHECK_DONE.PHEWAS_GROUP.id">
+          <tbody>
+            <tr>
+              <td>
+                Group by:
+              </td>
+              <td>
+                <select v-model="groupBy" class="form-control form-control-sm">
+                  <option value="">
+                    Select a field
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Star key:
+              </td>
+              <td>
+                <select v-model="starKey" class="form-control form-control-sm">
+                  <option value="">
+                    None
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-if="editingFieldset === CHECK_DONE.PHEWAS_RENDER.id">
+          <tbody>
+            <tr>
+              <td>
+                Render by:
+              </td>
+              <td>
+                <select v-model="renderBy" class="form-control form-control-sm">
+                  <option value="">
+                    Select a field
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Beta field:
+              </td>
+              <td>
+                <select v-model="betaField" class="form-control form-control-sm">
+                  <option value="">
+                    None
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="popup-field-label">
+                Hover content:
+              </td>
+            </tr>
+            <tr class="compact">
+              <td class="popup-field-label small-label">
+                Select all fields
+              </td>
+              <td>
+                <input
+                v-model="selectAllBox"
+                class="form-check-input"
+                type="checkbox"
+                @change="hoverContent = !selectAllBox ? [] : availableFields"
+                >
+              </td>
+            </tr>
+            <tr v-for="field in availableFields" :key="field" class="compact">
+              <td class="popup-field-label small-label">
+                {{ field }}
+              </td>
+              <td>
+                <input id="flexCheckDefault" v-model="hoverContent" class="form-check-input" type="checkbox" :value="field">
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-if="editingFieldset === CHECK_DONE.PHEWAS_SETUP.id">
+          <tbody>
+            <tr>
+              <td colspan="2">
+                Height:
+              </td>
+              <td colspan="2">
+                <input v-model="height" class="form-control input-default form-control-sm" type="number">
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                Margins:
+              </td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td class="small-label">
+                Top
+              </td>
+              <td>
+                <input v-model="margin['top']" class="form-control input-default form-control-sm" type="number">
+              </td>
+              <td class="small-label">
+                Bottom
+              </td>
+              <td>
+                <input v-model="margin['bottom']" class="form-control input-default form-control-sm" type="number">
+              </td>
+            </tr>
+            <tr>
+              <td class="small-label">
+                Left
+              </td>
+              <td>
+                <input v-model="margin['left']" class="form-control input-default form-control-sm" type="number">
+              </td>
+              <td class="small-label">
+                Right
+              </td>
+              <td>
+                <input v-model="margin['right']" class="form-control input-default form-control-sm" type="number">
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                Thresholds:
+              </td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr v-for="(_, index) in thresholds" :key="index">
+              <td colspan="2">
+                <input
+                  v-model="thresholds[index]"
+                  class="form-control form-control-sm"
+                  type="number"
+                >
+              </td>
+              <td>
+                <button
+                  class="btn btn-secondary replace-chars-button delete-button"
+                  @click="thresholds.splice(index, 1)"
+                >
+                  &times;
+                </button>
+              </td>
+              <td></td>
+            </tr>
+            <tr>
+              <td colspan="2"></td>
+              <td colspan="2">
+                <button class="btn btn-primary add-button" @click="thresholds.push('')">
+                  Add
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Render by<sup class="required"> *</sup>
+    <div id="phewas-gui" class="viz-gui">
+      <GuiButton :info="CHECK_DONE.PHEWAS_Y"></GuiButton>
+      <GuiButton :info="CHECK_DONE.PHEWAS_GROUP"></GuiButton>
+      <GuiButton :info="CHECK_DONE.PHEWAS_RENDER"></GuiButton>
+      <GuiButton :info="CHECK_DONE.PHEWAS_SETUP"></GuiButton>
     </div>
-    <div class="col-md-4">
-      <select v-model="renderBy" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Group by<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="groupBy" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Beta field
-      <small>(direction)</small>
-    </div>
-    <div class="col-md-4">
-      <select v-model="betaField" class="form-control form-control-sm">
-        <option value="">
-          None
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Star key
-    </div>
-    <div class="col-md-4">
-      <select v-model="starKey" class="form-control form-control-sm">
-        <option value="">
-          None
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Thresholds
-    </div>
-    <div class="col-md-4 col">
-      <table>
-        <tr v-for="(_, index) in thresholds" :key="index">
-          <td>
-            <input
-              v-model="thresholds[index]"
-              class="form-control form-control-sm"
-              type="number"
-            >
-          </td>
-          <td>
-            <button
-              class="btn btn-secondary replace-chars-button delete-button"
-              @click="thresholds.splice(index, 1)"
-            >
-              &times;
-            </button>
-          </td>
-        </tr>
-      </table>
-      <button class="btn btn-primary add-button" @click="thresholds.push('')">
-        Add
-      </button>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Plot margins
-    </div>
-    <div class="col-md-4">
-      <tr>
-        <td>Top</td>
-        <td>
-          <input v-model="margin['top']" class="form-control input-default form-control-sm" type="number">
-        </td>
-      </tr>
-      <tr>
-        <td>Bottom</td>
-        <td>
-          <input v-model="margin['bottom']" class="form-control input-default form-control-sm" type="number">
-        </td>
-      </tr>
-      <tr>
-        <td>Left</td>
-        <td>
-          <input v-model="margin['left']" class="form-control input-default form-control-sm" type="number">
-        </td>
-      </tr>
-      <tr>
-        <td>Right</td>
-        <td>
-          <input v-model="margin['right']" class="form-control input-default form-control-sm" type="number">
-        </td>
-      </tr>
-    </div>
-    <div class="col-md-2">
-      Height
-    </div>
-    <div class="col-md-4">
-      <input v-model="height" class="form-control input-default form-control-sm" type="number">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Hover content
-    </div>
-    <table id="hover" class="col-md-10">
-      <tr>
-        <th>
-          <input
-            v-model="selectAllBox"
-            class="form-check-input"
-            type="checkbox"
-            @change="hoverContent = !selectAllBox ? [] : availableFields"
-          >
-          <label class="label form-check-label">Select fields</label>
-        </th>
-      </tr>
-      <tr v-for="field in availableFields" :key="field">
-        <td>
-          <input id="flexCheckDefault" v-model="hoverContent" class="form-check-input" type="checkbox" :value="field">
-          <label class="form-check-label" for="flexCheckDefault">{{ field }}</label>
-        </td>
-      </tr>
-    </table>
   </div>
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+import GuiButton from '../GuiButton.vue';
 const store = useConfigBuilderStore();
 const emit = defineEmits(["updateVisualizer"]);
 const availableFields = computed(() => store.allFields);
+const editingFieldset = computed(() => store.vizEditingFieldset);
 const selectAllBox = ref(false);
 const yAxisField = ref("");
 const convertLog = ref(false);
@@ -214,16 +259,34 @@ const hoverContent = ref([]);
 const betaField = ref("");
 const starKey = ref("");
 const height = ref("");
-const thresholds = ref([]);
+const thresholds = ref([""]);
 const margin = ref({});
-const VALIDATORS = [
-  { condition: () => yAxisField.value === "", msg: "Specify Y axis field" },
-  { condition: () => yLabel.value === "", msg: "Specify Y axis label" },
-  { condition: () => yDecimal.value === "" || yDecimal.value < 0, msg: "Specify decimal places" },
-  { condition: () => renderBy.value === "", msg: "Specify field to render by" },
-  { condition: () => groupBy.value === "", msg: "Specify field to group by" },
-  { condition: () => thresholds.value.includes(null) || thresholds.value.includes(""), msg: "Fill in missing threshold value" }
-];
+const CHECK_DONE = Object.freeze({
+  PHEWAS_Y: {
+    id: "phewas-y",
+    text: "Y-axis field",
+    condition: () => !yAxisField.value || !yLabel.value || yDecimal.value === "" || yDecimal.value < 0, 
+    msg: "Specify field, label, and decimal places for Y-axis."
+  },
+  PHEWAS_RENDER: {
+    id: "phewas-render",
+    text: "Render by",
+    condition: () => !renderBy.value, 
+    msg: "Specify field to render by." 
+  },
+  PHEWAS_GROUP: {
+    id: "phewas-group",
+    text: "Group by",
+    condition: () => !groupBy.value, 
+    msg: "Specify field to group by."
+  },
+  PHEWAS_SETUP: {
+    id: "phewas-setup",
+    text: "Plot setup",
+    condition: () => thresholds.value.includes(null) || thresholds.value.includes(""),
+    msg: "Fill in missing threshold values."
+  }
+});
 const configString = computed(() => {
   const config = {
     type: "phewas plot",
@@ -256,6 +319,6 @@ const configString = computed(() => {
   return JSON.stringify(config);
 });
 watch(configString, () => {
-  emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
+  emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
 });
 </script>

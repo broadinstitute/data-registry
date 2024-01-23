@@ -255,7 +255,7 @@
           <span>max</span>
       </div>
       <div id="heatmap-sub-wrapper">
-        <GuiButton :info="CHECK_DONE.HEATMAP_MAIN"></GuiButton>
+        <GuiButton :info="CHECK_DONE.HEATMAP_SUB"></GuiButton>
         <span>min</span>
         <img v-if="subDirection === 'positive'" src="assets/images/heatmap_dot_sizes.jpg"/>
         <img v-else src="assets/images/heatmap_dot_sizes_reversed.jpg"/>

@@ -254,7 +254,7 @@ pre.output{
 .column-format-label {
 	margin-right: 10px;
 }
-#hover input {
+#hover input, .hover input {
 	margin-left: 16px;
 	margin-right: 10px;
 }
@@ -337,7 +337,7 @@ sup.required {
   .pad-field td {
     padding: 5px;
   }
-  .compact td {
+  .compact td, .small-label {
     font-size: smaller;
   }
   .compact input {
@@ -355,6 +355,10 @@ sup.required {
 	#volcano-gui {
 		background-image: url("assets/images/volcano_2.jpg");
 		height: 400px;
+	}
+	#phewas-gui {
+		background-image: url("assets/images/phewas_edit_small.jpg");
+		height: 275px;
 	}
 	/* viz-gui and leftfieldwrapper sum to 100*/
 	.viz-gui {
@@ -383,3 +387,7 @@ sup.required {
     border: 1px solid orangered;
     color: black;
   }
+	.small-label input {
+		display: inline;
+		width: 100px;
+	}
