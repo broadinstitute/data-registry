@@ -9,6 +9,7 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
     allFields: [],
     allFieldsConfig: [],
     latestFieldRename: [null, null],
+    vizEditingFieldset: ""
   }),
   getters: {
     getColumnName: (state) => {
@@ -76,6 +77,12 @@ export const useConfigBuilderStore = defineStore('ConfigBuilderStore', {
     },
     renameField (oldName, newName) {
       this.latestFieldRename = [oldName, newName];
+    },
+    setVizEditingFieldset(fieldset){
+      this.vizEditingFieldset = fieldset;
+    },
+    resetVizEditingFieldset(){
+      this.vizEditingFieldset = "";
     },
     restoreUnConverted (rawField) {
       this.updateSelectedColumns(rawField, "converted", false);

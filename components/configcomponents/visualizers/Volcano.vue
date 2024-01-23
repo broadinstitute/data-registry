@@ -1,262 +1,325 @@
 <template>
   <div class="row">
-    <div class="col-md-2">
-      Label<sup class="required"> *</sup>
+    <div id="leftFieldWrapper">
+      <div id="leftField" v-if="editingFieldset">
+        <div v-if="editingFieldset === CHECK_DONE.VOLCANO_PLOT_LABEL.id">
+          <tbody>
+            <tr>
+              <td>
+                Plot label:
+              </td>
+              <td>
+                <input
+                  v-model="label"
+                  type="text"
+                  class="form-control input-default form-control-sm"
+                >
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Width:
+              </td>
+              <td>
+                <input v-model="width" class="form-control form-control-sm" type="number">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Height:
+              </td>
+              <td>
+                <input v-model="height" class="form-control form-control-sm" type="number">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Label dots meeting:
+              </td>
+              <td>
+                <select v-model="dotLabelScore" class="form-control form-control-sm">
+                  <option value="">
+                    Select
+                  </option>
+                  <option :value="1">
+                    1 condition
+                  </option>
+                  <option :value="2">
+                    2 conditions
+                  </option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === CHECK_DONE.VOLCANO_X.id">
+          <tbody>
+            <tr>
+              <td>
+                X-axis field:
+              </td>
+              <td>
+                <select v-model="xAxisField" class="form-control form-control-sm">
+                  <option value="">
+                    Select a field
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                X-axis label:
+              </td>
+              <td>
+                <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Condition:
+              </td>
+              <td>
+                <select v-model="xAxisCondition" class="form-control form-control-sm">
+                  <option value="">Select condition</option>
+                  <option v-for="objVal in CONDITION_OPTIONS" :key="objVal.text" :value="objVal.text">
+                    {{ objVal.display }}
+                  </option>
+                </select>
+                <!-- v-bind entries in list-->
+              </td>
+            </tr>
+            <tr v-if="requiresGreaterThan(xAxisCondition)">
+              <td>
+                Greater than:
+              </td>
+              <td>
+                <input v-model="xGT" class="form-control form-control-sm" type="number">
+              </td>
+            </tr>
+            <tr v-if="requiresLessThan(xAxisCondition)">
+              <td>
+                <span v-if="xAxisCondition === CONDITION_OPTIONS.AND.text">AND</span>
+                <span v-else-if="xAxisCondition === CONDITION_OPTIONS.OR.text">OR</span>
+                Less than:
+              </td>
+              <td>
+                <input v-model="xLT" class="form-control form-control-sm" type="number">
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === CHECK_DONE.VOLCANO_Y.id">
+          <tbody>
+            <tr>
+              <td>
+                Y-axis field:
+              </td>
+              <td>
+                <select v-model="yAxisField" class="form-control form-control-sm">
+                  <option value="">
+                    Select a field
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Y-axis label:
+              </td>
+              <td>
+                <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Condition:
+              </td>
+              <td>
+                <select v-model="yAxisCondition" class="form-control form-control-sm">
+                  <option value="">Select condition</option>
+                  <option v-for="objVal in CONDITION_OPTIONS" :key="objVal.text" :value="objVal.text">
+                    {{ objVal.display }}
+                  </option>
+                </select>
+                <!-- v-bind entries in list-->
+              </td>
+            </tr>
+            <tr v-if="requiresGreaterThan(yAxisCondition)">
+              <td>
+                Greater than:
+              </td>
+              <td>
+                <input v-model="yGT" class="form-control form-control-sm" type="number">
+              </td>
+            </tr>
+            <tr v-if="requiresLessThan(yAxisCondition)">
+              <td>
+                <span v-if="yAxisCondition === CONDITION_OPTIONS.AND.text">AND</span>
+                <span v-else-if="yAxisCondition === CONDITION_OPTIONS.OR.text">OR</span>
+                Less than:
+              </td>
+              <td>
+                <input v-model="yLT" class="form-control form-control-sm" type="number">
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === CHECK_DONE.VOLCANO_RENDER_BY.id">
+          <tbody>
+            <tr>
+              <td>
+                Render by:
+              </td>
+              <td>
+                <select v-model="renderBy" class="form-control form-control-sm">
+                  <option value="">
+                    Select a field
+                  </option>
+                  <option v-for="field in availableFields" :key="field">
+                    {{ field }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </div>
+      </div>
     </div>
-    <div class="col-md-10">
-      <input
-        v-model="label"
-        type="text"
-        class="form-control input-default form-control-sm"
-      >
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      X axis field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="xAxisField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      X axis label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Y axis field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="yAxisField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Y axis label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Render by<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="renderBy" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="label">
-    X axis field condition
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Condition<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="xAxisCondition" class="form-control form-control-sm">
-        <option value="">
-          Select a condition
-        </option>
-        <option value="greater than">
-          Greater than
-        </option>
-        <option value="lower than">
-          Less than
-        </option>
-        <option value="and">
-          AND
-        </option>
-        <option value="or">
-          OR
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div v-if="GREATER_THANS.includes(xAxisCondition)" class="col-md-2">
-      Greater than<sup class="required"> *</sup>
-    </div>
-    <div v-if="GREATER_THANS.includes(xAxisCondition)" class="col-md-4">
-      <input v-model="xGT" class="form-control form-control-sm" type="number">
-    </div>
-    <div class="col-md-2">
-      <span v-if="xAxisCondition === 'lower than'">Less than<sup class="required"> *</sup></span>
-      <span v-else-if="xAxisCondition === 'and'">AND less than<sup class="required"> *</sup></span>
-      <span v-else-if="xAxisCondition === 'or'">OR less than<sup class="required"> *</sup></span>
-    </div>
-    <div v-if="LOWER_THANS.includes(xAxisCondition)" class="col-md-4">
-      <input v-model="xLT" class="form-control form-control-sm" type="number">
-    </div>
-  </div>
-  <div class="label">
-    Y axis field condition
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Condition<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="yAxisCondition" class="form-control form-control-sm">
-        <option value="">
-          Select a condition
-        </option>
-        <option value="greater than">
-          Greater than
-        </option>
-        <option value="lower than">
-          Less than
-        </option>
-        <option value="and">
-          AND
-        </option>
-        <option value="or">
-          OR
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div v-if="GREATER_THANS.includes(yAxisCondition)" class="col-md-2">
-      Greater than<sup class="required"> *</sup>
-    </div>
-    <div v-if="GREATER_THANS.includes(yAxisCondition)" class="col-md-4">
-      <input v-model="yGT" class="form-control form-control-sm" type="number">
-    </div>
-    <div class="col-md-2">
-      <span v-if="yAxisCondition === 'lower than'">Less than<sup class="required"> *</sup></span>
-      <span v-else-if="yAxisCondition === 'and'">AND less than<sup class="required"> *</sup></span>
-      <span v-else-if="yAxisCondition === 'or'">OR less than<sup class="required"> *</sup></span>
-    </div>
-    <div v-if="LOWER_THANS.includes(yAxisCondition)" class="col-md-4">
-      <input v-model="yLT" class="form-control form-control-sm" type="number">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Label dots meeting<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="dotLabelScore" class="form-control form-control-sm">
-        <option :value="1">
-          1 condition
-        </option>
-        <option :value="2">
-          2 conditions
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Width
-    </div>
-    <div class="col-md-4">
-      <input v-model="width" class="form-control form-control-sm" type="number">
-    </div>
-    <div class="col-md-2">
-      Height
-    </div>
-    <div class="col-md-4">
-      <input v-model="height" class="form-control form-control-sm" type="number">
+    <div id="volcano-gui" class="viz-gui">
+      <GuiButton :info="CHECK_DONE.VOLCANO_X"></GuiButton>
+      <GuiButton :info="CHECK_DONE.VOLCANO_Y"></GuiButton>
+      <GuiButton :info="CHECK_DONE.VOLCANO_PLOT_LABEL"></GuiButton>
+      <GuiButton :info=CHECK_DONE.VOLCANO_RENDER_BY></GuiButton>
     </div>
   </div>
 </template>
 <script setup>
-import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-const store = useConfigBuilderStore();
-const emit = defineEmits(["updateVisualizer"]);
-const availableFields = computed(() => store.allFields);
-const label = ref("");
-const xAxisField = ref("");
-const xAxisLabel = ref("");
-const yAxisField = ref("");
-const yAxisLabel = ref("");
-const renderBy = ref("");
-const dotLabelScore = ref(1);
-const xAxisCondition = ref("");
-const yAxisCondition = ref("");
-const GREATER_THANS = ["greater than", "and", "or"];
-const LOWER_THANS = ["lower than", "and", "or"];
-const xGT = ref(0);
-const xLT = ref(0);
-const yGT = ref(0);
-const yLT = ref(0);
-const width = ref(null);
-const height = ref(null);
-const VALIDATORS = [
-  { condition: () => label.value === "", msg: "Specify a label for the plot." },
-  { condition: () => xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes." },
-  { condition: () => xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes." },
-  { condition: () => renderBy.value === "", msg: "Specify field to render by." },
-  { condition: () => xAxisCondition.value === "" || yAxisCondition.value === "", msg: "Specify conditions for both axes." },
-  { condition: () => GREATER_THANS.includes(xAxisCondition.value) && xGT.value === null, msg: "Specify greater-than threshold for X axis." },
-  { condition: () => LOWER_THANS.includes(xAxisCondition.value) && xLT.value === null, msg: "Specify less-than threshold for X axis." },
-  { condition: () => GREATER_THANS.includes(yAxisCondition.value) && yGT.value === null, msg: "Specify greater-than threshold for Y axis." },
-  { condition: () => LOWER_THANS.includes(yAxisCondition.value) && yLT.value === null, msg: "Specify less-than threshold for Y axis." },
-  { condition: () => xAxisCondition.value === "and" && xGT.value >= xLT.value, msg: "X axis 'AND' condition must be corrected." },
-  { condition: () => yAxisCondition.value === "and" && yGT.value >= yLT.value, msg: "Y axis 'AND' condition must be corrected." }
-];
-const configString = computed(() => {
-  const config = {
-    type: "volcano plot",
-    label: label.value,
-    "x axis field": xAxisField.value,
-    "x axis label": xAxisLabel.value,
-    "y axis field": yAxisField.value,
-    "y axis label": yAxisLabel.value,
-    "render by": renderBy.value,
-    "x condition": {
-      combination: xAxisCondition.value,
+  import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  import GuiButton from '../GuiButton.vue';
+  const store = useConfigBuilderStore();
+  const emit = defineEmits(["updateVisualizer"]);
+  const availableFields = computed(() => store.allFields);
+  const editingFieldset = computed(() => store.vizEditingFieldset);
+  const label = ref("");
+  const xAxisField = ref("");
+  const xAxisLabel = ref("");
+  const yAxisField = ref("");
+  const yAxisLabel = ref("");
+  const renderBy = ref("");
+  const dotLabelScore = ref("");
+  const xAxisCondition = ref("");
+  const yAxisCondition = ref("");
+  const CONDITION_OPTIONS = Object.freeze({
+    GREATER: {
+      text: "greater than",
+      display: "Greater than"
     },
-    "y condition": {
-      combination: yAxisCondition.value,
+    LESS: {
+      text: "lower than",
+      display: "Less than"
     },
-    "dot label score": dotLabelScore.value,
-  };
-  if (GREATER_THANS.includes(xAxisCondition.value)) {
-    config["x condition"]["greater than"] = xGT.value;
+    AND: {
+      text: "and",
+      display: "AND"
+    },
+    OR: {
+      text: "or",
+      display: "OR"
+    }
+  });
+  const xGT = ref("");
+  const xLT = ref("");
+  const yGT = ref("");
+  const yLT = ref("");
+  const width = ref("");
+  const height = ref("");
+  const CHECK_DONE = Object.freeze({
+    VOLCANO_PLOT_LABEL: {
+      id: "volcano-plot-label",
+      text: "Plot setup",
+      condition: () => !label.value || !dotLabelScore.value, 
+      msg: "Specify a plot label and dot labeling conditions."
+    },
+    VOLCANO_X: {
+      id: "volcano-x",
+      text: "X-axis field",
+      // Empty string comparisons are necessary for number field which accepts zeroes
+      condition: () => !xAxisField.value || !xAxisLabel.value || !xAxisCondition.value ||
+        (requiresGreaterThan(xAxisCondition.value) && xGT.value === "") ||
+        (requiresLessThan(xAxisCondition.value) && xLT.value === "") ||
+        (xAxisCondition.value === "and" && xGT.value >= xLT.value),
+      msg: "Specify field, label, condition, and thresholds for X-axis."
+    },
+    VOLCANO_Y: {
+      id: "volcano-y",
+      text: "Y-axis field",
+      // Empty string comparisons are necessary for number field which accepts zeroes
+      condition: () => !yAxisField.value || !yAxisLabel.value || !yAxisCondition.value ||
+        (requiresGreaterThan(yAxisCondition.value) && yGT.value === "") ||
+        (requiresLessThan(yAxisCondition.value) && yLT.value === "") ||
+        (yAxisCondition.value === "and" && yGT.value >= yLT.value),
+      msg: "Specify field, label, and condition for Y-axis."
+    },
+    VOLCANO_RENDER_BY: {
+      id: "volcano-render-by",
+      text: "Render by",
+      condition: () => !renderBy.value, 
+      msg: "Specify field to render by."  
+    },
+
+  });
+  const configString = computed(() => {
+    const config = {
+      type: "volcano plot",
+      label: label.value,
+      "x axis field": xAxisField.value,
+      "x axis label": xAxisLabel.value,
+      "y axis field": yAxisField.value,
+      "y axis label": yAxisLabel.value,
+      "render by": renderBy.value,
+      "x condition": {
+        combination: xAxisCondition.value,
+      },
+      "y condition": {
+        combination: yAxisCondition.value,
+      },
+      "dot label score": dotLabelScore.value,
+    };
+    if (requiresGreaterThan(xAxisCondition.value)) {
+      config["x condition"]["greater than"] = xGT.value;
+    }
+    if (requiresLessThan(xAxisCondition.value)) {
+      config["x condition"]["lower than"] = xLT.value;
+    }
+    if (requiresGreaterThan(yAxisCondition.value)) {
+      config["y condition"]["greater than"] = yGT.value;
+    }
+    if (requiresLessThan(yAxisCondition.value)) {
+      config["y condition"]["lower than"] = yLT.value;
+    }
+    if (width.value) {
+      config.width = width.value;
+    }
+    if (height.value) {
+      config.height = height.value;
+    }
+    return JSON.stringify(config);
+  });
+  function requiresGreaterThan(conditionString){
+    let greaterThans = ["greater than", "and", "or"];
+    return greaterThans.includes(conditionString);
   }
-  if (LOWER_THANS.includes(xAxisCondition.value)) {
-    config["x condition"]["lower than"] = xLT.value;
+  function requiresLessThan(conditionString){
+    let lessThans = ["lower than", "and", "or"];
+    return lessThans.includes(conditionString);
   }
-  if (GREATER_THANS.includes(yAxisCondition.value)) {
-    config["y condition"]["greater than"] = yGT.value;
-  }
-  if (LOWER_THANS.includes(yAxisCondition.value)) {
-    config["y condition"]["lower than"] = yLT.value;
-  }
-  if (width.value !== null) {
-    config.width = width.value;
-  }
-  if (height.value !== null) {
-    config.height = height.value;
-  }
-  return JSON.stringify(config);
-});
-watch(configString, () => {
-  emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
-});
+  watch(configString, () => {
+    emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
+  });
 </script>
