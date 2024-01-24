@@ -9,14 +9,7 @@
                 X-axis field:
               </td>
               <td>
-                <select v-model="xAxisField" class="form-control form-control-sm">
-                  <option value="">
-                    Select a field
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <AvailableFields v-model="xAxisField"></AvailableFields>
               </td>
             </tr>
             <tr>
@@ -144,6 +137,7 @@
 </template>
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  import AvailableFields from '../AvailableFields.vue';
   import GuiButton from '../GuiButton.vue';
   const store = useConfigBuilderStore();
   const emit = defineEmits(["updateVisualizer"]);
