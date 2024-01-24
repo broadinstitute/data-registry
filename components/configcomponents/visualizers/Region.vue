@@ -1,73 +1,71 @@
 <template>
   <div class="row">
-    <div class="col-md-2">
-      X axis field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="xAxisField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      X Axis label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
+    <div id="leftFieldWrapper">
+      <div id="leftField" v-if="editingFieldset">
+        <div v-if="editingFieldset === CHECK_DONE.REGION_X.id">
+          <tbody>
+            <tr>
+              <td>
+                X-axis field:
+              </td>
+              <td>
+                <FieldSelect v-model="xAxisField"></FieldSelect>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                X-axis label:
+              </td>
+              <td>
+                <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === CHECK_DONE.REGION_Y.id">
+          <tbody>
+            <tr>
+              <td>
+                Y-axis field:
+              </td>
+              <td>
+                <FieldSelect v-model="yAxisField"></FieldSelect>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Y-axis label:
+              </td>
+              <td>
+                <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === CHECK_DONE.REGION_RENDER.id">
+          <tbody>
+            <tr>
+              <td>
+                Render by:
+              </td>
+              <td>
+                <FieldSelect v-model="renderBy"></FieldSelect>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Star key:
+              </td>
+              <td>
+                <FieldSelect v-model="starKey" :noneOption="true"></FieldSelect>
+              </td>
+            </tr>
+          </tbody>
+        </div>
+      </div>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-2">
-      Y Axis field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="yAxisField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Y Axis label<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Render by<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="renderBy" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Star key
-    </div>
-    <div class="col-md-4">
-      <select v-model="starKey" class="form-control form-control-sm">
-        <option value="">
-          None
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
   </div>
   <div class="row">
     <div class="col-md-2">
@@ -229,6 +227,7 @@
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+import FieldSelect from '../FieldSelect.vue';
 const store = useConfigBuilderStore();
 const runtimeConfig = useRuntimeConfig();
 const axios = useAxios(runtimeConfig, undefined, (error) => {
@@ -237,6 +236,7 @@ const axios = useAxios(runtimeConfig, undefined, (error) => {
 });
 const emit = defineEmits(["updateVisualizer"]);
 const availableFields = computed(() => store.allFields);
+const editingFieldset = computed(() => store.vizEditingFieldset);
 const selectAllBox = ref(false);
 const xAxisField = ref("");
 const xAxisLabel = ref("");
@@ -258,10 +258,28 @@ const fixedPop = ref("");
 const popOptions = ref([]);
 const POPULATIONS_URL = "https://portaldev.sph.umich.edu/ld/genome_builds/GRCh37/references/1000G/populations";
 // TODO SUPPLY ALL THESE VALIDATORS!!!
+const CHECK_DONE = Object.freeze({
+  REGION_X: {
+    id: "region-x",
+    text: "X-axis field",
+    condition: () => !xAxisField.value || !xAxisLabel.value,
+    msg: "Specify field and label for X-axis."
+  },
+  REGION_Y: {
+    id: "region-y",
+    text: "Y-axis field",
+    condition: () => !yAxisField.value || !yAxisLabel.value,
+    msg: "Specify field and label for Y-axis."
+  },
+  REGION_RENDER: {
+    id: "region-render",
+    text: "Render by",
+    condition: () => !renderBy.value,
+    msg: "Specify field to render by."
+  },
+
+});
 const VALIDATORS = [
-  { condition: () => xAxisField.value === "" || yAxisField.value === "", msg: "Specify fields for both axes." },
-  { condition: () => xAxisLabel.value === "" || yAxisLabel.value === "", msg: "Specify labels for both axes." },
-  { condition: () => renderBy.value === "", msg: "Specify field to render by." },
   { condition: () => inputType.value === "from data" && chrField.value === "", msg: "Specify chromosome field." },
   {
     condition: () => posField.value === "" || refField.value === "" ||
