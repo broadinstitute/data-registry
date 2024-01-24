@@ -10,33 +10,19 @@
       <div class="label">
         Locus field
       </div>
-      <select v-model="locus" class="form-control">
-        <option value="">
-          None
-        </option>
-        <option v-for="field in availableFields" :value="field" :key="field">
-          {{ field }}
-        </option>
-      </select>
+      <FieldSelect v-model="locus" :noneOption="true"></FieldSelect>
     </div>
     <div class="col-md-6 col text-center">
       <div class="label">
         Star column
       </div>
-      <select v-model="star" class="form-control">
-        <option value="">
-          None
-        </option>
-        <option v-for="field in availableFields" :value="field" :key="field">
-          {{ field }}
-        </option>
-      </select>
+      <FieldSelect v-model="star" :noneOption="true"></FieldSelect>
     </div>
   </div>
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-
+import FieldSelect from './FieldSelect.vue';
 const store = useConfigBuilderStore();
 const emit = defineEmits(["locusChanged", "starChanged"]);
 const availableFields = computed(() => store.allFields);

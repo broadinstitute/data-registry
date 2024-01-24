@@ -65,7 +65,7 @@
                 Star key:
               </td>
               <td>
-                <FieldSelect v-model="starKey"></FieldSelect>
+                <FieldSelect v-model="starKey" :noneOption="true"></FieldSelect>
               </td>
             </tr>
           </tbody>
@@ -85,7 +85,7 @@
                 Beta field:
               </td>
               <td>
-                <FieldSelect v-model="betaField"></FieldSelect>
+                <FieldSelect v-model="betaField" :noneOption="true"></FieldSelect>
               </td>
             </tr>
             <tr>
