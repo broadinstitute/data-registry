@@ -11,8 +11,6 @@
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
   const store = useConfigBuilderStore();
-  //const emit = defineEmits(["updateField"]);
   const availableFields = computed(() => store.allFields);
   const field = defineModel();
-  //watch(field, () => emit("updateField", field.value));
 </script>

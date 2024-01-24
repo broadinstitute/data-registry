@@ -9,14 +9,7 @@
                 Y-axis field:
               </td>
               <td>
-                <select v-model="yAxisField" class="form-control form-control-sm">
-                  <option value="">
-                    Select a field
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="yAxisField"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -64,14 +57,7 @@
                 Group by:
               </td>
               <td>
-                <select v-model="groupBy" class="form-control form-control-sm">
-                  <option value="">
-                    Select a field
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="groupBy"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -79,14 +65,7 @@
                 Star key:
               </td>
               <td>
-                <select v-model="starKey" class="form-control form-control-sm">
-                  <option value="">
-                    None
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="starKey"></FieldSelect>
               </td>
             </tr>
           </tbody>
@@ -98,14 +77,7 @@
                 Render by:
               </td>
               <td>
-                <select v-model="renderBy" class="form-control form-control-sm">
-                  <option value="">
-                    Select a field
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="renderBy"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -113,14 +85,7 @@
                 Beta field:
               </td>
               <td>
-                <select v-model="betaField" class="form-control form-control-sm">
-                  <option value="">
-                    None
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="betaField"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -245,6 +210,7 @@
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+import FieldSelect from '../FieldSelect.vue';
 import GuiButton from '../GuiButton.vue';
 const store = useConfigBuilderStore();
 const emit = defineEmits(["updateVisualizer"]);
