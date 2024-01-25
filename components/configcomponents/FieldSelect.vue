@@ -20,14 +20,11 @@
   const fieldNameNew = computed(() => store.latestFieldRename[1]);
   const field = defineModel();
   watch([availableFields, fieldNameOld], () => {
-  // Handle name changes first
-  if (field.value === fieldNameOld.value) {
-    field.value = fieldNameNew.value;
-  }
-
-  // Then handle deletions
-  if (!availableFields.value.includes(field.value)) {
-    field.value = "";
-  }
-});
+    // Deletions and name changes
+    if (field.value === fieldNameOld.value) {
+      field.value = fieldNameNew.value;
+    } else if (!availableFields.value.includes(field.value)) {
+      field.value = "";
+    }
+  });
 </script>

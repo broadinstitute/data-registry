@@ -21,16 +21,16 @@
   </div>
 </template>
 <script setup>
-import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+//import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 import FieldSelect from './FieldSelect.vue';
-const store = useConfigBuilderStore();
+//const store = useConfigBuilderStore();
 const emit = defineEmits(["locusChanged", "starChanged"]);
-const availableFields = computed(() => store.allFields);
-const fieldNameOld = computed(() => store.latestFieldRename[0]);
-const fieldNameNew = computed(() => store.latestFieldRename[1]);
+// const availableFields = computed(() => store.allFields);
+// const fieldNameOld = computed(() => store.latestFieldRename[0]);
+// const fieldNameNew = computed(() => store.latestFieldRename[1]);
 const locus = ref("");
 const star = ref("");
-watch([availableFields, fieldNameOld], () => {
+/* watch([availableFields, fieldNameOld], () => {
   // Handle name changes first
   if (locus.value === fieldNameOld.value) {
     locus.value = fieldNameNew.value;
@@ -46,7 +46,7 @@ watch([availableFields, fieldNameOld], () => {
   if (!availableFields.value.includes(star.value)) {
     star.value = "";
   }
-});
+}); */
 watch(locus, () => { emit("locusChanged", locus.value); });
 watch(star, () => { emit("starChanged", star.value); });
 </script>

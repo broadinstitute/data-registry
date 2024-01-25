@@ -42,5 +42,4 @@
       selectAllBox.value = false;
     }
   });
-  // Watch/monitor available fields? (Name changes, deletions, etc.)
 </script>
