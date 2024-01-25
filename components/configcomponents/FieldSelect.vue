@@ -10,6 +10,7 @@
   </select>
 </template>
 <script setup>
+  // Watch/monitor available fields? (Name changes, deletions, etc.)
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
   const props = defineProps({
     noneOption: Boolean

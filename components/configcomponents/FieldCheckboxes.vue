@@ -24,6 +24,13 @@
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
   const store = useConfigBuilderStore();
+  const selectAllBox = ref(false);
   const availableFields = computed(() => store.allFields);
   const fields = defineModel();
+  watch (fields, ()=> {
+    if (fields.value.length === 0){
+      selectAllBox.value = false;
+    }
+  });
+  // Watch/monitor available fields? (Name changes, deletions, etc.)
 </script>
