@@ -19,24 +19,11 @@
           </th>
           <th>
             <div class="label">
-              Select rows
+              Select top rows
             </div>
           </th>
         </tr>
-        <tr v-for="field in availableFields" :key="field">
-          <td>
-            <input
-              id="flexCheckDefault"
-              v-model="selectedFields"
-              class="form-check-input"
-              type="checkbox"
-              :value="field"
-            >
-          </td>
-          <td>
-            <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
-          </td>
-        </tr>
+        <FieldCheckboxes v-model="selectedFields"></FieldCheckboxes>
       </tbody>
     </div>
     <div class="col-md-6 col">
@@ -71,7 +58,7 @@
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-
+import FieldCheckboxes from './FieldCheckboxes.vue';
 const store = useConfigBuilderStore();
 const emit = defineEmits(["topRowsChanged"]);
 const availableFields = computed(() => store.allFields);

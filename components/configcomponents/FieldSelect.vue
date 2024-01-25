@@ -10,12 +10,24 @@
   </select>
 </template>
 <script setup>
-  // Watch/monitor available fields? (Name changes, deletions, etc.)
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
   const props = defineProps({
     noneOption: Boolean
   });
   const store = useConfigBuilderStore();
   const availableFields = computed(() => store.allFields);
+  const fieldNameOld = computed(() => store.latestFieldRename[0]);
+  const fieldNameNew = computed(() => store.latestFieldRename[1]);
   const field = defineModel();
+  watch([availableFields, fieldNameOld], () => {
+  // Handle name changes first
+  if (field.value === fieldNameOld.value) {
+    field.value = fieldNameNew.value;
+  }
+
+  // Then handle deletions
+  if (!availableFields.value.includes(field.value)) {
+    field.value = "";
+  }
+});
 </script>

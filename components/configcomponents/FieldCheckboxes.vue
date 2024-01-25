@@ -26,7 +26,17 @@
   const store = useConfigBuilderStore();
   const selectAllBox = ref(false);
   const availableFields = computed(() => store.allFields);
+  const fieldNameOld = computed(() => store.latestFieldRename[0]);
+  const fieldNameNew = computed(() => store.latestFieldRename[1]);
   const fields = defineModel();
+  watch([availableFields, fieldNameOld], () => {
+  // Handle name changes first
+  fields.value = fields.value.map(field => field === fieldNameOld.value ? fieldNameNew.value : field);
+
+  // Then handle deletions
+  fields.value = fields.value.filter(field => availableFields.value.includes(field));
+});
+  // Reset select-all toggle box if selection is empty
   watch (fields, ()=> {
     if (fields.value.length === 0){
       selectAllBox.value = false;
