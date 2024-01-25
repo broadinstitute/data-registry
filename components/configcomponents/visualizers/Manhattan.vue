@@ -57,27 +57,7 @@
                 Hover content:
               </td>
             </tr>
-            <tr class="compact">
-              <td class="popup-field-label small-label">
-                Select all fields
-              </td>
-              <td>
-                <input
-                v-model="selectAllBox"
-                class="form-check-input"
-                type="checkbox"
-                @change="hoverContent = !selectAllBox ? [] : availableFields"
-                >
-              </td>
-            </tr>
-            <tr v-for="field in availableFields" :key="field" class="compact">
-              <td class="popup-field-label small-label">
-                {{ field }}
-              </td>
-              <td>
-                <input id="flexCheckDefault" v-model="hoverContent" class="form-check-input" type="checkbox" :value="field">
-              </td>
-            </tr>
+            <FieldCheckboxes v-model="hoverContent"></FieldCheckboxes>
           </tbody>
         </div>
         <div v-else-if="editingFieldset === CHECK_DONE.MANHATTAN_GRAPHIC.id">
@@ -123,13 +103,12 @@
 </template>
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  import FieldCheckboxes from '../FieldCheckboxes.vue';
   import FieldSelect from '../FieldSelect.vue';
   import GuiButton from '../GuiButton.vue';
   const store = useConfigBuilderStore();
   const emit = defineEmits(["updateVisualizer"]);
   const editingFieldset = computed(() => store.vizEditingFieldset);
-  const availableFields = computed(() => store.allFields);
-  const selectAllBox = ref(false);
   const graphicFormat = ref("");
   const xAxisField = ref("");
   const yAxisField = ref("");
