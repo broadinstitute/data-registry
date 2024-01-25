@@ -16,11 +16,7 @@
                   <div class="label">
                     Select field
                   </div>
-                  <select v-model="selectedField" class="form-control">
-                    <option v-for="field in availableFields" :key="field">
-                      {{ field }}
-                    </option>
-                  </select>
+                  <FieldSelect v-model="selectedField"></FieldSelect>
                 </div>
                 <div class="col-md-3 col">
                   <div class="label">
@@ -120,14 +116,13 @@
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-
+import FieldSelect from './FieldSelect.vue';
 const store = useConfigBuilderStore();
-const availableFields = computed(() => store.allFields);
 const fieldNameOld = computed(() => store.latestFieldRename[0]);
 const fieldNameNew = computed(() => store.latestFieldRename[1]);
 const message = ref("");
 const editingFilterIndex = ref(-1);
-const selectedField = ref(null);
+const selectedField = ref("");
 const selectedFilterType = ref(null);
 const labelInBubble = ref(false);
 const filterLabel = ref("");
@@ -186,7 +181,7 @@ function saveFilter () {
 function clearAll () {
   editingFilterIndex.value = -1;
   message.value = "";
-  selectedField.value = null;
+  selectedField.value = "";
   selectedFilterType.value = null;
   labelInBubble.value = false;
   filterLabel.value = "";

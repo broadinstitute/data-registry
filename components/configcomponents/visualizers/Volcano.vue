@@ -59,14 +59,7 @@
                 X-axis field:
               </td>
               <td>
-                <select v-model="xAxisField" class="form-control form-control-sm">
-                  <option value="">
-                    Select a field
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="xAxisField"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -118,14 +111,7 @@
                 Y-axis field:
               </td>
               <td>
-                <select v-model="yAxisField" class="form-control form-control-sm">
-                  <option value="">
-                    Select a field
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="yAxisField"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -177,14 +163,7 @@
                 Render by:
               </td>
               <td>
-                <select v-model="renderBy" class="form-control form-control-sm">
-                  <option value="">
-                    Select a field
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="renderBy"></FieldSelect>
               </td>
             </tr>
           </tbody>
@@ -201,10 +180,10 @@
 </template>
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  import FieldSelect from '../FieldSelect.vue';
   import GuiButton from '../GuiButton.vue';
   const store = useConfigBuilderStore();
   const emit = defineEmits(["updateVisualizer"]);
-  const availableFields = computed(() => store.allFields);
   const editingFieldset = computed(() => store.vizEditingFieldset);
   const label = ref("");
   const xAxisField = ref("");

@@ -21,14 +21,7 @@
                 Column field:
               </td>
               <td>
-                <select v-model="columnField" class="form-control form-control-sm">
-                  <option value="">
-                    Select a field
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="columnField"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -52,14 +45,7 @@
                 Row field:
               </td>
               <td>
-                <select v-model="rowField" class="form-control form-control-sm">
-                  <option value="">
-                    Select a field
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="rowField"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -83,14 +69,7 @@
                 Field:
               </td>
               <td>
-                <select v-model="mainField" class="form-control form-control-sm">
-                  <option value="">
-                    Select a field
-                  </option>
-                  <option v-for="field in availableFields" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="mainField"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -162,14 +141,7 @@
                 Field:
               </td>
               <td>
-                <select v-model="subField" class="form-control form-control-sm">
-                  <option value="">
-                    Select field
-                  </option>
-                  <option v-for="field in availableFields" :value="field" :key="field">
-                    {{ field }}
-                  </option>
-                </select>
+                <FieldSelect v-model="subField"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -266,10 +238,10 @@
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+import FieldSelect from '../FieldSelect.vue';
 import GuiButton from '../GuiButton.vue';
 const store = useConfigBuilderStore();
 const emit = defineEmits(["updateVisualizer"]);
-const availableFields = computed(() => store.allFields);
 const editingFieldset = computed(() => store.vizEditingFieldset);
 const plotLabel = ref("");
 const columnField = ref("");
