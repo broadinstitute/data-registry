@@ -354,6 +354,31 @@ sup.required {
 		top: 20px;
 		left: -100px;
 	}
+	#region-y {
+		top: 125px;
+		left: -7px;
+	}
+	#region-x {
+		top: 215px;
+		left: 260px;
+	}
+	#region-render {
+		top: 85px;
+		left: 320px;
+	}
+	#region-region {
+		top: 5px;
+		left: -217px;
+	}
+	#region-ld {
+		top: 40px;
+		left: -393px;
+	}
+	#region-genes {
+		position: relative;
+		width: 750px;
+		top: 225px;
+	}
   .pad-field td {
     padding: 5px;
   }
@@ -380,6 +405,12 @@ sup.required {
 		background-image: url("assets/images/phewas_edit_small.jpg");
 		height: 275px;
 	}
+	#region-gui {
+		background-image: url("assets/images/region_wide.jpg");
+		height: 300px;
+		overflow: hidden;
+	}
+
 	/* viz-gui and leftfieldwrapper sum to 100*/
 	.viz-gui {
 		flex: 0 0 auto;

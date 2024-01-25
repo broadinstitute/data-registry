@@ -1,5 +1,4 @@
 <template>
-  <tbody>
     <tr class="compact">
       <td class="popup-field-label small-label">
         Select all fields
@@ -21,7 +20,6 @@
         <input id="flexCheckDefault" v-model="fields" class="form-check-input" type="checkbox" :value="field">
       </td>
     </tr>
-  </tbody>
 </template>
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';

@@ -60,174 +60,139 @@
                 <FieldSelect v-model="starKey" :noneOption="true"></FieldSelect>
               </td>
             </tr>
+            <tr>
+              <td colspan="2">Hover content</td>
+            </tr>
+            <FieldCheckboxes v-model="hoverContent"></FieldCheckboxes>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === CHECK_DONE.REGION_REGION.id">
+          <tbody>
+            <tr>
+              <td>
+                Chromosome field:
+              </td>
+              <td>
+                <FieldSelect v-model="chrField"></FieldSelect>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Position field:
+              </td>
+              <td>
+                <FieldSelect v-model="posField"></FieldSelect>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Plot height:
+              </td>
+              <td>
+                <input v-model="height" class="form-control input-default form-control-sm" type="number">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Include genes track:
+              </td>
+              <td>
+                <input v-model="showGenesTrack" type="checkbox">
+              </td>
+            </tr>
+          </tbody>
+        </div>
+        <div v-else-if="editingFieldset === CHECK_DONE.REGION_LD.id">
+          <tbody>
+            <tr>
+              <td>
+                Reference allele:
+              </td>
+              <td>
+                <FieldSelect v-model="refField"></FieldSelect>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Alternative allele:
+              </td>
+              <td>
+                <FieldSelect v-model="altField"></FieldSelect>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Reference variant:
+              </td>
+              <td>
+                <FieldSelect v-model="refVarField"></FieldSelect>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Population type:
+              </td>
+              <td>
+                <select v-model="popTypeFixed" class="form-control form-control-sm">
+                  <option :value="true">
+                    Fixed
+                  </option>
+                  <option :value="false">
+                    Dynamic
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr v-if="!popTypeFixed">
+              <td>
+                Populations field:
+              </td>
+              <td>
+                <FieldSelect v-model="popField"></FieldSelect>
+              </td>
+            </tr>
+            <tr v-else>
+              <td>
+                Fixed population:
+              </td>
+              <td>
+                <select v-model="fixedPop" class="form-control form-control-sm">
+                  <option value="">
+                    Select a population
+                  </option>
+                  <option v-for="item in popOptions" :key="item">
+                    {{ item }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr v-if="popTypeFixed && fixedPop">
+              <td>
+                {{ fixedPop }}:
+              </td>
+              <td>
+                <input v-model="populations[fixedPop]" class="form-control input-default form-control-sm">
+              </td>
+            </tr>
           </tbody>
         </div>
       </div>
     </div>
-  </div>
-  <div class="row">
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Height
-    </div>
-    <div class="col-md-4">
-      <input v-model="height" class="form-control input-default form-control-sm" type="number">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Hover content
-    </div>
-    <table id="hover" class="col-md-10">
-      <tr>
-        <th>
-          <input
-            v-model="selectAllBox"
-            class="form-check-input"
-            type="checkbox"
-            @change="hoverContent = !selectAllBox ? [] : availableFields"
-          >
-          <label class="label form-check-label">Select fields</label>
-        </th>
-      </tr>
-      <tr v-for="field in availableFields" :key="field">
-        <td>
-          <input v-model="hoverContent" class="form-check-input" type="checkbox" :value="field">
-          <label class="form-check-label">{{ field }}</label>
-        </td>
-      </tr>
-    </table>
-  </div>
-  <div class="label">
-    Set region
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Input type<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="inputType" class="form-control form-control-sm">
-        <option value="from data">
-          From data
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Chromosome field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="chrField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-  </div>
-  <div v-if="inputType == 'from data'" class="row">
-    <div class="col-md-2">
-      Position field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="posField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="label">
-    LD server
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Reference allele<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="refField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Alternative allele<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="altField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Reference variant field<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="refVarField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      Populations field
-    </div>
-    <div class="col-md-4">
-      <select v-model="popField" class="form-control form-control-sm">
-        <option value="">
-          Select a field
-        </option>
-        <option v-for="field in availableFields" :key="field">
-          {{ field }}
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Fixed population<sup class="required"> *</sup>
-    </div>
-    <div class="col-md-4">
-      <select v-model="fixedPop" class="form-control form-control-sm">
-        <option value="">
-          Select a population
-        </option>
-        <option v-for="item in popOptions" :key="item">
-          {{ item }}
-        </option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      Include genes track
-    </div>
-    <div class="col-md-2">
-      <input v-model="showGenesTrack" type="checkbox">
+    <div id="region-gui" class="viz-gui">
+      <GuiButton :info="CHECK_DONE.REGION_Y"></GuiButton>
+      <GuiButton :info="CHECK_DONE.REGION_X"></GuiButton>
+      <GuiButton :info="CHECK_DONE.REGION_REGION"></GuiButton>
+      <GuiButton :info="CHECK_DONE.REGION_RENDER"></GuiButton>
+      <GuiButton :info="CHECK_DONE.REGION_LD"></GuiButton>
+      <img v-if="showGenesTrack" src="assets/images/gene_only.jpg" id="region-genes" />
     </div>
   </div>
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+import FieldCheckboxes from '../FieldCheckboxes.vue';
 import FieldSelect from '../FieldSelect.vue';
+import GuiButton from '../GuiButton.vue';
 const store = useConfigBuilderStore();
 const runtimeConfig = useRuntimeConfig();
 const axios = useAxios(runtimeConfig, undefined, (error) => {
@@ -235,15 +200,13 @@ const axios = useAxios(runtimeConfig, undefined, (error) => {
   throw new Error("Server Error");
 });
 const emit = defineEmits(["updateVisualizer"]);
-const availableFields = computed(() => store.allFields);
 const editingFieldset = computed(() => store.vizEditingFieldset);
-const selectAllBox = ref(false);
 const xAxisField = ref("");
 const xAxisLabel = ref("");
 const yAxisField = ref("");
 const yAxisLabel = ref("");
 const renderBy = ref("");
-const inputType = ref("from data");
+const inputType = ref("from data"); // Other input types to be added
 const hoverContent = ref([]);
 const height = ref(200);
 const starKey = ref("");
@@ -252,10 +215,12 @@ const posField = ref("");
 const refField = ref("");
 const altField = ref("");
 const refVarField = ref("");
+const popTypeFixed = ref(true);
 const popField = ref("");
 const showGenesTrack = ref(true);
 const fixedPop = ref("");
 const popOptions = ref([]);
+const populations = ref({});
 const POPULATIONS_URL = "https://portaldev.sph.umich.edu/ld/genome_builds/GRCh37/references/1000G/populations";
 // TODO SUPPLY ALL THESE VALIDATORS!!!
 const CHECK_DONE = Object.freeze({
@@ -277,18 +242,22 @@ const CHECK_DONE = Object.freeze({
     condition: () => !renderBy.value,
     msg: "Specify field to render by."
   },
-
-});
-const VALIDATORS = [
-  { condition: () => inputType.value === "from data" && chrField.value === "", msg: "Specify chromosome field." },
-  {
-    condition: () => posField.value === "" || refField.value === "" ||
-            altField.value === "" || refVarField.value === "",
-    msg: "Specify position, ref, alt, and reference variant fields."
+  REGION_REGION: {
+    id: "region-region",
+    text: "Region",
+    condition: () => inputType.value === "from data" && (!chrField.value || !posField.value), 
+    msg: "Specify chromosome field and position field.",
   },
-  { condition: () => popField.value === "", msg: "Specify population field." },
-  // { condition: fixedPop.value === "", msg: "Specify fixed population."}
-];
+  REGION_LD: {
+    id: "region-ld",
+    text: "LD server",
+    condition: () => !refField.value || !altField.value || !refVarField.value || 
+      (!popTypeFixed.value && !popField.value) ||
+      (popTypeFixed.value && 
+        (!fixedPop.value || !populations.value[fixedPop.value])),
+    msg: "Specify fields for ref, alt, and ref var as well as population details."
+  }
+});
 const configString = computed(() => {
   // Dynamic population has been removed as an option for now - we're working on it.
   const config = {
@@ -300,17 +269,19 @@ const configString = computed(() => {
     "render by": renderBy.value,
     "star key": starKey.value,
     "ld server": {
-      pos: posField.value,
-      ref: refField.value,
-      alt: altField.value,
+      "pos": posField.value,
+      "ref": refField.value,
+      "alt": altField.value,
       "ref variant field": refVarField.value,
-      "populations field": popField.value,
-      "populations type": "fixed",
-      populations: {
-        ALL: "ALL"
-      }
+      "populations type": popTypeFixed.value ? "fixed" : "dynamic",
     }
   };
+  if (popTypeFixed){
+    config["fixed population"] = fixedPop.value;
+    config["populations"] = populations.value;
+  } else {
+    config["populations field"] = popField.value;
+  }
   if (height.value !== "") {
     config.height = height.value;
   }
@@ -342,7 +313,7 @@ onMounted(async () => {
   await loadPopulationOptions();
 });
 watch(configString, () => {
-  emit('updateVisualizer', configString.value, readyToSave(VALIDATORS));
+  emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
 });
 async function loadPopulationOptions () {
   const populations = (await axios.get(POPULATIONS_URL)).data;
