@@ -1,25 +1,27 @@
 <template>
-  <tr class="compact">
-    <td class="popup-field-label small-label">
-      Select all fields
-    </td>
-    <td>
-      <input
-      v-model="selectAllBox"
-      class="form-check-input"
-      type="checkbox"
-      @change="fields = !selectAllBox ? [] : availableFields"
-      >
-    </td>
-  </tr>
-  <tr v-for="field in availableFields" :key="field" class="compact">
-    <td class="popup-field-label small-label">
-      {{ field }}
-    </td>
-    <td>
-      <input id="flexCheckDefault" v-model="fields" class="form-check-input" type="checkbox" :value="field">
-    </td>
-  </tr>
+  <tbody>
+    <tr class="compact">
+      <td class="popup-field-label small-label">
+        Select all fields
+      </td>
+      <td>
+        <input
+        v-model="selectAllBox"
+        class="form-check-input"
+        type="checkbox"
+        @change="fields = !selectAllBox ? [] : availableFields"
+        >
+      </td>
+    </tr>
+    <tr v-for="field in availableFields" :key="field" class="compact">
+      <td class="popup-field-label small-label">
+        {{ field }}
+      </td>
+      <td>
+        <input id="flexCheckDefault" v-model="fields" class="form-check-input" type="checkbox" :value="field">
+      </td>
+    </tr>
+  </tbody>
 </template>
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
@@ -30,11 +32,17 @@
   const fieldNameNew = computed(() => store.latestFieldRename[1]);
   const fields = defineModel();
   watch([availableFields, fieldNameOld], () => {
-  // Handle name changes first
-  fields.value = fields.value.map(field => field === fieldNameOld.value ? fieldNameNew.value : field);
-
-  // Then handle deletions
-  fields.value = fields.value.filter(field => availableFields.value.includes(field));
+    // Name changes and deletions.
+    // Applying map/filters does not work; we must rebuild the list.
+    let newFields = [];
+    fields.value.forEach(field => {
+      if (field === fieldNameOld.value){
+        newFields.push(fieldNameNew.value);
+      } else if(availableFields.value.includes(field)){
+        newFields.push(field);
+      }
+    });
+    fields.value = newFields;
 });
   // Reset select-all toggle box if selection is empty
   watch (fields, ()=> {

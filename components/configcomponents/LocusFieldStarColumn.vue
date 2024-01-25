@@ -21,32 +21,10 @@
   </div>
 </template>
 <script setup>
-//import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
 import FieldSelect from './FieldSelect.vue';
-//const store = useConfigBuilderStore();
 const emit = defineEmits(["locusChanged", "starChanged"]);
-// const availableFields = computed(() => store.allFields);
-// const fieldNameOld = computed(() => store.latestFieldRename[0]);
-// const fieldNameNew = computed(() => store.latestFieldRename[1]);
 const locus = ref("");
 const star = ref("");
-/* watch([availableFields, fieldNameOld], () => {
-  // Handle name changes first
-  if (locus.value === fieldNameOld.value) {
-    locus.value = fieldNameNew.value;
-  }
-  if (star.value === fieldNameOld.value) {
-    star.value = fieldNameNew.value;
-  }
-
-  // Then handle deletions
-  if (!availableFields.value.includes(locus.value)) {
-    locus.value = "";
-  }
-  if (!availableFields.value.includes(star.value)) {
-    star.value = "";
-  }
-}); */
 watch(locus, () => { emit("locusChanged", locus.value); });
 watch(star, () => { emit("starChanged", star.value); });
 </script>
