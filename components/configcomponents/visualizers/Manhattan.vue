@@ -189,7 +189,6 @@
   });
   function loadConfig(){
     let loadedConfig = JSON.parse(props.configToLoad);
-    console.log("Should be loading manhattan config");
     graphicFormat.value = loadedConfig["type"];
     xAxisField.value = loadedConfig["x axis field"];
     xAxisLabel.value = loadedConfig["x axis label"];

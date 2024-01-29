@@ -237,104 +237,145 @@
   </div>
 </template>
 <script setup>
-import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-import FieldSelect from '../FieldSelect.vue';
-import GuiButton from '../GuiButton.vue';
-const store = useConfigBuilderStore();
-const emit = defineEmits(["updateVisualizer"]);
-const editingFieldset = computed(() => store.vizEditingFieldset);
-const plotLabel = ref("");
-const columnField = ref("");
-const columnLabel = ref("");
-const rowField = ref("");
-const rowLabel = ref("");
-const fontSize = ref("");
-const mainField = ref("");
-const mainLabel = ref("");
-const mainRenderType = ref("scale");
-const mainDirection = ref("positive");
-const mainLow = ref("");
-const mainMid = ref("");
-const mainHigh = ref("");
-const includeSubCircle = ref(true);
-const subSteps = ref([""]);
-const subField = ref("");
-const subLabel = ref("");
-const subRenderType = ref("steps");
-const subDirection = ref("positive");
-const configString = computed(() => {
-  const config = {
-    type: "heat map",
-    label: plotLabel.value,
-    "column field": columnField.value,
-    "column label": columnLabel.value,
-    "row field": rowField.value,
-    "row label": rowLabel.value,
-    "font size": fontSize.value,
-    main: {
-      field: mainField.value,
-      label: mainLabel.value,
-      type: mainRenderType.value,
-      direction: mainDirection.value,
-      low: mainLow.value,
-      middle: mainMid.value,
-      high: mainHigh.value,
-    }
-  };
-  if (includeSubCircle.value) {
-    const sub = {
-      field: subField.value,
-      label: subLabel.value,
-      type: subRenderType.value,
-      direction: subDirection.value,
-      "value range": subSteps.value
-    };
-    config.sub = sub;
-  }
-
-  // tracking the string rather than the object picks up changes within arrays
-  return JSON.stringify(config);
-});
-const CHECK_DONE = Object.freeze({
-  HEATMAP_PLOT_LABEL: {
-    id: "heatmap-plot-label",
-    text: "Plot label",
-    condition: () => !plotLabel.value, 
-    msg: "Specify a label for the plot." 
-  },
-  HEATMAP_COLUMN: {
-    id: "heatmap-column",
-    text: "Column field", 
-    condition: () => !columnField.value || !columnLabel.value,
-    msg: "Specify field and label for columns."
-  },
-  HEATMAP_ROW: {
-    id: "heatmap-row",
-    text: "Row field",
-    condition: () => !rowField.value || !rowLabel.value,
-    msg: "Specify field and label for rows."
-  },
-  HEATMAP_FONT_SIZE: {
-    id: "heatmap-font-size",
-    text: "Font size",
-    condition: () => !fontSize.value, 
-    msg: "Specify font size." 
-  },
-  HEATMAP_MAIN: {
-    id: "heatmap-main",
-    text: "Box color coding",
-    condition: () => !mainField.value || !mainLabel.value || !(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value),
-    msg: "Specify main field, label, and low/mid/high values in order."
-  },
-  HEATMAP_SUB: {
-    id: "heatmap-sub",
-    text: "Sub circle scaling",
-    condition: () => includeSubCircle.value && (!subField.value || !subLabel.value || 
-        subSteps.value.length === 0 || subSteps.value.includes("")), 
-    msg: "Specify field, label, and value steps for the sub circle." 
-  },
-});
-watch(configString, () => {
-    emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
+  import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  import FieldSelect from '../FieldSelect.vue';
+  import GuiButton from '../GuiButton.vue';
+  const store = useConfigBuilderStore();
+  const props = defineProps({ 
+    configToLoad: String,
+    editing: Boolean,
   });
+  const emit = defineEmits(["updateVisualizer"]);
+  const editingFieldset = computed(() => store.vizEditingFieldset);
+  const editingHeatmap = computed(() => props.editing);
+  const plotLabel = ref("");
+  const columnField = ref("");
+  const columnLabel = ref("");
+  const rowField = ref("");
+  const rowLabel = ref("");
+  const fontSize = ref("");
+  const mainField = ref("");
+  const mainLabel = ref("");
+  const mainRenderType = ref("scale");
+  const mainDirection = ref("positive");
+  const mainLow = ref("");
+  const mainMid = ref("");
+  const mainHigh = ref("");
+  const includeSubCircle = ref(true);
+  const subSteps = ref([""]);
+  const subField = ref("");
+  const subLabel = ref("");
+  const subRenderType = ref("steps");
+  const subDirection = ref("positive");
+  const configString = computed(() => {
+    const config = {
+      type: "heat map",
+      label: plotLabel.value,
+      "column field": columnField.value,
+      "column label": columnLabel.value,
+      "row field": rowField.value,
+      "row label": rowLabel.value,
+      "font size": fontSize.value,
+      main: {
+        field: mainField.value,
+        label: mainLabel.value,
+        type: mainRenderType.value,
+        direction: mainDirection.value,
+        low: mainLow.value,
+        middle: mainMid.value,
+        high: mainHigh.value,
+      }
+    };
+    if (includeSubCircle.value) {
+      const sub = {
+        field: subField.value,
+        label: subLabel.value,
+        type: subRenderType.value,
+        direction: subDirection.value,
+        "value range": subSteps.value
+      };
+      config.sub = sub;
+    }
+
+    // tracking the string rather than the object picks up changes within arrays
+    return JSON.stringify(config);
+  });
+  const CHECK_DONE = Object.freeze({
+    HEATMAP_PLOT_LABEL: {
+      id: "heatmap-plot-label",
+      text: "Plot label",
+      condition: () => !plotLabel.value, 
+      msg: "Specify a label for the plot." 
+    },
+    HEATMAP_COLUMN: {
+      id: "heatmap-column",
+      text: "Column field", 
+      condition: () => !columnField.value || !columnLabel.value,
+      msg: "Specify field and label for columns."
+    },
+    HEATMAP_ROW: {
+      id: "heatmap-row",
+      text: "Row field",
+      condition: () => !rowField.value || !rowLabel.value,
+      msg: "Specify field and label for rows."
+    },
+    HEATMAP_FONT_SIZE: {
+      id: "heatmap-font-size",
+      text: "Font size",
+      condition: () => !fontSize.value, 
+      msg: "Specify font size." 
+    },
+    HEATMAP_MAIN: {
+      id: "heatmap-main",
+      text: "Box color coding",
+      condition: () => !mainField.value || !mainLabel.value || !(mainLow.value <= mainMid.value && mainMid.value <= mainHigh.value),
+      msg: "Specify main field, label, and low/mid/high values in order."
+    },
+    HEATMAP_SUB: {
+      id: "heatmap-sub",
+      text: "Sub circle scaling",
+      condition: () => includeSubCircle.value && (!subField.value || !subLabel.value || 
+          subSteps.value.length === 0 || subSteps.value.includes("")), 
+      msg: "Specify field, label, and value steps for the sub circle." 
+    },
+  });
+  onMounted(() => {
+      if (editingHeatmap.value){
+        loadConfig();
+      }
+    });
+    watch(editingHeatmap, () => {
+      if (editingHeatmap.value){
+        loadConfig();
+      }
+    });
+  watch(configString, () => {
+      emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
+    });
+  function loadConfig(){
+    let loadedConfig = JSON.parse(props.configToLoad);
+    plotLabel.value = loadedConfig["label"];
+    columnField.value = loadedConfig["column field"];
+    columnLabel.value = loadedConfig["column label"];
+    rowField.value = loadedConfig["row field"];
+    rowLabel.value = loadedConfig["row label"];
+    fontSize.value = loadedConfig["font size"];
+    mainField.value = loadedConfig.main["field"];
+    mainLabel.value = loadedConfig.main["label"];
+    mainRenderType.value = loadedConfig.main["type"];
+    mainDirection.value = loadedConfig.main["direction"];
+    mainLow.value = loadedConfig.main["low"];
+    mainMid.value = loadedConfig.main["middle"];
+    mainHigh.value = loadedConfig.main["high"];
+    if (loadedConfig.sub){
+      includeSubCircle.value = true;
+      subField.value = loadedConfig.sub["field"];
+      subLabel.value = loadedConfig.sub["label"];
+      subRenderType.value = loadedConfig.sub["type"];
+      subDirection.value = loadedConfig.sub["direction"];
+      subSteps.value = loadedConfig.sub["value range"];
+    } else {
+      includeSubCircle.value = false;
+    }
+  }
 </script>

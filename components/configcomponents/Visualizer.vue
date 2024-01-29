@@ -36,6 +36,8 @@
                     />
                     <Heatmap
                       v-else-if="vizType === PLOT_TYPES.HEATMAP_PLOT.id"
+                      :editing="editingVizType === PLOT_TYPES.HEATMAP_PLOT.id"
+                      :configToLoad = "currentConfig"
                       @update-visualizer="(newConfig, saveCheck) => getConfig(newConfig, saveCheck)"
                     />
                     <Phewas
@@ -296,7 +298,7 @@ const PLOT_TYPES = Object.freeze({
   },
   HEATMAP_PLOT: {
     display: "Heatmap",
-    id: "heatmap"
+    id: "heat"
   },
   PHEWAS_PLOT: {
     display: "PheWAS",
