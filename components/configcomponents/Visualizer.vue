@@ -48,6 +48,8 @@
                     />
                     <Region
                       v-else-if="vizType === PLOT_TYPES.REGION_PLOT.id"
+                      :editing="editingVizType === PLOT_TYPES.PHEWAS_PLOT.id"
+                      :configToLoad = "currentConfig"
                       @update-visualizer="(newConfig, saveCheck) => getConfig(newConfig, saveCheck)"
                     />
                     <Volcano
