@@ -107,8 +107,13 @@
   import FieldSelect from '../FieldSelect.vue';
   import GuiButton from '../GuiButton.vue';
   const store = useConfigBuilderStore();
+  const props = defineProps({ 
+    configToLoad: String,
+    editing: Boolean,
+  });
   const emit = defineEmits(["updateVisualizer"]);
   const editingFieldset = computed(() => store.vizEditingFieldset);
+  const editingManhattan = computed(() => props.editing);
   const graphicFormat = ref("");
   const xAxisField = ref("");
   const yAxisField = ref("");
@@ -119,8 +124,8 @@
   const linkTo = ref("");
   const hoverContent = ref([]);
   const GRAPHIC_FORMATS = Object.freeze({
-    VECTOR: "vector",
-    BITMAP: "bitmap"
+    VECTOR: "manhattan vector",
+    BITMAP: "manhattan bitmap"
   });
   const configString = computed(() => {
     const type = graphicFormat.value;
@@ -169,7 +174,36 @@
       msg: "Specify graphic format."
     }
   };
+  onMounted(() => {
+    if (editingManhattan.value){
+      loadConfig();
+    }
+  });
   watch(configString, () => {
     emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
   });
+  watch(editingManhattan, () => {
+    if (editingManhattan.value){
+      loadConfig();
+    }
+  });
+  function loadConfig(){
+    let loadedConfig = JSON.parse(props.configToLoad);
+    console.log("Should be loading manhattan config");
+    graphicFormat.value = loadedConfig["type"];
+    xAxisField.value = loadedConfig["x axis field"];
+    xAxisLabel.value = loadedConfig["x axis label"];
+    yAxisField.value = loadedConfig["y axis field"];
+    yAxisLabel.value = loadedConfig["y axis label"];
+    renderBy.value = loadedConfig["render by"];
+    if (loadedConfig["height"]){
+      height.value = loadedConfig["height"];
+    }
+    if (linkTo.value){
+      linkTo.value = loadedConfig["link to"];
+    }
+    if (loadedConfig["hover content"]){
+      hoverContent.value = loadedConfig["hover content"];
+    }
+  }
 </script>

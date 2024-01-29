@@ -16,37 +16,39 @@
                     <div class="label">
                       Select visualizer
                     </div>
-                    <select v-model="visType" id="viz-selector" class="form-control">
+                    <select v-model="vizType" id="viz-selector" class="form-control">
                       <option value="">
                         Select
                       </option>
-                      <option v-for="viz in PLOT_TYPES" :key="viz" :value="viz">
-                        {{ viz }}
+                      <option v-for="viz in PLOT_TYPES" :key="viz.id" :value="viz.id">
+                        {{ viz.display }}
                       </option>
                     </select>
                   </div>
-                    <div class="label" v-if="visType">
+                    <div class="label" v-if="vizType">
                       Set parameters
                     </div>
                     <Manhattan
-                      v-if="visType === PLOT_TYPES.MANHATTAN_PLOT"
-                      @update-visualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)"
+                      v-if="vizType === PLOT_TYPES.MANHATTAN_PLOT.id"
+                      :editing="editingVizType === PLOT_TYPES.MANHATTAN_PLOT.id"
+                      :configToLoad = "currentConfig"
+                      @update-visualizer="(newConfig, saveCheck) => getConfig(newConfig, saveCheck)"
                     />
                     <Heatmap
-                      v-if="visType === PLOT_TYPES.HEATMAP_PLOT"
-                      @update-visualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)"
+                      v-else-if="vizType === PLOT_TYPES.HEATMAP_PLOT.id"
+                      @update-visualizer="(newConfig, saveCheck) => getConfig(newConfig, saveCheck)"
                     />
                     <Phewas
-                      v-if="visType === PLOT_TYPES.PHEWAS_PLOT"
-                      @update-visualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)"
+                      v-else-if="vizType === PLOT_TYPES.PHEWAS_PLOT.id"
+                      @update-visualizer="(newConfig, saveCheck) => getConfig(newConfig, saveCheck)"
                     />
                     <Region
-                      v-if="visType === PLOT_TYPES.REGION_PLOT"
-                      @update-visualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)"
+                      v-else-if="vizType === PLOT_TYPES.REGION_PLOT.id"
+                      @update-visualizer="(newConfig, saveCheck) => getConfig(newConfig, saveCheck)"
                     />
                     <Volcano
-                      v-if="visType === PLOT_TYPES.VOLCANO_PLOT"
-                      @update-visualizer="(newConfig, saveCheck) => showConfig(newConfig, saveCheck)"
+                      v-else-if="vizType === PLOT_TYPES.VOLCANO_PLOT.id"
+                      @update-visualizer="(newConfig, saveCheck) => getConfig(newConfig, saveCheck)"
                     />
                   </div>
                   <div class="col-md-2 col">
@@ -280,22 +282,38 @@ import Phewas from "@/components/configcomponents/visualizers/Phewas.vue";
 import Region from "@/components/configcomponents/visualizers/Region.vue";
 import Volcano from "@/components/configcomponents/visualizers/Volcano.vue";
 const store = useConfigBuilderStore();
-const visType = ref("");
-const config = ref("");
+const vizType = ref("");
+const editingVizType = ref("");
+const currentConfig = ref("");
 const savedViz = ref({});
 const failedSaveMsg = ref("Specify plot parameters.");
 const readyToSave = ref(false);
 const showMsg = ref(false);
 const PLOT_TYPES = Object.freeze({
-  MANHATTAN_PLOT: "Manhattan",
-  HEATMAP_PLOT: "Heatmap",
-  PHEWAS_PLOT: "PheWAS",
-  REGION_PLOT: "Region",
-  VOLCANO_PLOT: "Volcano"
+  MANHATTAN_PLOT: {
+    display: "Manhattan",
+    id: "manhattan"
+  },
+  HEATMAP_PLOT: {
+    display: "Heatmap",
+    id: "heatmap"
+  },
+  PHEWAS_PLOT: {
+    display: "PheWAS",
+    id: "phewas"
+  },
+  REGION_PLOT: {
+    display: "Region",
+    id: "region"
+  },
+  VOLCANO_PLOT: {
+    display: "Volcano",
+    id: "volcano"
+  }
 });
-function showConfig (newConfig, saveCheck) {
+function getConfig (newConfig, saveCheck) {
   showMsg.value = false;
-  config.value = newConfig;
+  currentConfig.value = newConfig;
   readyToSave.value = saveCheck.ready;
   failedSaveMsg.value = saveCheck.msg;
 }
@@ -305,12 +323,14 @@ function saveVisualization () {
     return;
   }
   showMsg.value = false;
-  savedViz.value = JSON.parse(config.value);
-  visType.value = "";
+  savedViz.value = JSON.parse(currentConfig.value);
+  vizType.value = "";
+  editingVizType.value = "";
 }
 function editVisualization () {
-  visType.value = savedViz.value.type.split(" ")[0];
-  config.value = JSON.stringify(savedViz.value);
+  vizType.value = savedViz.value.type.split(" ")[0];
+  editingVizType.value = vizType.value;
+  currentConfig.value = JSON.stringify(savedViz.value);
 }
-watch(visType, () => store.resetVizEditingFieldset());
+watch(vizType, () => store.resetVizEditingFieldset());
 </script>
