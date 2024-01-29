@@ -42,6 +42,8 @@
                     />
                     <Phewas
                       v-else-if="vizType === PLOT_TYPES.PHEWAS_PLOT.id"
+                      :editing="editingVizType === PLOT_TYPES.PHEWAS_PLOT.id"
+                      :configToLoad = "currentConfig"
                       @update-visualizer="(newConfig, saveCheck) => getConfig(newConfig, saveCheck)"
                     />
                     <Region
@@ -298,7 +300,7 @@ const PLOT_TYPES = Object.freeze({
   },
   HEATMAP_PLOT: {
     display: "Heatmap",
-    id: "heat"
+    id: "heat" //only first word is looked at
   },
   PHEWAS_PLOT: {
     display: "PheWAS",

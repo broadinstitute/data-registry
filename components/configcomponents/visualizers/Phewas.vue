@@ -189,96 +189,132 @@
   </div>
 </template>
 <script setup>
-import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-import FieldCheckboxes from '../FieldCheckboxes.vue';
-import FieldSelect from '../FieldSelect.vue';
-import GuiButton from '../GuiButton.vue';
-const store = useConfigBuilderStore();
-const emit = defineEmits(["updateVisualizer"]);
-const editingFieldset = computed(() => store.vizEditingFieldset);
-const yAxisField = ref("");
-const convertLog = ref(false);
-const yDecimal = ref(2);
-const yLabel = ref("");
-const groupBy = ref("");
-const renderBy = ref("");
-const hoverContent = ref([]);
-const betaField = ref("");
-const starKey = ref("");
-const height = ref("");
-const thresholds = ref([""]);
-const margin = ref({});
-const plotSetupUnedited = ref(true); // Just want to make it turn green without an evaluator condition
-const CHECK_DONE = Object.freeze({
-  PHEWAS_Y: {
-    id: "phewas-y",
-    text: "Y-axis field",
-    condition: () => !yAxisField.value || !yLabel.value || yDecimal.value === "" || yDecimal.value < 0, 
-    msg: "Specify field, label, and decimal places for Y-axis."
-  },
-  PHEWAS_RENDER: {
-    id: "phewas-render",
-    text: "Render by",
-    condition: () => !renderBy.value, 
-    msg: "Specify field to render by." 
-  },
-  PHEWAS_GROUP: {
-    id: "phewas-group",
-    text: "Group by",
-    condition: () => !groupBy.value, 
-    msg: "Specify field to group by."
-  },
-  PHEWAS_SETUP: {
-    id: "phewas-setup",
-    text: "Plot setup",
-    condition: () => !height.value,
-    msg: "Specify plot height."
-    
-  },
-  PHEWAS_THRESHOLDS: {
-    id: "phewas-thresholds",
-    text: "Thresholds",
-    condition: () => thresholds.value.includes(null) || thresholds.value.includes(""),
-    msg: "Fill in missing threshold values."
+  import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  import FieldCheckboxes from '../FieldCheckboxes.vue';
+  import FieldSelect from '../FieldSelect.vue';
+  import GuiButton from '../GuiButton.vue';
+  const store = useConfigBuilderStore();
+  const props = defineProps({ 
+      configToLoad: String,
+      editing: Boolean,
+    });
+  const emit = defineEmits(["updateVisualizer"]);
+  const editingFieldset = computed(() => store.vizEditingFieldset);
+  const editingPhewas = computed(() => props.editing);
+  const yAxisField = ref("");
+  const convertLog = ref(false);
+  const yDecimal = ref(2);
+  const yLabel = ref("");
+  const groupBy = ref("");
+  const renderBy = ref("");
+  const hoverContent = ref([]);
+  const betaField = ref("");
+  const starKey = ref("");
+  const height = ref("");
+  const thresholds = ref([""]);
+  const margin = ref({});
+  const CHECK_DONE = Object.freeze({
+    PHEWAS_Y: {
+      id: "phewas-y",
+      text: "Y-axis field",
+      condition: () => !yAxisField.value || !yLabel.value || yDecimal.value === "" || yDecimal.value < 0, 
+      msg: "Specify field, label, and decimal places for Y-axis."
+    },
+    PHEWAS_RENDER: {
+      id: "phewas-render",
+      text: "Render by",
+      condition: () => !renderBy.value, 
+      msg: "Specify field to render by." 
+    },
+    PHEWAS_GROUP: {
+      id: "phewas-group",
+      text: "Group by",
+      condition: () => !groupBy.value, 
+      msg: "Specify field to group by."
+    },
+    PHEWAS_SETUP: {
+      id: "phewas-setup",
+      text: "Plot setup",
+      condition: () => !height.value,
+      msg: "Specify plot height."
+      
+    },
+    PHEWAS_THRESHOLDS: {
+      id: "phewas-thresholds",
+      text: "Thresholds",
+      condition: () => thresholds.value.includes(null) || thresholds.value.includes(""),
+      msg: "Fill in missing threshold values."
+    }
+  });
+  const configString = computed(() => {
+    const config = {
+      type: "phewas plot",
+      "y axis field": yAxisField.value,
+      "y axis label": yLabel.value,
+      "y ticks decimal point": yDecimal.value,
+      "render by": renderBy.value,
+      "group by": groupBy.value,
+      "convert y -log10": `${convertLog.value}`
+    };
+    // Phenotype map can only be added administratively.
+    if (height.value !== "") {
+      config.height = height.value;
+    }
+    if (betaField.value !== "") {
+      config["beta field"] = betaField.value;
+    }
+    if (starKey.value !== "") {
+      config["star key"] = starKey.value;
+    }
+    if (thresholds.value.length > 0) {
+      config.thresholds = thresholds.value;
+    }
+    if (hoverContent.value.length > 0) {
+      config["hover content"] = hoverContent.value;
+    }
+    if (Object.keys(margin.value).length > 0) {
+      config["plot margin"] = margin.value;
+    }
+    return JSON.stringify(config);
+  });
+  onMounted(() => {
+    if (editingPhewas.value){
+      loadConfig();
+    }
+  });
+  watch(editingPhewas, () => {
+    if (editingPhewas.value){
+      loadConfig();
+    }
+  });
+  watch(configString, () => {
+    emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
+  });
+  function loadConfig(){
+    let loadedConfig = JSON.parse(props.configToLoad);
+    yAxisField.value = loadedConfig["y axis field"];
+    yLabel.value = loadedConfig["y axis label"];
+    yDecimal.value = loadedConfig["y ticks decimal point"];
+    renderBy.value = loadedConfig["render by"];
+    groupBy.value = loadedConfig["group by"];
+    convertLog.value = loadedConfig["convert y -log10"] === 'true';
+    if (loadedConfig["height"]){
+      height.value = loadedConfig["height"];
+    }
+    if (loadedConfig["beta field"]){
+      betaField.value = loadedConfig["beta field"];
+    }
+    if (loadedConfig["star key"]){
+      starKey.value = loadedConfig["star key"]; 
+    }
+    if (loadedConfig["thresholds"]){
+      thresholds.value = loadedConfig["thresholds"];
+    }
+    if (loadedConfig["hover content"]){
+      hoverContent.value = loadedConfig["hover content"];
+    }
+    if (loadedConfig["plot margin"]){
+      margin.value = loadedConfig["plot margin"];
+    }
   }
-});
-const configString = computed(() => {
-  const config = {
-    type: "phewas plot",
-    "y axis field": yAxisField.value,
-    "y axis label": yLabel.value,
-    "y ticks decimal point": parseInt(yDecimal.value),
-    "render by": renderBy.value,
-    "group by": groupBy.value,
-    "convert y -log10": `${convertLog.value}`
-  };
-  // Phenotype map can only be added administratively.
-  if (height.value !== "") {
-    config.height = height.value;
-  }
-  if (betaField.value !== "") {
-    config["beta field"] = betaField.value;
-  }
-  if (starKey.value !== "") {
-    config["star key"] = starKey.value;
-  }
-  if (thresholds.value.length > 0) {
-    config.thresholds = thresholds.value;
-  }
-  if (hoverContent.value.length > 0) {
-    config["hover content"] = hoverContent.value;
-  }
-  if (Object.keys(margin.value).length > 0) {
-    config["plot margin"] = margin.value;
-  }
-  return JSON.stringify(config);
-});
-watch(configString, () => {
-  emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
-});
-watch(editingFieldset, (_, oldVal) => {
-  if (oldVal === CHECK_DONE.PHEWAS_SETUP.id){
-    plotSetupUnedited.value = false;
-  }
-});
 </script>

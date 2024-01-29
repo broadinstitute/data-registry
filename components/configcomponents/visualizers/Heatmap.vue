@@ -340,18 +340,18 @@
     },
   });
   onMounted(() => {
-      if (editingHeatmap.value){
-        loadConfig();
-      }
-    });
-    watch(editingHeatmap, () => {
-      if (editingHeatmap.value){
-        loadConfig();
-      }
-    });
+    if (editingHeatmap.value){
+      loadConfig();
+    }
+  });
+  watch(editingHeatmap, () => {
+    if (editingHeatmap.value){
+      loadConfig();
+    }
+  });
   watch(configString, () => {
-      emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
-    });
+    emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
+  });
   function loadConfig(){
     let loadedConfig = JSON.parse(props.configToLoad);
     plotLabel.value = loadedConfig["label"];
