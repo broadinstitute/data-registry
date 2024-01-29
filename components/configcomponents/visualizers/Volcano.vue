@@ -183,8 +183,13 @@
   import FieldSelect from '../FieldSelect.vue';
   import GuiButton from '../GuiButton.vue';
   const store = useConfigBuilderStore();
+  const props = defineProps({ 
+    configToLoad: String,
+    editing: Boolean,
+  });
   const emit = defineEmits(["updateVisualizer"]);
   const editingFieldset = computed(() => store.vizEditingFieldset);
+  const editingVolcano = computed(() => props.editing);
   const label = ref("");
   const xAxisField = ref("");
   const xAxisLabel = ref("");
@@ -290,6 +295,16 @@
     }
     return JSON.stringify(config);
   });
+  onMounted(() => {
+    if (editingVolcano.value){
+      loadConfig();
+    }
+  });
+  watch(editingVolcano, () => {
+    if (editingVolcano.value){
+      loadConfig();
+    }
+  });
   function requiresGreaterThan(conditionString){
     let greaterThans = ["greater than", "and", "or"];
     return greaterThans.includes(conditionString);
@@ -301,4 +316,35 @@
   watch(configString, () => {
     emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
   });
+  function loadConfig(){
+    let loadedConfig = JSON.parse(props.configToLoad);
+    label.value = loadedConfig["label"];
+    xAxisField.value = loadedConfig["x axis field"];
+    xAxisLabel.value = loadedConfig["x axis label"];
+    yAxisField.value = loadedConfig["y axis field"];
+    yAxisLabel.value = loadedConfig["y axis label"];
+    renderBy.value = loadedConfig["render by"];
+    xAxisCondition.value = loadedConfig["x condition"]["combination"];
+    yAxisCondition.value = loadedConfig["y condition"]["combination"];
+    dotLabelScore.value = loadedConfig["dot label score"];
+    if (Object.keys(loadedConfig["x condition"]).includes("greater than")){
+      // Zero is a falsy value but valid input
+      xGT.value = loadedConfig["x condition"]["greater than"];
+    }
+    if (Object.keys(loadedConfig["x condition"]).includes("lower than")){
+      xLT.value = loadedConfig["x condition"]["lower than"];
+    }
+    if (Object.keys(loadedConfig["y condition"]).includes("greater than")){
+    yGT.value = loadedConfig["y condition"]["greater than"];
+    }
+    if (Object.keys(loadedConfig["y condition"]).includes("lower than")){
+      yLT.value = loadedConfig["y condition"]["lower than"];
+    }
+    if (loadedConfig["width"]){
+      width.value = loadedConfig["width"];
+    }
+    if (loadedConfig["height"]){
+      height.value = loadedConfig["height"];
+    }
+  }
 </script>

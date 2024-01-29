@@ -54,6 +54,8 @@
                     />
                     <Volcano
                       v-else-if="vizType === PLOT_TYPES.VOLCANO_PLOT.id"
+                      :editing="editingVizType === PLOT_TYPES.VOLCANO_PLOT.id"
+                      :configToLoad = "currentConfig"
                       @update-visualizer="(newConfig, saveCheck) => getConfig(newConfig, saveCheck)"
                     />
                   </div>
