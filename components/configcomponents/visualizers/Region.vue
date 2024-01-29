@@ -211,7 +211,6 @@
   const yAxisField = ref("");
   const yAxisLabel = ref("");
   const renderBy = ref("");
-  const inputType = ref("from data"); // Other input types to be added
   const hoverContent = ref([]);
   const height = ref(200);
   const starKey = ref("");
@@ -250,7 +249,7 @@
     REGION_REGION: {
       id: "region-region",
       text: "Region",
-      condition: () => inputType.value === "from data" && (!chrField.value || !posField.value), 
+      condition: () => !chrField.value || !posField.value, 
       msg: "Specify chromosome field and position field.",
     },
     REGION_LD: {
@@ -272,7 +271,11 @@
       "y axis field": yAxisField.value,
       "y axis label": yAxisLabel.value.trim(),
       "render by": renderBy.value,
-      "star key": starKey.value,
+      "input type": "from data", // Dynamic and static not supported yet
+      "region fields": {
+        "chromosome": chrField.value,
+        "position": posField.value
+      },
       "ld server": {
         "pos": posField.value,
         "ref": refField.value,
@@ -281,7 +284,10 @@
         "populations type": popTypeFixed.value ? "fixed" : "dynamic",
       }
     };
-    if (popTypeFixed){
+    if (starKey.value){
+      config["star key"] = starKey.value;
+    }
+    if (popTypeFixed.value){
       config["ld server"]["fixed population"] = fixedPop.value;
       config["ld server"]["populations"] = populations.value;
     } else {
@@ -292,12 +298,6 @@
     }
     if (hoverContent.value.length !== 0) {
       config["hover content"] = hoverContent.value;
-    }
-    if (inputType.value === "from data") {
-      config["region fields"] = {
-        chromosome: chrField.value,
-        position: posField.value
-      };
     }
     if (showGenesTrack.value) {
       const genesTrack = {
@@ -338,13 +338,17 @@
     yAxisField.value = loadedConfig["y axis field"];
     yAxisLabel.value = loadedConfig["y axis label"];
     renderBy.value = loadedConfig["render by"];
-    starKey.value = loadedConfig["star key"];
     posField.value = loadedConfig["ld server"]["pos"];
     refField.value = loadedConfig["ld server"]["ref"];
     altField.value = loadedConfig["ld server"]["alt"];
     refVarField.value = loadedConfig["ld server"]["ref variant field"];
     popTypeFixed.value = loadedConfig["ld server"]["populations type"] === "fixed";
-    if(popTypeFixed.value){
+    chrField.value = loadedConfig["region fields"]["chromosome"];
+    posField.value = loadedConfig["region fields"]["position"];
+    if (loadedConfig["star key"]){
+      starKey.value = loadedConfig["star key"];
+    }
+    if (popTypeFixed.value){
       fixedPop.value = loadedConfig["ld server"]["fixed population"];
       populations.value = loadedConfig["ld server"]["populations"];
     } else {
@@ -355,10 +359,6 @@
     }
     if (loadedConfig["hover content"]){
       hoverContent.value = loadedConfig["hover content"];
-    }
-    if (loadedConfig["input type"] === "from data"){
-      chrField.value = loadedConfig["region fields"]["chromosome"];
-      posField.value = loadedConfig["region fields"]["position"];
     }
     if (loadedConfig["genes track"]){
       showGenesTrack.value = true;
