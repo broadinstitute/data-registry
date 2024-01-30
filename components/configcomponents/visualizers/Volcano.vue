@@ -91,7 +91,7 @@
                 Greater than:
               </td>
               <td>
-                <input v-model="configObject.value['x condition']['greater than']" 
+                <input v-model="configObject['x condition']['greater than']" 
                   class="form-control form-control-sm" type="number">
               </td>
             </tr>
