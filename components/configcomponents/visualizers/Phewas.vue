@@ -9,7 +9,7 @@
                 Y-axis field:
               </td>
               <td>
-                <FieldSelect v-model="yAxisField"></FieldSelect>
+                <FieldSelect v-model="configObject['y axis field']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -18,7 +18,7 @@
               </td>
               <td>
                 <input
-                  v-model="yLabel"
+                  v-model="configObject['y axis label']"
                   type="text"
                   class="form-control input-default form-control-sm"
                 >
@@ -30,7 +30,7 @@
               </td>
               <td>
                 <input
-                  v-model="yDecimal"
+                  v-model="configObject['y ticks decimal point']"
                   type="number"
                   class="form-control input-default form-control-sm"
                 >
@@ -44,7 +44,6 @@
                   v-model="convertLog"
                   class="form-check-input"
                   type="checkbox"
-                  :value="false"
                 >
               </td>
             </tr>
@@ -57,7 +56,7 @@
                 Group by:
               </td>
               <td>
-                <FieldSelect v-model="groupBy"></FieldSelect>
+                <FieldSelect v-model="configObject['group by']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -65,7 +64,7 @@
                 Star key:
               </td>
               <td>
-                <FieldSelect v-model="starKey" :noneOption="true"></FieldSelect>
+                <FieldSelect v-model="configObject['star key']" :noneOption="true"></FieldSelect>
               </td>
             </tr>
           </tbody>
@@ -77,7 +76,7 @@
                 Render by:
               </td>
               <td>
-                <FieldSelect v-model="renderBy"></FieldSelect>
+                <FieldSelect v-model="configObject['render by']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -85,7 +84,7 @@
                 Beta field:
               </td>
               <td>
-                <FieldSelect v-model="betaField" :noneOption="true"></FieldSelect>
+                <FieldSelect v-model="configObject['beta field']" :noneOption="true"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -93,7 +92,7 @@
                 Hover content:
               </td>
             </tr>
-            <FieldCheckboxes v-model="hoverContent"></FieldCheckboxes>
+            <FieldCheckboxes v-model="configObject['hover content']"></FieldCheckboxes>
           </tbody>
         </div>
         <div v-else-if="editingFieldset === CHECK_DONE.PHEWAS_SETUP.id">
@@ -103,7 +102,7 @@
                 Height:
               </td>
               <td>
-                <input v-model="height" class="form-control input-default form-control-sm" type="number">
+                <input v-model="configObject['height']" class="form-control input-default form-control-sm" type="number">
               </td>
             </tr>
             <tr>
@@ -116,7 +115,8 @@
                 Top
               </td>
               <td>
-                <input v-model="margin['top']" class="form-control input-default form-control-sm" type="number">
+                <input v-model="configObject['plot margin']['top']" 
+                  class="form-control input-default form-control-sm" type="number">
               </td>
             </tr>
             <tr>
@@ -124,7 +124,8 @@
                 Bottom
               </td>
               <td>
-                <input v-model="margin['bottom']" class="form-control input-default form-control-sm" type="number">
+                <input v-model="configObject['plot margin']['bottom']" 
+                  class="form-control input-default form-control-sm" type="number">
               </td>
             </tr>
             <tr>
@@ -132,7 +133,8 @@
                 Left
               </td>
               <td>
-                <input v-model="margin['left']" class="form-control input-default form-control-sm" type="number">
+                <input v-model="configObject['plot margin']['left']"
+                  class="form-control input-default form-control-sm" type="number">
               </td>
             </tr>
             <tr>
@@ -140,7 +142,8 @@
                 Right
               </td>
               <td>
-                <input v-model="margin['right']" class="form-control input-default form-control-sm" type="number">
+                <input v-model="configObject['plot margin']['right']"
+                  class="form-control input-default form-control-sm" type="number">
               </td>
             </tr>
           </tbody>
@@ -151,18 +154,17 @@
                 Thresholds:
               </td>
             </tr>
-            <tr v-for="(_, index) in thresholds" :key="index">
+            <tr v-for="(_, index) in configObject.thresholds" :key="index">
               <td>
                 <input
-                  v-model="thresholds[index]"
+                  v-model="configObject.thresholds[index]"
                   class="form-control form-control-sm"
                   type="number"
                 >
               </td>
               <td>
-                <button v-if="thresholds.length > 1"
-                  class="btn btn-secondary replace-chars-button delete-button"
-                  @click="thresholds.splice(index, 1)"
+                <button class="btn btn-secondary replace-chars-button delete-button"
+                  @click="configObject.thresholds.splice(index, 1)"
                 >
                   &times;
                 </button>
@@ -171,7 +173,7 @@
             </tr>
             <tr>
               <td>
-                <button class="btn btn-primary add-button" @click="thresholds.push('')">
+                <button class="btn btn-primary add-button" @click="configObject.thresholds.push('')">
                   Add
                 </button>
               </td>
@@ -201,81 +203,78 @@
   const emit = defineEmits(["updateVisualizer"]);
   const editingFieldset = computed(() => store.vizEditingFieldset);
   const editingPhewas = computed(() => props.editing);
-  const yAxisField = ref("");
+  const configObject = ref({
+    "type": "phewas plot",
+    "y axis field": "",
+    "y ticks decimal point": "",
+    "phenotype map": "kp phenotype map", // only supported value right now?
+    "render by": "",
+    "group by": "",
+    "hover content": [],
+    "star key": "",
+    "beta field": "",
+    "thresholds": [""],
+    "plot margin": {}
+  });
   const convertLog = ref(false);
-  const yDecimal = ref(2);
-  const yLabel = ref("");
-  const groupBy = ref("");
-  const renderBy = ref("");
-  const hoverContent = ref([]);
-  const betaField = ref("");
-  const starKey = ref("");
-  const height = ref("");
-  const thresholds = ref([""]);
-  const margin = ref({});
   const CHECK_DONE = Object.freeze({
     PHEWAS_Y: {
       id: "phewas-y",
       text: "Y-axis field",
-      condition: () => !yAxisField.value || !yLabel.value || yDecimal.value === "" || yDecimal.value < 0, 
+      condition: () => !configObject.value['y axis field'] || 
+        !configObject.value["y axis label"] || 
+        configObject.value["y ticks decimal point"] === "" || 
+        configObject.value["y ticks decimal point"] < 0, 
       msg: "Specify field, label, and decimal places for Y-axis."
     },
     PHEWAS_RENDER: {
       id: "phewas-render",
       text: "Render by",
-      condition: () => !renderBy.value, 
+      condition: () => !configObject.value['render by'], 
       msg: "Specify field to render by." 
     },
     PHEWAS_GROUP: {
       id: "phewas-group",
       text: "Group by",
-      condition: () => !groupBy.value, 
+      condition: () => !configObject.value['group by'], 
       msg: "Specify field to group by."
     },
     PHEWAS_SETUP: {
       id: "phewas-setup",
       text: "Plot setup",
-      condition: () => !height.value,
+      condition: () => !configObject.value['height'],
       msg: "Specify plot height."
       
     },
     PHEWAS_THRESHOLDS: {
       id: "phewas-thresholds",
       text: "Thresholds",
-      condition: () => thresholds.value.includes(null) || thresholds.value.includes(""),
+      condition: () => configObject.value["thresholds"].includes(null) || 
+        configObject.value["thresholds"].includes(""),
       msg: "Fill in missing threshold values."
     }
   });
   const configString = computed(() => {
-    const config = {
-      type: "phewas plot",
-      "y axis field": yAxisField.value,
-      "y axis label": yLabel.value,
-      "y ticks decimal point": yDecimal.value,
-      "render by": renderBy.value,
-      "group by": groupBy.value,
-      "convert y -log10": `${convertLog.value}`
-    };
-    // Phenotype map can only be added administratively.
-    if (height.value !== "") {
-      config.height = height.value;
+    let outputObject = JSON.parse(JSON.stringify(configObject.value)); // Deep copy
+    outputObject['convert y -log10'] = `${convertLog.value}`;
+
+    // Avoid empty values for optional fields
+    if (outputObject["hover content"].length === 0){
+      delete outputObject["hover content"];
     }
-    if (betaField.value !== "") {
-      config["beta field"] = betaField.value;
+    if (!outputObject["beta field"]){
+      delete outputObject["beta field"];
     }
-    if (starKey.value !== "") {
-      config["star key"] = starKey.value;
+    if (!outputObject['star key']){
+      delete outputObject['star key'];
     }
-    if (thresholds.value.length > 0) {
-      config.thresholds = thresholds.value;
+    if (outputObject["thresholds"].length === 0){
+      delete outputObject["thresholds"];
     }
-    if (hoverContent.value.length > 0) {
-      config["hover content"] = hoverContent.value;
+    if (Object.keys(outputObject["plot margin"]).length === 0) {
+      delete outputObject["plot margin"];
     }
-    if (Object.keys(margin.value).length > 0) {
-      config["plot margin"] = margin.value;
-    }
-    return JSON.stringify(config);
+    return JSON.stringify(outputObject);
   });
   onMounted(() => {
     if (editingPhewas.value){
@@ -292,29 +291,22 @@
   });
   function loadConfig(){
     let loadedConfig = JSON.parse(props.configToLoad);
-    yAxisField.value = loadedConfig["y axis field"];
-    yLabel.value = loadedConfig["y axis label"];
-    yDecimal.value = loadedConfig["y ticks decimal point"];
-    renderBy.value = loadedConfig["render by"];
-    groupBy.value = loadedConfig["group by"];
     convertLog.value = loadedConfig["convert y -log10"] === 'true';
-    if (loadedConfig["height"]){
-      height.value = loadedConfig["height"];
+    if (!loadedConfig['hover content']){
+      loadedConfig['hover content'] = [];
     }
-    if (loadedConfig["beta field"]){
-      betaField.value = loadedConfig["beta field"];
+    if (!loadedConfig["beta field"]){
+      loadedConfig["beta field"] = "";
     }
-    if (loadedConfig["star key"]){
-      starKey.value = loadedConfig["star key"]; 
+    if (!loadedConfig["star key"]){
+      loadedConfig["star key"] = ""; 
     }
-    if (loadedConfig["thresholds"]){
-      thresholds.value = loadedConfig["thresholds"];
+    if (!loadedConfig["thresholds"]){
+      loadedConfig["thresholds"] = [""];
     }
-    if (loadedConfig["hover content"]){
-      hoverContent.value = loadedConfig["hover content"];
+    if (!loadedConfig["plot margin"]){
+      loadedConfig["plot margin"] = {};
     }
-    if (loadedConfig["plot margin"]){
-      margin.value = loadedConfig["plot margin"];
-    }
+    configObject.value = loadedConfig;
   }
 </script>

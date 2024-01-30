@@ -249,12 +249,12 @@
   const emit = defineEmits(["updateVisualizer"]);
   const editingFieldset = computed(() => store.vizEditingFieldset);
   const editingHeatmap = computed(() => props.editing);
-  const CONFIG_SUB = {
+  const CONFIG_SUB = JSON.stringify({
       "field": "",
       "type": "steps", // only supported type at the moment
       "direction": "positive",
       "value range": [""]
-  };
+  });
   const configObject = ref({
     "type": "heat map",
     // Pre-fill empty strings so that 'select field' is preselected
@@ -268,7 +268,7 @@
       "middle": "",
       "high": ""
     },
-    "sub": JSON.parse(JSON.stringify(CONFIG_SUB)) //Deep copy
+    "sub": JSON.parse(CONFIG_SUB) //Deep copy
   });
   const includeSubCircle = ref(true);
   const configString = computed(() => {
@@ -343,7 +343,7 @@
     let loadedConfig = JSON.parse(props.configToLoad);
     includeSubCircle.value = !!loadedConfig.sub;
     if (!loadedConfig.sub){
-      loadedConfig.sub = JSON.parse(JSON.stringify(CONFIG_SUB));
+      loadedConfig.sub = JSON.parse(CONFIG_SUB);
     }
     configObject.value = loadedConfig;
   }
