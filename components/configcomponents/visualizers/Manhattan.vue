@@ -124,8 +124,8 @@
     "hover content": []
   });
   const GRAPHIC_FORMATS = Object.freeze({
-    VECTOR: "manhattan vector",
-    BITMAP: "manhattan bitmap"
+    VECTOR: "manhattan plot",
+    BITMAP: "manhattan bitmap plot"
   });
   const configString = computed(() => {
     // Clean up optional fields
