@@ -9,7 +9,7 @@
                 X-axis field:
               </td>
               <td>
-                <FieldSelect v-model="xAxisField"></FieldSelect>
+                <FieldSelect v-model="configObject['x axis field']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -17,7 +17,7 @@
                 X-axis label:
               </td>
               <td>
-                <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
+                <input v-model="configObject['x axis label']" type="text" class="form-control input-default form-control-sm">
               </td>
             </tr>
           </tbody>
@@ -29,7 +29,7 @@
                 Y-axis field:
               </td>
               <td>
-                <FieldSelect v-model="yAxisField"></FieldSelect>
+                <FieldSelect v-model="configObject['y axis field']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -37,7 +37,7 @@
                 Y-axis label:
               </td>
               <td>
-                <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
+                <input v-model="configObject['y axis label']" type="text" class="form-control input-default form-control-sm">
               </td>
             </tr>
           </tbody>
@@ -49,7 +49,7 @@
                 Render by:
               </td>
               <td>
-                <FieldSelect v-model="renderBy"></FieldSelect>
+                <FieldSelect v-model="configObject['render by']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -57,13 +57,13 @@
                 Star key:
               </td>
               <td>
-                <FieldSelect v-model="starKey" :noneOption="true"></FieldSelect>
+                <FieldSelect v-model="configObject['star key']" :noneOption="true"></FieldSelect>
               </td>
             </tr>
             <tr>
               <td colspan="2">Hover content</td>
             </tr>
-            <FieldCheckboxes v-model="hoverContent"></FieldCheckboxes>
+            <FieldCheckboxes v-model="configObject['hover content']"></FieldCheckboxes>
           </tbody>
         </div>
         <div v-else-if="editingFieldset === CHECK_DONE.REGION_REGION.id">
@@ -73,7 +73,7 @@
                 Chromosome field:
               </td>
               <td>
-                <FieldSelect v-model="chrField"></FieldSelect>
+                <FieldSelect v-model="configObject['region fields']['chromosome']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -81,7 +81,7 @@
                 Position field:
               </td>
               <td>
-                <FieldSelect v-model="posField"></FieldSelect>
+                <FieldSelect v-model="configObject['region fields']['position']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -89,7 +89,7 @@
                 Plot height:
               </td>
               <td>
-                <input v-model="height" class="form-control input-default form-control-sm" type="number">
+                <input v-model="configObject['height']" class="form-control input-default form-control-sm" type="number">
               </td>
             </tr>
             <tr>
@@ -109,7 +109,7 @@
                 Reference allele:
               </td>
               <td>
-                <FieldSelect v-model="refField"></FieldSelect>
+                <FieldSelect v-model="configObject['ld server']['ref']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -117,7 +117,7 @@
                 Alternative allele:
               </td>
               <td>
-                <FieldSelect v-model="altField"></FieldSelect>
+                <FieldSelect v-model="configObject['ld server']['alt']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -125,7 +125,7 @@
                 Reference variant:
               </td>
               <td>
-                <FieldSelect v-model="refVarField"></FieldSelect>
+                <FieldSelect v-model="configObject['ld server']['ref variant field']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -133,22 +133,22 @@
                 Population type:
               </td>
               <td>
-                <select v-model="popTypeFixed" class="form-control form-control-sm">
-                  <option :value="true">
+                <select v-model="configObject['ld server']['populations type']" class="form-control form-control-sm">
+                  <option value="fixed">
                     Fixed
                   </option>
-                  <option :value="false">
+                  <option value="dynamic">
                     Dynamic
                   </option>
                 </select>
               </td>
             </tr>
-            <tr v-if="!popTypeFixed">
+            <tr v-if="configObject['ld server']['populations type'] === 'dynamic'">
               <td>
                 Populations field:
               </td>
               <td>
-                <FieldSelect v-model="popField"></FieldSelect>
+                <FieldSelect v-model="configObject['ld server']['populations field']"></FieldSelect>
               </td>
             </tr>
             <tr v-else>
@@ -166,7 +166,7 @@
                 </select>
               </td>
             </tr>
-            <tr v-if="popTypeFixed && fixedPop">
+            <tr v-if="configObject['ld server']['populations type'] === 'fixed' && fixedPop">
               <td>
                 {{ fixedPop }}:
               </td>
@@ -206,21 +206,28 @@
   const emit = defineEmits(["updateVisualizer"]);
   const editingFieldset = computed(() => store.vizEditingFieldset);
   const editingRegion = computed(() => props.editing);
-  const xAxisField = ref("");
-  const xAxisLabel = ref("");
-  const yAxisField = ref("");
-  const yAxisLabel = ref("");
-  const renderBy = ref("");
-  const hoverContent = ref([]);
-  const height = ref(200);
-  const starKey = ref("");
-  const chrField = ref("");
-  const posField = ref("");
-  const refField = ref("");
-  const altField = ref("");
-  const refVarField = ref("");
-  const popTypeFixed = ref(true);
-  const popField = ref("");
+  const configObject = ref({
+    "type": "region plot",
+    "x axis field": "",
+    "y axis field": "",
+    "render by": "",
+    "input type": "from data", // Dynamic and static not supported yet,
+    "hover content": [],
+    "height": "",
+    "region fields": {
+        "chromosome": "",
+        "position": ""
+      },
+    "ld server": {
+      "pos": "",
+      "ref": "",
+      "alt": "",
+      "ref variant field": "",
+      "populations type": "fixed",
+      "populations field": ""
+    },
+    "star key": ""
+  });
   const showGenesTrack = ref(true);
   const fixedPop = ref("");
   const popOptions = ref([]);
@@ -231,82 +238,67 @@
     REGION_X: {
       id: "region-x",
       text: "X-axis field",
-      condition: () => !xAxisField.value || !xAxisLabel.value,
+      condition: () => !configObject.value["x axis field"] || !configObject.value['x axis label'],
       msg: "Specify field and label for X-axis."
     },
     REGION_Y: {
       id: "region-y",
       text: "Y-axis field",
-      condition: () => !yAxisField.value || !yAxisLabel.value,
+      condition: () => !configObject.value["y axis field"] || !configObject.value['y axis label'],
       msg: "Specify field and label for Y-axis."
     },
     REGION_RENDER: {
       id: "region-render",
       text: "Render by",
-      condition: () => !renderBy.value,
+      condition: () => !configObject.value["render by"],
       msg: "Specify field to render by."
     },
     REGION_REGION: {
       id: "region-region",
       text: "Region",
-      condition: () => !chrField.value || !posField.value, 
+      condition: () => !configObject.value["region fields"]["chromosome"] || 
+        !configObject.value["region fields"]["position"], 
       msg: "Specify chromosome field and position field.",
     },
     REGION_LD: {
       id: "region-ld",
       text: "LD server",
-      condition: () => !refField.value || !altField.value || !refVarField.value || 
-        (!popTypeFixed.value && !popField.value) ||
-        (popTypeFixed.value && 
+      condition: () => !configObject.value["ld server"]["ref"] || 
+        !configObject.value["ld server"]["alt"] || 
+        !configObject.value["ld server"]["ref variant field"] || 
+        (configObject.value["ld server"]["populations type"] !== "fixed" && 
+          !configObject.value["ld server"]["populations field"]) ||
+        (configObject.value["ld server"]["populations type"] === "fixed" && 
           (!fixedPop.value || !populations.value[fixedPop.value])),
       msg: "Specify fields for ref, alt, and ref var as well as population details."
     }
   });
   const configString = computed(() => {
     // Dynamic population has been removed as an option for now - we're working on it.
-    const config = {
-      type: "region plot",
-      "x axis field": xAxisField.value,
-      "x axis label": xAxisLabel.value.trim(),
-      "y axis field": yAxisField.value,
-      "y axis label": yAxisLabel.value.trim(),
-      "render by": renderBy.value,
-      "input type": "from data", // Dynamic and static not supported yet
-      "region fields": {
-        "chromosome": chrField.value,
-        "position": posField.value
-      },
-      "ld server": {
-        "pos": posField.value,
-        "ref": refField.value,
-        "alt": altField.value,
-        "ref variant field": refVarField.value,
-        "populations type": popTypeFixed.value ? "fixed" : "dynamic",
-      }
-    };
-    if (starKey.value){
-      config["star key"] = starKey.value;
+    let outputObject = JSON.parse(JSON.stringify(configObject.value)); // Deep copy
+    if (!outputObject["height"]){
+      delete outputObject["height"];
     }
-    if (popTypeFixed.value){
-      config["ld server"]["fixed population"] = fixedPop.value;
-      config["ld server"]["populations"] = populations.value;
+    if (!outputObject["star key"]){
+      delete outputObject["star key"];
+    }
+    if (outputObject["hover content"].length === 0){
+      delete outputObject["hover content"];
+    }
+    outputObject["ld server"]["pos"] = outputObject["region fields"]["pos"];
+    if (outputObject["populations type"] === "fixed"){
+      delete outputObject["ld server"]["populations field"];
     } else {
-      config["ld server"]["populations field"] = popField.value;
-    }
-    if (height.value !== "") {
-      config.height = height.value;
-    }
-    if (hoverContent.value.length !== 0) {
-      config["hover content"] = hoverContent.value;
+      delete outputObject["ld server"]["fixed population"];
+      delete outputObject["ld server"]["populations"];
     }
     if (showGenesTrack.value) {
-      const genesTrack = {
+      outputObject["genes track"] = {
         "input type": "from data", // From data is the only option we're using currently
-        "region fields": config["region fields"]
+        "region fields": outputObject["region fields"]
       };
-      config["genes track"] = genesTrack;
     }
-    return JSON.stringify(config);
+    return JSON.stringify(outputObject);
   });
   onMounted(async () => {
     if (editingRegion.value){
@@ -333,35 +325,24 @@
   }
   function loadConfig(){
     let loadedConfig = JSON.parse(props.configToLoad);
-    xAxisField.value = loadedConfig["x axis field"];
-    xAxisLabel.value = loadedConfig["x axis label"];
-    yAxisField.value = loadedConfig["y axis field"];
-    yAxisLabel.value = loadedConfig["y axis label"];
-    renderBy.value = loadedConfig["render by"];
-    posField.value = loadedConfig["ld server"]["pos"];
-    refField.value = loadedConfig["ld server"]["ref"];
-    altField.value = loadedConfig["ld server"]["alt"];
-    refVarField.value = loadedConfig["ld server"]["ref variant field"];
-    popTypeFixed.value = loadedConfig["ld server"]["populations type"] === "fixed";
-    chrField.value = loadedConfig["region fields"]["chromosome"];
-    posField.value = loadedConfig["region fields"]["position"];
-    if (loadedConfig["star key"]){
-      starKey.value = loadedConfig["star key"];
+    if (!loadedConfig["hover content"]){
+      loadedConfig["hover content"] = [];
     }
-    if (popTypeFixed.value){
-      fixedPop.value = loadedConfig["ld server"]["fixed population"];
-      populations.value = loadedConfig["ld server"]["populations"];
-    } else {
-      popField.value = loadedConfig["ld server"]["populations field"];
+    if (!loadedConfig["height"]){
+      loadedConfig["height"] = "";
     }
-    if (loadedConfig["height"]){
-      height.value = loadedConfig["height"];
+    if (!loadedConfig["star key"]){
+      loadedConfig["star key"] = "";
     }
-    if (loadedConfig["hover content"]){
-      hoverContent.value = loadedConfig["hover content"];
+    if (!loadedConfig["ld server"]["fixed population"]){
+      loadedConfig["ld server"]["fixed population"] = "";
     }
-    if (loadedConfig["genes track"]){
-      showGenesTrack.value = true;
+    if (!loadedConfig["ld server"]["populations"]){
+      loadedConfig["ld server"]["populations"] = {};
     }
+    if (!loadedConfig["ld server"]["populations field"]){
+      loadedConfig["ld server"]["populations field"];
+    }
+    showGenesTrack.value = !!loadedConfig["genes track"];
   }
 </script>
