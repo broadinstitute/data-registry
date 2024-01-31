@@ -344,5 +344,6 @@
       loadedConfig["ld server"]["populations field"];
     }
     showGenesTrack.value = !!loadedConfig["genes track"];
+    configObject.value = loadedConfig;
   }
 </script>
