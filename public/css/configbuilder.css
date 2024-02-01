@@ -254,7 +254,7 @@ pre.output{
 .column-format-label {
 	margin-right: 10px;
 }
-#hover input {
+#hover input, .hover input {
 	margin-left: 16px;
 	margin-right: 10px;
 }
@@ -265,3 +265,145 @@ sup.required {
 	font-size: smaller;
 	padding: 5px;
 }
+#viz-selector{
+	width: 200px !important;
+	margin-bottom: 20px;
+}
+.gui-btn {
+	position: relative;
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+    border-radius: 15px;
+    color: #333333;
+  }
+  #manhattan-y {
+    top: 110px;
+    left: -112px;
+  }
+  #manhattan-x {
+    top: 188px;
+    left: 280px;
+  }
+  #manhattan-render {
+    top: 110px;
+    left: 80px;
+  }
+  #manhattan-graphic {
+    top: 35px;
+    left: -315px;
+  }
+  #heatmap-column {
+	top: 60px;
+	left: 450px;
+  }
+  #heatmap-row {
+	top: 180px;
+	left: 66px;
+  }
+  #heatmap-plot-label {
+	top: 305px;
+	left: 150px;
+  }
+  #heatmap-font-size {
+	top: 85px;
+	left: -300px;
+  }
+  #heatmap-main-wrapper {
+	position: relative;
+	top: -25px;
+  }
+  #heatmap-main-wrapper button, #heatmap-sub-wrapper button {
+	margin-right: 20px;
+  }
+  #heatmap-sub-wrapper {
+	position: relative;
+	top: -15px;
+  }
+	#volcano-x {
+		top: 340px;
+		left: 410px;
+	}
+	#volcano-y {
+		top: 160px;
+		left: -70px;
+	}
+	#volcano-render-by {
+		top: 62px;
+	}
+	#volcano-plot-label {
+		top: 5px;
+		left: 205px;
+	}
+	#phewas-y {
+		top: 100px;
+		left: -3px;
+	}
+	#phewas-group {
+		top: 220px;
+		left: 240px;
+	}
+	#phewas-render {
+		top: 80px;
+		left: 295px;
+	}
+	#phewas-setup {
+		top: 215px;
+		left: -299px;
+	}
+	#phewas-thresholds {
+		top: 20px;
+		left: -100px;
+	}
+  .pad-field td {
+    padding: 5px;
+  }
+  .compact td, .small-label {
+    font-size: smaller;
+  }
+  .compact input {
+    margin-left: 5px;
+  }
+  #manhattan-gui {
+    background-image: url("assets/images/manhattan_model_tight_crop.jpg");
+		height:250px;
+    background-position: left;
+  }
+  #heatmap-gui {
+		background-image: url("assets/images/heatmap_crop_wide.jpg");
+		height: 350px;
+  }
+	#volcano-gui {
+		background-image: url("assets/images/volcano_2.jpg");
+		height: 400px;
+	}
+	#phewas-gui {
+		background-image: url("assets/images/phewas_edit_small.jpg");
+		height: 275px;
+	}
+	/* viz-gui and leftfieldwrapper sum to 100*/
+	.viz-gui {
+		flex: 0 0 auto;
+		width: 70%;
+    background-size: 800px;
+    background-repeat: no-repeat;
+  }
+  #leftFieldWrapper {
+    width: 30%;
+  }
+  #leftField {
+    margin-top: 20px;
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 15px;
+    padding: 5px;
+  }
+  .done {
+    background-color: green;
+    border: 1px solid darkgreen;
+    color: white;
+  }
+  .undone {
+    background-color: orange;
+    border: 1px solid orangered;
+    color: black;
+  }
