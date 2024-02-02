@@ -243,7 +243,7 @@ function filterStudies (q) {
               <option value="exomchip">
                 Exome chip
               </option>
-              <option value="exomseq">
+              <option value="exseq">
                 Exome sequence analysis
               </option>
               <option value="ichip">
