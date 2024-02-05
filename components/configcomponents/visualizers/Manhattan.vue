@@ -181,6 +181,14 @@
     }
   });
   function loadConfig(){
-    configObject.value = JSON.parse(props.configToLoad);
+    let loadedConfig = JSON.parse(props.configToLoad);
+    // Restore optional fields
+    if (!loadedConfig["height"]){
+      loadedConfig["height"] = "";
+    }
+    if (!loadedConfig["hover content"]){
+      loadedConfig["hover content"] = [];
+    }
+    configObject.value = loadedConfig;
   }
 </script>
