@@ -362,6 +362,6 @@
   }
   function deleteViz(){
     cancelViz();
-    savedViz.value = ({});
+    savedViz.value = {};
   }
 </script>
