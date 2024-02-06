@@ -158,7 +158,7 @@
 
 
 <script setup>
-import Modal from '~/components/Modal.vue'
+import Modal from '~/components/Modal.vue';
 import { useDatasetStore } from '~/stores/DatasetStore';
 
 const route = useRouter();
