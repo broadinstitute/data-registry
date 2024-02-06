@@ -12,7 +12,7 @@
       </div>
       <div class="col text-end">
         <nuxt-link :to="{ name: 'datasets-new' }">
-          <button type="button" class="btn btn-primary btn-sm">
+          <button type="button" class="btn btn-primary btn-sm" v-can="'createDataset'">
             <i class="bi bi-plus" />
             Add New Dataset
           </button>

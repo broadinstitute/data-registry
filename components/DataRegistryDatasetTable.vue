@@ -1,4 +1,5 @@
 <template>
+  <div>
   <table class="table table-striped table-hover">
     <thead>
       <tr>
@@ -74,15 +75,20 @@
             }}
           </td>
           <td>
-            <nuxt-link :to="`/datasets/${dataset.id}?edit=true`">
+            <nuxt-link v-can="'editDataset'" :to="`/datasets/${dataset.id}?edit=true`">
               <i class="bi bi-pencil" style="cursor: pointer" />
             </nuxt-link>
                     &nbsp;
-            <i
+            <i v-can="'deleteDataset'"
               class="bi bi-trash"
               style="cursor: pointer; color: red"
               @click="deleteDataSet(dataset.id)"
             />
+            <i v-can="'analyzeDataset'"
+               class="bi bi-bar-chart"
+                style="cursor: pointer; color: green"
+               @click="analyze"
+               />
           </td>
         </tr>
         <tr v-if="dataset.showFiles && dataset.files.length > 0">
@@ -145,14 +151,20 @@
       </template>
     </tbody>
   </table>
+  <Modal v-if="showAnalyze" :status-message="'Analyze This!'" :show-close-button="true"
+         @close="showAnalyze = false"/>
+  </div>
 </template>
 
+
 <script setup>
+import Modal from '~/components/Modal.vue'
 import { useDatasetStore } from '~/stores/DatasetStore';
 
 const route = useRouter();
 const config = useRuntimeConfig();
 const store = useDatasetStore();
+const showAnalyze = ref(false);
 const datasets = ref([]);
 
 const axios = useAxios(config, undefined, (error) => {
@@ -164,6 +176,10 @@ onMounted(async () => {
   await fetchDataSets();
   await store.fetchPhenotypes();
 });
+
+function analyze () {
+  showAnalyze.value = true;
+}
 
 async function toggleFiles (dataSet) {
   if (!dataSet.files) {

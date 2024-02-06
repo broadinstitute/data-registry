@@ -13,13 +13,17 @@
             :style="progressWidth"
           />
         </div>
+        <div v-if="showCloseButton">
+          <button type="button" class="btn btn-primary" @click="() => $emit('close')">Close</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-const props = defineProps({ statusMessage: String, progress: Number, showProgress: Boolean });
+const props = defineProps({ statusMessage: String, progress: Number, showProgress: Boolean,
+  showCloseButton: {type: Boolean, default: false} });
 
 const progressWidth = computed(() => {
   return {

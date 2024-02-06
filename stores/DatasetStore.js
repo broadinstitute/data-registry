@@ -3,7 +3,6 @@ import { defineStore } from 'pinia';
 const config = useRuntimeConfig();
 
 const configuredAxios = useAxios(config, undefined, (error) => {
-  console.log(JSON.stringify(error));
   const store = useDatasetStore();
   store.processing = false;
   store.errorMessage = error.message || error.errorMessage;
