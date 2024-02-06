@@ -1,10 +1,10 @@
 <template>
-  <div class="hello">
-    <a href="/register">Register New User</a> *
-    <a href="/create">Create New Content</a>
+  <div>
+    Data Registry
   </div>
 </template>
 <script setup>
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+  import { useRouter } from "vue-router";
+  const router = useRouter();
+  onMounted(() => router.replace({path: '/configbuilder'}));
 </script>
