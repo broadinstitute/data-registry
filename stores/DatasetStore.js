@@ -5,7 +5,7 @@ const config = useRuntimeConfig();
 const configuredAxios = useAxios(config, undefined, (error) => {
   const store = useDatasetStore();
   store.processing = false;
-  store.errorMessage = error.message || error.errorMessage;
+  store.errorMessage = error.response.data.detail || error.message || error.errorMessage;
   store.serverSuccess = false;
   store.showNotification = true;
   return Promise.reject(error);
