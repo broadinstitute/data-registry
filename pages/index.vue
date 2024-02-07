@@ -1,10 +1,9 @@
 <template>
-  <div>
-    Data Registry
+  <div class="hello">
+    <a href="/configbuilder">BYOR Config Builder</a>
   </div>
 </template>
-<script setup>
-  import { useRouter } from "vue-router";
-  const router = useRouter();
-  onMounted(() => router.replace({path: '/configbuilder'}));
+  <script setup>
+  import "bootstrap/dist/css/bootstrap.min.css";
+  import "bootstrap-icons/font/bootstrap-icons.css";
 </script>
