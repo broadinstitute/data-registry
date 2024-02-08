@@ -1,13 +1,22 @@
 <script setup>
-  const person = ref({
+// eslint-disable-next-line no-undef
+  const person = reactive({
     firstName: '',
     lastName: ''
   });
 
   function assignName() {
-    person.value['firstName'] = 'John';
-    person.value['lastName'] = 'Doe';
+    person['firstName'] = 'John';
+    person['lastName'] = 'Doe';
   }
+
+  watch(person, (newVal) => {
+    console.log(`Person is now ${JSON.stringify(newVal)}`);
+  });
+
+  const fullName = computed(() => {
+    return `${person['firstName']} ${person['lastName']}`;
+  });
 </script>
 
 <template>
@@ -24,7 +33,7 @@
   </div>
   <div class="row">
     <div class="col">
-      <p>{{ person['firstName'] }} {{ person['lastName'] }}</p>
+      <p>First: {{ person['firstName'] }} Last: {{ person['lastName'] }}</p>
     </div>
   </div>
   <div class="row">
@@ -32,6 +41,7 @@
       <button class="btn btn-primary" @click="assignName">Assign Name</button>
     </div>
   </div>
+  <p>{{fullName}}</p>
 </div>
 </template>
 
