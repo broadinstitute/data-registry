@@ -9,7 +9,7 @@
                 X-axis field:
               </td>
               <td>
-                <FieldSelect v-model="xAxisField"></FieldSelect>
+                <FieldSelect v-model="configObject['x axis field']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -17,7 +17,7 @@
                 Label:
               </td>
               <td>
-                <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
+                <input v-model="configObject['x axis label']" type="text" class="form-control input-default form-control-sm">
               </td>
             </tr>
           </tbody>
@@ -29,7 +29,7 @@
                 Y-axis field:
               </td>
               <td>
-                <FieldSelect v-model="yAxisField"></FieldSelect>
+                <FieldSelect v-model="configObject['y axis field']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -37,7 +37,7 @@
                 Label:
               </td>
               <td>
-                <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
+                <input v-model="configObject['y axis label']" type="text" class="form-control input-default form-control-sm">
               </td>
             </tr>
           </tbody>
@@ -49,7 +49,7 @@
                 Render by:
               </td>
               <td>
-                <FieldSelect v-model="renderBy"></FieldSelect>
+                <FieldSelect v-model="configObject['render by']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -57,27 +57,7 @@
                 Hover content:
               </td>
             </tr>
-            <tr class="compact">
-              <td class="popup-field-label small-label">
-                Select all fields
-              </td>
-              <td>
-                <input
-                v-model="selectAllBox"
-                class="form-check-input"
-                type="checkbox"
-                @change="hoverContent = !selectAllBox ? [] : availableFields"
-                >
-              </td>
-            </tr>
-            <tr v-for="field in availableFields" :key="field" class="compact">
-              <td class="popup-field-label small-label">
-                {{ field }}
-              </td>
-              <td>
-                <input id="flexCheckDefault" v-model="hoverContent" class="form-check-input" type="checkbox" :value="field">
-              </td>
-            </tr>
+            <FieldCheckboxes v-model="configObject['hover content']"></FieldCheckboxes>
           </tbody>
         </div>
         <div v-else-if="editingFieldset === CHECK_DONE.MANHATTAN_GRAPHIC.id">
@@ -87,18 +67,19 @@
                 Graphic format:
               </td>
               <td>
-                <select v-model="graphicFormat" class="form-control form-control-sm">
+                <select v-model="configObject['type']" class="form-control form-control-sm">
+                  <option value="" selected>Select format</option>
                   <option :value="GRAPHIC_FORMATS.VECTOR">Vector</option>
                   <option :value="GRAPHIC_FORMATS.BITMAP">Bitmap</option>
                 </select>
               </td>
             </tr>
-            <tr v-if="graphicFormat === GRAPHIC_FORMATS.VECTOR">
+            <tr v-if="configObject['type'] === GRAPHIC_FORMATS.VECTOR">
               <td class="popup-field-label">
                 Link to:
               </td>
               <td>
-                <input v-model="linkTo" type="text" class="form-control input-default form-control-sm">
+                <input v-model="configObject['link to']" type="text" class="form-control input-default form-control-sm">
               </td>
             </tr>
             <tr>
@@ -106,7 +87,7 @@
                 Plot height:
               </td>
               <td>
-                <input v-model="height" class="form-control form-control-sm" type="number">
+                <input v-model="configObject['height']" class="form-control form-control-sm" type="number">
               </td>
             </tr>
           </tbody>
@@ -123,74 +104,91 @@
 </template>
 <script setup>
   import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
+  import FieldCheckboxes from '../FieldCheckboxes.vue';
   import FieldSelect from '../FieldSelect.vue';
   import GuiButton from '../GuiButton.vue';
   const store = useConfigBuilderStore();
+  const props = defineProps({ 
+    configToLoad: String,
+    editing: Boolean,
+  });
   const emit = defineEmits(["updateVisualizer"]);
   const editingFieldset = computed(() => store.vizEditingFieldset);
-  const availableFields = computed(() => store.allFields);
-  const selectAllBox = ref(false);
-  const graphicFormat = ref("");
-  const xAxisField = ref("");
-  const yAxisField = ref("");
-  const renderBy = ref("");
-  const xAxisLabel = ref("");
-  const yAxisLabel = ref("");
-  const height = ref("");
-  const linkTo = ref("");
-  const hoverContent = ref([]);
+  const editingManhattan = computed(() => props.editing);
+  const configObject = ref({
+    // Pre-fill empty strings so that 'select field' is preselected
+    "type": "",
+    "x axis field": "",
+    "y axis field": "",
+    "render by": "",
+    "hover content": []
+  });
   const GRAPHIC_FORMATS = Object.freeze({
-    VECTOR: "vector",
-    BITMAP: "bitmap"
+    VECTOR: "manhattan plot",
+    BITMAP: "manhattan bitmap plot"
   });
   const configString = computed(() => {
-    const type = graphicFormat.value;
-    const config = {
-      type,
-      "x axis field": xAxisField.value,
-      "y axis field": yAxisField.value,
-      "render by": renderBy.value,
-      "x axis label": xAxisLabel.value,
-      "y axis label": yAxisLabel.value
-    };
-    if (height.value) {
-      config.height = height.value;
+    // Clean up optional fields
+    let outputObject = JSON.parse(JSON.stringify(configObject.value)); // Deep copy
+    if (!outputObject["height"]){
+      delete outputObject["height"];
     }
-    if (linkTo.value) {
-      config["link to"] = linkTo.value;
+    if (outputObject["hover content"].length === 0){
+      delete outputObject["hover content"];
     }
-    if (hoverContent.value.length > 0) {
-      config["hover content"] = hoverContent.value;
+    if (!outputObject["link to"]){
+      delete outputObject["link to"];
     }
-    return JSON.stringify(config);
+    return JSON.stringify(outputObject);
   });
   const CHECK_DONE = {
     MANHATTAN_X: {
       id: "manhattan-x",
       text: "X-axis field",
-      condition: () => !xAxisField.value || !xAxisLabel.value,
+      condition: () => !configObject.value["x axis field"] || !configObject.value["x axis label"],
       msg: "Specify field and label for X-axis."
     },
     MANHATTAN_Y: {
       id: "manhattan-y",
       text: "Y-axis field",
-      condition: () => !yAxisField.value || !yAxisLabel.value,
+      condition: () => !configObject.value["y axis field"] || !configObject.value["y axis label"],
       msg: "Specify field and label for Y-axis."
     },
     MANHATTAN_RENDER: {
       id: "manhattan-render",
       text: "Render by",
-      condition: () => !renderBy.value,
+      condition: () => !configObject.value["render by"],
       msg: "Specify field to render by."
     },
     MANHATTAN_GRAPHIC: {
       id: "manhattan-graphic",
       text: "Graphic format",
-      condition: () => !graphicFormat.value,
+      condition: () => !configObject.value["type"],
       msg: "Specify graphic format."
     }
   };
+  onMounted(() => {
+    if (editingManhattan.value){
+      loadConfig();
+    }
+  });
   watch(configString, () => {
     emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
   });
+  watch(editingManhattan, () => {
+    if (editingManhattan.value){
+      loadConfig();
+    }
+  });
+  function loadConfig(){
+    let loadedConfig = JSON.parse(props.configToLoad);
+    // Restore optional fields
+    if (!loadedConfig["height"]){
+      loadedConfig["height"] = "";
+    }
+    if (!loadedConfig["hover content"]){
+      loadedConfig["hover content"] = [];
+    }
+    configObject.value = loadedConfig;
+  }
 </script>

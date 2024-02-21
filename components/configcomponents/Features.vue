@@ -11,34 +11,13 @@
     </div>
     <div class="col-md-3 col">
       <tr>
-        <th>
-          <input
-            v-model="selectAll"
-            class="form-check-input"
-            type="checkbox"
-            @change="toggleSelectAll"
-          >
-        </th>
-        <th>
+        <th colspan="2">
           <div class="label">
             Select fields
           </div>
         </th>
       </tr>
-      <tr v-for="field in availableFields" :key="field">
-        <td>
-          <input
-            id="flexCheckDefault"
-            v-model="currentSelectedFields"
-            class="form-check-input"
-            type="checkbox"
-            :value="field"
-          >
-        </td>
-        <td>
-          <span class="form-check-label" for="flexCheckDefault">{{ field }}</span>
-        </td>
-      </tr>
+      <FieldCheckboxes v-model="currentSelectedFields"></FieldCheckboxes>
     </div>
     <div class="col-md-5 col">
       <div class="label">
@@ -109,7 +88,7 @@
 </template>
 <script setup>
 import { useConfigBuilderStore } from '@/stores/ConfigBuilderStore';
-
+import FieldCheckboxes from './FieldCheckboxes.vue';
 const store = useConfigBuilderStore();
 const emit = defineEmits(["featuresChanged"]);
 // WHY is this updating on such a delay
@@ -150,9 +129,6 @@ function movePrevNext (index, next = false) {
   list.splice(index - 1, 0, risingItem);
   allFeaturesConfig.value.features = list;
   emitFeatures();
-}
-function toggleSelectAll () {
-  currentSelectedFields.value = selectAll.value ? availableFields.value.slice() : [];
 }
 function saveFeature () {
   const trimmedName = currentFeatureName.value.trim();
