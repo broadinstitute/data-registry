@@ -190,6 +190,22 @@ export const useDatasetStore = defineStore('DatasetStore', {
       };
       await configuredAxios.post("/api/enqueue-csv-process", JSON.stringify(request));
     },
+    async uploadFileForHermes (file, fileName, dataset, metadata) {
+      this.showProgressBar = true;
+      this.processing = true;
+      this.modalMsg = "Uploading File";
+      this.uploadProgress = 0;
+      const formData = new FormData();
+      formData.append("file", file);
+      const { data } = await configuredAxios.post("/api/upload-hermes", formData,
+        {
+          headers: { "Content-Type": "multipart/form-data",
+            FileName: fileName, Dataset: dataset, Metadata: JSON.stringify(metadata) },
+          onUploadProgress: onUpload
+        });
+      this.processing = false;
+      return data;
+    },
     async uploadFileForBioindex (file, fileName) {
       this.showProgressBar = true;
       this.processing = true;

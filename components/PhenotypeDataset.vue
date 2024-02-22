@@ -157,7 +157,7 @@ function ptypeBlur (event) {
     phenotypeDataset.value.name = event.value;
     phenotypeDataset.value.dichotomous = false;
     phenotypeDataset.value.description = event.value;
-    needsDichotomousInfo.value = true;
+    needsssInfo.value = true;
   } else {
     phenotypeDataset.value.name = event.value.name;
     phenotypeDataset.value.description = event.value.description;

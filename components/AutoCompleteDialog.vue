@@ -83,6 +83,10 @@ const props = defineProps({
   selectOnTab: {
     type: Boolean,
     default: true,
+  },
+  allowOnlyListValues: {
+    type: Boolean,
+    default: false,
   }
 });
 const emit = defineEmits(['blur']);
@@ -106,6 +110,9 @@ watch(initialInput, (val) => {
 }, { immediate: true });
 
 function onBlur () {
+  if (props.allowOnlyListValues && !inputVal.value) {
+    input.value = '';
+  }
   isInputFocused.value = false;
   emit('blur', { value: inputVal.value ?? input.value, id: props.id });
 }
@@ -127,6 +134,8 @@ function onArrowUp () {
 function selectCurrentSelection () {
   if (currentSelection.value) {
     selectItem(currentSelection.value);
+  } else if (props.allowOnlyListValues) {
+    input.value = '';
   }
 }
 
@@ -153,8 +162,17 @@ function selectItem (item) {
 }
 
 function onInput () {
-  currentSelectionIndex.value = 0;
-  inputVal.value = null;
+  if (!props.allowOnlyListValues) {
+    currentSelectionIndex.value = 0;
+    inputVal.value = null;
+    return;
+  }
+  const match = filteredItems.value.find(item => props.itemDisplay(item).toLowerCase() === input.value.toLowerCase());
+  if (match) {
+    selectItem(match);
+  } else {
+    inputVal.value = null; // No match found, clear the selection
+  }
 }
 
 function onEscape () {
