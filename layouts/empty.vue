@@ -1,10 +1,10 @@
+<script setup>
+definePageMeta({
+    layout: "empty",
+});
+import AppLayout from "@/layouts/AppLayout.vue";
+</script>
+
 <template>
-    <div>
-        <header>
-            <slot name="header"> Default header content </slot>
-        </header>
-        <main>
-            <slot />
-        </main>
-    </div>
+    <app-layout></app-layout>
 </template>
