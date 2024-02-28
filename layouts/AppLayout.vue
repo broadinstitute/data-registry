@@ -4,7 +4,7 @@ import { usePrimeVue } from "primevue/config";
 import AppTopbar from "./AppTopbar.vue";
 import AppFooter from "./AppFooter.vue";
 import AppSidebar from "./AppSidebar.vue";
-// import AppConfig from './AppConfig.vue';
+import AppConfig from "./AppConfig.vue";
 import { useLayout } from "./composables/layout";
 
 const $primevue = usePrimeVue();

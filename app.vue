@@ -1,7 +1,12 @@
+<script setup></script>
+
 <template>
-    <div class="container-fluid">
-        <NuxtLayout>
-            <NuxtPage />
-        </NuxtLayout>
-    </div>
+    <NuxtLayout>
+        <NuxtPage />
+    </NuxtLayout>
+    <!-- <div>
+        <NuxtPage />
+    </div> -->
 </template>
+
+<style lang="scss"></style>

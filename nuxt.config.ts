@@ -4,12 +4,32 @@ export default defineNuxtConfig({
     devtools: {
         enabled: true,
     },
+    app: {
+        head: {
+            title: "KPN Data Registry",
+            link: [
+                {
+                    id: "theme-css",
+                    rel: "stylesheet",
+                    type: "text/css",
+                    href: "/themes/lara-light-indigo/theme.css",
+                },
+            ],
+        },
+    },
+    // css: [
+    //     "bootstrap/dist/css/bootstrap.css",
+    //     "bootstrap-icons/font/bootstrap-icons.css",
+    //     "assets/css/styles.css",
+    //     "assets/css/base.css",
+    // ],
     css: [
-        "bootstrap/dist/css/bootstrap.css",
-        "bootstrap-icons/font/bootstrap-icons.css",
-        "assets/css/styles.css",
-        "assets/css/base.css",
+        "primeicons/primeicons.css",
+        "primeflex/primeflex.scss",
+        "primevue/resources/primevue.min.css",
+        "@/assets/styles.scss",
     ],
+
     runtimeConfig: {
         public: {
             skipAuth: false,
@@ -26,13 +46,13 @@ export default defineNuxtConfig({
         "@nuxtjs/tailwindcss",
     ],
     primevue: {
-        options: { unstyled: true },
-        importPT: {
-            from: "/presets/lara/",
-        }, //import and apply preset
-        components: {
-            prefix: "Prime",
-        },
+        // options: { unstyled: true },
+        // importPT: {
+        //     from: "/presets/lara/",
+        // }, //import and apply preset
+        // components: {
+        //     // prefix: "Prime",
+        // },
     },
 
     // https://stackoverflow.com/questions/74003458/cannot-find-module-pinia-dist-pinia-mjs-when-using-run-dev

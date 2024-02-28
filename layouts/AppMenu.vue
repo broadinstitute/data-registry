@@ -60,7 +60,7 @@ const model = ref([
             {
                 label: "Chart",
                 icon: "pi pi-fw pi-chart-bar",
-                to: "/uikit/chart",
+                to: "/",
             },
             { label: "Misc", icon: "pi pi-fw pi-circle", to: "/uikit/misc" },
         ],
@@ -71,13 +71,13 @@ const model = ref([
             {
                 label: "Free Blocks",
                 icon: "pi pi-fw pi-eye",
-                to: "/blocks",
+                to: "/",
                 badge: "NEW",
             },
             {
                 label: "All Blocks",
                 icon: "pi pi-fw pi-globe",
-                url: "https://www.primefaces.org/primeblocks-vue",
+                url: "/",
                 target: "_blank",
             },
         ],
@@ -88,7 +88,7 @@ const model = ref([
             {
                 label: "PrimeIcons",
                 icon: "pi pi-fw pi-prime",
-                to: "/utilities/icons",
+                to: "/",
             },
             {
                 label: "PrimeFlex",
@@ -106,7 +106,7 @@ const model = ref([
             {
                 label: "Landing",
                 icon: "pi pi-fw pi-globe",
-                to: "/landing",
+                to: "/",
             },
             {
                 label: "Auth",
@@ -115,39 +115,39 @@ const model = ref([
                     {
                         label: "Login",
                         icon: "pi pi-fw pi-sign-in",
-                        to: "/auth/login",
+                        to: "/",
                     },
                     {
                         label: "Error",
                         icon: "pi pi-fw pi-times-circle",
-                        to: "/auth/error",
+                        to: "/",
                     },
                     {
                         label: "Access Denied",
                         icon: "pi pi-fw pi-lock",
-                        to: "/auth/access",
+                        to: "/",
                     },
                 ],
             },
             {
                 label: "Crud",
                 icon: "pi pi-fw pi-pencil",
-                to: "/crud",
+                to: "/",
             },
             {
                 label: "Timeline",
                 icon: "pi pi-fw pi-calendar",
-                to: "/timeline",
+                to: "/",
             },
             {
                 label: "Not Found",
                 icon: "pi pi-fw pi-exclamation-circle",
-                to: "/notfound",
+                to: "/",
             },
             {
                 label: "Empty",
                 icon: "pi pi-fw pi-circle-off",
-                to: "/empty",
+                to: "/",
             },
         ],
     },
@@ -226,7 +226,7 @@ const model = ref([
             {
                 label: "Documentation",
                 icon: "pi pi-fw pi-question",
-                to: "/documentation",
+                to: "/",
             },
             {
                 label: "Figma",
