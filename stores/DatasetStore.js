@@ -153,6 +153,14 @@ export const useDatasetStore = defineStore('DatasetStore', {
     async deleteDataSet(dsId){
       await configuredAxios.delete(`/api/datasets/${dsId}`);
     },
+    async fetchColumnOptions(){
+      const { data } = await configuredAxios.get('/api/hermes-upload-columns');
+      return data;
+    },
+    async validateMetadata(metadata) {
+      const {data} = await configuredAxios.post("/api/validate-hermes", JSON.stringify(metadata));
+      return data;
+    },
     async fetchExistingDataset (dsId) {
       const { data } = await configuredAxios.get(`/api/datasets/${dsId}`);
       this.savedPhenotypes = data.phenotypes;

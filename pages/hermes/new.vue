@@ -11,17 +11,40 @@ let phenotypes = {};
 const colMap = ref({});
 const selectedPhenotype = ref({});
 const cases = ref(0);
+const subjects = ref(0);
 const controls = ref(0);
 const dataSetName = ref("");
+const colOptions = ref([]);
+
 
 onMounted(async () => {
   await store.fetchPhenotypes();
+  colOptions.value = await store.fetchColumnOptions();
   phenotypes = store.phenotypes;
 });
 async function sampleFile (e) {
+  colMap.value = {};
+  store.showNotification = false;
   file = e.target.files[0];
   fileName = e.target.files[0].name;
-  fileInfo.value = await store.sampleTextFile(e.target.files[0]);
+  try {
+    fileInfo.value = await store.sampleTextFile(e.target.files[0]);
+  } catch (e) {
+    console.log(e);
+    fileInfo.value = {};
+  }
+}
+
+function updateColumnMapping(name, event) {
+  if(event.target.value === ""){
+    Object.entries(colMap.value).forEach(([key, value]) => {
+      if(value === name){
+        delete colMap.value[key];
+      }
+    });
+  } else {
+    colMap.value[event.target.value] = name;
+  }
 }
 
 function ptypeBlur (event) {
@@ -44,35 +67,37 @@ function filterFunc (q) {
     });
     return matches === words.length;
   });
+
 }
 
-function updateColumnMapping (e) {
-  const col = e.target.parentElement.parentElement.firstChild.innerText;
-  colMap.value[e.target.value] = col;
-  console.log(Object.keys(colMap.value));
-}
-
-function upload(){
+async function upload() {
   if (!useFormValidation("uploadGwasForm")) {
     return;
   }
-  store.uploadFileForHermes(file, fileName, dataSetName.value, {
+
+  const metadata = {
+    original_data: fileName,
     phenotype: selectedPhenotype.value.name,
+    dataset: dataSetName.value,
     cases: cases.value,
     controls: controls.value,
-    colMap: colMap.value
-  });
+    subjects: subjects.value,
+    column_map: colMap.value
+  };
+
+  const errors = await store.validateMetadata(metadata);
+  if (errors.length > 0) {
+    store.showNotification = true;
+    store.errorMessage = `<ul class="dotted">${errors.map((e) => `<li>${e}</li>`).join("")}</ul>`;
+  } else {
+    store.showNotification = false;
+    await store.uploadFileForHermes(file, fileName, dataSetName.value, metadata);
+  }
 }
 
 </script>
 
 <template>
-  <ServerNotification
-      :show-notification="store.showNotification"
-      :error-message="store.errorMessage"
-      :success="store.isServerSuccess"
-      :success-message="store.successMessage"
-  />
   <div class="container-fluid">
     <form id="uploadGwasForm" class="needs-validation" novalidate>
       <div class="row">
@@ -126,6 +151,21 @@ function upload(){
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          <div class="form-group">
+            <label class="label" for="subjects">Subjects:</label>
+            <input
+                v-model="subjects"
+                type="number"
+                placeholder="Subjects"
+                class="form-control input-default"
+                min="1"
+                required
+            />
+          </div>
+        </div>
+      </div>
       <div class="row" v-if="selectedPhenotype.dichotomous">
         <div class="col-md-6 offset-md-3">
           <div class="form-group">
@@ -135,7 +175,7 @@ function upload(){
                   type="number"
                   placeholder="Cases"
                   class="form-control input-default"
-                  min="0"
+                  min="1"
                   required
               />
             </div>
@@ -169,32 +209,11 @@ function upload(){
               <tr v-for="col in fileInfo.columns" :key="col">
                 <td>{{ col }}</td>
                 <td>
-                  <select class="form-control" @change="updateColumnMapping">
+                  <select class="form-control" @change="updateColumnMapping(col, $event)">
                     <option value="">
                     </option>
-                    <option value="chromosome">
-                      chromosome
-                    </option>
-                    <option value="position">
-                      position
-                    </option>
-                    <option value="reference">
-                      reference
-                    </option>
-                    <option value="alt">
-                      alt
-                    </option>
-                    <option value="pValue">
-                      pValue
-                    </option>
-                    <option value="beta">
-                      beta
-                    </option>
-                    <option value="oddsRatio">
-                      odds ratio
-                    </option>
-                    <option value="stdErr">
-                      standard error
+                    <option v-for="option in colOptions" :key="option" :value="option" :disabled="Object.keys(colMap).includes(option)">
+                      {{ option }}
                     </option>
                   </select>
                 </td>
@@ -210,9 +229,21 @@ function upload(){
           </button>
         </div>
       </div>
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          <ServerNotification
+              :show-notification="store.showNotification"
+              :error-message="store.errorMessage"
+              :success="store.isServerSuccess"
+              :success-message="store.successMessage"
+              :auto-hide="false"
+          />
+        </div>
+      </div>
     </form>
   </div>
-  <Modal v-if="store.processing" :status-message="store.modalMsg" :progress="store.uploadProgress" :show-progress="store.showProgressBar" />
+  <Modal v-if="store.processing" :status-message="store.modalMsg"
+         :progress="store.uploadProgress" :show-progress="store.showProgressBar" />
 </template>
 
 <style scoped>

@@ -28,6 +28,11 @@ ul {
   padding-left: 0;
 }
 
+.dotted {
+  list-style: disc;
+  margin-left: 3px;
+}
+
 .label {
   font-weight: 700;
   font-size: 14px;

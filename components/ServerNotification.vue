@@ -3,8 +3,7 @@
     <div v-if="success" class="alert alert-success" role="alert">
       {{ successMessage ? successMessage : 'Success!' }}
     </div>
-    <div v-else class="alert alert-danger" role="alert">
-      {{ errorMessage }}
+    <div v-else class="alert alert-danger" role="alert" v-html="errorMessage">
     </div>
   </div>
 </template>
@@ -21,6 +20,10 @@ const props = defineProps(
       type: Number,
       default: 7
     },
+    autoHide: {
+      type: Boolean,
+      default: true
+    },
     showNotification: Boolean
   });
 const isVisible = ref(true);
@@ -28,10 +31,12 @@ const isVisible = ref(true);
 watch(() => props.showNotification, (newValue) => {
   if (newValue) {
     isVisible.value = true;
-    setTimeout(() => {
-      isVisible.value = false;
-      store.showNotification = false;
-    }, props.displayNotificationSeconds * 1000);
+    if(props.autoHide) {
+      setTimeout(() => {
+        isVisible.value = false;
+        store.showNotification = false;
+      }, props.displayNotificationSeconds * 1000);
+    }
   }
 });
 
