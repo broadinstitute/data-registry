@@ -1,6 +1,6 @@
 <script setup>
-import Modal from '~/components/Modal.vue'
-import { useDatasetStore } from '~/stores/DatasetStore'
+import Modal from '~/components/Modal.vue';
+import { useDatasetStore } from '~/stores/DatasetStore';
 
 
 const store = useDatasetStore();
