@@ -4,6 +4,7 @@ import { useDatasetStore } from '~/stores/DatasetStore'
 
 
 const store = useDatasetStore();
+const route = useRouter();
 const fileInfo = ref({});
 let file = null;
 let fileName = null;
@@ -91,7 +92,12 @@ async function upload() {
     store.errorMessage = `<ul class="dotted">${errors.map((e) => `<li>${e}</li>`).join("")}</ul>`;
   } else {
     store.showNotification = false;
-    await store.uploadFileForHermes(file, fileName, dataSetName.value, metadata);
+    try {
+      await store.uploadFileForHermes(file, fileName, dataSetName.value, metadata);
+      await route.push({ path: '/hermes' });
+    } catch (e){
+      console.log(e);
+    }
   }
 }
 
