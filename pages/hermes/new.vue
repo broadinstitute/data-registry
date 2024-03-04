@@ -20,7 +20,9 @@ const colOptions = ref([]);
 
 onMounted(async () => {
   await store.fetchPhenotypes();
-  colOptions.value = await store.fetchColumnOptions();
+  const { required, optional } = await store.fetchColumnOptions();
+  const requiredAnnotated = required.map((r) => `${r} (required)`);
+  colOptions.value = requiredAnnotated.concat(optional);
   phenotypes = store.phenotypes;
 });
 async function sampleFile (e) {
@@ -37,15 +39,16 @@ async function sampleFile (e) {
 }
 
 function updateColumnMapping(name, event) {
-  if(event.target.value === ""){
     Object.entries(colMap.value).forEach(([key, value]) => {
       if(value === name){
         delete colMap.value[key];
       }
     });
-  } else {
-    colMap.value[event.target.value] = name;
-  }
+
+    if(event.target.value !== ""){
+      colMap.value[event.target.value] = name;
+    }
+
 }
 
 function ptypeBlur (event) {
@@ -83,7 +86,8 @@ async function upload() {
     cases: cases.value,
     controls: controls.value,
     subjects: subjects.value,
-    column_map: colMap.value
+    column_map: colMap.value,
+    dichotomous: selectedPhenotype.value.dichotomous
   };
 
   const errors = await store.validateMetadata(metadata);
@@ -218,7 +222,9 @@ async function upload() {
                   <select class="form-control" @change="updateColumnMapping(col, $event)">
                     <option value="">
                     </option>
-                    <option v-for="option in colOptions" :key="option" :value="option" :disabled="Object.keys(colMap).includes(option)">
+                    <option v-for="option in colOptions" :key="option"
+                            :value="option.replace(' (required)', '')"
+                            :disabled="Object.keys(colMap).includes(option.replace(' (required)', ''))">
                       {{ option }}
                     </option>
                   </select>
