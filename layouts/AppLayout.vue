@@ -4,7 +4,7 @@ import { usePrimeVue } from "primevue/config";
 import AppTopbar from "./AppTopbar.vue";
 import AppFooter from "./AppFooter.vue";
 import AppSidebar from "./AppSidebar.vue";
-import AppConfig from "./AppConfig.vue";
+// import AppConfig from "./AppConfig.vue";
 import { useLayout } from "./composables/layout";
 
 const $primevue = usePrimeVue();
@@ -76,11 +76,13 @@ const isOutsideClicked = (event) => {
         </div>
         <div class="layout-main-container">
             <div class="layout-main">
-                <router-view></router-view>
+                <!-- <router-view></router-view> -->
+                <NuxtPage />
             </div>
             <app-footer></app-footer>
         </div>
-        <app-config></app-config>
+
+        <!-- <app-config></app-config> -->
         <div class="layout-mask"></div>
     </div>
 </template>

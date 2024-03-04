@@ -6,10 +6,10 @@
             :success="store.isServerSuccess"
             :success-message="store.successMessage"
         />
-        <DatasetTable />
+        <DataRegistryDatasetTable />
         <div class="row">
             <div class="col text-end">
-                <nuxt-link :to="{ name: 'datasets-new' }">
+                <nuxt-link :to="{ name: 'datasets_old-new' }">
                     <button type="button" class="btn btn-primary">
                         <i class="bi bi-plus" />
                         Add New Dataset
@@ -20,6 +20,9 @@
     </div>
 </template>
 <script setup>
+definePageMeta({
+    layout: "bootstrap",
+});
 import { useDatasetStore } from "~/stores/DatasetStore";
 
 const store = useDatasetStore();

@@ -5,7 +5,7 @@
 </template>
 <script setup>
 definePageMeta({
-    layout: "empty",
+    layout: "bootstrap",
 });
 import ConfigBuilder from "@/components/configcomponents/ConfigBuilder.vue";
 </script>

@@ -52,6 +52,7 @@ const model = ref([
             {
                 label: "Data Sets",
                 icon: "pi pi-fw pi-chart-bar",
+                to: "/datasets",
             },
             {
                 label: "Data Views",

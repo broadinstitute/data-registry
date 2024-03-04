@@ -22,9 +22,6 @@
     </div>
 </template>
 <script setup>
-definePageMeta({
-    layout: "empty",
-});
 import { useDatasetStore } from "~/stores/DatasetStore";
 
 const store = useDatasetStore();

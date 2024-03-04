@@ -1,12 +1,9 @@
 <template>
     <div class="container-fluid">
-        <DRDatasetAccordion
-            :ds-id="route.params.id"
-            :edit-mode="route.query.edit === 'true'"
-        />
+        <DRDatasetAccordion />
         <div class="row mt-2">
             <div class="col text-start">
-                <nuxt-link :to="{ name: 'datasets' }">
+                <nuxt-link :to="{ name: 'datasets_old' }">
                     <button type="button" class="btn btn-success btn-sm">
                         <i class="bi bi-arrow-left" />
                         Back to Dataset List
@@ -14,7 +11,7 @@
                 </nuxt-link>
             </div>
             <div class="col text-end">
-                <nuxt-link :to="{ name: 'datasets-new' }">
+                <nuxt-link :to="{ name: 'datasets_old-new' }">
                     <button type="button" class="btn btn-primary btn-sm">
                         <i class="bi bi-plus" />
                         Add New Dataset
@@ -24,11 +21,12 @@
         </div>
     </div>
 </template>
-
 <script setup>
+definePageMeta({
+    layout: "bootstrap",
+});
 import { useDatasetStore } from "~/stores/DatasetStore";
 
-const route = useRoute();
 const store = useDatasetStore();
-store.savedDataSetId = route.params.id;
+store.$reset();
 </script>
