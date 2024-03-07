@@ -4,6 +4,13 @@ import { ProductService } from "@/service/ProductService";
 import { onMounted, reactive, ref, watch } from "vue";
 const { isDarkTheme } = useLayout();
 const products = ref(null);
+const config = useRuntimeConfig();
+const store = useDatasetStore();
+const datasets = ref([]);
+const axios = useAxios(config, undefined, (error) => {
+    console.log(error);
+    throw new Error("Server Error");
+});
 const lineData = reactive({
     labels: ["January", "February", "March", "April", "May", "June", "July"],
     datasets: [
@@ -31,8 +38,11 @@ const items = ref([
 ]);
 const lineOptions = ref(null);
 
-onMounted(() => {
+onMounted(async () => {
     ProductService.getProductsSmall().then((data) => (products.value = data));
+    datasets.value = (await axios.get(`/api/datasets`)).data.map((ds) => {
+        return { ...ds, showFiles: false };
+    });
 });
 
 const formatCurrency = (value) => {
@@ -117,7 +127,7 @@ watch(
 
 <template>
     <div class="grid">
-        <div class="col-12 lg:col-6 xl:col-3">
+        <!-- <div class="col-12 lg:col-6 xl:col-3">
             <div class="card mb-0">
                 <div class="flex justify-content-between mb-3">
                     <div>
@@ -198,10 +208,49 @@ watch(
                 <span class="text-green-500 font-medium">1 </span>
                 <span class="text-500">Active</span>
             </div>
-        </div>
+        </div> -->
 
-        <div class="col-12 xl:col-6">
+        <div class="col-12">
             <div class="card">
+                <h5>Recent Datasets</h5>
+                <DataTable
+                    :value="datasets"
+                    :pt="{
+                        table: 'table table-striped',
+                    }"
+                    stripedRows
+                    tableStyle="min-width: 50rem"
+                    paginator
+                    :rows="5"
+                >
+                    <Column header="Name">
+                        <template #body="{ data }">
+                            <NuxtLink :to="`/datasets/${data.id}`">{{
+                                data.name
+                            }}</NuxtLink>
+                        </template>
+                    </Column>
+                    <Column field="project" header="Project"></Column>
+                    <Column field="data_type" header="Type"></Column>
+                    <Column field="data_submitter" header="Submitter"></Column>
+                    <Column
+                        header="Date"
+                        field="created_at"
+                        dataType="date"
+                        style="min-width: 10rem"
+                        ><template #body="{ data }">
+                            {{
+                                data.created_at
+                                    ? data.created_at.split("T")[0]
+                                    : ""
+                            }}</template
+                        >
+                    </Column>
+                </DataTable>
+            </div>
+        </div>
+        <div class="col-12 xl:col-6">
+            <!-- <div class="card">
                 <h5>Recent Datasets</h5>
                 <DataTable
                     :value="products"
@@ -219,7 +268,7 @@ watch(
                         <template #header> Type </template>
                         <template #body
                             >GWAS
-                            <!-- <Button icon="pi pi-search" type="button" class="p-button-text"></Button> -->
+
                         </template>
                     </Column>
                     <Column
@@ -249,7 +298,8 @@ watch(
                         </template>
                     </Column>
                 </DataTable>
-            </div>
+            </div> -->
+
             <div class="card">
                 <div
                     class="flex justify-content-between align-items-center mb-5"
@@ -423,10 +473,10 @@ watch(
             </div>
         </div>
         <div class="col-12 xl:col-6">
-            <div class="card">
+            <!--<div class="card">
                 <h5>New Datasets</h5>
-                <!-- <Chart type="line" :data="lineData" :options="lineOptions" /> -->
-            </div>
+                 <Chart type="line" :data="lineData" :options="lineOptions" />
+            </div> -->
             <div class="card">
                 <div
                     class="flex align-items-center justify-content-between mb-4"

@@ -24,9 +24,9 @@ export default defineNuxtConfig({
     //     "assets/css/base.css",
     // ],
     css: [
-        // "bootstrap/dist/css/bootstrap.css",
-        // "bootstrap-icons/font/bootstrap-icons.css",
-        // "assets/css/styles.css",
+        "bootstrap/dist/css/bootstrap.css",
+        "bootstrap-icons/font/bootstrap-icons.css",
+        "assets/css/styles.css",
         "primeicons/primeicons.css",
         "primeflex/primeflex.scss",
         "primevue/resources/primevue.min.css",
