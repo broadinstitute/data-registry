@@ -63,7 +63,14 @@ async function getPubMedInfo () {
 }
 
 async function loadDataset (existingDataset) {
-  const data = await store.fetchExistingDataset(existingDataset);
+  let data;
+  try {
+    data = await store.fetchExistingDataset(existingDataset);
+  } catch(error) {
+    console.error("Error loading dataset:", error);
+    return;
+  }
+
   const ds = data.dataset;
   dsName.value = ds.name;
   genomeBuild.value = ds.genome_build;
@@ -243,7 +250,7 @@ function filterStudies (q) {
               <option value="exomchip">
                 Exome chip
               </option>
-              <option value="exomseq">
+              <option value="exseq">
                 Exome sequence analysis
               </option>
               <option value="ichip">

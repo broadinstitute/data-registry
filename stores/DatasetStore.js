@@ -3,10 +3,9 @@ import { defineStore } from 'pinia';
 const config = useRuntimeConfig();
 
 const configuredAxios = useAxios(config, undefined, (error) => {
-  console.log(JSON.stringify(error));
   const store = useDatasetStore();
   store.processing = false;
-  store.errorMessage = error.message || error.errorMessage;
+  store.errorMessage = error.response.data.detail || error.message || error.errorMessage;
   store.serverSuccess = false;
   store.showNotification = true;
   return Promise.reject(error);
@@ -141,6 +140,10 @@ export const useDatasetStore = defineStore('DatasetStore', {
         this.phenotypes = mappedPhenotypes;
       }
     },
+    async fetchFileUploads(){
+      const { data } = await configuredAxios.get('/api/upload-hermes');
+      return data;
+    },
     async fetchStudies () {
       const { data } = await configuredAxios.get('/api/studies');
       this.studies = data.map((s) => {
@@ -153,6 +156,14 @@ export const useDatasetStore = defineStore('DatasetStore', {
     },
     async deleteDataSet(dsId){
       await configuredAxios.delete(`/api/datasets/${dsId}`);
+    },
+    async fetchColumnOptions(){
+      const { data } = await configuredAxios.get('/api/hermes-upload-columns');
+      return data;
+    },
+    async validateMetadata(metadata) {
+      const {data} = await configuredAxios.post("/api/validate-hermes", JSON.stringify(metadata));
+      return data;
     },
     async fetchExistingDataset (dsId) {
       const { data } = await configuredAxios.get(`/api/datasets/${dsId}`);
@@ -190,6 +201,22 @@ export const useDatasetStore = defineStore('DatasetStore', {
         data_types: mapping,
       };
       await configuredAxios.post("/api/enqueue-csv-process", JSON.stringify(request));
+    },
+    async uploadFileForHermes (file, fileName, dataset, metadata) {
+      this.showProgressBar = true;
+      this.processing = true;
+      this.modalMsg = "Uploading File";
+      this.uploadProgress = 0;
+      const formData = new FormData();
+      formData.append("file", file);
+      const { data } = await configuredAxios.post("/api/upload-hermes", formData,
+        {
+          headers: { "Content-Type": "multipart/form-data",
+            FileName: fileName, Dataset: dataset, Metadata: JSON.stringify(metadata) },
+          onUploadProgress: onUpload
+        });
+      this.processing = false;
+      return data;
     },
     async uploadFileForBioindex (file, fileName) {
       this.showProgressBar = true;

@@ -10,7 +10,7 @@
               </td>
               <td>
                 <input
-                  v-model="label"
+                  v-model="configObject['label']"
                   type="text"
                   class="form-control input-default form-control-sm"
                 >
@@ -21,7 +21,7 @@
                 Width:
               </td>
               <td>
-                <input v-model="width" class="form-control form-control-sm" type="number">
+                <input v-model="configObject['width']" class="form-control form-control-sm" type="number">
               </td>
             </tr>
             <tr>
@@ -29,7 +29,7 @@
                 Height:
               </td>
               <td>
-                <input v-model="height" class="form-control form-control-sm" type="number">
+                <input v-model="configObject['height']" class="form-control form-control-sm" type="number">
               </td>
             </tr>
             <tr>
@@ -37,7 +37,7 @@
                 Label dots meeting:
               </td>
               <td>
-                <select v-model="dotLabelScore" class="form-control form-control-sm">
+                <select v-model="configObject['dot label score']" class="form-control form-control-sm">
                   <option value="">
                     Select
                   </option>
@@ -59,7 +59,7 @@
                 X-axis field:
               </td>
               <td>
-                <FieldSelect v-model="xAxisField"></FieldSelect>
+                <FieldSelect v-model="configObject['x axis field']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -67,7 +67,8 @@
                 X-axis label:
               </td>
               <td>
-                <input v-model="xAxisLabel" type="text" class="form-control input-default form-control-sm">
+                <input v-model="configObject['x axis label']" 
+                  type="text" class="form-control input-default form-control-sm">
               </td>
             </tr>
             <tr>
@@ -75,7 +76,8 @@
                 Condition:
               </td>
               <td>
-                <select v-model="xAxisCondition" class="form-control form-control-sm">
+                <select v-model="configObject['x condition']['combination']" 
+                  class="form-control form-control-sm">
                   <option value="">Select condition</option>
                   <option v-for="objVal in CONDITION_OPTIONS" :key="objVal.text" :value="objVal.text">
                     {{ objVal.display }}
@@ -84,22 +86,28 @@
                 <!-- v-bind entries in list-->
               </td>
             </tr>
-            <tr v-if="requiresGreaterThan(xAxisCondition)">
+            <tr v-if="requiresGreaterThan(configObject['x condition']['combination'])">
               <td>
                 Greater than:
               </td>
               <td>
-                <input v-model="xGT" class="form-control form-control-sm" type="number">
+                <input v-model="configObject['x condition']['greater than']" 
+                  class="form-control form-control-sm" type="number">
               </td>
             </tr>
-            <tr v-if="requiresLessThan(xAxisCondition)">
+            <tr v-if="requiresLessThan(configObject['x condition']['combination'])">
               <td>
-                <span v-if="xAxisCondition === CONDITION_OPTIONS.AND.text">AND</span>
-                <span v-else-if="xAxisCondition === CONDITION_OPTIONS.OR.text">OR</span>
+                <span v-if="configObject['x condition']['combination'] === CONDITION_OPTIONS.AND.text">
+                  AND
+                </span>
+                <span v-else-if="configObject['x condition']['combination'] === CONDITION_OPTIONS.OR.text">
+                  OR
+                </span>
                 Less than:
               </td>
               <td>
-                <input v-model="xLT" class="form-control form-control-sm" type="number">
+                <input v-model="configObject['x condition']['lower than']" 
+                  class="form-control form-control-sm" type="number">
               </td>
             </tr>
           </tbody>
@@ -111,7 +119,7 @@
                 Y-axis field:
               </td>
               <td>
-                <FieldSelect v-model="yAxisField"></FieldSelect>
+                <FieldSelect v-model="configObject['y axis field']"></FieldSelect>
               </td>
             </tr>
             <tr>
@@ -119,7 +127,8 @@
                 Y-axis label:
               </td>
               <td>
-                <input v-model="yAxisLabel" type="text" class="form-control input-default form-control-sm">
+                <input v-model="configObject['y axis label']"
+                  type="text" class="form-control input-default form-control-sm">
               </td>
             </tr>
             <tr>
@@ -127,7 +136,7 @@
                 Condition:
               </td>
               <td>
-                <select v-model="yAxisCondition" class="form-control form-control-sm">
+                <select v-model="configObject['y condition']['combination']" class="form-control form-control-sm">
                   <option value="">Select condition</option>
                   <option v-for="objVal in CONDITION_OPTIONS" :key="objVal.text" :value="objVal.text">
                     {{ objVal.display }}
@@ -136,22 +145,28 @@
                 <!-- v-bind entries in list-->
               </td>
             </tr>
-            <tr v-if="requiresGreaterThan(yAxisCondition)">
+            <tr v-if="requiresGreaterThan(configObject['y condition']['combination'])">
               <td>
                 Greater than:
               </td>
               <td>
-                <input v-model="yGT" class="form-control form-control-sm" type="number">
+                <input v-model="configObject['y condition']['greater than']" 
+                  class="form-control form-control-sm" type="number">
               </td>
             </tr>
-            <tr v-if="requiresLessThan(yAxisCondition)">
+            <tr v-if="requiresLessThan(configObject['y condition']['combination'])">
               <td>
-                <span v-if="yAxisCondition === CONDITION_OPTIONS.AND.text">AND</span>
-                <span v-else-if="yAxisCondition === CONDITION_OPTIONS.OR.text">OR</span>
+                <span v-if="configObject['y condition']['combination'] === CONDITION_OPTIONS.AND.text">
+                  AND
+                </span>
+                <span v-else-if="configObject['y condition']['combination'] === CONDITION_OPTIONS.OR.text">
+                  OR
+                </span>
                 Less than:
               </td>
               <td>
-                <input v-model="yLT" class="form-control form-control-sm" type="number">
+                <input v-model="configObject['y condition']['lower than']" 
+                  class="form-control form-control-sm" type="number">
               </td>
             </tr>
           </tbody>
@@ -163,7 +178,7 @@
                 Render by:
               </td>
               <td>
-                <FieldSelect v-model="renderBy"></FieldSelect>
+                <FieldSelect v-model="configObject['render by']"></FieldSelect>
               </td>
             </tr>
           </tbody>
@@ -183,17 +198,32 @@
   import FieldSelect from '../FieldSelect.vue';
   import GuiButton from '../GuiButton.vue';
   const store = useConfigBuilderStore();
+  const props = defineProps({ 
+    configToLoad: String,
+    editing: Boolean,
+  });
   const emit = defineEmits(["updateVisualizer"]);
   const editingFieldset = computed(() => store.vizEditingFieldset);
-  const label = ref("");
-  const xAxisField = ref("");
-  const xAxisLabel = ref("");
-  const yAxisField = ref("");
-  const yAxisLabel = ref("");
-  const renderBy = ref("");
-  const dotLabelScore = ref("");
-  const xAxisCondition = ref("");
-  const yAxisCondition = ref("");
+  const editingVolcano = computed(() => props.editing);
+  const configObject = ref({
+    "type": "volcano plot",
+    "x axis field": "",
+    "y axis field": "",
+    "render by": "",
+    "dot label score": "",
+    "x condition": {
+      "combination": "",
+      "greater than": "",
+      "lower than": ""
+    },
+    "y condition": {
+      "combination": "",
+      "greater than": "",
+      "lower than": ""
+    },
+    "width": "",
+    "height": ""
+  });
   const CONDITION_OPTIONS = Object.freeze({
     GREATER: {
       text: "greater than",
@@ -212,83 +242,84 @@
       display: "OR"
     }
   });
-  const xGT = ref("");
-  const xLT = ref("");
-  const yGT = ref("");
-  const yLT = ref("");
-  const width = ref("");
-  const height = ref("");
   const CHECK_DONE = Object.freeze({
     VOLCANO_PLOT_LABEL: {
       id: "volcano-plot-label",
       text: "Plot setup",
-      condition: () => !label.value || !dotLabelScore.value, 
+      condition: () => !configObject.value["label"] || !configObject.value["dot label score"], 
       msg: "Specify a plot label and dot labeling conditions."
     },
     VOLCANO_X: {
       id: "volcano-x",
       text: "X-axis field",
       // Empty string comparisons are necessary for number field which accepts zeroes
-      condition: () => !xAxisField.value || !xAxisLabel.value || !xAxisCondition.value ||
-        (requiresGreaterThan(xAxisCondition.value) && xGT.value === "") ||
-        (requiresLessThan(xAxisCondition.value) && xLT.value === "") ||
-        (xAxisCondition.value === "and" && xGT.value >= xLT.value),
+      condition: () => !configObject.value["x axis field"] || 
+        !configObject.value["x axis label"] || 
+        !configObject.value['x condition']['combination'] ||
+        (requiresGreaterThan(configObject.value['x condition']['combination']) && 
+          configObject.value['x condition']['greater than'] === "") ||
+        (requiresLessThan(configObject.value['x condition']['combination']) && 
+          configObject.value['x condition']['lower than'] === "") ||
+        (configObject.value['x condition']['combination'] === "and" &&
+          configObject.value['x condition']['greater than'] >= 
+            configObject.value['x condition']['lower than']),
       msg: "Specify field, label, condition, and thresholds for X-axis."
     },
     VOLCANO_Y: {
       id: "volcano-y",
       text: "Y-axis field",
       // Empty string comparisons are necessary for number field which accepts zeroes
-      condition: () => !yAxisField.value || !yAxisLabel.value || !yAxisCondition.value ||
-        (requiresGreaterThan(yAxisCondition.value) && yGT.value === "") ||
-        (requiresLessThan(yAxisCondition.value) && yLT.value === "") ||
-        (yAxisCondition.value === "and" && yGT.value >= yLT.value),
+      condition: () => !configObject.value['y axis field'] || 
+        !configObject.value['y axis label'] || 
+        !configObject.value['y condition']['combination'] ||
+        (requiresGreaterThan(configObject.value['y condition']['combination']) && 
+          configObject.value['y condition']['greater than'] === "") ||
+        (requiresLessThan(configObject.value['y condition']['combination']) && 
+          configObject.value['y condition']['lower than'] === "") ||
+        (configObject.value['y condition']['combination'] === "and" && 
+          configObject.value['y condition']['greater than'] >= 
+            configObject.value['y condition']['lower than']),
       msg: "Specify field, label, and condition for Y-axis."
     },
     VOLCANO_RENDER_BY: {
       id: "volcano-render-by",
       text: "Render by",
-      condition: () => !renderBy.value, 
+      condition: () => !configObject.value['render by'], 
       msg: "Specify field to render by."  
     },
 
   });
   const configString = computed(() => {
-    const config = {
-      type: "volcano plot",
-      label: label.value,
-      "x axis field": xAxisField.value,
-      "x axis label": xAxisLabel.value,
-      "y axis field": yAxisField.value,
-      "y axis label": yAxisLabel.value,
-      "render by": renderBy.value,
-      "x condition": {
-        combination: xAxisCondition.value,
-      },
-      "y condition": {
-        combination: yAxisCondition.value,
-      },
-      "dot label score": dotLabelScore.value,
-    };
-    if (requiresGreaterThan(xAxisCondition.value)) {
-      config["x condition"]["greater than"] = xGT.value;
+    let outputObject = JSON.parse(JSON.stringify(configObject.value)); // Deep copy
+    if (!requiresGreaterThan(outputObject["x condition"]["combination"])) {
+      delete outputObject["x condition"]["greater than"];
     }
-    if (requiresLessThan(xAxisCondition.value)) {
-      config["x condition"]["lower than"] = xLT.value;
+    if (!requiresLessThan(outputObject["x condition"]["combination"])) {
+      delete outputObject["x condition"]["lower than"];
     }
-    if (requiresGreaterThan(yAxisCondition.value)) {
-      config["y condition"]["greater than"] = yGT.value;
+    if (!requiresGreaterThan(outputObject["y condition"]["combination"])) {
+      delete outputObject["y condition"]["greater than"];
     }
-    if (requiresLessThan(yAxisCondition.value)) {
-      config["y condition"]["lower than"] = yLT.value;
+    if (!requiresLessThan(outputObject["y condition"]["combination"])) {
+      delete outputObject["y condition"]["lower than"];
     }
-    if (width.value) {
-      config.width = width.value;
+    if (!outputObject["width"]) {
+      delete outputObject["width"];
     }
-    if (height.value) {
-      config.height = height.value;
+    if (!outputObject["height"]) {
+      delete outputObject["height"];
     }
-    return JSON.stringify(config);
+    return JSON.stringify(outputObject);
+  });
+  onMounted(() => {
+    if (editingVolcano.value){
+      loadConfig();
+    }
+  });
+  watch(editingVolcano, () => {
+    if (editingVolcano.value){
+      loadConfig();
+    }
   });
   function requiresGreaterThan(conditionString){
     let greaterThans = ["greater than", "and", "or"];
@@ -301,4 +332,27 @@
   watch(configString, () => {
     emit('updateVisualizer', configString.value, readyToSave(Object.values(CHECK_DONE)));
   });
+  function loadConfig(){
+    let loadedConfig = JSON.parse(props.configToLoad);
+    if (!Object.keys(loadedConfig["x condition"]).includes("greater than")){
+      // Zero is a falsy value but valid input
+      loadedConfig["x condition"]["greater than"] = "";
+    }
+    if (!Object.keys(loadedConfig["x condition"]).includes("lower than")){
+      loadedConfig["x condition"]["lower than"] = "";
+    }
+    if (!Object.keys(loadedConfig["y condition"]).includes("greater than")){
+      loadedConfig["y condition"]["greater than"] = "";
+    }
+    if (!Object.keys(loadedConfig["y condition"]).includes("lower than")){
+      loadedConfig["y condition"]["lower than"] = "";
+    }
+    if (!loadedConfig["width"]){
+      loadedConfig["width"] = "";
+    }
+    if (!loadedConfig["height"]){
+      loadedConfig["height"] = "";
+    }
+    configObject.value = loadedConfig;
+  }
 </script>
