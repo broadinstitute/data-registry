@@ -1,5 +1,5 @@
 <script setup>
-import { useDatasetStore } from '~/stores/DatasetStore'
+import { useDatasetStore } from '~/stores/DatasetStore';
 
 
 const route = useRoute();
