@@ -140,6 +140,10 @@ export const useDatasetStore = defineStore('DatasetStore', {
         this.phenotypes = mappedPhenotypes;
       }
     },
+    async fetchFileUpload(fileId){
+      const { data } = await configuredAxios.get(`/api/upload-hermes/${fileId}`);
+      return data;
+    },
     async fetchFileUploads(){
       const { data } = await configuredAxios.get('/api/upload-hermes');
       return data;
