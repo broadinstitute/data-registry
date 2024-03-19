@@ -2,6 +2,7 @@
 import { useLayout } from "@/layouts/composables/layout";
 import { ProductService } from "@/service/ProductService";
 import { onMounted, reactive, ref, watch } from "vue";
+import Chart from "primevue/chart";
 const { isDarkTheme } = useLayout();
 const products = ref(null);
 const config = useRuntimeConfig();
@@ -11,6 +12,10 @@ const axios = useAxios(config, undefined, (error) => {
     console.log(error);
     throw new Error("Server Error");
 });
+let documentStyle = ref(null);
+let textColor = ref(null);
+let textColorSecondary = ref(null);
+let surfaceBorder = ref(null);
 const lineData = reactive({
     labels: ["January", "February", "March", "April", "May", "June", "July"],
     datasets: [
@@ -32,17 +37,83 @@ const lineData = reactive({
         },
     ],
 });
+const radarData = {
+    labels: [
+        "Uploaded",
+        "QC Passed",
+        "Aggregated",
+        "Annotated",
+        "Indexed",
+        "Published",
+        "Archived",
+    ],
+    datasets: [
+        {
+            label: "Hermes 1",
+            borderColor: "#8183f4",
+            pointBackgroundColor: "#8183f4",
+            pointBorderColor: "#8183f4",
+            pointHoverBackgroundColor: "gray",
+            pointHoverBorderColor: "#8183f4",
+            data: [65, 59, 90, 81, 56, 55, 40],
+        },
+        {
+            label: "Hermes 2",
+            borderColor: "#b975f9",
+            pointBackgroundColor: "#b975f9",
+            pointBorderColor: "#b975f9",
+            pointHoverBackgroundColor: "gray",
+            pointHoverBorderColor: "#b975f9",
+            data: [28, 48, 40, 19, 96, 27, 100],
+        },
+    ],
+};
+const radarOptions = {
+    plugins: {
+        legend: {
+            labels: {
+                fontColor: "darkgray",
+            },
+        },
+    },
+    scales: {
+        r: {
+            grid: {
+                color: "gray",
+            },
+        },
+    },
+};
+const setColorOptions = () => {
+    documentStyle.value = getComputedStyle(document.documentElement);
+    textColor.value = "#334155";
+    textColorSecondary.value = "#a0e6ba";
+    surfaceBorder.value = "#036475";
+};
+
 const items = ref([
     { label: "Add New", icon: "pi pi-fw pi-plus" },
     { label: "Remove", icon: "pi pi-fw pi-minus" },
 ]);
 const lineOptions = ref(null);
+const pieOptions = ref(null);
+const pieData = ref({
+    labels: ["Uploaded", "QC Passed", "Annotated", "Indexed"],
+    datasets: [
+        {
+            data: [40, 25, 18, 12],
+            backgroundColor: ["#6366f1", "#a855f7", "#eab308", "#14b8a6"],
+            hoverBackgroundColor: ["#8183f4", "#b975f9", "#eec137", "#41c5b7"],
+        },
+    ],
+});
 
 onMounted(async () => {
     ProductService.getProductsSmall().then((data) => (products.value = data));
     datasets.value = (await axios.get(`/api/datasets`)).data.map((ds) => {
         return { ...ds, showFiles: false };
     });
+    setColorOptions();
 });
 
 const formatCurrency = (value) => {
@@ -76,6 +147,16 @@ const applyLightTheme = () => {
                 },
                 grid: {
                     color: "#ebedef",
+                },
+            },
+        },
+    };
+    pieOptions.value = {
+        plugins: {
+            legend: {
+                labels: {
+                    usePointStyle: true,
+                    color: textColor,
                 },
             },
         },
@@ -126,7 +207,7 @@ watch(
 </script>
 
 <template>
-    <div class="grid">
+    <div class="grid p-fluid">
         <!-- <div class="col-12 lg:col-6 xl:col-3">
             <div class="card mb-0">
                 <div class="flex justify-content-between mb-3">
@@ -210,7 +291,7 @@ watch(
             </div>
         </div> -->
 
-        <div class="col-12">
+        <!-- <div class="col-12">
             <div class="card">
                 <h5>Recent Datasets</h5>
                 <DataTable
@@ -232,6 +313,7 @@ watch(
                     </Column>
                     <Column field="project" header="Project"></Column>
                     <Column field="data_type" header="Type"></Column>
+                    <Column field="phenotype" header="Phenotype"></Column>
                     <Column field="data_submitter" header="Submitter"></Column>
                     <Column
                         header="Date"
@@ -248,57 +330,66 @@ watch(
                     </Column>
                 </DataTable>
             </div>
+        </div> -->
+        <div class="col-12 xl:col-6">
+            <div class="card flex flex-column align-items-center">
+                <h5 class="text-left w-full">Datasets</h5>
+                <Chart
+                    type="doughnut"
+                    :data="pieData"
+                    :options="pieOptions"
+                ></Chart>
+            </div>
         </div>
         <div class="col-12 xl:col-6">
-            <!-- <div class="card">
+            <div class="card flex flex-column align-items-center">
+                <h5 class="text-left w-full">Projects</h5>
+                <Chart
+                    type="radar"
+                    :data="radarData"
+                    :options="radarOptions"
+                ></Chart>
+            </div>
+        </div>
+        <div class="col-12 xl:col-6">
+            <div class="card">
                 <h5>Recent Datasets</h5>
                 <DataTable
-                    :value="products"
+                    :value="datasets"
+                    :pt="{
+                        table: 'table table-striped',
+                    }"
+                    stripedRows
+                    tableStyle="min-width: 50rem"
+                    paginator
                     :rows="5"
-                    :paginator="true"
-                    responsiveLayout="scroll"
                 >
-                    <Column
-                        field="name"
-                        header="File"
-                        :sortable="true"
-                        style="width: 30%"
-                    ></Column>
-                    <Column style="width: 10%">
-                        <template #header> Type </template>
-                        <template #body
-                            >GWAS
+                    <Column header="Name">
+                        <template #body="{ data }">
+                            <NuxtLink :to="`/datasets/${data.id}`">{{
+                                data.name
+                            }}</NuxtLink>
+                        </template>
+                    </Column>
+                    <Column field="project" header="Project"></Column>
+                    <Column field="data_type" header="Type"></Column>
 
-                        </template>
-                    </Column>
+                    <Column field="data_submitter" header="Submitter"></Column>
                     <Column
-                        field="date"
                         header="Date"
-                        :sortable="true"
-                        style="width: 20%"
-                    >
-                        <template #body="slotProps">
-                            {{ slotProps.data.date }}
-                        </template>
-                    </Column>
-                    <Column style="width: 35%">
-                        <template #header> Uploader </template>
-                        <template #body="slotProps">
-                            {{ slotProps.data.user }}
-                        </template>
-                    </Column>
-                    <Column style="width: 5%">
-                        <template #header> View </template>
-                        <template #body>
-                            <Button
-                                icon="pi pi-search"
-                                type="button"
-                                class="p-button-text"
-                            ></Button>
-                        </template>
+                        field="created_at"
+                        dataType="date"
+                        style="min-width: 10rem"
+                        ><template #body="{ data }">
+                            {{
+                                data.created_at
+                                    ? data.created_at.split("T")[0]
+                                    : ""
+                            }}</template
+                        >
                     </Column>
                 </DataTable>
-            </div> -->
+            </div>
 
             <div class="card">
                 <div
@@ -473,9 +564,14 @@ watch(
             </div>
         </div>
         <div class="col-12 xl:col-6">
-            <!--<div class="card">
+            <!-- <div class="card">
                 <h5>New Datasets</h5>
-                 <Chart type="line" :data="lineData" :options="lineOptions" />
+                <Chart
+                    type="pie"
+                    :data="lineData"
+                    :options="pieOptions"
+                    height="300"
+                />
             </div> -->
             <div class="card">
                 <div
@@ -565,7 +661,7 @@ watch(
                     </li>
                 </ul>
             </div>
-            <div
+            <!-- <div
                 class="px-4 py-5 shadow-2 flex flex-column md:flex-row md:align-items-center justify-content-between mb-3"
                 style="
                     border-radius: 1rem;
@@ -597,7 +693,7 @@ watch(
                         Get Started
                     </a>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>

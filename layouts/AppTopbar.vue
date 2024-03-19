@@ -74,10 +74,10 @@ const isOutsideClicked = (event) => {
         </router-link>
 
         <button
-            class="p-link layout-menu-button layout-topbar-button"
+            class="p-link layout-menu-button layout-topbar-button btn"
             @click="onMenuToggle()"
         >
-            <i class="pi pi-bars"></i>
+            <i class="bi-list"></i>
         </button>
 
         <button
@@ -97,16 +97,16 @@ const isOutsideClicked = (event) => {
             </button> -->
             <button
                 @click="onTopBarMenuButton()"
-                class="p-link layout-topbar-button"
+                class="p-link layout-topbar-button btn"
             >
-                <i class="pi pi-user"></i>
+                <i class="bi-person"></i>
                 <span>Profile</span>
             </button>
             <button
                 @click="onSettingsClick()"
-                class="p-link layout-topbar-button"
+                class="p-link layout-topbar-button btn"
             >
-                <i class="pi pi-cog"></i>
+                <i class="bi-gear"></i>
                 <span>Settings</span>
             </button>
         </div>
