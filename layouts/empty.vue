@@ -5,7 +5,7 @@
 
 <template>
     <div>
-        <h1>Empty Layout</h1>
+        <!-- <h1>Empty Layout</h1> -->
         <!-- <PageHeader /> -->
         <slot />
         <!-- <PageFooter /> -->

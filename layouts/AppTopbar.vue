@@ -2,6 +2,8 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useLayout } from "./composables/layout";
 import { useRouter } from "vue-router";
+import { useUserStore } from "~/stores/UserStore";
+const User = useUserStore();
 const { layoutConfig, onMenuToggle } = useLayout();
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -88,13 +90,14 @@ const isOutsideClicked = (event) => {
         </button>
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <!-- <button
+            <button
                 @click="onTopBarMenuButton()"
-                class="p-link layout-topbar-button"
+                class="p-link layout-topbar-button btn"
             >
-                <i class="pi pi-calendar"></i>
-                <span>Calendar</span>
-            </button> -->
+                <i class="bi-bell"></i>
+                <span>Alerts</span>
+            </button>
+            {{ User?.user?.user_name }}
             <button
                 @click="onTopBarMenuButton()"
                 class="p-link layout-topbar-button btn"

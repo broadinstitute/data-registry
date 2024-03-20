@@ -1,15 +1,30 @@
 <script setup>
-import { computed, watch, ref } from "vue";
+import { computed, watch, ref, onMounted } from "vue";
+import { useUserStore } from "@/stores/UserStore";
 import { usePrimeVue } from "primevue/config";
 import AppTopbar from "./AppTopbar.vue";
 import AppFooter from "./AppFooter.vue";
 import AppSidebar from "./AppSidebar.vue";
 // import AppConfig from "./AppConfig.vue";
 import { useLayout } from "./composables/layout";
+import { useRouter } from "vue-router";
 
 const $primevue = usePrimeVue();
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 const outsideClickListener = ref(null);
+const userStore = useUserStore();
+const router = useRouter();
+
+onMounted(async () => {
+    await userStore.isUserLoggedIn();
+    // const { user } = await userStore.isUserLoggedIn();
+    // if (!user) {
+    //     console.log("User not logged in");
+    //     //await router.push("/login");
+    // } else {
+    //     console.log("User is logged in");
+    // }
+});
 
 watch(isSidebarActive, (newVal) => {
     if (newVal) {

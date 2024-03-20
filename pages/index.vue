@@ -371,10 +371,7 @@ watch(
                             }}</NuxtLink>
                         </template>
                     </Column>
-                    <Column field="project" header="Project"></Column>
                     <Column field="data_type" header="Type"></Column>
-
-                    <Column field="data_submitter" header="Submitter"></Column>
                     <Column
                         header="Date"
                         field="created_at"

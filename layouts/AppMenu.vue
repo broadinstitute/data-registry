@@ -1,6 +1,10 @@
 <script setup>
 import { ref } from "vue";
+import { useUserStore } from "@/stores/UserStore";
 import AppMenuItem from "./AppMenuItem.vue";
+
+const userStore = useUserStore();
+const User = userStore.user;
 const model = ref([
     {
         label: "Home",
@@ -28,18 +32,21 @@ const model = ref([
         ],
     },
     {
-        label: "Help",
-        items: [
-            {
-                label: "Documentation",
-                icon: "pi pi-fw pi-question",
-            },
-            {
-                label: "Support",
-                icon: "pi pi-fw pi-comment",
-            },
-        ],
+        separator: true,
     },
+    // {
+    //     label: "Help",
+    //     items: [
+    //         {
+    //             label: "Documentation",
+    //             icon: "bi-journals",
+    //         },
+    //         {
+    //             label: "Support",
+    //             icon: "bi-chat",
+    //         },
+    //     ],
+    // },
 ]);
 </script>
 
@@ -63,6 +70,7 @@ const model = ref([
             </a>
         </li>
     </ul>
+    {{ User?.user_name }} ok
 </template>
 
 <style lang="scss" scoped></style>
