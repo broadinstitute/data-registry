@@ -7,14 +7,14 @@ export default defineNuxtConfig({
     app: {
         head: {
             title: "KPN Data Registry",
-            // link: [
-            //     {
-            //         id: "theme-css",
-            //         rel: "stylesheet",
-            //         type: "text/css",
-            //         href: "/themes/lara-light-indigo/theme.css",
-            //     },
-            // ],
+            link: [
+                {
+                    id: "theme-css",
+                    rel: "stylesheet",
+                    type: "text/css",
+                    href: "/themes/lara-light-indigo/theme.css",
+                },
+            ],
         },
     },
     // css: [
@@ -44,8 +44,8 @@ export default defineNuxtConfig({
         },
     },
     modules: [
-        "@nuxt/devtools",
         "@pinia/nuxt",
+        "@nuxt/devtools",
         "nuxt-primevue",
         // "@nuxtjs/tailwindcss",
     ],
