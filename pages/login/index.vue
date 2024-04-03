@@ -12,7 +12,8 @@ const userStore = useUserStore();
 const submitForm = async () => {
   try {
     await userStore.login(email.value, password.value);
-    navigateTo(route.query.redirect !== '/' ? route.query.redirect : '/');
+    console.log(`redirect ${route.query.redirect}`);
+    navigateTo(route.query.redirect ? route.query.redirect : '/hermes');
   } catch (error) {
     console.log(error);
     errorMessage.value = 'Sorry, we could not log you in.';

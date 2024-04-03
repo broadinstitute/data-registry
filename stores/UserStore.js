@@ -42,11 +42,11 @@ export const useUserStore = defineStore('UserStore', {
       }
       await this.axios.post('/api/google-login', JSON.stringify({ code }));
     },
-    async login (name, password) {
+    async login (user_name, password) {
       if (!this.axios) {
         this.init();
       }
-      await this.axios.post('/api/login', JSON.stringify({ name, password }));
+      await this.axios.post('/api/login', JSON.stringify({ user_name, password }));
     }
   }
 });
