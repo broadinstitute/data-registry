@@ -98,7 +98,7 @@ const items = ref([
 const lineOptions = ref(null);
 const pieOptions = ref(null);
 const pieData = ref({
-    labels: ["Uploaded", "QC Passed", "Annotated", "Indexed"],
+    labels: ["Uploaded", "QC Passed", "QC Failed", "Indexed"],
     datasets: [
         {
             data: [40, 25, 18, 12],
@@ -361,8 +361,10 @@ watch(
                     }"
                     stripedRows
                     tableStyle="min-width: 50rem"
-                    paginator
+                    :totalRecords="5"
                     :rows="5"
+                    :paginator="true"
+                    :alwaysShowPaginator="false"
                 >
                     <Column header="Name">
                         <template #body="{ data }">
@@ -388,7 +390,7 @@ watch(
                 </DataTable>
             </div>
 
-            <div class="card">
+            <!-- <div class="card">
                 <div
                     class="flex justify-content-between align-items-center mb-5"
                 >
@@ -558,7 +560,7 @@ watch(
                         </div>
                     </li>
                 </ul>
-            </div>
+            </div> -->
         </div>
         <div class="col-12 xl:col-6">
             <!-- <div class="card">
@@ -575,14 +577,14 @@ watch(
                     class="flex align-items-center justify-content-between mb-4"
                 >
                     <h5>Updates</h5>
-                    <div>
+                    <!-- <div>
                         <Button
                             icon="pi pi-ellipsis-v"
                             class="p-button-text p-button-plain p-button-rounded"
                             @click="$refs.menu1.toggle($event)"
                         ></Button>
                         <Menu ref="menu1" :popup="true" :model="items"></Menu>
-                    </div>
+                    </div> -->
                 </div>
 
                 <span class="block text-600 font-medium mb-3">TODAY</span>

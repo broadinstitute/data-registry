@@ -5,6 +5,9 @@ import AppMenuItem from "./AppMenuItem.vue";
 
 const userStore = useUserStore();
 const User = userStore.user;
+function signOut() {
+    userStore.logout();
+}
 const model = ref([
     {
         label: "Home",
@@ -68,6 +71,11 @@ const model = ref([
                     class="w-full mt-3"
                 />
             </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#" @click.prevent="signOut"
+                >Sign out</a
+            >
         </li>
     </ul>
     {{ User?.user_name }} ok

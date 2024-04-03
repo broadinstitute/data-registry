@@ -27,7 +27,7 @@ const onTopBarMenuButton = () => {
 
 const onSettingsClick = () => {
     topbarMenuActive.value = false;
-    router.push("/utilities/documentation");
+    router.push("/");
 };
 
 const topbarMenuClasses = computed(() => {
@@ -97,7 +97,7 @@ const isOutsideClicked = (event) => {
                 <i class="bi-bell"></i>
                 <span>Alerts</span>
             </button>
-            {{ User?.user?.user_name }}
+
             <button
                 @click="onTopBarMenuButton()"
                 class="p-link layout-topbar-button btn"
