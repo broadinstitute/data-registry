@@ -21,7 +21,7 @@ const localEditMode = ref(props.editMode);
     :success="store.isServerSuccess"
     :success-message="store.successMessage"
   />
-  <div v-if="store.dataSetId" class="row">
+  <div v-if="store.dataSetId" class="row" v-can="'editDataset'">
     <div class="col">
       <div class="form-check form-switch">
         <input
