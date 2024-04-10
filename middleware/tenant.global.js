@@ -1,6 +1,6 @@
 import { useTenantStore } from '~/stores/TenantStore';
 
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware(() => {
   console.log("Hello from tenant middleware!");
   const hostname = window.location.hostname;
   const segments = hostname.split('.');
