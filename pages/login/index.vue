@@ -1,10 +1,12 @@
 <script setup>
 
+import { useTenantStore } from '~/stores/TenantStore';
 import { useUserStore } from '~/stores/UserStore';
 
 const email = ref('');
 const password = ref('');
 const errorMessage = ref('');
+const loginTitle = ref('Login');
 
 const route = useRoute();
 const config = useRuntimeConfig();
@@ -34,6 +36,10 @@ function loginWithGoogle () {
 }
 
 onMounted(() => {
+  const tenantStore = useTenantStore();
+  if(tenantStore.strings.name){
+    loginTitle.value = `Login to ${tenantStore.strings.name}`;
+  }
   document.getElementById('email').focus();
   if(userStore.loginError){
     errorMessage.value = userStore.loginError;
@@ -46,7 +52,7 @@ onMounted(() => {
     <div class="row justify-content-center">
       <div class="col-md-6">
         <h2 class="text-center">
-          Login
+          {{ loginTitle }}
         </h2>
         <div v-if="errorMessage" class="alert alert-danger" role="alert">
           {{ errorMessage }}
