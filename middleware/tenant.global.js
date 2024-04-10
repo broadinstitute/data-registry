@@ -5,7 +5,10 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const hostname = window.location.hostname;
   const segments = hostname.split('.');
   // Adjust logic here if your local development has a different segments length
-  const tenant = segments.length >= 3 ? segments[0] : 'default';
+  const tenant = segments[0];
+  if(['kpndataregistry', 'local'].includes(tenant)) {
+    return;
+  }
   const tenantStore = useTenantStore();
 
   import(`~/assets/tenants/${tenant}/strings.json`)

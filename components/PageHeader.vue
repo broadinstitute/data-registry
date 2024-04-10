@@ -1,7 +1,9 @@
 <template>
   <nav class="navbar navbar-expand-lg p-3 mb-3 border-bottom">
     <div class="container">
-      <a href="/" class="navbar-brand mr-4"><img :src="`${tenantStore.assetPath}logo.png`" alt="Logo" /></a>
+      <a href="/" class="navbar-brand mr-4"><img v-if="tenantStore.assetPath" :src="`${tenantStore.assetPath}logo.png`" alt="Logo" />
+        <span v-else>[ Data Registry <i class="bi bi-r-square-fill" /> ]</span>
+      </a>
 
       <ul class="navbar-nav">
         <li class="nav-item">
