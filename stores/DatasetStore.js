@@ -149,79 +149,78 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return result;
         },
     },
-    actions: {
-        async fetchPhenotypes() {
-            if (Object.keys(this.phenotypes).length > 0) {
-                return;
-            }
-            const { data, error } = await useFetch(config.public.phenotypesUrl);
-            if (error.value) {
-                this.showNotification = true;
-                this.errorMessage = error.value.errorMessage;
-            } else {
-                const mappedPhenotypes = {};
-                data.value.data.forEach((d) => (mappedPhenotypes[d.name] = d));
-                this.phenotypes = mappedPhenotypes;
-            }
-        },
-        async fetchFileUpload(fileId) {
-            const { data } = await configuredAxios.get(
-                `/api/upload-hermes/${fileId}`,
-            );
-            return data;
-        },
-        async fetchFileUploads() {
-            const { data } = await configuredAxios.get("/api/upload-hermes");
-            return data;
-        },
-        async fetchStudies() {
-            const { data } = await configuredAxios.get("/api/studies");
-            this.studies = data.map((s) => {
-                return {
-                    label: s.name,
-                    value: s.id,
-                    institution: s.institution,
-                };
-            });
-        },
-        async saveStudy(study) {
-            const { data } = await configuredAxios.post(
-                "/api/studies",
-                JSON.stringify(study),
-            );
-            return data;
-        },
-        async deleteDataSet(dsId) {
-            await configuredAxios.delete(`/api/datasets/${dsId}`);
-        },
-        async fetchColumnOptions() {
-            const { data } = await configuredAxios.get(
-                "/api/hermes-upload-columns",
-            );
-            return data;
-        },
-        async validateMetadata(metadata) {
-            const { data } = await configuredAxios.post(
-                "/api/validate-hermes",
-                JSON.stringify(metadata),
-            );
-            return data;
-        },
-        async fetchExistingDataset(dsId) {
-            const { data } = await configuredAxios.get(`/api/datasets/${dsId}`);
-            this.savedPhenotypes = data.phenotypes;
-            this.savedCredibleSets = data.credible_sets;
-            this.savedDataSetId = data.dataset.id;
-            this.combinedPhenotypesAndCredibleSets = mapCredibleSets();
-            return data;
-        },
-        async sampleTextFile(file) {
-            this.showProgressBar = false;
-            this.processing = true;
-            this.modalMsg = "Sampling File";
-            const part = await readFilePart(file, 2048);
-            const formData = new FormData();
-            formData.append("file", new Blob([part]), file.name);
+    dataSetId: (state) => {
+      return state.savedDataSetId;
+    },
+    credibleSetsToAdd: (state) => {
+      let result = false;
+      state.combinedPhenotypesAndCredibleSets.forEach((p) => {
+        if (p.credibleSets.filter(cs => !cs.id).length > 0) {
+          result = true;
+        }
+      });
+      return result;
+    }
+  },
+  actions: {
+    async fetchPhenotypes () {
+      if (Object.keys(this.phenotypes).length > 0) {
+        return;
+      }
+      const { data, error } = await useFetch(config.public.phenotypesUrl);
+      if (error.value) {
+        this.showNotification = true;
+        this.errorMessage = error.value.errorMessage;
+      } else {
+        const mappedPhenotypes = {};
+        data.value.data.forEach(d => (mappedPhenotypes[d.name] = d));
+        this.phenotypes = mappedPhenotypes;
+      }
+    },
+    async fetchFileUpload(fileId){
+      const { data } = await configuredAxios.get(`/api/upload-hermes/${fileId}`);
+      return data;
+    },
+    async fetchFileUploads(){
+      const { data } = await configuredAxios.get('/api/upload-hermes');
+      return data;
+    },
+    async fetchStudies () {
+      const { data } = await configuredAxios.get('/api/studies');
+      this.studies = data.map((s) => {
+        return { label: s.name, value: s.id, institution: s.institution };
+      });
+    },
+    async saveStudy (study) {
+      const { data } = await configuredAxios.post("/api/studies", JSON.stringify(study));
+      return data;
+    },
+    async deleteDataSet(dsId){
+      await configuredAxios.delete(`/api/datasets/${dsId}`);
+    },
+    async fetchColumnOptions(){
+      const { data } = await configuredAxios.get('/api/hermes-upload-columns');
+      return data;
+    },
+    async validateMetadata(metadata) {
+      const {data} = await configuredAxios.post("/api/validate-hermes", JSON.stringify(metadata));
+      return data;
+    },
+    async fetchExistingDataset (dsId) {
+      const { data } = await configuredAxios.get(`/api/datasets/${dsId}`);
+      this.savedPhenotypes = data.phenotypes;
+      this.savedCredibleSets = data.credible_sets;
+      this.savedDataSetId = data.dataset.id;
+      this.combinedPhenotypesAndCredibleSets = mapCredibleSets();
+      return data;
+    },
+    async sampleTextFile (file) {
+      this.showProgressBar = false;
+      this.processing = true;
+      this.modalMsg = "Sampling File";
+      const part = await readFilePart(file, 2048);
+      const formData = new FormData();
+      formData.append("file", new Blob([part]), file.name);
 
             const { data } = await configuredAxios.post(
                 "/api/preview-delimited-file",

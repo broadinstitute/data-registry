@@ -38,7 +38,7 @@ async function copyApiToken(){
 
     <div class="card mb-4">
       <div class="card-body">
-        <p class="card-text"><strong>User:</strong> {{ store.user.name }}</p>
+        <p class="card-text"><strong>User:</strong> {{ store.user.user_name }}</p>
         <p class="card-text"><strong>Roles:</strong> {{ store.user.roles.join(', ') }}</p>
         <p class="card-text">
           <strong>API Token:</strong>
