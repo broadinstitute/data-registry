@@ -378,4 +378,23 @@ export const useDatasetStore = defineStore("DatasetStore", {
             this.combinedPhenotypesAndCredibleSets.splice(index, 1);
         },
     },
+    async deletePhenotypeDataSet (save_phenotype_id) {
+      await configuredAxios.delete(`/api/phenotypes/${save_phenotype_id}`);
+    },
+    addStudy (study) {
+      this.studies.push(study);
+    },
+    addPhenoBlankDataset () {
+      this.combinedPhenotypesAndCredibleSets.push({ credibleSets: [{}] });
+    },
+    resetPhenoDatasets () {
+      this.combinedPhenotypesAndCredibleSets = [{ credibleSets: [{}] }];
+    },
+    removePhenoDataset (index) {
+      this.combinedPhenotypesAndCredibleSets.splice(index, 1);
+    },
+    reviewDataset(id, status) {
+      return configuredAxios.patch(`/api/upload-hermes/${id}`, JSON.stringify({ status }));
+    }
+  }
 });

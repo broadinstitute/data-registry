@@ -1,13 +1,15 @@
 <script setup>
 import { useLayout } from "@/layouts/composables/layout";
 import { ref, computed } from "vue";
-import { useUserStore } from "~/stores/UserStore";
+import { useTenantStore } from '~/stores/TenantStore';
+import { useUserStore } from '~/stores/UserStore';
 // import AppConfig from "@/layouts/AppConfig.vue";
 const { layoutConfig } = useLayout();
 const email = ref("");
 const password = ref("");
 const remember = ref(false);
 const errorMessage = ref("");
+const loginTitle = ref('Login');
 const logoUrl = computed(() => {
     const subdomain = window.location.hostname.split(".")[0];
     if (subdomain === "local") return "/layout/images/hermes-logo-full.png";
@@ -22,13 +24,14 @@ definePageMeta({
 });
 
 const submitForm = async () => {
-    try {
-        await userStore.login(email.value, password.value);
-        navigateTo(route.query.redirect !== "/" ? route.query.redirect : "/");
-    } catch (error) {
-        console.log(error);
-        errorMessage.value = "Sorry, we could not log you in.";
-    }
+  try {
+    await userStore.login(email.value, password.value);
+    console.log(`redirect ${route.query.redirect}`);
+    navigateTo(route.query.redirect ? route.query.redirect : '/hermes');
+  } catch (error) {
+    console.log(error);
+    errorMessage.value = 'Sorry, we could not log you in.';
+  }
 };
 
 function loginWithGoogle() {
@@ -45,11 +48,15 @@ function loginWithGoogle() {
 }
 
 onMounted(() => {
-    document.getElementById("email").focus();
-    if (userStore.loginError) {
-        errorMessage.value = userStore.loginError;
-        userStore.loginError = null;
-    }
+  const tenantStore = useTenantStore();
+  if(tenantStore.strings.name){
+    loginTitle.value = `Login to ${tenantStore.strings.name}`;
+  }
+  document.getElementById('email').focus();
+  if(userStore.loginError){
+    errorMessage.value = userStore.loginError;
+    userStore.loginError = null;
+  }
 });
 </script>
 
