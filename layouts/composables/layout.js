@@ -1,20 +1,20 @@
-import { toRefs, reactive, computed } from 'vue';
+import { toRefs, reactive, computed } from "vue";
 
 const layoutConfig = reactive({
     darkTheme: false,
-    menuMode: 'static',
-    theme: 'lara-light-indigo',
+    menuMode: "static",
+    theme: "lara-light-indigo",
     scale: 14,
-    activeMenuItem: null
+    activeMenuItem: null,
 });
 
 const layoutState = reactive({
-    staticMenuDesktopInactive: false,
+    staticMenuDesktopInactive: true,
     overlayMenuActive: false,
     profileSidebarVisible: false,
     configSidebarVisible: false,
     staticMenuMobileActive: false,
-    menuHoverActive: false
+    menuHoverActive: false,
 });
 
 export function useLayout() {
@@ -32,18 +32,23 @@ export function useLayout() {
     };
 
     const onMenuToggle = () => {
-        if (layoutConfig.menuMode === 'overlay') {
+        if (layoutConfig.menuMode === "overlay") {
             layoutState.overlayMenuActive = !layoutState.overlayMenuActive;
         }
 
         if (window.innerWidth > 991) {
-            layoutState.staticMenuDesktopInactive = !layoutState.staticMenuDesktopInactive;
+            layoutState.staticMenuDesktopInactive =
+                !layoutState.staticMenuDesktopInactive;
         } else {
-            layoutState.staticMenuMobileActive = !layoutState.staticMenuMobileActive;
+            layoutState.staticMenuMobileActive =
+                !layoutState.staticMenuMobileActive;
         }
     };
 
-    const isSidebarActive = computed(() => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive);
+    const isSidebarActive = computed(
+        () =>
+            layoutState.overlayMenuActive || layoutState.staticMenuMobileActive,
+    );
 
     const isDarkTheme = computed(() => layoutConfig.darkTheme);
 
@@ -55,6 +60,6 @@ export function useLayout() {
         onMenuToggle,
         isSidebarActive,
         isDarkTheme,
-        setActiveMenuItem
+        setActiveMenuItem,
     };
 }

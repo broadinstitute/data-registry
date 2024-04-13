@@ -4,13 +4,13 @@ import { useUserStore } from "@/stores/UserStore";
 import { usePrimeVue } from "primevue/config";
 import AppTopbar from "./AppTopbar.vue";
 import AppFooter from "./AppFooter.vue";
-import AppSidebar from "./AppSidebar.vue";
+// import AppSidebar from "./AppSidebar.vue";
 // import AppConfig from "./AppConfig.vue";
 import { useLayout } from "./composables/layout";
 import { useRouter } from "vue-router";
 
 const $primevue = usePrimeVue();
-const { layoutConfig, layoutState, isSidebarActive } = useLayout();
+const { layoutConfig, layoutState } = useLayout();
 const outsideClickListener = ref(null);
 const userStore = useUserStore();
 const router = useRouter();
@@ -26,13 +26,13 @@ onMounted(async () => {
     // }
 });
 
-watch(isSidebarActive, (newVal) => {
-    if (newVal) {
-        bindOutsideClickListener();
-    } else {
-        unbindOutsideClickListener();
-    }
-});
+// watch(isSidebarActive, (newVal) => {
+//     if (newVal) {
+//         bindOutsideClickListener();
+//     } else {
+//         unbindOutsideClickListener();
+//     }
+// });
 const containerClass = computed(() => {
     return {
         "layout-theme-light": layoutConfig.darkTheme.value === "light",
@@ -86,9 +86,9 @@ const isOutsideClicked = (event) => {
 <template>
     <div class="layout-wrapper" :class="containerClass">
         <app-topbar></app-topbar>
-        <div class="layout-sidebar">
+        <!-- <div class="layout-sidebar">
             <app-sidebar></app-sidebar>
-        </div>
+        </div> -->
         <div class="layout-main-container">
             <div class="layout-main">
                 <!-- <router-view></router-view> -->
