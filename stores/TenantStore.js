@@ -1,20 +1,20 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 
-export const useTenantStore = defineStore('TenantStore', {
-  state: () => {
-    return {
-      name: 'default',
-      assetPath: null,
-      strings: {},
-    };
-  },
-  actions: {
-    setTenant(tenant) {
-      this.name = tenant;
-      this.assetPath = `/tenants/${tenant}/`; // Set the path based on the tenant
+export const useTenantStore = defineStore("TenantStore", {
+    state: () => {
+        return {
+            name: "default",
+            assetPath: "/tenants/default/",
+            strings: {},
+        };
     },
-    setStrings(strings) {
-      this.strings = strings;
+    actions: {
+        setTenant(tenant) {
+            this.name = tenant;
+            this.assetPath = `/tenants/${tenant}/`; // Set the path based on the tenant
+        },
+        setStrings(strings) {
+            this.strings = strings;
+        },
     },
-  },
 });

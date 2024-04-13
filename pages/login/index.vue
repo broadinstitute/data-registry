@@ -1,20 +1,22 @@
 <script setup>
 import { useLayout } from "@/layouts/composables/layout";
 import { ref, computed } from "vue";
-import { useTenantStore } from '~/stores/TenantStore';
-import { useUserStore } from '~/stores/UserStore';
+import { useTenantStore } from "~/stores/TenantStore";
+import { useUserStore } from "~/stores/UserStore";
 // import AppConfig from "@/layouts/AppConfig.vue";
 const { layoutConfig } = useLayout();
 const email = ref("");
 const password = ref("");
 const remember = ref(false);
 const errorMessage = ref("");
-const loginTitle = ref('Login');
-const logoUrl = computed(() => {
-    const subdomain = window.location.hostname.split(".")[0];
-    if (subdomain === "local") return "/layout/images/hermes-logo-full.png";
-    else return "/layout/images/dr-logo.png";
+const tenant = useTenantStore();
+const tenantLogo = computed(() => {
+    return tenant.assetPath + tenant.strings.logo;
 });
+const tenantWebsite = computed(() => {
+    return tenant.strings.website;
+});
+
 const route = useRoute();
 const config = useRuntimeConfig();
 const userStore = useUserStore();
@@ -24,14 +26,14 @@ definePageMeta({
 });
 
 const submitForm = async () => {
-  try {
-    await userStore.login(email.value, password.value);
-    console.log(`redirect ${route.query.redirect}`);
-    navigateTo(route.query.redirect ? route.query.redirect : '/hermes');
-  } catch (error) {
-    console.log(error);
-    errorMessage.value = 'Sorry, we could not log you in.';
-  }
+    try {
+        await userStore.login(email.value, password.value);
+        console.log(`redirect ${route.query.redirect}`);
+        navigateTo(route.query.redirect ? route.query.redirect : "/hermes");
+    } catch (error) {
+        console.log(error);
+        errorMessage.value = "Sorry, we could not log you in.";
+    }
 };
 
 function loginWithGoogle() {
@@ -48,15 +50,11 @@ function loginWithGoogle() {
 }
 
 onMounted(() => {
-  const tenantStore = useTenantStore();
-  if(tenantStore.strings.name){
-    loginTitle.value = `Login to ${tenantStore.strings.name}`;
-  }
-  document.getElementById('email').focus();
-  if(userStore.loginError){
-    errorMessage.value = userStore.loginError;
-    userStore.loginError = null;
-  }
+    document.getElementById("email").focus();
+    if (userStore.loginError) {
+        errorMessage.value = userStore.loginError;
+        userStore.loginError = null;
+    }
 });
 </script>
 
@@ -81,17 +79,24 @@ onMounted(() => {
                     style="border-radius: 53px"
                 >
                     <div class="text-center mb-5">
-                        <p>
+                        <template v-if="tenantWebsite != '/'"
+                            ><NuxtLink :to="tenantWebsite" target="_blank">
+                                <img
+                                    :src="tenantLogo"
+                                    alt="logo"
+                                    class="mb-5 flex-shrink-0"
+                                    height="100"
+                                />
+                            </NuxtLink>
+                        </template>
+                        <template v-else>
                             <img
-                                :src="logoUrl"
+                                :src="tenantLogo"
                                 alt="logo"
                                 class="mb-5 flex-shrink-0"
                                 height="100"
                             />
-                        </p>
-                        <span class="text-600 text-xl font-medium"
-                            >Sign in to continue</span
-                        >
+                        </template>
                     </div>
                     <div
                         v-if="errorMessage"

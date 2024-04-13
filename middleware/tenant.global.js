@@ -1,22 +1,19 @@
-import { useTenantStore } from '~/stores/TenantStore';
+import { useTenantStore } from "~/stores/TenantStore";
 
 export default defineNuxtRouteMiddleware(() => {
-  console.log("Hello from tenant middleware!");
-  const hostname = window.location.hostname;
-  const segments = hostname.split('.');
-  // Adjust logic here if your local development has a different segments length
-  const tenant = segments[0];
-  if(['kpndataregistry', 'local'].includes(tenant)) {
-    return;
-  }
-  const tenantStore = useTenantStore();
+    console.log("Hello from tenant middleware!");
+    let tenant = window.location.hostname.split(".")[0];
+    if (["kpndataregistry", "local"].includes(tenant)) {
+        tenant = "default";
+    }
+    const tenantStore = useTenantStore();
 
-  import(`~/assets/tenants/${tenant}/strings.json`)
-    .then((module) => {
-      tenantStore.setTenant(tenant);
-      tenantStore.setStrings(module.default);
-    })
-    .catch(() => {
-      console.error(`Strings for tenant ${tenant} not found.`);
-    });
+    import(`~/assets/tenants/${tenant}/strings.json`)
+        .then((module) => {
+            tenantStore.setTenant(tenant);
+            tenantStore.setStrings(module.default);
+        })
+        .catch(() => {
+            console.error(`Strings for tenant ${tenant} not found.`);
+        });
 });
