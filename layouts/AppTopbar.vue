@@ -3,7 +3,12 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useLayout } from "./composables/layout";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/UserStore";
+import { useTenantStore } from "~/stores/TenantStore";
 const User = useUserStore();
+const Tenant = useTenantStore();
+const tenantLogo = computed(() => {
+    return Tenant.assetPath + Tenant.strings.logo;
+});
 const { layoutConfig, onMenuToggle } = useLayout();
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -71,9 +76,9 @@ const isOutsideClicked = (event) => {
 
 <template>
     <div class="layout-topbar">
-        <router-link to="/" class="layout-topbar-logo">
-            <img src="/layout/images/dr-logo.png" alt="logo" />
-        </router-link>
+        <nuxt-link to="/" class="layout-topbar-logo">
+            <img :src="tenantLogo" alt="logo" />
+        </nuxt-link>
 
         <button
             class="p-link layout-menu-button layout-topbar-button btn"
