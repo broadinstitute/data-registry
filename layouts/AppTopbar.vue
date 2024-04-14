@@ -72,6 +72,37 @@ const isOutsideClicked = (event) => {
         topbarEl.contains(event.target)
     );
 };
+const items = ref([
+    {
+        label: "Profile",
+        items: [
+            {
+                label: "Settings",
+                icon: "bi-gear",
+            },
+            {
+                label: "Sign out",
+                icon: "bi-door-open",
+            },
+        ],
+    },
+]);
+const menuBar = ref([
+    {
+        label: "Dashboard",
+        icon: "bi-house",
+        to: "/",
+    },
+    {
+        label: "Datasets",
+        icon: "bi-file-earmark-text",
+        to: "/datasets",
+    },
+]);
+const menu = ref();
+const toggle = (event) => {
+    menu.value.toggle(event);
+};
 </script>
 
 <template>
@@ -80,45 +111,75 @@ const isOutsideClicked = (event) => {
             <img :src="tenantLogo" alt="logo" />
         </nuxt-link>
 
-        <button
+        <!-- <button
             class="p-link layout-menu-button layout-topbar-button btn"
             @click="onMenuToggle()"
         >
             <i class="bi-list"></i>
-        </button>
+        </button> -->
 
-        <button
+        <!-- <button
             class="p-link layout-topbar-menu-button layout-topbar-button"
             @click="onTopBarMenuButton()"
         >
             <i class="pi pi-ellipsis-v"></i>
-        </button>
+        </button> -->
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <button
+            <!-- <button
                 @click="onTopBarMenuButton()"
                 class="p-link layout-topbar-button btn"
             >
                 <i class="bi-bell"></i>
                 <span>Alerts</span>
-            </button>
+            </button> -->
 
-            <button
+            <!-- <button
                 @click="onTopBarMenuButton()"
                 class="p-link layout-topbar-button btn"
             >
                 <i class="bi-person"></i>
                 <span>Profile</span>
-            </button>
-            <button
-                @click="onSettingsClick()"
-                class="p-link layout-topbar-button btn"
-            >
-                <i class="bi-gear"></i>
-                <span>Settings</span>
-            </button>
+            </button> -->
+            <Menubar :model="menuBar">
+                <!-- <template #start>
+                <NuxtLink :to="dashboard">
+                    <span>Dashboard</span>
+                </NuxtLink>
+                <NuxtLink :to="datasets">
+                    <span>Profile</span>
+                </NuxtLink>
+            </template> -->
+                <template #end>
+                    <button
+                        @click="toggle"
+                        class="p-link layout-topbar-button btn"
+                    >
+                        <i class="bi-person"></i>
+                        <span>Settings</span>
+                    </button>
+                    <Menu
+                        ref="menu"
+                        id="overlay_menu"
+                        :model="items"
+                        :popup="true"
+                    />
+                </template>
+            </Menubar>
         </div>
     </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.p-menubar {
+    border: none;
+    background-color: transparent;
+}
+.p-menubar button {
+    background-color: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    padding: 0.5rem;
+}
+</style>
