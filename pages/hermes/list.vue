@@ -83,7 +83,7 @@ const getIcon = (status) => {
             <Column field="qc_status" header="Status">
                 <template #body="{ data }">
                     <span v-if="data.qc_status !== 'SUBMITTED'">
-                        <nuxt-link :to="`/hermes/${data.id}`">
+                        <nuxt-link :to="`/hermes/qc/${data.id}`">
                             <Tag
                                 :severity="getSeverity(data.qc_status)"
                                 :icon="getIcon(data.qc_status)"
