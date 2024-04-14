@@ -43,8 +43,12 @@ export default defineNuxtConfig({
             googleAuthRedirectUri: "",
         },
     },
-    modules: ["@pinia/nuxt", "@nuxt/devtools", // "@nuxtjs/tailwindcss",
-    "nuxt-primevue", "nuxt-shiki"],
+    modules: [
+        "@pinia/nuxt",
+        "@nuxt/devtools", // "@nuxtjs/tailwindcss",
+        "nuxt-primevue",
+        "nuxt-shiki",
+    ],
     primevue: {
         options: { unstyled: false },
         importPT: {
@@ -53,6 +57,19 @@ export default defineNuxtConfig({
         components: {
             // prefix: "Prime",
         },
+    },
+    shiki: {
+        bundledLangs: [
+            "javascript",
+            "typescript",
+            "json",
+            "html",
+            "css",
+            "scss",
+            "yaml",
+            "markdown",
+            "r",
+        ],
     },
 
     // https://stackoverflow.com/questions/74003458/cannot-find-module-pinia-dist-pinia-mjs-when-using-run-dev

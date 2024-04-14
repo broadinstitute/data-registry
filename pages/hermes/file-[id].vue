@@ -45,37 +45,46 @@ async function reviewDataset() {
                 </button>
             </div>
         </div>
-        <div class="row">
+        <div class="grid" v-if="reviewStatus != 'FAILED'">
+            <div class="col text-center">
+                <Card>
+                    <template #title>QQ Plot</template>
+                    <template #content>
+                        <Image
+                            :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/qq_plot.png`"
+                            alt="QQ Plot"
+                            width="400"
+                        />
+                    </template>
+                </Card>
+            </div>
+
+            <div class="col text-center">
+                <Card>
+                    <template #title>Manhattan Plot</template>
+                    <template #content>
+                        <Image
+                            :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/manhattan_plot.png`"
+                            alt="Manhattan Plot"
+                            width="400"
+                        />
+                    </template>
+                </Card>
+            </div>
+        </div>
+        <div class="grid">
             <div class="col col-md-12 mb-4">
-                <h3>Log Output</h3>
-                <div
-                    class="text-box"
-                    style="
-                        overflow-y: scroll;
-                        height: 400px;
-                        white-space: pre-wrap;
-                    "
-                >
-                    <p>{{ logText }}</p>
-                </div>
-            </div>
-
-            <div class="col-6">
-                <h3>QQ Plot</h3>
-                <img
-                    :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/qq_plot.png`"
-                    alt="QQ Plot"
-                    style="width: 600px; height: 600px; object-fit: contain"
-                />
-            </div>
-
-            <div class="col-6">
-                <h3>Manhattan Plot</h3>
-                <img
-                    :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/manhattan_plot.png`"
-                    alt="Manhattan Plot"
-                    style="width: 600px; height: 600px; object-fit: contain"
-                />
+                <Card>
+                    <template #title>Log Output</template>
+                    <template #content>
+                        <Shiki
+                            :code="logText"
+                            lang="r"
+                            :theme="'nord'"
+                            style="height: 400px; overflow-y: scroll"
+                        />
+                    </template>
+                </Card>
             </div>
         </div>
     </div>
