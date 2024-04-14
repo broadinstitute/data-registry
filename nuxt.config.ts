@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     //     "assets/css/base.css",
     // ],
     css: [
-        "bootstrap/dist/css/bootstrap.css",
+        //"bootstrap/dist/css/bootstrap.css",
         "bootstrap-icons/font/bootstrap-icons.css",
         "assets/css/styles.css",
         "primeicons/primeicons.css",
@@ -43,14 +43,10 @@ export default defineNuxtConfig({
             googleAuthRedirectUri: "",
         },
     },
-    modules: [
-        "@pinia/nuxt",
-        "@nuxt/devtools",
-        "nuxt-primevue",
-        // "@nuxtjs/tailwindcss",
-    ],
+    modules: ["@pinia/nuxt", "@nuxt/devtools", // "@nuxtjs/tailwindcss",
+    "nuxt-primevue", "nuxt-shiki"],
     primevue: {
-        options: { unstyled: true },
+        options: { unstyled: false },
         importPT: {
             from: "/presets/lara/",
         }, //import and apply preset
