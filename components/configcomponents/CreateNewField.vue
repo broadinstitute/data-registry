@@ -51,6 +51,7 @@ const unConvertedFields = computed(() =>
 const fieldAvailable = computed(() => {
   const available = unConvertedFields.value.includes(selectedField.value);
   if (!props.fieldIsLoaded && !available) {
+    // eslint-disable-next-line vue/no-side-effects-in-computed-properties
     createNewField.value = true;
   }
   // Force enable the convert option if you're loading a field which already has it chosen
