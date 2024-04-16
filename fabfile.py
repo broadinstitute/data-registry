@@ -22,9 +22,9 @@ def build(c, env):
     """
     directory = get_checkout_directory(env)
     with c.cd(directory):
-        c.run("npm install")
-        c.run("npx browserslist@latest --update-db")
         c.run("rm -rf .output && rm -rf node_modules/.cache")
+        c.run("npm ci")
+        c.run("npx browserslist@latest --update-db")
         c.run(f"rm -f .env && cp /home/ec2-user/env-files/dr-{env} .env")
         c.run("node_modules/.bin/nuxt generate")
 
