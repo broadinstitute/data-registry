@@ -24,7 +24,7 @@
         "eslint-plugin-vue": "9.25.0",
         "nuxt": "3.11.1",
         "playwright-core": "1.42.1",
-        "vite": "5.2.7",
+        "vite": "5.2.9",
         "vitest": "1.4.0",
         "vue-router": "4.3.0"
     },
