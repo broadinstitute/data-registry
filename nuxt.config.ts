@@ -12,7 +12,7 @@ export default defineNuxtConfig({
                     id: "theme-css",
                     rel: "stylesheet",
                     type: "text/css",
-                    href: "/themes/lara-light-indigo/theme.css",
+                    href: "/themes/aura-light-indigo/theme.css",
                 },
             ],
         },
@@ -26,12 +26,13 @@ export default defineNuxtConfig({
     css: [
         //"bootstrap/dist/css/bootstrap.css",
         "bootstrap-icons/font/bootstrap-icons.css",
-        "assets/css/styles.css",
+        //"assets/css/styles.css",
         "primeicons/primeicons.css",
         "primeflex/primeflex.scss",
         "primevue/resources/primevue.min.css",
         "@/assets/styles.scss",
         // "assets/css/base.css",
+        "primevue/resources/themes/aura-light-indigo/theme.css",
     ],
 
     runtimeConfig: {
@@ -50,10 +51,10 @@ export default defineNuxtConfig({
         "nuxt-shiki",
     ],
     primevue: {
-        options: { unstyled: false },
-        importPT: {
-            from: "/presets/lara/",
-        }, //import and apply preset
+        options: { unstyled: false, ripple: true },
+        //importPT: {
+        //    from: "/presets/lara/",
+        //}, //import and apply preset
         components: {
             // prefix: "Prime",
         },

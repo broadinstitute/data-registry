@@ -157,6 +157,7 @@ onMounted(() => {
                         <Button
                             label="Sign In"
                             class="w-full p-3 text-xl"
+                            icon="bi-person"
                             @click="submitForm()"
                         ></Button>
                         <Button

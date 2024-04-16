@@ -4,7 +4,11 @@ import { useLayout } from "./composables/layout";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/UserStore";
 import { useTenantStore } from "~/stores/TenantStore";
-const User = useUserStore();
+const userStore = useUserStore();
+const User = userStore.user;
+function signOut() {
+    userStore.logout();
+}
 const Tenant = useTenantStore();
 const tenantLogo = computed(() => {
     return Tenant.assetPath + Tenant.strings.logo;
@@ -83,6 +87,7 @@ const items = ref([
             {
                 label: "Sign out",
                 icon: "bi-door-open",
+                command: signOut,
             },
         ],
     },

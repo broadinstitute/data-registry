@@ -18,7 +18,7 @@ const getSeverity = (status) => {
             return "success";
 
         case "SUBMITTED":
-            return null;
+            return "secondary";
     }
 };
 
@@ -38,7 +38,7 @@ const getIcon = (status) => {
             return "bi-check";
 
         case "SUBMITTED":
-            return null;
+            return "bi-plus";
     }
 };
 </script>
@@ -53,12 +53,11 @@ const getIcon = (status) => {
             :rows="10"
             :rowsPerPageOptions="[5, 10, 20]"
             ><template #header>
-                <div
-                    class="flex justify-content-between flex-column sm:flex-row"
-                >
+                <div class="flex justify-content-end flex-column sm:flex-row">
                     <Button
                         type="button"
                         label="Upload New Dataset"
+                        icon="bi-upload"
                         outlined
                         @click="() => $router.push('/hermes/new')"
                     />
@@ -93,8 +92,26 @@ const getIcon = (status) => {
                         </nuxt-link>
                     </span>
                     <span v-else>
-                        <Chip :label="data.qc_status" />
+                        <Tag
+                            :severity="getSeverity(data.qc_status)"
+                            :icon="getIcon(data.qc_status)"
+                            rounded
+                            >{{ data.qc_status.toUpperCase() }}</Tag
+                        >
                     </span>
+                </template>
+            </Column>
+            <Column field="qc_report" header="QC Report">
+                <template #body="{ data }">
+                    <NuxtLink :to="`/hermes/qc/${data.id}`">
+                        <Button
+                            v-if="data.qc_status !== 'SUBMITTED'"
+                            outlined
+                            size="small"
+                        >
+                            View
+                        </Button></NuxtLink
+                    >
                 </template>
             </Column>
         </DataTable>
