@@ -5,6 +5,8 @@ const route = useRoute();
 const id = route.params.id;
 const store = useDatasetStore();
 const reviewStatus = ref("");
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
 
 const logText = ref(
     "This is a long text that will be displayed in the text box.",
@@ -16,39 +18,18 @@ onMounted(async () => {
     reviewStatus.value = response.status;
 });
 
-async function reviewDataset() {
-    await store.reviewDataset(id, reviewStatus.value);
+async function reviewDataset(id, value) {
+    await store.reviewDataset(id, value);
+    toast.add({
+        severity: "success",
+        summary: "Success",
+        detail: "Dataset status updated successfully",
+        life: "3000",
+    });
 }
 </script>
 
 <template>
-    <div class="grid" v-can="'approveUpload'">
-        <InputGroup>
-            <Button label="Fail" />
-            <Button label="Pass" />
-        </InputGroup>
-
-        <div class="col col-3">
-            <div class="label">Review Status:</div>
-            <select
-                class="form-select form-control form-control-sm"
-                v-model="reviewStatus"
-            >
-                <option value=""></option>
-                <option value="REVIEW APPROVED">Pass</option>
-                <option value="REVIEW REJECTED">Fail</option>
-            </select>
-        </div>
-        <div class="col col-3 d-flex align-items-end">
-            <button
-                :disabled="reviewStatus === ''"
-                class="btn btn-primary"
-                @click="reviewDataset()"
-            >
-                Review Dataset
-            </button>
-        </div>
-    </div>
     <Breadcrumb
         :home="{ icon: 'bi-house', to: '/' }"
         :items="[{ label: 'Datasets' }, { label: 'Dataset' }]"
@@ -62,6 +43,7 @@ async function reviewDataset() {
                         :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/qq_plot.png`"
                         alt="QQ Plot"
                         width="400"
+                        preview
                     />
                 </template>
             </Card>
@@ -75,6 +57,7 @@ async function reviewDataset() {
                         :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/manhattan_plot.png`"
                         alt="Manhattan Plot"
                         width="400"
+                        preview
                     />
                 </template>
             </Card>
@@ -97,6 +80,29 @@ async function reviewDataset() {
                     />
                 </template>
             </Card>
+        </div>
+    </div>
+    <div class="grid" v-can="'approveUpload'">
+        <div class="col-6 col-offset-3">
+            <Toast position="bottom-right" />
+            <InputGroup>
+                <Button
+                    label="Fail"
+                    icon="bi-x-lg"
+                    severity="danger"
+                    @click="reviewDataset(id, 'REVIEW REJECTED')"
+                />
+                <InputText
+                    placeholder="Review dataset this dataset."
+                    disabled
+                />
+                <Button
+                    label="Pass"
+                    icon="bi-check-lg"
+                    severity="success"
+                    @click="reviewDataset(id, 'REVIEW APPROVED')"
+                />
+            </InputGroup>
         </div>
     </div>
 </template>

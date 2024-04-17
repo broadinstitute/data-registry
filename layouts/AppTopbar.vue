@@ -96,12 +96,12 @@ const menuBar = ref([
     {
         label: "Dashboard",
         icon: "bi-house",
-        to: "/",
+        url: "/",
     },
     {
         label: "Datasets",
         icon: "bi-file-earmark-text",
-        to: "/datasets",
+        url: "/hermes/list",
     },
 ]);
 const menu = ref();
