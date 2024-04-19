@@ -41,6 +41,14 @@ const colMap = computed(() => {
         Object.entries(selectedFields.value).filter(([key, value]) => value),
     );
 });
+
+const tableRows = computed(() => {
+    return Object.entries(fileInfo.value.columns).map(([index, value]) => ({
+        index: index,
+        column: value,
+    }));
+});
+
 async function sampleFile(e) {
     store.showNotification = false;
     file = e.target.files[0];
@@ -49,10 +57,8 @@ async function sampleFile(e) {
         fileInfo.value = await store.sampleTextFile(e.target.files[0]);
         //copy fileInfo.columns to selectedFields
         fileInfo.value.columns.forEach((col) => {
-            console.log(col);
             selectedFields.value[col] = null;
         });
-        console.log("done mapping", selectedFields.value);
     } catch (e) {
         console.log(e);
         fileInfo.value = {};
@@ -342,15 +348,8 @@ async function upload() {
                         <Chip v-else :label="field" :key="'else-' + field" />
                     </template>
                 </div>
-                <DataTable
-                    :value="fileInfo.columns"
-                    v-if="fileInfo.columns"
-                    rowHover
-                >
-                    <Column header="Column" class="col-4">
-                        <template #body="{ data }">
-                            {{ data }}
-                        </template>
+                <DataTable :value="tableRows" v-if="fileInfo.columns" rowHover>
+                    <Column field="column" header="Column" class="col-4">
                     </Column>
                     <Column header=">>" class="col-1"></Column>
                     <Column header="Represents" class="col-7">
@@ -367,11 +366,11 @@ async function upload() {
                                                 selectedFields,
                                             ).includes(option.value) &&
                                             option.value !==
-                                                selectedFields[data]
+                                                selectedFields[data.column]
                                         );
                                     }
                                 "
-                                v-model="selectedFields[data]"
+                                v-model="selectedFields[data.column]"
                                 showClear
                             />
                         </template>
