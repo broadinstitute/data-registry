@@ -8,7 +8,6 @@ const fileInfo = ref({});
 let file = null;
 let fileName = null;
 let phenotypes = {};
-const colMap = ref({});
 const selectedPhenotype = ref({});
 const cases = ref(0);
 const subjects = ref(0);
@@ -36,8 +35,13 @@ const availableOptions = computed(() => {
         (option) => !Object.keys(colMap.value).includes(option.value),
     );
 });
+
+const colMap = computed(() => {
+    return Object.fromEntries(
+        Object.entries(selectedFields.value).filter(([key, value]) => value),
+    );
+});
 async function sampleFile(e) {
-    colMap.value = {};
     store.showNotification = false;
     file = e.target.files[0];
     fileName = e.target.files[0].name;
@@ -54,19 +58,6 @@ async function sampleFile(e) {
         fileInfo.value = {};
         selectedFields.value = {};
     }
-}
-
-function updateColumnMapping(name, event) {
-    console.log(name, event);
-    // Object.entries(colMap.value).forEach(([key, value]) => {
-    //     if (value === name) {
-    //         delete colMap.value[key];
-    //     }
-    // });
-
-    // if (event !== "" && event !== undefined && event !== null) {
-    //     colMap.value[event.replace("*", "")] = name;
-    // }
 }
 
 function ptypeBlur(event) {
@@ -130,10 +121,6 @@ async function upload() {
             console.log(e);
         }
     }
-}
-
-function show(event) {
-    console.log("event", event);
 }
 </script>
 
@@ -243,53 +230,7 @@ function show(event) {
                     </div>
                 </div>
             </div>
-            <div v-if="fileInfo.columns" class="row">
-                <div class="col-md-6 offset-md-3">
-                    <!-- <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Column</th>
-                                <th>Represents</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="col in fileInfo.columns" :key="col">
-                                <td>{{ col }}</td>
-                                <td>
-                                    <select
-                                        class="form-control"
-                                        @change="
-                                            updateColumnMapping(col, $event)
-                                        "
-                                    >
-                                        <option value=""></option>
-                                        <option
-                                            v-for="option in colOptions"
-                                            :key="option"
-                                            :value="
-                                                option.replace(
-                                                    ' (required)',
-                                                    '',
-                                                )
-                                            "
-                                            :disabled="
-                                                Object.keys(colMap).includes(
-                                                    option.replace(
-                                                        ' (required)',
-                                                        '',
-                                                    ),
-                                                )
-                                            "
-                                        >
-                                            {{ option }}
-                                        </option>
-                                    </select>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table> -->
-                </div>
-            </div>
+
             <div class="row">
                 <div class="col-md-6 offset-md-3">
                     <button
@@ -431,11 +372,7 @@ function show(event) {
                                     }
                                 "
                                 v-model="selectedFields[data]"
-                                @change="
-                                    updateColumnMapping(data, $event.value)
-                                "
                                 showClear
-                                v-on:update:model-value="show"
                             />
                         </template>
                     </Column>
