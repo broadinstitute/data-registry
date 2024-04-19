@@ -16,15 +16,25 @@ const controls = ref(0);
 const dataSetName = ref("");
 const colOptions = ref([]);
 const requiredFields = ref([]);
-const selectedFields = ref([]);
+const selectedFields = ref({});
 
 onMounted(async () => {
     await store.fetchPhenotypes();
     const { required, optional } = await store.fetchColumnOptions();
-    const requiredAnnotated = required.map((r) => `${r}*`);
-    colOptions.value = requiredAnnotated.concat(optional);
+    //create a list of objects with required fields with an asterisk at the end, and add optional fields with keys name and value
+    const requiredAnnotated = required.map((r) => ({
+        name: `${r}*`,
+        value: r,
+    }));
+    const optionalFields = optional.map((o) => ({ name: o, value: o }));
+    colOptions.value = requiredAnnotated.concat(optionalFields);
     phenotypes = store.phenotypes;
     requiredFields.value = required;
+});
+const availableOptions = computed(() => {
+    return colOptions.value.filter(
+        (option) => !Object.keys(colMap.value).includes(option.value),
+    );
 });
 async function sampleFile(e) {
     colMap.value = {};
@@ -33,23 +43,30 @@ async function sampleFile(e) {
     fileName = e.target.files[0].name;
     try {
         fileInfo.value = await store.sampleTextFile(e.target.files[0]);
+        //copy fileInfo.columns to selectedFields
+        fileInfo.value.columns.forEach((col) => {
+            console.log(col);
+            selectedFields.value[col] = null;
+        });
+        console.log("done mapping", selectedFields.value);
     } catch (e) {
         console.log(e);
         fileInfo.value = {};
+        selectedFields.value = {};
     }
 }
 
 function updateColumnMapping(name, event) {
     console.log(name, event);
-    Object.entries(colMap.value).forEach(([key, value]) => {
-        if (value === name) {
-            delete colMap.value[key];
-        }
-    });
+    // Object.entries(colMap.value).forEach(([key, value]) => {
+    //     if (value === name) {
+    //         delete colMap.value[key];
+    //     }
+    // });
 
-    if (event !== "") {
-        colMap.value[event.replace("*", "")] = name;
-    }
+    // if (event !== "" && event !== undefined && event !== null) {
+    //     colMap.value[event.replace("*", "")] = name;
+    // }
 }
 
 function ptypeBlur(event) {
@@ -113,6 +130,10 @@ async function upload() {
             console.log(e);
         }
     }
+}
+
+function show(event) {
+    console.log("event", event);
 }
 </script>
 
@@ -224,7 +245,7 @@ async function upload() {
             </div>
             <div v-if="fileInfo.columns" class="row">
                 <div class="col-md-6 offset-md-3">
-                    <table class="table">
+                    <!-- <table class="table">
                         <thead>
                             <tr>
                                 <th>Column</th>
@@ -266,7 +287,7 @@ async function upload() {
                                 </td>
                             </tr>
                         </tbody>
-                    </table>
+                    </table> -->
                 </div>
             </div>
             <div class="row">
@@ -361,7 +382,7 @@ async function upload() {
             <div class="card">
                 <h5>Map column names to their representations.</h5>
                 <small
-                    >Map all the required fields<span style="color: darkred"
+                    >Match all the required fields<span style="color: darkred"
                         >*</span
                     >
                     and any optional field to upload file.</small
@@ -370,7 +391,7 @@ async function upload() {
                     <h6 class="w-full">Required fields:</h6>
                     <template v-for="field in requiredFields">
                         <Chip
-                            v-if="Object.keys(colMap).includes(field)"
+                            v-if="Object.values(selectedFields).includes(field)"
                             :key="field"
                             icon="bi-check"
                             :label="field"
@@ -380,23 +401,41 @@ async function upload() {
                         <Chip v-else :label="field" :key="'else-' + field" />
                     </template>
                 </div>
-                <DataTable :value="fileInfo.columns" v-if="fileInfo.columns">
+                <DataTable
+                    :value="fileInfo.columns"
+                    v-if="fileInfo.columns"
+                    rowHover
+                >
                     <Column header="Column" class="col-4">
                         <template #body="{ data }">
                             {{ data }}
                         </template>
                     </Column>
                     <Column header=">>" class="col-1"></Column>
-                    <Column field="rep" header="Represents" class="col-7">
+                    <Column header="Represents" class="col-7">
                         <template #body="{ data }">
                             <Dropdown
                                 class="w-full"
+                                :options="availableOptions"
+                                option-label="name"
+                                option-value="value"
+                                :option-disabled="
+                                    (option) => {
+                                        return (
+                                            Object.values(
+                                                selectedFields,
+                                            ).includes(option.value) &&
+                                            option.value !==
+                                                selectedFields[data]
+                                        );
+                                    }
+                                "
                                 v-model="selectedFields[data]"
-                                :options="colOptions"
                                 @change="
                                     updateColumnMapping(data, $event.value)
                                 "
                                 showClear
+                                v-on:update:model-value="show"
                             />
                         </template>
                     </Column>
