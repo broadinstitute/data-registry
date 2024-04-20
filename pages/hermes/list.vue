@@ -13,12 +13,14 @@ const getSeverity = (status) => {
     switch (status) {
         case "FAILED":
             return "danger";
-
         case "SUCCEEDED":
             return "success";
-
         case "SUBMITTED":
             return "secondary";
+        case "REVIEW REJECTED":
+            return "warning";
+        default:
+            return "info";
     }
 };
 
@@ -33,12 +35,14 @@ const getIcon = (status) => {
     switch (status) {
         case "FAILED":
             return "bi-x";
-
         case "SUCCEEDED":
             return "bi-check";
-
         case "SUBMITTED":
             return "bi-plus";
+        case "REVIEW REJECTED":
+            return "bi-x-square";
+        case "REVIEW APPROVED":
+            return "bi-check-square";
     }
 };
 </script>
@@ -59,7 +63,7 @@ const getIcon = (status) => {
                         label="Upload New Dataset"
                         icon="bi-upload"
                         outlined
-                        @click="() => $router.push('/hermes/new')"
+                        @click="() => $router.push('/hermes/qc/upload')"
                     />
                 </div>
             </template>
@@ -86,18 +90,18 @@ const getIcon = (status) => {
                             <Tag
                                 :severity="getSeverity(data.qc_status)"
                                 :icon="getIcon(data.qc_status)"
+                                :value="data.qc_status.toUpperCase()"
                                 rounded
-                                >{{ data.qc_status.toUpperCase() }}</Tag
-                            >
+                            />
                         </nuxt-link>
                     </span>
                     <span v-else>
                         <Tag
                             :severity="getSeverity(data.qc_status)"
                             :icon="getIcon(data.qc_status)"
+                            :value="data.qc_status.toUpperCase()"
                             rounded
-                            >{{ data.qc_status.toUpperCase() }}</Tag
-                        >
+                        />
                     </span>
                 </template>
             </Column>
@@ -119,7 +123,10 @@ const getIcon = (status) => {
 </template>
 
 <style scoped>
-button span.icon {
+/* button span.icon {
     margin-right: 10px;
-}
+} */
+/* .p-tag .p-tag-icon {
+    margin-right: 0.25rem;
+} */
 </style>

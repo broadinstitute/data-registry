@@ -1,5 +1,4 @@
 <script setup>
-import Modal from "~/components/Modal.vue";
 import { useDatasetStore } from "~/stores/DatasetStore";
 
 const store = useDatasetStore();
@@ -9,6 +8,7 @@ let file = null;
 let fileName = null;
 let phenotypes = {};
 const selectedPhenotype = ref({});
+const filteredPhenotypes = ref();
 const cases = ref(0);
 const subjects = ref(0);
 const controls = ref(0);
@@ -43,18 +43,28 @@ const colMap = computed(() => {
 });
 
 const tableRows = computed(() => {
-    return Object.entries(fileInfo.value.columns).map(([index, value]) => ({
-        index: index,
-        column: value,
-    }));
+    return (
+        Object.entries(fileInfo.value?.columns).map(([index, value]) => ({
+            index: index,
+            column: value,
+        })) || []
+    );
 });
+const steps = ref([
+    { label: "Enter Metadata" },
+    { label: "Select File" },
+    { label: "Map Columns" },
+    { label: "Upload" },
+]);
+
+const activeStep = ref(0);
 
 async function sampleFile(e) {
     store.showNotification = false;
-    file = e.target.files[0];
-    fileName = e.target.files[0].name;
+    file = e.files[0];
+    fileName = e.files[0].name;
     try {
-        fileInfo.value = await store.sampleTextFile(e.target.files[0]);
+        fileInfo.value = await store.sampleTextFile(e.files[0]);
         //copy fileInfo.columns to selectedFields
         fileInfo.value.columns.forEach((col) => {
             selectedFields.value[col] = null;
@@ -89,6 +99,22 @@ function filterFunc(q) {
         });
         return matches === words.length;
     });
+}
+
+function matchPhenotypes(event) {
+    setTimeout(() => {
+        if (!event.query.trim().length || event.query.trim().length < 2) {
+            filteredPhenotypes.value = phenotypes.value;
+        } else {
+            filteredPhenotypes.value = Object.values(phenotypes)
+                .filter((p) => {
+                    return p.description
+                        .toLowerCase()
+                        .includes(event.query.toLowerCase());
+                })
+                .sort((a, b) => a.description.length - b.description.length);
+        }
+    }, 250);
 }
 
 async function upload() {
@@ -183,11 +209,6 @@ async function upload() {
                             :item-display="(i) => i.description"
                             @blur="ptypeBlur"
                         />
-                        <!-- <AutoComplete
-                            v-model="value"
-                            optionLabel="description"
-                            :suggestions="Object.values(phenotypes)"
-                        /> -->
                     </div>
                 </div>
             </div>
@@ -206,7 +227,7 @@ async function upload() {
                     </div>
                 </div>
             </div>
-            <div class="row" v-if="selectedPhenotype.dichotomous">
+            <div class="row" v-if="selectedPhenotype?.dichotomous">
                 <div class="col-md-6 offset-md-3">
                     <div class="form-group">
                         <label class="label" for="cases">Cases:</label>
@@ -221,7 +242,7 @@ async function upload() {
                     </div>
                 </div>
             </div>
-            <div class="row" v-if="selectedPhenotype.dichotomous">
+            <div class="row" v-if="selectedPhenotype?.dichotomous">
                 <div class="col-md-6 offset-md-3">
                     <div class="form-group">
                         <label class="label" for="cases">Controls:</label>
@@ -277,7 +298,12 @@ async function upload() {
             :animation-duration="0"
         />
     </Dialog>
-
+    <div class="grid">
+        <div class="col mb-4">
+            <h2 class="text-center mb-4">Upload GWAS for Analysis</h2>
+            <Steps :activeStep="activeStep" :model="steps" />
+        </div>
+    </div>
     <div class="grid">
         <div class="col-12 md:col-6">
             <div class="card p-fluid">
@@ -291,8 +317,42 @@ async function upload() {
                     />
                 </div>
                 <div class="field">
-                    <label for="email1">Phenotype</label>
-                    <InputText id="email1" type="text" />
+                    <label for="phenotype">Phenotype</label>
+                    <AutoComplete
+                        id="phenotype"
+                        v-model="selectedPhenotype"
+                        optionLabel="description"
+                        :suggestions="filteredPhenotypes"
+                        @complete="matchPhenotypes"
+                        dataKey="name"
+                        dropdown
+                        forceSelection
+                        dropdown-mode="current"
+                        auto-option-focus
+                    />
+                </div>
+                <div
+                    v-if="selectedPhenotype?.dichotomous"
+                    class="formgrid grid"
+                >
+                    <div class="field col">
+                        <label for="cases">Cases</label>
+                        <InputText
+                            id="cases"
+                            type="number"
+                            v-model="cases"
+                            min="0"
+                        />
+                    </div>
+                    <div class="field col">
+                        <label for="controls">Controls</label>
+                        <InputText
+                            id="controls"
+                            type="number"
+                            v-model="controls"
+                            min="0"
+                        />
+                    </div>
                 </div>
                 <div class="field">
                     <label for="subjects">Subjects/Samples</label>
@@ -302,6 +362,7 @@ async function upload() {
                         type="number"
                         inputId="withoutgrouping"
                         :useGrouping="false"
+                        min="0"
                     />
                 </div>
             </div>
@@ -312,9 +373,9 @@ async function upload() {
                     name="file"
                     id="fileInput"
                     accept=".csv, .tsv, .gz, .bgzip, .gzip"
-                    @change="sampleFile"
                     :showUploadButton="false"
                     :previewWidth="0"
+                    @select="sampleFile"
                 >
                     <template #empty>
                         <p>
@@ -376,6 +437,16 @@ async function upload() {
                         </template>
                     </Column>
                 </DataTable>
+                <div class="w-full text-center mt-4">
+                    <Button
+                        type="button"
+                        label="Upload"
+                        class="p-button-primary"
+                        icon="bi-upload"
+                        @click="upload"
+                        raised
+                    ></Button>
+                </div>
             </div>
         </div>
     </div>

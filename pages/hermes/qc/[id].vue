@@ -32,7 +32,11 @@ async function reviewDataset(id, value) {
 <template>
     <Breadcrumb
         :home="{ icon: 'bi-house', to: '/' }"
-        :items="[{ label: 'Datasets' }, { label: 'Dataset' }]"
+        :model="[
+            { label: 'Datasets', url: '/hermes/list' },
+            { label: 'Dataset' },
+        ]"
+        class="mb-3"
     />
     <div class="grid" v-if="reviewStatus != 'FAILED'">
         <div class="col text-center">
@@ -83,7 +87,7 @@ async function reviewDataset(id, value) {
         </div>
     </div>
     <div class="grid" v-can="'approveUpload'">
-        <div class="col-6 col-offset-3">
+        <div class="col-4 col-offset-4">
             <Toast position="bottom-right" />
             <InputGroup>
                 <Button
@@ -92,10 +96,7 @@ async function reviewDataset(id, value) {
                     severity="danger"
                     @click="reviewDataset(id, 'REVIEW REJECTED')"
                 />
-                <InputText
-                    placeholder="Review dataset this dataset."
-                    disabled
-                />
+                <InputText placeholder="Approve this dataset?" disabled />
                 <Button
                     label="Pass"
                     icon="bi-check-lg"
