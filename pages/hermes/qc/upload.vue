@@ -1,5 +1,7 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
+import { ref, onMounted, computed } from "vue";
+import ServerNotification from "~/components/ServerNotification.vue";
 
 const store = useDatasetStore();
 const route = useRouter();
@@ -37,18 +39,28 @@ const availableOptions = computed(() => {
 });
 
 const colMap = computed(() => {
-    return Object.fromEntries(
-        Object.entries(selectedFields.value).filter(([key, value]) => value),
+    //remove any null values from selectedFields
+    const filteredSelectedFields = Object.fromEntries(
+        Object.entries(selectedFields.value).filter(
+            ([key, value]) => value !== null,
+        ),
     );
+    //then transpose the object to have the value as the key and the key as the value
+    const transposedSelectedFields = Object.fromEntries(
+        Object.entries(filteredSelectedFields).map(([key, value]) => [
+            value,
+            key,
+        ]),
+    );
+    return transposedSelectedFields;
 });
 
 const tableRows = computed(() => {
-    return (
-        Object.entries(fileInfo.value?.columns).map(([index, value]) => ({
-            index: index,
-            column: value,
-        })) || []
-    );
+    return fileInfo.value.columns
+        ? fileInfo.value.columns.map((value) => ({
+              column: value,
+          }))
+        : [];
 });
 const steps = ref([
     { label: "Enter Metadata" },
@@ -57,7 +69,37 @@ const steps = ref([
     { label: "Upload" },
 ]);
 
-const activeStep = ref(0);
+const step1Complete = computed(() => {
+    return Boolean(
+        dataSetName.value &&
+            selectedPhenotype.value?.name &&
+            subjects.value &&
+            (selectedPhenotype.value?.dichotomous
+                ? cases.value && controls.value
+                : true),
+    );
+});
+const step2Complete = computed(() => {
+    return Boolean(fileInfo.value.columns);
+});
+const step3Complete = computed(() => {
+    //check if all items in requiredFields are in selectedFields
+    return requiredFields.value.every((field) =>
+        Object.values(selectedFields.value).includes(field),
+    );
+});
+
+const currentStep = computed(() => {
+    if (step1Complete.value && step2Complete.value && step3Complete.value) {
+        return 3;
+    } else if (step1Complete.value && step2Complete.value) {
+        return 2;
+    } else if (step1Complete.value) {
+        return 1;
+    } else {
+        return 0;
+    }
+});
 
 async function sampleFile(e) {
     store.showNotification = false;
@@ -118,9 +160,9 @@ function matchPhenotypes(event) {
 }
 
 async function upload() {
-    if (!useFormValidation("uploadGwasForm")) {
-        return;
-    }
+    // if (!useFormValidation("uploadGwasForm")) {
+    //     return;
+    // }
 
     const metadata = {
         original_data: fileName,
@@ -301,7 +343,7 @@ async function upload() {
     <div class="grid">
         <div class="col mb-4">
             <h2 class="text-center mb-4">Upload GWAS for Analysis</h2>
-            <Steps :activeStep="activeStep" :model="steps" />
+            <Steps id="steps" :activeStep="currentStep" :model="steps" />
         </div>
     </div>
     <div class="grid">
@@ -337,20 +379,20 @@ async function upload() {
                 >
                     <div class="field col">
                         <label for="cases">Cases</label>
-                        <InputText
+                        <InputNumber
                             id="cases"
                             type="number"
                             v-model="cases"
-                            min="0"
+                            :min="0"
                         />
                     </div>
                     <div class="field col">
                         <label for="controls">Controls</label>
-                        <InputText
+                        <InputNumber
                             id="controls"
                             type="number"
                             v-model="controls"
-                            min="0"
+                            :min="0"
                         />
                     </div>
                 </div>
@@ -362,7 +404,7 @@ async function upload() {
                         type="number"
                         inputId="withoutgrouping"
                         :useGrouping="false"
-                        min="0"
+                        :min="0"
                     />
                 </div>
             </div>
@@ -417,7 +459,7 @@ async function upload() {
                         <template #body="{ data }">
                             <Dropdown
                                 class="w-full"
-                                :options="availableOptions"
+                                :options="colOptions"
                                 option-label="name"
                                 option-value="value"
                                 :option-disabled="
@@ -445,6 +487,7 @@ async function upload() {
                         icon="bi-upload"
                         @click="upload"
                         raised
+                        :disabled="currentStep !== 3"
                     ></Button>
                 </div>
             </div>
@@ -465,5 +508,8 @@ async function upload() {
 .required-card h6 {
     font-size: 0.75rem;
     margin-bottom: 0.5rem;
+}
+* >>> #steps span.p-menuitem-link {
+    background: transparent;
 }
 </style>
