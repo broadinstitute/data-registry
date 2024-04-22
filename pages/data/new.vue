@@ -115,31 +115,12 @@ async function sampleFile(e) {
     }
 }
 
-function ptypeBlur(event) {
-    if (!event.value) {
-        return;
-    }
-    selectedPhenotype.value.name = event.value.name;
-    selectedPhenotype.value.description = event.value.description;
-    selectedPhenotype.value.dichotomous = event.value.dichotomous;
+function resetFile() {
+    fileInfo.value = {};
+    selectedFields.value = {};
+    file = null;
+    fileName = null;
 }
-
-function filterFunc(q) {
-    return Object.values(phenotypes).filter((p) => {
-        if (q.length < 2) {
-            return false;
-        }
-        const words = q.split(" ");
-        let matches = 0;
-        words.forEach((word) => {
-            if (p.description.toLowerCase().includes(word.toLowerCase())) {
-                matches++;
-            }
-        });
-        return matches === words.length;
-    });
-}
-
 function matchPhenotypes(event) {
     setTimeout(() => {
         if (!event.query.trim().length || event.query.trim().length < 2) {
@@ -306,6 +287,8 @@ async function upload() {
                     :showUploadButton="false"
                     :previewWidth="0"
                     @select="sampleFile"
+                    @clear="resetFile"
+                    @remove="resetFile"
                 >
                     <template #empty>
                         <p>
