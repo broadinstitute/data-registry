@@ -11,11 +11,11 @@ onMounted(async () => {
 
 const getSeverity = (status) => {
     switch (status) {
-        case "FAILED":
+        case "FAILED QC":
             return "danger";
-        case "SUCCEEDED":
+        case "READY FOR REVIEW":
             return "success";
-        case "SUBMITTED":
+        case "SUBMITTED TO QC":
             return "secondary";
         case "REVIEW REJECTED":
             return "warning";
@@ -33,11 +33,11 @@ const formatDate = (value) => {
 };
 const getIcon = (status) => {
     switch (status) {
-        case "FAILED":
+        case "FAILED QC":
             return "bi-x";
-        case "SUCCEEDED":
+        case "READY FOR REVIEW":
             return "bi-check";
-        case "SUBMITTED":
+        case "SUBMITTED TO QC":
             return "bi-plus";
         case "REVIEW REJECTED":
             return "bi-x-square";
@@ -130,7 +130,9 @@ const pieOptions = {
                         <Column field="phenotype" header="Phenotype"></Column>
                         <Column field="qc_status" header="Status">
                             <template #body="{ data }">
-                                <span v-if="data.qc_status !== 'SUBMITTED'">
+                                <span
+                                    v-if="data.qc_status !== 'SUBMITTED TO QC'"
+                                >
                                     <nuxt-link :to="`/data/qc/${data.id}`">
                                         <Tag
                                             :severity="
@@ -158,7 +160,7 @@ const pieOptions = {
             </Card>
         </div>
         <div class="col-4">
-            <Card id="pieChart">
+            <Card id="pieChart" v-if="fileUploads.length">
                 <template #content>
                     <Chart
                         type="doughnut"
@@ -166,6 +168,11 @@ const pieOptions = {
                         :options="pieOptions"
                         class="h-20rem flex items-center justify-center"
                     ></Chart>
+                </template>
+            </Card>
+            <Card v-else>
+                <template #content>
+                    <div class="text-center h-10rem">No datasets found</div>
                 </template>
             </Card>
         </div>

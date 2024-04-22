@@ -5,6 +5,7 @@ const route = useRoute();
 const id = route.params.id;
 const store = useDatasetStore();
 const reviewStatus = ref("");
+const dsName = ref("");
 import { useToast } from "primevue/usetoast";
 const toast = useToast();
 
@@ -16,6 +17,7 @@ onMounted(async () => {
     const response = await store.fetchFileUpload(id);
     logText.value = response.log;
     reviewStatus.value = response.status;
+    dsName.value = response.dataset_name;
 });
 
 async function reviewDataset(id, value) {
@@ -32,10 +34,10 @@ async function reviewDataset(id, value) {
 <template>
     <Breadcrumb
         :home="{ icon: 'bi-house', url: '/data/dashboard/' }"
-        :model="[{ label: 'Datasets', url: '/data/' }, { label: 'Dataset' }]"
+        :model="[{ label: 'Datasets', url: '/data/' }, { label: dsName }]"
         class="mb-3"
     />
-    <div class="grid" v-if="reviewStatus != 'FAILED'">
+    <div class="grid" v-if="reviewStatus != 'FAILED QC'">
         <div class="col text-center">
             <Card>
                 <template #title>QQ Plot</template>
@@ -86,7 +88,7 @@ async function reviewDataset(id, value) {
     <div
         class="grid"
         v-can="'approveUpload'"
-        v-if="reviewStatus === 'SUCCEEDED'"
+        v-if="reviewStatus === 'READY FOR REVIEW'"
     >
         <div class="col-4 col-offset-4">
             <Toast position="bottom-right" />
