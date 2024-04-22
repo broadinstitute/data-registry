@@ -1,7 +1,6 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
 import { ref, onMounted, computed } from "vue";
-import ServerNotification from "~/components/ServerNotification.vue";
 
 const store = useDatasetStore();
 const route = useRouter();
@@ -30,12 +29,10 @@ onMounted(async () => {
     const optionalFields = optional.map((o) => ({ name: o, value: o }));
     colOptions.value = requiredAnnotated.concat(optionalFields);
     phenotypes = store.phenotypes;
+
+    //TODO: add either maf or eaf for required
+    //required.push("maf | eaf");
     requiredFields.value = required;
-});
-const availableOptions = computed(() => {
-    return colOptions.value.filter(
-        (option) => !Object.keys(colMap.value).includes(option.value),
-    );
 });
 
 const colMap = computed(() => {
@@ -178,9 +175,10 @@ async function upload() {
     const errors = await store.validateMetadata(metadata);
     if (errors.length > 0) {
         store.showNotification = true;
-        store.errorMessage = `<ul class="dotted">${errors
-            .map((e) => `<li>${e}</li>`)
-            .join("")}</ul>`;
+        // store.errorMessage = `<ul class="dotted">${errors
+        //     .map((e) => `<li>${e}</li>`)
+        //     .join("")}</ul>`;
+        store.errorMessage = errors;
     } else {
         store.showNotification = false;
         try {
@@ -199,131 +197,6 @@ async function upload() {
 </script>
 
 <template>
-    <div class="container-fluid">
-        <form id="uploadGwasForm" class="needs-validation" novalidate>
-            <div class="row">
-                <div class="col-md-6 offset-md-3">
-                    <h2 class="text-center mb-4">Upload GWAS for Analysis</h2>
-
-                    <div class="form-group">
-                        <label class="label" for="fileInput"
-                            >Select file, must be text based or (b)gzip:</label
-                        >
-                        <input
-                            id="fileInput"
-                            type="file"
-                            class="form-control-file form-control"
-                            name="file"
-                            required
-                            accept=".csv, .tsv, .gz, .bgzip, .gzip"
-                            @change="sampleFile"
-                        />
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 offset-md-3">
-                    <div class="form-group">
-                        <label class="label" for="datasetName"
-                            >Dataset Name:</label
-                        >
-                        <input
-                            v-model="dataSetName"
-                            type="text"
-                            placeholder="Dataset Name"
-                            class="form-control input-default"
-                            required
-                        />
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 offset-md-3">
-                    <div class="form-group">
-                        <label class="label" for="phenotype">Phenotype:</label>
-                        <AutoCompleteDialog
-                            id="phenotype"
-                            placeholder="Phenotype"
-                            :items="Object.values(phenotypes)"
-                            :filter-function="filterFunc"
-                            :disabled="false"
-                            :allow-only-list-values="true"
-                            :item-display="(i) => i.description"
-                            @blur="ptypeBlur"
-                        />
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 offset-md-3">
-                    <div class="form-group">
-                        <label class="label" for="subjects">Subjects:</label>
-                        <input
-                            v-model="subjects"
-                            type="number"
-                            placeholder="Subjects"
-                            class="form-control input-default"
-                            min="1"
-                            required
-                        />
-                    </div>
-                </div>
-            </div>
-            <div class="row" v-if="selectedPhenotype?.dichotomous">
-                <div class="col-md-6 offset-md-3">
-                    <div class="form-group">
-                        <label class="label" for="cases">Cases:</label>
-                        <input
-                            v-model="cases"
-                            type="number"
-                            placeholder="Cases"
-                            class="form-control input-default"
-                            min="1"
-                            required
-                        />
-                    </div>
-                </div>
-            </div>
-            <div class="row" v-if="selectedPhenotype?.dichotomous">
-                <div class="col-md-6 offset-md-3">
-                    <div class="form-group">
-                        <label class="label" for="cases">Controls:</label>
-                        <input
-                            v-model="controls"
-                            type="number"
-                            placeholder="Controls"
-                            class="form-control input-default"
-                            min="0"
-                            required
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 offset-md-3">
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        @click="upload"
-                    >
-                        Upload
-                    </button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 offset-md-3">
-                    <ServerNotification
-                        :show-notification="store.showNotification"
-                        :error-message="store.errorMessage"
-                        :success="store.isServerSuccess"
-                        :success-message="store.successMessage"
-                        :auto-hide="false"
-                    />
-                </div>
-            </div>
-        </form>
-    </div>
     <Dialog
         v-if="store.processing"
         :visible="true"
@@ -340,12 +213,27 @@ async function upload() {
             :animation-duration="0"
         />
     </Dialog>
+
     <div class="grid">
         <div class="col mb-4">
             <h2 class="text-center mb-4">Upload GWAS for Analysis</h2>
             <Steps id="steps" :activeStep="currentStep" :model="steps" />
         </div>
     </div>
+
+    <div class="grid" v-if="store.showNotification">
+        <div class="col-6 col-offset-3">
+            <Message
+                v-for="msg in store.errorMessage"
+                severity="error"
+                :closable="false"
+                :sticky="true"
+                :key="msg"
+                >{{ msg }}</Message
+            >
+        </div>
+    </div>
+
     <div class="grid">
         <div class="col-12 md:col-6">
             <div class="card p-fluid">

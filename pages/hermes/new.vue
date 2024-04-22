@@ -290,25 +290,6 @@ async function upload() {
         :progress="store.uploadProgress"
         :show-progress="store.showProgressBar"
     />
-
-    <div class="grid">
-        <div class="col">
-            <InputGroup>
-                <InputText
-                    id="firstname1"
-                    type="text"
-                    placeholder="Firstname"
-                />
-
-                <InputText id="lastname1" type="text" placeholder="Lastname" />
-                <Dropdown
-                    id="dropdown1"
-                    :options="['Option 1', 'Option 2', 'Option 3']"
-                />
-                <Button label="Submit"></Button>
-            </InputGroup>
-        </div>
-    </div>
 </template>
 
 <style scoped></style>

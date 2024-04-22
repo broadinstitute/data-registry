@@ -31,11 +31,8 @@ async function reviewDataset(id, value) {
 
 <template>
     <Breadcrumb
-        :home="{ icon: 'bi-house', to: '/' }"
-        :model="[
-            { label: 'Datasets', url: '/hermes/list' },
-            { label: 'Dataset' },
-        ]"
+        :home="{ icon: 'bi-house', url: '/data/dashboard/' }"
+        :model="[{ label: 'Datasets', url: '/data/' }, { label: 'Dataset' }]"
         class="mb-3"
     />
     <div class="grid" v-if="reviewStatus != 'FAILED'">
@@ -86,7 +83,11 @@ async function reviewDataset(id, value) {
             </Card>
         </div>
     </div>
-    <div class="grid" v-can="'approveUpload'">
+    <div
+        class="grid"
+        v-can="'approveUpload'"
+        v-if="reviewStatus === 'SUCCEEDED'"
+    >
         <div class="col-4 col-offset-4">
             <Toast position="bottom-right" />
             <InputGroup>
