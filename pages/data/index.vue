@@ -5,9 +5,14 @@ import { ref, onMounted } from "vue";
 const route = useRouter();
 const store = useDatasetStore();
 const fileUploads = ref([]);
+const tableLoading = ref(false);
+const finished = ref(false);
 
 onMounted(async () => {
+    tableLoading.value = true;
     fileUploads.value = await store.fetchFileUploads();
+    tableLoading.value = false;
+    finished.value = true;
 });
 
 const getSeverity = (status) => {
@@ -50,7 +55,7 @@ const getIcon = (status) => {
 
 <template>
     <div class="grid">
-        <div v-if="fileUploads.length" class="col">
+        <div v-if="fileUploads.length && finished" class="col">
             <Card>
                 <template #content>
                     <DataTable
@@ -59,6 +64,7 @@ const getIcon = (status) => {
                         rowHover
                         :rows="10"
                         :rowsPerPageOptions="[5, 10, 20]"
+                        :loading="tableLoading"
                         ><template #header>
                             <div
                                 class="flex justify-content-end flex-column sm:flex-row"
@@ -140,7 +146,7 @@ const getIcon = (status) => {
                 </template>
             </Card>
         </div>
-        <div v-else class="col">
+        <div v-else-if="finished && !fileUploads.length" class="col">
             <Card>
                 <template #content>
                     <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
@@ -158,6 +164,22 @@ const getIcon = (status) => {
                                 class="mr-2"
                                 @click="route.push('/data/new')"
                             ></Button>
+                        </div>
+                    </div>
+                </template>
+            </Card>
+        </div>
+        <div v-else class="col">
+            <Card>
+                <template #content>
+                    <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
+                        <div class="text-700 text-center">
+                            <div class="text-600 font-bold text-4xl mb-3">
+                                Loading...
+                            </div>
+                            <div class="text-700 text-2xl mb-5">
+                                Please wait while we load your datasets.
+                            </div>
                         </div>
                     </div>
                 </template>
