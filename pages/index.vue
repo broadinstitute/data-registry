@@ -1,10 +1,8 @@
 <script setup>
 import { useLayout } from "@/layouts/composables/layout";
-import { ProductService } from "@/service/ProductService";
 import { onMounted, reactive, ref, watch } from "vue";
 import Chart from "primevue/chart";
 const { isDarkTheme } = useLayout();
-const products = ref(null);
 const config = useRuntimeConfig();
 const store = useDatasetStore();
 const datasets = ref([]);
@@ -109,19 +107,11 @@ const pieData = ref({
 });
 
 onMounted(async () => {
-    ProductService.getProductsSmall().then((data) => (products.value = data));
     datasets.value = (await axios.get(`/api/datasets`)).data.map((ds) => {
         return { ...ds, showFiles: false };
     });
     setColorOptions();
 });
-
-const formatCurrency = (value) => {
-    return value.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-    });
-};
 
 const applyLightTheme = () => {
     lineOptions.value = {
