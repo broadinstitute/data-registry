@@ -169,7 +169,7 @@ async function upload() {
                 dataSetName.value,
                 metadata,
             );
-            await route.push({ path: "/hermes" });
+            await route.push({ path: "/data" });
         } catch (e) {
             console.log(e);
         }
