@@ -30,7 +30,6 @@ jobs:
         run: npm run test
 
   deploy-qa:
-    needs: [ test ]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     name: Deploy to QA
     runs-on: ubuntu-latest
