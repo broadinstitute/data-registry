@@ -2,7 +2,11 @@
 export default defineNuxtConfig({
     ssr: false,
     devtools: {
+      enabled: true,
+
+      timeline: {
         enabled: true,
+      },
     },
     app: {
         head: {

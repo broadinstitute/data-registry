@@ -1,13 +1,14 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
+import { useToast } from "primevue/usetoast";
 
 const route = useRoute();
 const id = route.params.id;
 const store = useDatasetStore();
 const reviewStatus = ref("");
 const dsName = ref("");
-import { useToast } from "primevue/usetoast";
 const toast = useToast();
+const showReview = ref(true);
 
 const logText = ref(
     "This is a long text that will be displayed in the text box.",
@@ -28,6 +29,7 @@ async function reviewDataset(id, value) {
         detail: "Dataset status updated successfully",
         life: "3000",
     });
+    showReview.value = false;
 }
 </script>
 
@@ -85,13 +87,13 @@ async function reviewDataset(id, value) {
             </Card>
         </div>
     </div>
+
     <div
         class="grid"
         v-can="'approveUpload'"
-        v-if="reviewStatus === 'READY FOR REVIEW'"
+        v-if="reviewStatus === 'READY FOR REVIEW' && showReview"
     >
-        <div class="col-4 col-offset-4">
-            <Toast position="bottom-right" />
+        <div class="col-4 col-offset-4 mt-2 mb-4">
             <InputGroup>
                 <Button
                     label="Fail"
@@ -109,6 +111,7 @@ async function reviewDataset(id, value) {
             </InputGroup>
         </div>
     </div>
+    <Toast position="bottom-right" />
 </template>
 
 <style scoped>
