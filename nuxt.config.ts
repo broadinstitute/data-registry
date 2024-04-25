@@ -2,23 +2,23 @@
 export default defineNuxtConfig({
     ssr: false,
     devtools: {
-      enabled: true,
-
-      timeline: {
         enabled: true,
-      },
+
+        timeline: {
+            enabled: true,
+        },
     },
     app: {
         head: {
             title: "KPN Data Registry",
-            link: [
-                {
-                    id: "theme-css",
-                    rel: "stylesheet",
-                    type: "text/css",
-                    href: "/themes/aura-light-indigo/theme.css",
-                },
-            ],
+            // link: [
+            //     {
+            //         id: "theme-css",
+            //         rel: "stylesheet",
+            //         type: "text/css",
+            //         href: "/themes/aura-light-indigo/theme.css",
+            //     },
+            // ],
         },
     },
     // css: [
