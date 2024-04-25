@@ -18,7 +18,7 @@ const logoUrl = computed(() => {
             Made with <i class="pi pi-heart-fill" style="color: darkred" /> by
             the Portal Team.</span
         >
-        <span v-else> Tenant: {{ Tenant.name }} </span>
+        <span v-else> Powered by KPN Data Registry </span>
     </div>
 </template>
 <style lang="scss" scoped></style>

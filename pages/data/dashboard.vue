@@ -94,7 +94,7 @@ const pieOptions = {
     <div class="grid">
         <div class="col-8">
             <Card>
-                <template #title>Latest Datasets</template>
+                <template #title>Recently Added</template>
                 <template #content
                     ><DataTable
                         :value="fileUploads"
@@ -161,6 +161,7 @@ const pieOptions = {
         </div>
         <div class="col-4">
             <Card id="pieChart" v-if="fileUploads.length">
+                <template #title>Dataset Status</template>
                 <template #content>
                     <Chart
                         type="doughnut"
