@@ -169,7 +169,7 @@ async function upload() {
                 dataSetName.value,
                 metadata,
             );
-            await route.push({ path: "/data" });
+            await route.push({ path: "/hermes" });
         } catch (e) {
             console.log(e);
         }
@@ -351,23 +351,15 @@ async function upload() {
                     </Column>
                 </DataTable>
                 <div class="w-full text-center mt-4">
-                    <span
-                        style="display: inline-block"
-                        v-tooltip.top="
-                            currentStep !== 3 &&
-                            'Complete all required steps to upload.'
-                        "
-                    >
-                        <Button
-                            type="button"
-                            label="Upload"
-                            class="p-button-primary"
-                            icon="bi-upload"
-                            @click="upload"
-                            raised
-                            :disabled="currentStep !== 3"
-                        ></Button>
-                    </span>
+                    <Button
+                        type="button"
+                        label="Upload"
+                        class="p-button-primary"
+                        icon="bi-upload"
+                        @click="upload"
+                        raised
+                        :disabled="currentStep !== 3"
+                    ></Button>
                 </div>
             </div>
         </div>
@@ -388,7 +380,7 @@ async function upload() {
     font-size: 0.75rem;
     margin-bottom: 0.5rem;
 }
-* :deep(#steps span.p-menuitem-link) {
+* >>> #steps span.p-menuitem-link {
     background: transparent;
 }
 </style>
