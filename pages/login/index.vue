@@ -1,10 +1,12 @@
 <script setup>
 
+import { useTenantStore } from '~/stores/TenantStore';
 import { useUserStore } from '~/stores/UserStore';
 
 const email = ref('');
 const password = ref('');
 const errorMessage = ref('');
+const loginTitle = ref('Login');
 
 const route = useRoute();
 const config = useRuntimeConfig();
@@ -12,7 +14,8 @@ const userStore = useUserStore();
 const submitForm = async () => {
   try {
     await userStore.login(email.value, password.value);
-    navigateTo(route.query.redirect !== '/' ? route.query.redirect : '/');
+    console.log(`redirect ${route.query.redirect}`);
+    navigateTo(route.query.redirect ? route.query.redirect : '/hermes');
   } catch (error) {
     console.log(error);
     errorMessage.value = 'Sorry, we could not log you in.';
@@ -33,6 +36,10 @@ function loginWithGoogle () {
 }
 
 onMounted(() => {
+  const tenantStore = useTenantStore();
+  if(tenantStore.strings.name){
+    loginTitle.value = `Login to ${tenantStore.strings.name}`;
+  }
   document.getElementById('email').focus();
   if(userStore.loginError){
     errorMessage.value = userStore.loginError;
@@ -45,7 +52,7 @@ onMounted(() => {
     <div class="row justify-content-center">
       <div class="col-md-6">
         <h2 class="text-center">
-          Login
+          {{ loginTitle }}
         </h2>
         <div v-if="errorMessage" class="alert alert-danger" role="alert">
           {{ errorMessage }}

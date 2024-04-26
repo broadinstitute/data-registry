@@ -297,6 +297,9 @@ export const useDatasetStore = defineStore('DatasetStore', {
     },
     removePhenoDataset (index) {
       this.combinedPhenotypesAndCredibleSets.splice(index, 1);
+    },
+    reviewDataset(id, status) {
+      return configuredAxios.patch(`/api/upload-hermes/${id}`, JSON.stringify({ status }));
     }
   }
 });
