@@ -39,7 +39,7 @@ jobs:
 
 
   deploy-qa:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/hermes-main'
     needs: [build]
     name: Deploy to QA
     runs-on: ubuntu-latest
