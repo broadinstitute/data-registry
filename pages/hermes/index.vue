@@ -35,18 +35,13 @@ onMounted(async () => {
             <td>{{ fu.uploaded_by }}</td>
             <td>{{ fu.phenotype }}</td>
             <td>
-              <nuxt-link v-if="fu.qc_status !== 'SUBMITTED TO QC'" :to="`/hermes/${fu.id}`">{{ fu.qc_status }}</nuxt-link>
+              <nuxt-link v-if="fu.qc_status !== 'SUBMITTED'" :to="`/hermes/${fu.id}`">{{ fu.qc_status }}</nuxt-link>
               <span v-else>{{ fu.qc_status }}</span>
             </td>
           </tr>
         </template>
       </tbody>
     </table>
-    <div class="row">
-      <div class="col">
-        <nuxt-link to="/hermes/new" class="btn btn-primary">Upload Dataset</nuxt-link>
-      </div>
-    </div>
   </div>
 
 </template>
