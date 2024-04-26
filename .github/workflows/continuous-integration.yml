@@ -33,13 +33,13 @@ jobs:
 
             - name: Create .env file
               run: |
-                echo "NUXT_PUBLIC_PHENOTYPES_URL='https://bioindex.hugeamp.org/api/portal/phenotypes'" > .env
-                echo "NUXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID=${{ secrets.GOOGLE_AUTH_CLIENT_ID }} >> .env
+                echo "NUXT_PUBLIC_PHENOTYPES_URL=https://bioindex.hugeamp.org/api/portal/phenotypes" > .env
+                echo "NUXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID=${{ secrets.GOOGLE_AUTH_CLIENT_ID }}" >> .env
                 if [[ $GITHUB_REF == 'refs/heads/hermes-main' ]]; then
-                  echo "NUXT_PUBLIC_GOOGLE_AUTH_REDIRECT_URI='https://kpndataregistry.org:8000/login/callback'" >> .env
+                  echo "NUXT_PUBLIC_GOOGLE_AUTH_REDIRECT_URI=https://kpndataregistry.org:8000/login/callback" >> .env
                   echo "NUXT_PUBLIC_API_BASE_URL=https://api.kpndataregistry.org:8000" >> .env
                 elif [[ $GITHUB_REF == refs/tags/V* ]]; then
-                  echo "NUXT_PUBLIC_GOOGLE_AUTH_REDIRECT_URI='https://kpndataregistry.org/login/callback'" >> .env
+                  echo "NUXT_PUBLIC_GOOGLE_AUTH_REDIRECT_URI=https://kpndataregistry.org/login/callback" >> .env
                   echo "NUXT_PUBLIC_API_BASE_URL=https://api.kpndataregistry.org" >> .env
                 fi
 
