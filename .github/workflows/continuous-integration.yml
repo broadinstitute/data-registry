@@ -48,6 +48,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: nuxt-build
+      - name: List workspace directories
+        run: ls -alh
+
+      - name: List output directory contents
+        run: ls -alh .output/
+
       - name: Deploy to Server
         uses: appleboy/scp-action@master
         with:
