@@ -87,7 +87,7 @@ const getIcon = (status) => {
                         <Column field="file_size" header="File Size">
                             <template #body="{ data }">
                                 {{
-                                    ((data.file_size / 1048576).toFixed(2) +
+                                    (data.file_size / (1024*1024)).toFixed(2) +
                                     " mb"
                                 }}
                             </template>
