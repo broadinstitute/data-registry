@@ -19,7 +19,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
             "/login?redirect=" + to.path,
         ]);
     }
-    //temp route for /, will be replaced by /data
+    //temp route for / redirect to /data, will change later
     if (to.path === "/") {
         return callWithNuxt(nuxtApp, navigateTo, ["/data"]);
     }

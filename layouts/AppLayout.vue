@@ -17,13 +17,13 @@ const router = useRouter();
 
 onMounted(async () => {
     await userStore.isUserLoggedIn();
-    // const { user } = await userStore.isUserLoggedIn();
-    // if (!user) {
-    //     console.log("User not logged in");
-    //     //await router.push("/login");
-    // } else {
-    //     console.log("User is logged in");
-    // }
+    const { user } = await userStore.isUserLoggedIn();
+    if (!user) {
+        console.log("User not logged in");
+        //await router.push("/login");
+    } else {
+        console.log("User is logged in");
+    }
 });
 
 // watch(isSidebarActive, (newVal) => {
