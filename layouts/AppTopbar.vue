@@ -6,8 +6,10 @@ import { useUserStore } from "~/stores/UserStore";
 import { useTenantStore } from "~/stores/TenantStore";
 const userStore = useUserStore();
 const User = userStore.user;
-const isUploader = ref(User.roles.includes("uploader"));
-const isAdmin = ref(User.roles.includes("admin"));
+const isUploader = User.roles.includes("uploader");
+const isAdmin = User.roles.includes("admin");
+
+//check if user isLoggedIn from auth global middleware
 
 function signOut() {
     userStore.logout();
