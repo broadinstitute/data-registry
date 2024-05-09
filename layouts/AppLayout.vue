@@ -16,14 +16,15 @@ const userStore = useUserStore();
 const router = useRouter();
 
 onMounted(async () => {
-    await userStore.isUserLoggedIn();
-    const { user } = await userStore.isUserLoggedIn();
-    if (!user) {
-        console.log("User not logged in");
-        //await router.push("/login");
-    } else {
-        console.log("User is logged in");
-    }
+    // await userStore.isUserLoggedIn();
+    // const { user } = await userStore.isUserLoggedIn();
+    // if (!user) {
+    //     console.log("User not logged in");
+    //     //await router.push("/login");
+    // } else {
+    //     console.log("User is logged in");
+    // }
+    //console log if user is isLoggedIn from auth middleware
 });
 
 // watch(isSidebarActive, (newVal) => {
