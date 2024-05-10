@@ -1,7 +1,8 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
 import { ref, onMounted } from "vue";
-const hoveredId = ref(null);
+const hoveredQQId = ref(null);
+const hoveredMId = ref(null);
 const route = useRouter();
 const store = useDatasetStore();
 const fileUploads = ref([]);
@@ -10,7 +11,9 @@ const finished = ref(false);
 
 onMounted(async () => {
     tableLoading.value = true;
-    fileUploads.value = await store.fetchFileUploads();
+    fileUploads.value = await store.fetchFileUploads().then((data) => {
+        return data.filter((file) => file.qc_status !== "SUBMITTED TO QC");
+    });
     tableLoading.value = false;
     finished.value = true;
 });
@@ -60,6 +63,7 @@ const imageUrl = (id, plot) => {
 <template>
     <div class="grid">
         <div v-if="fileUploads.length && finished" class="col">
+            <h4>QC Reports</h4>
             <Card>
                 <template #content>
                     <DataTable
@@ -134,27 +138,61 @@ const imageUrl = (id, plot) => {
                                 </span>
                             </template>
                         </Column>
+
+                        <Column header="Plots">
+                            <template #body="{ data }">
+                                <div
+                                    v-if="
+                                        data.qc_status !== 'SUBMITTED TO QC' &&
+                                        data.qc_status !== 'FAILED QC'
+                                    "
+                                >
+                                    <Button
+                                        @mouseover="hoveredQQId = data.id"
+                                        @mouseleave="hoveredQQId = null"
+                                        size="small"
+                                        outlined
+                                        class="mr-2 plot"
+                                        >QQ</Button
+                                    >
+                                    <div
+                                        v-if="hoveredQQId === data.id"
+                                        class="image-tooltip"
+                                    >
+                                        <img
+                                            :src="`https://hermes-qc.s3.amazonaws.com/images/${data.id}/qq_plot.png`"
+                                            alt="Plot"
+                                            class="plot-image"
+                                            width="400"
+                                            height="400"
+                                        />
+                                    </div>
+
+                                    <Button
+                                        @mouseover="hoveredMId = data.id"
+                                        @mouseleave="hoveredMId = null"
+                                        size="small"
+                                        outlined
+                                        class="plot"
+                                        >M</Button
+                                    >
+                                    <div
+                                        v-if="hoveredMId === data.id"
+                                        class="image-tooltip"
+                                    >
+                                        <img
+                                            :src="`https://hermes-qc.s3.amazonaws.com/images/${data.id}/manhattan_plot.png`"
+                                            alt="Plot"
+                                            class="plot-image"
+                                            width="400"
+                                            height="400"
+                                        />
+                                    </div>
+                                </div>
+                            </template>
+                        </Column>
                         <Column field="qc_report" header="QC Report">
                             <template #body="{ data }">
-                                <Button
-                                    @mouseover="hoveredId = data.id"
-                                    @mouseleave="hoveredId = null"
-                                    size="small"
-                                    outlined
-                                    >M Plot</Button
-                                >
-                                <div
-                                    v-if="hoveredId === data.id"
-                                    class="image-tooltip"
-                                >
-                                    <img
-                                        :src="`https://hermes-qc.s3.amazonaws.com/images/${data.id}/manhattan_plot.png`"
-                                        alt="Plot"
-                                        class="plot-image"
-                                        width="400"
-                                        height="400"
-                                    />
-                                </div>
                                 <NuxtLink :to="`/data/qc/${data.id}`">
                                     <Button
                                         v-if="
@@ -232,6 +270,10 @@ const imageUrl = (id, plot) => {
     width: 406px;
     height: 406px;
     overflow: auto;
-    border: 3px solid #5d5d5d;
+    border: 3px solid #6366f1;
+    z-index: 1000;
+}
+button.plot {
+    cursor: help;
 }
 </style>
