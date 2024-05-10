@@ -1,6 +1,7 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
 import { ref, onMounted } from "vue";
+
 const hoveredQQId = ref(null);
 const hoveredMId = ref(null);
 const route = useRouter();
@@ -8,6 +9,7 @@ const store = useDatasetStore();
 const fileUploads = ref([]);
 const tableLoading = ref(false);
 const finished = ref(false);
+const includeFailedRejected = ref(true);
 
 onMounted(async () => {
     tableLoading.value = true;
@@ -16,6 +18,16 @@ onMounted(async () => {
     });
     tableLoading.value = false;
     finished.value = true;
+});
+
+const datasets = computed(() => {
+    return includeFailedRejected.value
+        ? fileUploads.value
+        : fileUploads.value.filter(
+              (file) =>
+                  file.qc_status !== "FAILED QC" &&
+                  file.qc_status !== "REVIEW REJECTED",
+          );
 });
 
 const getSeverity = (status) => {
@@ -67,7 +79,7 @@ const imageUrl = (id, plot) => {
             <Card>
                 <template #content>
                     <DataTable
-                        :value="fileUploads"
+                        :value="datasets"
                         :paginator="false"
                         rowHover
                         :rows="10"
@@ -79,13 +91,13 @@ const imageUrl = (id, plot) => {
                             <div
                                 class="flex justify-content-end flex-column sm:flex-row"
                             >
-                                <Button
-                                    type="button"
-                                    label="Upload New Dataset"
-                                    icon="bi-upload"
-                                    outlined
-                                    @click="() => $router.push('/data/new')"
-                                />
+                                <InputSwitch
+                                    v-model="includeFailedRejected"
+                                    inputID="includeFailedRejected"
+                                    class="mr-2"
+                                /><label for="includeFailedRejected"
+                                    >Include Failed/Rejected</label
+                                >
                             </div>
                         </template>
                         <template #empty> No dataset found. </template>
