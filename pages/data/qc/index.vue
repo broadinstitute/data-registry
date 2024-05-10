@@ -1,6 +1,7 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
 import { ref, onMounted } from "vue";
+import Chart from "primevue/chart";
 
 const hoveredQQId = ref(null);
 const hoveredMId = ref(null);
@@ -11,6 +12,89 @@ const tableLoading = ref(false);
 const finished = ref(false);
 const includeFailedRejected = ref(true);
 
+const chartOptions = {
+    indexAxis: "y",
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+        x: {
+            display: false,
+            stacked: true,
+        },
+        y: {
+            stacked: true,
+            ticks: {
+                callback: function (index) {
+                    const count = dataCollection.value.datasets[0].data[index];
+                    const label = dataCollection.value.labels[index];
+                    return `${label} (${count})`;
+                },
+            },
+        },
+    },
+    plugins: {
+        title: {
+            display: true,
+            text: "Dataset Status",
+        },
+        legend: {
+            display: false,
+        },
+        tooltip: {
+            callbacks: {
+                label: function (context) {
+                    return context.raw;
+                },
+            },
+        },
+    },
+};
+
+const dataCollection = computed(() => {
+    const labels = [
+        "FAILED QC",
+        "READY FOR REVIEW",
+        "REVIEW REJECTED",
+        "REVIEW APPROVED",
+    ];
+    const data = {
+        labels: labels,
+        datasets: [
+            {
+                label: "Dataset Status",
+                data: [
+                    datasetRows.value.filter(
+                        (file) => file.qc_status === "FAILED QC",
+                    ).length,
+                    datasetRows.value.filter(
+                        (file) => file.qc_status === "READY FOR REVIEW",
+                    ).length,
+                    datasetRows.value.filter(
+                        (file) => file.qc_status === "REVIEW REJECTED",
+                    ).length,
+                    datasetRows.value.filter(
+                        (file) => file.qc_status === "REVIEW APPROVED",
+                    ).length,
+                ],
+                backgroundColor: [
+                    statusBgColors["FAILED QC"],
+                    statusBgColors["READY FOR REVIEW"],
+                    statusBgColors["REVIEW REJECTED"],
+                    statusBgColors["REVIEW APPROVED"],
+                ],
+            },
+        ],
+    };
+    return data;
+});
+
+const statusBgColors = {
+    "FAILED QC": "#ffd0ce",
+    "READY FOR REVIEW": "#caf1d8",
+    "REVIEW REJECTED": "#feddc7",
+    "REVIEW APPROVED": "#d0e1fd",
+};
+
 onMounted(async () => {
     tableLoading.value = true;
     fileUploads.value = await store.fetchFileUploads().then((data) => {
@@ -20,7 +104,7 @@ onMounted(async () => {
     finished.value = true;
 });
 
-const datasets = computed(() => {
+const datasetRows = computed(() => {
     return includeFailedRejected.value
         ? fileUploads.value
         : fileUploads.value.filter(
@@ -66,20 +150,26 @@ const getIcon = (status) => {
             return "bi-check-square";
     }
 };
-
-const imageUrl = (id, plot) => {
-    return `<img src='https://hermes-qc.s3.amazonaws.com/images/${id}/${plot}' alt='${plot}' class='plot-image' />`;
-};
 </script>
 
 <template>
     <div class="grid">
         <div v-if="fileUploads.length && finished" class="col">
-            <h4>QC Reports</h4>
+            <h2>QC Reports</h2>
             <Card>
                 <template #content>
+                    <!-- ... your other code ... -->
+                    <Chart
+                        type="bar"
+                        :data="dataCollection"
+                        :options="chartOptions"
+                    />
+                </template>
+            </Card>
+            <Card class="mt-4">
+                <template #content>
                     <DataTable
-                        :value="datasets"
+                        :value="datasetRows"
                         :paginator="false"
                         rowHover
                         :rows="10"
