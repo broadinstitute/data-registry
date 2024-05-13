@@ -9,11 +9,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
   const nuxtApp = useNuxtApp();
   const userStore = useUserStore();
-  if (userStore.user || to.path.startsWith('/login')) {
+  if (userStore.user || to.path.startsWith('/login') || to.path.startsWith('/hermes/login')) {
     return;
   }
   const isLoggedIn = await userStore.isUserLoggedIn();
   if (!isLoggedIn) {
-    return callWithNuxt(nuxtApp, navigateTo, ['/login?redirect=' + to.path]);
+    if(to.path.startsWith('/hermes')){
+      return callWithNuxt(nuxtApp, navigateTo, ['/hermes/login?redirect=' + to.path]);
+    } else {
+      return callWithNuxt(nuxtApp, navigateTo, ['/login?redirect=' + to.path]);
+    }
   }
 });
