@@ -8,7 +8,13 @@ const fileUploads = ref([]);
 onMounted(async () => {
     fileUploads.value = await store.fetchFileUploads();
 });
-
+const statusColors = {
+    "FAILED QC": "danger",
+    "READY FOR REVIEW": "success",
+    "SUBMITTED TO QC": "secondary",
+    "REVIEW REJECTED": "warning",
+    "REVIEW APPROVED": "info",
+};
 const getSeverity = (status) => {
     switch (status) {
         case "FAILED QC":
@@ -102,6 +108,8 @@ const pieOptions = {
                         rowHover
                         :rows="5"
                         :rowsPerPageOptions="[5, 10, 20]"
+                        sortField="uploaded_at"
+                        :sortOrder="-1"
                         ><template #header>
                             <div
                                 class="flex justify-content-end flex-column sm:flex-row"

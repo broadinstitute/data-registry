@@ -65,6 +65,8 @@ const getIcon = (status) => {
                         :rows="10"
                         :rowsPerPageOptions="[5, 10, 20]"
                         :loading="tableLoading"
+                        sortField="uploaded_at"
+                        :sortOrder="-1"
                         ><template #header>
                             <div
                                 class="flex justify-content-end flex-column sm:flex-row"
@@ -87,8 +89,9 @@ const getIcon = (status) => {
                         <Column field="file_size" header="File Size">
                             <template #body="{ data }">
                                 {{
-                                    (data.file_size / (1024*1024)).toFixed(2) +
-                                    " mb"
+                                    (data.file_size / (1024 * 1024)).toFixed(
+                                        2,
+                                    ) + " mb"
                                 }}
                             </template>
                         </Column>

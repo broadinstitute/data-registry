@@ -6,6 +6,11 @@ import { useUserStore } from "~/stores/UserStore";
 import { useTenantStore } from "~/stores/TenantStore";
 const userStore = useUserStore();
 const User = userStore.user;
+const isUploader = User.roles.includes("uploader");
+const isAdmin = User.roles.includes("admin");
+
+//check if user isLoggedIn from auth global middleware
+
 function signOut() {
     userStore.logout();
 }
@@ -92,18 +97,31 @@ const items = ref([
         ],
     },
 ]);
-const menuBar = ref([
-    {
-        label: "Dashboard",
-        icon: "bi-house",
-        url: "/data/dashboard/",
-    },
-    {
-        label: "Datasets",
-        icon: "bi-file-earmark-text",
-        url: "/data/",
-    },
-]);
+const menuBar = computed(() => {
+    if (isAdmin.value) {
+        return [
+            {
+                label: "Dashboard",
+                icon: "bi-house",
+                url: "/data/dashboard/",
+            },
+            {
+                label: "Datasets",
+                icon: "bi-file-earmark-text",
+                url: "/data/",
+            },
+        ];
+    } else {
+        return [
+            {
+                label: "Datasets",
+                icon: "bi-file-earmark-text",
+                url: "/data/",
+            },
+        ];
+    }
+});
+
 const menu = ref();
 const toggle = (event) => {
     menu.value.toggle(event);
