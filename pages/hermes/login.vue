@@ -1,6 +1,9 @@
 <script setup>
 
-import Login from '~/pages/login.vue'
+import Login from '~/components/Login.vue';
+definePageMeta({
+  layout: false,
+});
 </script>
 
 <template>

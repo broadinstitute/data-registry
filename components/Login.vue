@@ -21,9 +21,6 @@ defineProps({
   }
 });
 
-definePageMeta({
-  layout: false,
-});
 
 const submitForm = async () => {
   try {
