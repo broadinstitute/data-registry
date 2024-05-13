@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if (userStore.user || to.path.startsWith('/login') || to.path.startsWith('/hermes/login')) {
         return;
     }
-    const isLoggedIn = await userStore.isUserLoggedIn()
+    const isLoggedIn = await userStore.isUserLoggedIn();
     if (!isLoggedIn) {
         if (to.path.startsWith('/hermes')) {
             return callWithNuxt(nuxtApp, navigateTo, ['/hermes/login?redirect=' + to.path]);
