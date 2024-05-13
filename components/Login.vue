@@ -25,8 +25,10 @@ defineProps({
 const submitForm = async () => {
   try {
     await userStore.login(email.value, password.value);
-    console.log(`redirect ${route.query.redirect}`);
-    navigateTo(route.query.redirect ? route.query.redirect : "/data");
+    await userStore.isUserLoggedIn();
+    console.log(JSON.stringify(userStore.user));
+    const defaultUrl = userStore.user.groups.includes("hermes") ? "/hermes" : "/datasets";
+    navigateTo(route.query.redirect ? route.query.redirect : defaultUrl);
   } catch (error) {
     console.log(error);
     errorMessage.value = "Sorry, we could not log you in.";
