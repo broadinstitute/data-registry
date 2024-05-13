@@ -132,6 +132,7 @@ export const useDatasetStore = defineStore("DatasetStore", {
         },
         hasNoSavedData: (state) => {
             return (
+                state.combinedPhenotypesAndCredibleSets[0] &&
                 Object.keys(state.combinedPhenotypesAndCredibleSets[0])
                     .length === 1
             );
