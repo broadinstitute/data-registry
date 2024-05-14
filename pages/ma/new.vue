@@ -14,6 +14,7 @@
                                 optionLabel="description"
                                 :suggestions="filteredPhenotypes"
                                 @complete="matchPhenotypes"
+                                @item-select="fetchFileUploads"
                                 dataKey="name"
                                 dropdown
                                 forceSelection
@@ -33,7 +34,7 @@
                         <div
                             class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium"
                         >
-                            <Button @click="fetchFileUploads" label="Fetch" />
+                            <!-- <Button @click="fetchFileUploads" label="Fetch" /> -->
                             <DataTable
                                 :value="fileUploads"
                                 :loading="tableLoading"
@@ -145,7 +146,11 @@
                             severity="secondary"
                             @click="prevCallback"
                         />
-                        <Button label="Run Analysis" severity="success" />
+                        <Button
+                            label="Run Analysis"
+                            severity="success"
+                            @click="runAnalysis"
+                        />
                     </div>
                 </template>
             </StepperPanel>
@@ -216,5 +221,15 @@ const formatDate = (value) => {
         month: "2-digit",
         year: "numeric",
     });
+};
+
+const runAnalysis = async () => {
+    console.log("Running analysis...");
+    let dsIDs = selectedDatasets.value.length ? selectedDatasets.value.map((ds) => ds.id) : [];
+
+}
+    console.log("Selected datasets:", dsIDs);
+    console.log("Name:", name.value);
+    console.log("Overlap:", overlap.value);
 };
 </script>
