@@ -76,7 +76,6 @@
 
 <script setup>
 import { useUserStore } from '~/stores/UserStore';
-import { useTenantStore } from '~/stores/TenantStore';
 
 
 const userStore = useUserStore();

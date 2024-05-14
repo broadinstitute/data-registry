@@ -3,7 +3,6 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useLayout } from "./composables/layout";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/UserStore";
-import { useTenantStore } from "~/stores/TenantStore";
 const userStore = useUserStore();
 const User = userStore.user;
 const isUploader = User.roles.includes("uploader");
@@ -14,11 +13,7 @@ const isAdmin = User.roles.includes("admin");
 function signOut() {
     userStore.logout();
 }
-const Tenant = useTenantStore();
-const tenantLogo = computed(() => {
-    return Tenant.assetPath + Tenant.strings.logo;
-});
-const { layoutConfig, onMenuToggle } = useLayout();
+const { layoutConfig } = useLayout();
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
@@ -131,7 +126,7 @@ const toggle = (event) => {
 <template>
     <div class="layout-topbar">
         <nuxt-link to="/" class="layout-topbar-logo">
-            <img :src="tenantLogo" alt="logo" />
+            <img src="/tenants/hermes/logo.png" alt="logo" />
         </nuxt-link>
 
         <!-- <button
