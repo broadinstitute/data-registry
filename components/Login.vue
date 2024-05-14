@@ -26,7 +26,6 @@ const submitForm = async () => {
   try {
     await userStore.login(email.value, password.value);
     await userStore.isUserLoggedIn();
-    console.log(JSON.stringify(userStore.user));
     const defaultUrl = userStore.user.groups.includes("hermes") ? "/hermes" : "/datasets";
     navigateTo(route.query.redirect ? route.query.redirect : defaultUrl);
   } catch (error) {
