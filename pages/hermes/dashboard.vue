@@ -119,7 +119,7 @@ const pieOptions = {
                                     label="View All Dataset"
                                     icon="bi-card-list"
                                     outlined
-                                    @click="() => $router.push('/data/')"
+                                    @click="() => $router.push('/hermes/')"
                                 />
                             </div>
                         </template>
@@ -141,7 +141,7 @@ const pieOptions = {
                                 <span
                                     v-if="data.qc_status !== 'SUBMITTED TO QC'"
                                 >
-                                    <nuxt-link :to="`/data/qc/${data.id}`">
+                                    <nuxt-link :to="`/hermes/qc/${data.id}`">
                                         <Tag
                                             :severity="
                                                 getSeverity(data.qc_status)
