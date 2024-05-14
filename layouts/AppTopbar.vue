@@ -103,12 +103,12 @@ const menuBar = computed(() => {
             {
                 label: "Dashboard",
                 icon: "bi-house",
-                url: "/data/dashboard/",
+                url: "/hermes/dashboard/",
             },
             {
                 label: "Datasets",
                 icon: "bi-file-earmark-text",
-                url: "/data/",
+                url: "/hermes/",
             },
         ];
     } else {
@@ -116,7 +116,7 @@ const menuBar = computed(() => {
             {
                 label: "Datasets",
                 icon: "bi-file-earmark-text",
-                url: "/data/",
+                url: "/hermes/",
             },
         ];
     }
