@@ -1,14 +1,10 @@
 <script setup>
-import PageHeader from "~/components/PageHeader.vue";
-import PageFooter from "~/components/PageFooter.vue";
+// definePageMeta({
+//     layout: "empty",
+// });
+import AppLayout from "@/layouts/AppLayout.vue";
 </script>
 
 <template>
-  <div>
-    <PageHeader />
-    <slot />
-    <PageFooter />
-  </div>
+    <app-layout></app-layout>
 </template>
-
-<style scoped></style>

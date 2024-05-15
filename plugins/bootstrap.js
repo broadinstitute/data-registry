@@ -1,4 +1,3 @@
-import 'bootstrap';
+// import 'bootstrap';
 
-export default defineNuxtPlugin(() => {
-});
+export default defineNuxtPlugin(() => {});
