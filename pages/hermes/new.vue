@@ -21,7 +21,7 @@ const selectedFields = ref({});
 onMounted(async () => {
     await store.fetchPhenotypes();
     const { required, optional } = await store.fetchColumnOptions();
-    //create a list of objects with required fields with an asterisk at the end, and add optional fields with keys name and value
+    //list of objects with required fields with an asterisk at the end
     const requiredAnnotated = required.map((r) => ({
         name: `${r}*`,
         value: r,
@@ -42,7 +42,8 @@ const colMap = computed(() => {
             ([key, value]) => value !== null,
         ),
     );
-    //then transpose the object to have the value as the key and the key as the value
+    //transpose the object to have the value as the key and the key as the value
+    //this is the format that the backend expects
     const transposedSelectedFields = Object.fromEntries(
         Object.entries(filteredSelectedFields).map(([key, value]) => [
             value,

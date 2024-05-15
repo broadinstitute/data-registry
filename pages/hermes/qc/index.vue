@@ -217,7 +217,7 @@ const getIcon = (status) => {
                                 <span
                                     v-if="data.qc_status !== 'SUBMITTED TO QC'"
                                 >
-                                    <nuxt-link :to="`/data/qc/${data.id}`">
+                                    <nuxt-link :to="`/hermes/qc/${data.id}`">
                                         <Tag
                                             :severity="
                                                 getSeverity(data.qc_status)
@@ -295,7 +295,7 @@ const getIcon = (status) => {
                         </Column>
                         <Column field="qc_report" header="QC Report">
                             <template #body="{ data }">
-                                <NuxtLink :to="`/data/qc/${data.id}`">
+                                <NuxtLink :to="`/hermes/qc/${data.id}`">
                                     <Button
                                         v-if="
                                             data.qc_status !== 'SUBMITTED TO QC'
@@ -328,7 +328,7 @@ const getIcon = (status) => {
                                 label="Upload"
                                 icon="bi-upload"
                                 class="mr-2"
-                                @click="route.push('/data/new')"
+                                @click="route.push('/hermes/new')"
                             ></Button>
                         </div>
                     </div>
