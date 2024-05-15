@@ -111,6 +111,7 @@ onMounted(() => {
             >
             <InputText
                 id="email"
+                autofocus
                 v-model="email"
                 type="text"
                 placeholder="Enter username or email"
@@ -147,11 +148,6 @@ onMounted(() => {
                 ></Checkbox>
                 <label for="rememberme">Remember me</label>
               </div>
-              <a
-                  class="font-medium no-underline ml-2 text-right cursor-pointer"
-                  style="color: var(--primary-color)"
-              >Forgot password?</a
-              >
             </div>
             <Button
                 label="Sign In"
