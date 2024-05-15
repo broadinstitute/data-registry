@@ -3,7 +3,6 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useLayout } from "./composables/layout";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/UserStore";
-import { useTenantStore } from "~/stores/TenantStore";
 const userStore = useUserStore();
 const User = userStore.user;
 const isUploader = User.roles.includes("uploader");
@@ -12,13 +11,9 @@ const isAdmin = User.roles.includes("admin");
 //check if user isLoggedIn from auth global middleware
 
 function signOut() {
-    userStore.logout();
+    userStore.logout("/hermes/login");
 }
-const Tenant = useTenantStore();
-const tenantLogo = computed(() => {
-    return Tenant.assetPath + Tenant.strings.logo;
-});
-const { layoutConfig, onMenuToggle } = useLayout();
+const { layoutConfig } = useLayout();
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
@@ -103,12 +98,12 @@ const menuBar = computed(() => {
             {
                 label: "Dashboard",
                 icon: "bi-house",
-                url: "/data/dashboard/",
+                url: "/hermes/dashboard/",
             },
             {
                 label: "Datasets",
                 icon: "bi-file-earmark-text",
-                url: "/data/",
+                url: "/hermes/",
             },
         ];
     } else {
@@ -116,7 +111,7 @@ const menuBar = computed(() => {
             {
                 label: "Datasets",
                 icon: "bi-file-earmark-text",
-                url: "/data/",
+                url: "/hermes/",
             },
         ];
     }
@@ -130,49 +125,12 @@ const toggle = (event) => {
 
 <template>
     <div class="layout-topbar">
-        <nuxt-link to="/" class="layout-topbar-logo">
-            <img :src="tenantLogo" alt="logo" />
+        <nuxt-link to="/hermes" class="layout-topbar-logo">
+            <img src="/tenants/hermes/logo.png" alt="logo" />
         </nuxt-link>
 
-        <!-- <button
-            class="p-link layout-menu-button layout-topbar-button btn"
-            @click="onMenuToggle()"
-        >
-            <i class="bi-list"></i>
-        </button> -->
-
-        <!-- <button
-            class="p-link layout-topbar-menu-button layout-topbar-button"
-            @click="onTopBarMenuButton()"
-        >
-            <i class="pi pi-ellipsis-v"></i>
-        </button> -->
-
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <!-- <button
-                @click="onTopBarMenuButton()"
-                class="p-link layout-topbar-button btn"
-            >
-                <i class="bi-bell"></i>
-                <span>Alerts</span>
-            </button> -->
-
-            <!-- <button
-                @click="onTopBarMenuButton()"
-                class="p-link layout-topbar-button btn"
-            >
-                <i class="bi-person"></i>
-                <span>Profile</span>
-            </button> -->
             <Menubar :model="menuBar">
-                <!-- <template #start>
-                <NuxtLink :to="dashboard">
-                    <span>Dashboard</span>
-                </NuxtLink>
-                <NuxtLink :to="datasets">
-                    <span>Profile</span>
-                </NuxtLink>
-            </template> -->
                 <template #end>
                     <button
                         @click="toggle"

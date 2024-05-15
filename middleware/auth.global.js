@@ -9,18 +9,25 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
     const nuxtApp = useNuxtApp();
     const userStore = useUserStore();
-    if (userStore.user || to.path.startsWith("/login")) {
+    const isLoggedIn = await userStore.isUserLoggedIn();
+    if (userStore.user && JSON.stringify(userStore.user.groups) === JSON.stringify(['hermes'])
+      && !to.path.startsWith('/hermes')) {
+        // eslint-disable-next-line no-undef
+        throw createError({
+            statusCode: 403,
+            message: 'Forbidden',
+        });
+    }
+
+    if (userStore.user || to.path.startsWith('/login') || to.path.startsWith('/hermes/login')) {
         return;
     }
-    const isLoggedIn = await userStore.isUserLoggedIn();
-    console.log("isLoggedIn", isLoggedIn);
+
     if (!isLoggedIn) {
-        return callWithNuxt(nuxtApp, navigateTo, [
-            "/login?redirect=" + to.path,
-        ]);
-    }
-    //temp route for / redirect to /data, will change later
-    if (to.path === "/") {
-        return callWithNuxt(nuxtApp, navigateTo, ["/data"]);
+        if (to.path.startsWith('/hermes')) {
+            return callWithNuxt(nuxtApp, navigateTo, ['/hermes/login?redirect=' + to.path]);
+        } else {
+            return callWithNuxt(nuxtApp, navigateTo, ['/login?redirect=' + to.path]);
+        }
     }
 });

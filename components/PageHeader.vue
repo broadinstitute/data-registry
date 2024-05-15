@@ -1,8 +1,8 @@
 <template>
   <nav class="navbar navbar-expand-lg p-3 mb-3 border-bottom">
     <div class="container">
-      <a href="/" class="navbar-brand mr-4"><img v-if="tenantStore.assetPath" :src="`${tenantStore.assetPath}logo.png`" alt="Logo" />
-        <span v-else>[ Data Registry <i class="bi bi-r-square-fill" /> ]</span>
+      <a href="/" class="navbar-brand mr-4">
+        <span>[ Data Registry <i class="bi bi-r-square-fill" /> ]</span>
       </a>
 
       <ul class="navbar-nav">
@@ -76,14 +76,12 @@
 
 <script setup>
 import { useUserStore } from '~/stores/UserStore';
-import { useTenantStore } from '~/stores/TenantStore';
 
 
 const userStore = useUserStore();
-const tenantStore = useTenantStore();
 
 function signOut () {
-  userStore.logout();
+  userStore.logout('/login');
 }
 
 </script>

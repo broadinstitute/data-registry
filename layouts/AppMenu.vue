@@ -6,7 +6,7 @@ import AppMenuItem from "./AppMenuItem.vue";
 const userStore = useUserStore();
 const User = userStore.user;
 function signOut() {
-    userStore.logout();
+    userStore.logout('/hermes/login');
 }
 const model = ref([
     {

@@ -1,20 +1,20 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
 import { ref, onMounted } from "vue";
-
-const route = useRouter();
+import Chart from "primevue/chart";
 const store = useDatasetStore();
 const fileUploads = ref([]);
-const tableLoading = ref(false);
-const finished = ref(false);
 
 onMounted(async () => {
-    tableLoading.value = true;
     fileUploads.value = await store.fetchFileUploads();
-    tableLoading.value = false;
-    finished.value = true;
 });
-
+const statusColors = {
+    "FAILED QC": "danger",
+    "READY FOR REVIEW": "success",
+    "SUBMITTED TO QC": "secondary",
+    "REVIEW REJECTED": "warning",
+    "REVIEW APPROVED": "info",
+};
 const getSeverity = (status) => {
     switch (status) {
         case "FAILED QC":
@@ -51,20 +51,63 @@ const getIcon = (status) => {
             return "bi-check-square";
     }
 };
+
+//computed function to tally the number of datasets for each unique status
+const statusCounts = computed(() => {
+    const counts = {};
+    fileUploads.value.forEach((file) => {
+        if (counts[file.qc_status]) {
+            counts[file.qc_status]++;
+        } else {
+            counts[file.qc_status] = 1;
+        }
+    });
+    return counts;
+});
+
+//generate data for piechart from statusCounts, using primevue chart
+const pieData = computed(() => {
+    return {
+        labels: Object.keys(statusCounts.value),
+        datasets: [
+            {
+                data: Object.values(statusCounts.value),
+                backgroundColor: [
+                    "#FFC107",
+                    "#007bff",
+                    "#28a745",
+                    "#dc3545",
+                    "#6c757d",
+                ],
+            },
+        ],
+    };
+});
+
+const pieOptions = {
+    plugins: {
+        legend: {
+            labels: {
+                usePointStyle: true,
+                color: "#334155",
+            },
+        },
+    },
+};
 </script>
 
 <template>
     <div class="grid">
-        <div v-if="fileUploads.length && finished" class="col">
+        <div class="col-8">
             <Card>
-                <template #content>
-                    <DataTable
+                <template #title>Recently Added</template>
+                <template #content
+                    ><DataTable
                         :value="fileUploads"
                         :paginator="false"
                         rowHover
-                        :rows="10"
+                        :rows="5"
                         :rowsPerPageOptions="[5, 10, 20]"
-                        :loading="tableLoading"
                         sortField="uploaded_at"
                         :sortOrder="-1"
                         ><template #header>
@@ -73,10 +116,10 @@ const getIcon = (status) => {
                             >
                                 <Button
                                     type="button"
-                                    label="Upload New Dataset"
-                                    icon="bi-upload"
+                                    label="View All Dataset"
+                                    icon="bi-card-list"
                                     outlined
-                                    @click="() => $router.push('/data/new')"
+                                    @click="() => $router.push('/hermes/')"
                                 />
                             </div>
                         </template>
@@ -85,16 +128,7 @@ const getIcon = (status) => {
                             Loading dataset data. Please wait...
                         </template>
                         <Column field="dataset_name" header="Dataset"></Column>
-                        <Column field="file_name" header="File Name"></Column>
-                        <Column field="file_size" header="File Size">
-                            <template #body="{ data }">
-                                {{
-                                    (data.file_size / (1024 * 1024)).toFixed(
-                                        2,
-                                    ) + " mb"
-                                }}
-                            </template>
-                        </Column>
+
                         <Column field="uploaded_at" header="Date Uploaded">
                             <template #body="{ data }">
                                 {{ formatDate(new Date(data.uploaded_at)) }}
@@ -107,7 +141,7 @@ const getIcon = (status) => {
                                 <span
                                     v-if="data.qc_status !== 'SUBMITTED TO QC'"
                                 >
-                                    <nuxt-link :to="`/data/qc/${data.id}`">
+                                    <nuxt-link :to="`/hermes/qc/${data.id}`">
                                         <Tag
                                             :severity="
                                                 getSeverity(data.qc_status)
@@ -129,62 +163,25 @@ const getIcon = (status) => {
                                     />
                                 </span>
                             </template>
-                        </Column>
-                        <Column field="qc_report" header="QC Report">
-                            <template #body="{ data }">
-                                <NuxtLink :to="`/data/qc/${data.id}`">
-                                    <Button
-                                        v-if="
-                                            data.qc_status !== 'SUBMITTED TO QC'
-                                        "
-                                        outlined
-                                        size="small"
-                                    >
-                                        View
-                                    </Button></NuxtLink
-                                >
-                            </template>
-                        </Column>
-                    </DataTable>
-                </template>
+                        </Column> </DataTable
+                ></template>
             </Card>
         </div>
-        <div v-else-if="finished && !fileUploads.length" class="col">
-            <Card>
+        <div class="col-4">
+            <Card id="pieChart" v-if="fileUploads.length">
+                <template #title>Dataset Status</template>
                 <template #content>
-                    <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
-                        <div class="text-700 text-center">
-                            <div class="text-900 font-bold text-5xl mb-3">
-                                Upload your datasets.
-                            </div>
-                            <div class="text-700 text-2xl mb-5">
-                                You don't have any dataset yet. Start uploading
-                                your first dataset today.
-                            </div>
-                            <Button
-                                label="Upload"
-                                icon="bi-upload"
-                                class="mr-2"
-                                @click="route.push('/data/new')"
-                            ></Button>
-                        </div>
-                    </div>
+                    <Chart
+                        type="doughnut"
+                        :data="pieData"
+                        :options="pieOptions"
+                        class="h-20rem flex items-center justify-center"
+                    ></Chart>
                 </template>
             </Card>
-        </div>
-        <div v-else class="col">
-            <Card>
+            <Card v-else>
                 <template #content>
-                    <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
-                        <div class="text-700 text-center">
-                            <div class="text-600 font-bold text-4xl mb-3">
-                                Loading...
-                            </div>
-                            <div class="text-700 text-2xl mb-5">
-                                Please wait while we load your datasets.
-                            </div>
-                        </div>
-                    </div>
+                    <div class="text-center h-10rem">No datasets found</div>
                 </template>
             </Card>
         </div>
@@ -198,4 +195,10 @@ const getIcon = (status) => {
 /* .p-tag .p-tag-icon {
     margin-right: 0.25rem;
 } */
+#pieChart {
+    height: 25rem;
+}
+#pieChart :deep(.p-card-content) {
+    margin: 0 auto;
+}
 </style>

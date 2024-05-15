@@ -35,7 +35,7 @@ jobs:
               run: |
                 echo "NUXT_PUBLIC_PHENOTYPES_URL=https://bioindex.hugeamp.org/api/portal/phenotypes" > .env
                 echo "NUXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID=${{ secrets.GOOGLE_AUTH_CLIENT_ID }}" >> .env
-                if [[ $GITHUB_REF == 'refs/heads/hermes-main' ]]; then
+                if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
                   echo "NUXT_PUBLIC_GOOGLE_AUTH_REDIRECT_URI=https://kpndataregistry.org:8000/login/callback" >> .env
                   echo "NUXT_PUBLIC_API_BASE_URL=https://api.kpndataregistry.org:8000" >> .env
                 elif [[ $GITHUB_REF == refs/tags/V* ]]; then
@@ -54,7 +54,7 @@ jobs:
 
 
     deploy-qa:
-        if: github.event_name == 'push' && github.ref == 'refs/heads/hermes-main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         needs: [build]
         name: Deploy to QA
         runs-on: ubuntu-latest

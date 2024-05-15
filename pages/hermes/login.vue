@@ -1,4 +1,5 @@
 <script setup>
+
 import Login from '~/components/Login.vue';
 definePageMeta({
   layout: false,
@@ -6,7 +7,7 @@ definePageMeta({
 </script>
 
 <template>
-    <Login tenantLogo="/tenants/default/dr-logo.png" tenantWebsite="/" />
+  <Login tenantLogo="/tenants/hermes/logo.png" tenantWebsite="https://www.hermesconsortium.org/" />
 </template>
 
 <style scoped>
