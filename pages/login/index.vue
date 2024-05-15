@@ -4,7 +4,6 @@ definePageMeta({
   layout: false,
 });
 </script>
-
 <template>
     <Login tenantLogo="/tenants/default/dr-logo.png" tenantWebsite="/" />
 </template>
