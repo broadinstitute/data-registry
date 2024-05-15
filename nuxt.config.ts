@@ -11,22 +11,8 @@ export default defineNuxtConfig({
     app: {
         head: {
             title: "KPN Data Registry",
-            // link: [
-            //     {
-            //         id: "theme-css",
-            //         rel: "stylesheet",
-            //         type: "text/css",
-            //         href: "/themes/aura-light-indigo/theme.css",
-            //     },
-            // ],
         },
     },
-    // css: [
-    //     "bootstrap/dist/css/bootstrap.css",
-    //     "bootstrap-icons/font/bootstrap-icons.css",
-    //     "assets/css/styles.css",
-    //     "assets/css/base.css",
-    // ],
     css: [
         //"bootstrap/dist/css/bootstrap.css",
         "bootstrap-icons/font/bootstrap-icons.css",
@@ -83,4 +69,13 @@ export default defineNuxtConfig({
     },
     telemetry: false,
     plugins: [{ src: "~/plugins/bootstrap.js", mode: "client" }],
+    hooks: {
+        'pages:extend'(pages) {
+            // add a route
+            pages.push({
+                path: '/',
+                redirect: '/datasets'
+            });
+        }
+    }
 });

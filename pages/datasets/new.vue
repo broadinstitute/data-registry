@@ -22,6 +22,9 @@
     </div>
 </template>
 <script setup>
+definePageMeta({
+    layout: "bootstrap",
+});
 import { useDatasetStore } from "~/stores/DatasetStore";
 
 const store = useDatasetStore();
