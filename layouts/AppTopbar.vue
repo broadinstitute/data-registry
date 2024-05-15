@@ -11,7 +11,7 @@ const isAdmin = User.roles.includes("admin");
 //check if user isLoggedIn from auth global middleware
 
 function signOut() {
-    userStore.logout();
+    userStore.logout('/hermes/login');
 }
 const { layoutConfig } = useLayout();
 const outsideClickListener = ref(null);

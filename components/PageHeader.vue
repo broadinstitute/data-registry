@@ -81,7 +81,7 @@ import { useUserStore } from '~/stores/UserStore';
 const userStore = useUserStore();
 
 function signOut () {
-  userStore.logout();
+  userStore.logout('/login');
 }
 
 </script>
