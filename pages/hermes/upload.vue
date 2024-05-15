@@ -26,12 +26,12 @@ onMounted(async () => {
         name: `${r}*`,
         value: r,
     }));
-    const optionalFields = optional.map((o) => ({ name: o, value: o }));
+    const optionalFields = optional.map((o) => ({
+        name: o === "maf" || o === "eaf" ? `${o}^` : o,
+        value: o,
+    }));
     colOptions.value = requiredAnnotated.concat(optionalFields);
     phenotypes = store.phenotypes;
-
-    //TODO: add either maf or eaf for required
-    //required.push("maf | eaf");
     requiredFields.value = required;
 });
 
@@ -81,8 +81,17 @@ const step2Complete = computed(() => {
 });
 const step3Complete = computed(() => {
     //check if all items in requiredFields are in selectedFields
-    return requiredFields.value.every((field) =>
-        Object.values(selectedFields.value).includes(field),
+    return (
+        requiredFields.value.every((field) =>
+            Object.values(selectedFields.value).includes(field),
+        ) && requiredAF.value
+    );
+});
+const requiredAF = computed(() => {
+    //check if selectedFields contains either maf or eaf
+    const words = ["maf", "eaf"];
+    return Object.values(selectedFields.value).some((field) =>
+        words.includes(field),
     );
 });
 
@@ -197,7 +206,9 @@ async function upload() {
 
     <div class="grid">
         <div class="col mb-4">
-            <h2 class="text-center mb-4">Upload GWAS for Analysis</h2>
+            <h2 class="text-center mb-4">
+                Upload GWAS for Quality Control (QC)
+            </h2>
             <Steps id="steps" :activeStep="currentStep" :model="steps" />
         </div>
     </div>
@@ -305,8 +316,9 @@ async function upload() {
                 <small
                     >Match all the required fields<span style="color: darkred"
                         >*</span
-                    >
-                    and any optional field to upload file.</small
+                    >, allele frequency (maf or eaf)<span style="color: darkred"
+                        >^</span
+                    >, and any optional field to upload file.</small
                 >
                 <div class="card flex flex-wrap gap-1 required-card">
                     <h6 class="w-full">Required fields:</h6>
@@ -321,6 +333,13 @@ async function upload() {
 
                         <Chip v-else :label="field" :key="'else-' + field" />
                     </template>
+                    <Chip
+                        v-if="requiredAF"
+                        icon="bi-check"
+                        label="maf | eaf"
+                        class="selected-chip"
+                    />
+                    <Chip v-else label="maf | eaf" />
                 </div>
                 <DataTable :value="tableRows" v-if="fileInfo.columns" rowHover>
                     <Column field="column" header="Column" class="col-4">
