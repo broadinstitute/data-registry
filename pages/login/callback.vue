@@ -1,4 +1,7 @@
 <script setup>
+definePageMeta({
+  layout: false,
+});
 import { useUserStore } from '~/stores/UserStore';
 
 

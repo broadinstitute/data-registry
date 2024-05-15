@@ -1,7 +1,9 @@
 <template>
   <nav class="navbar navbar-expand-lg p-3 mb-3 border-bottom">
     <div class="container">
-      <a href="/" class="navbar-brand mr-4">[ Data Registry <i class="bi bi-r-square-fill" /> ]</a>
+      <a href="/" class="navbar-brand mr-4">
+        <span>[ Data Registry <i class="bi bi-r-square-fill" /> ]</span>
+      </a>
 
       <ul class="navbar-nav">
         <li class="nav-item">
@@ -75,10 +77,11 @@
 <script setup>
 import { useUserStore } from '~/stores/UserStore';
 
+
 const userStore = useUserStore();
 
 function signOut () {
-  userStore.logout();
+  userStore.logout('/login');
 }
 
 </script>
