@@ -227,9 +227,6 @@ const runAnalysis = async () => {
     console.log("Running analysis...");
     let dsIDs = selectedDatasets.value.length ? selectedDatasets.value.map((ds) => ds.id) : [];
 
-}
-    console.log("Selected datasets:", dsIDs);
-    console.log("Name:", name.value);
-    console.log("Overlap:", overlap.value);
 };
+
 </script>
