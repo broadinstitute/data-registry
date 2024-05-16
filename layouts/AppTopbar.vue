@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useLayout } from "./composables/layout";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/UserStore";
+
 const userStore = useUserStore();
 const User = userStore.user;
 const isUploader = User.roles.includes("uploader");
@@ -93,6 +94,18 @@ const items = ref([
     },
 ]);
 const menuBar = computed(() => {
+    let items = [
+        {
+            label: "Datasets",
+            icon: "bi-files",
+            url: "/hermes/",
+        },
+        {
+            label: "QC Reports",
+            icon: "bi-file-earmark-check",
+            url: "/hermes/qc/",
+        },
+    ];
     if (isAdmin.value) {
         return [
             {
@@ -100,20 +113,9 @@ const menuBar = computed(() => {
                 icon: "bi-house",
                 url: "/hermes/dashboard/",
             },
-            {
-                label: "Datasets",
-                icon: "bi-file-earmark-text",
-                url: "/hermes/",
-            },
-        ];
+        ].concat(items);
     } else {
-        return [
-            {
-                label: "Datasets",
-                icon: "bi-file-earmark-text",
-                url: "/hermes/",
-            },
-        ];
+        return items;
     }
 });
 
