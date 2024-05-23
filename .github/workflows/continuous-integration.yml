@@ -34,7 +34,7 @@ jobs:
             - name: Start backend and database
               run: |
                 cd backend
-                GITHUB_TOKEN=${{ secrets.PA_TOKEN }} docker compose up --build
+                GITHUB_TOKEN=${{ secrets.PA_TOKEN }} docker compose up --build -d
 
             - name: Wait for backend to be ready
               run: |
