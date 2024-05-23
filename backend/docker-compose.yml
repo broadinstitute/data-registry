@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0.32
+    volumes:
+      - /var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: dataregistry
+      MYSQL_DATABASE: dataregistry
+      MYSQL_USER: dataregistry
+      MYSQL_PASSWORD: dataregistry
+    ports:
+      - "3307:3306"
+    restart: always
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BACKEND_REPO: https://github.com/broadinstitute/data-registry-api
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      DATA_REGISTRY_DB_CONNECTION: mysql+pymysql://dataregistry:dataregistry@db:3306/dataregistry
+
