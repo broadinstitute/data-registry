@@ -38,7 +38,7 @@ jobs:
 
             - name: Wait for backend to be ready
               run: |
-                curl --retry 5 --retry-delay 10 --retry-connrefused http://localhost:5000/docs
+                curl --retry 5 --retry-delay 60 --retry-connrefused http://localhost:5000/docs
 
             - name: Update .env for end to end tests
               run: |
