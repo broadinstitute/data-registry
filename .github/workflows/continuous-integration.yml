@@ -40,7 +40,7 @@ jobs:
               run: |
                 cd backend
                 echo "Waiting for backend to become healthy..."
-                until [ "$(docker compose ps --filter "status=running" --services --filter "health=healthy" | wc -l)" -eq 2 ]; do
+                until [ "$(docker compose ps --filter "status=running" | grep -c healthy)" -eq 2 ]; do
                   echo "Waiting for backend service..."
                   sleep 10
                 done
