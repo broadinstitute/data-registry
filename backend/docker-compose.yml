@@ -1,6 +1,11 @@
 version: '3.8'
 services:
   db:
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     image: mysql:8.0.32
     volumes:
       - /var/lib/mysql
@@ -14,6 +19,11 @@ services:
     restart: always
 
   api:
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5000/docs"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
     build:
       context: .
       dockerfile: Dockerfile

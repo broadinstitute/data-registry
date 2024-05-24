@@ -36,9 +36,14 @@ jobs:
                 cd backend
                 GITHUB_TOKEN=${{ secrets.PA_TOKEN }} docker compose up --build -d
 
-            - name: Wait for backend to be ready
+            - name: Wait for backend to be healthy
               run: |
-                curl --retry 5 --retry-delay 60 --retry-connrefused http://localhost:5000/docs
+                cd backend
+                echo "Waiting for backend to become healthy..."
+                until [ "$(docker compose ps --filter "status=running" --services --filter "health=healthy" | wc -l)" -eq 2 ]; do
+                  echo "Waiting for backend service..."
+                  sleep 10
+                done
 
             - name: Update .env for end to end tests
               run: |

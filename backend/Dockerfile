@@ -1,6 +1,6 @@
 FROM python:3.9-slim
 
-RUN apt-get update && apt-get install -y git && apt-get install -y default-mysql-client
+RUN apt-get update && apt-get install -y git && apt-get install -y default-mysql-client && apt-get install -y curl
 
 ARG BACKEND_REPO
 ARG GITHUB_TOKEN
