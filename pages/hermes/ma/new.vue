@@ -173,23 +173,20 @@ const finished = ref(false);
 const selectedDatasets = ref([]);
 
 onMounted(async () => {
-    await store.fetchPhenotypes();
-    phenotypes = store.phenotypes;
+    let availablePhenotypes = await store.fetchHermesPhenotypes();
+    console.log("Available phenotypes:", availablePhenotypes);
+    phenotypes = availablePhenotypes;
 });
 
 function matchPhenotypes(event) {
     setTimeout(() => {
-        if (!event.query.trim().length || event.query.trim().length < 2) {
-            filteredPhenotypes.value = phenotypes.value;
-        } else {
-            filteredPhenotypes.value = Object.values(phenotypes)
-                .filter((p) => {
-                    return p.description
-                        .toLowerCase()
-                        .includes(event.query.toLowerCase());
-                })
-                .sort((a, b) => a.description.length - b.description.length);
-        }
+        filteredPhenotypes.value = Object.values(phenotypes)
+            .filter((p) => {
+                return p.description
+                    .toLowerCase()
+                    .includes(event.query.toLowerCase());
+            })
+            .sort((a, b) => a.description.length - b.description.length);
     }, 250);
 }
 
