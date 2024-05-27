@@ -45,6 +45,7 @@
                                 :sortOrder="-1"
                                 v-model:selection="selectedDatasets"
                                 data-key="id"
+                                style="width: 100%"
                             >
                                 <Column
                                     selectionMode="multiple"
@@ -132,8 +133,9 @@
                                         inputId="overlap"
                                         class="mr-2"
                                     /><label for="overlap" class="font-medium"
-                                        >Overlap [{{
-                                            overlap ? "ON" : "OFF"
+                                        >Overlap {{ overlap ? "ON" : "OFF" }} -
+                                        [{{
+                                            overlap ? "Bottom-Line" : "Naive"
                                         }}]</label
                                     >
                                 </div>
@@ -192,7 +194,13 @@ function matchPhenotypes(event) {
 
 const fetchFileUploads = async () => {
     tableLoading.value = true;
-    fileUploads.value = await store.fetchFileUploads();
+    let params = {
+        phenotype: selectedPhenotype.value.name,
+    };
+    let query = Object.keys(params)
+        .map((key) => key + "=" + params[key])
+        .join("&");
+    fileUploads.value = await store.fetchFileUploads(query);
     tableLoading.value = false;
     finished.value = true;
 };
