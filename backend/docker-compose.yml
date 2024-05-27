@@ -20,7 +20,7 @@ services:
 
   api:
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:7000/docs"]
+      test: ["CMD", "curl", "--fail", "http://localhost:5000/docs"]
       interval: 15s
       timeout: 5s
       retries: 6
