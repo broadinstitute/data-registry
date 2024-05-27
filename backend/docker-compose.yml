@@ -20,7 +20,7 @@ services:
 
   api:
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:5000/docs"]
+      test: ["CMD", "curl", "--fail", "http://localhost:7000/docs"]
       interval: 15s
       timeout: 5s
       retries: 6
@@ -31,7 +31,7 @@ services:
         BACKEND_REPO: https://github.com/broadinstitute/data-registry-api
         GITHUB_TOKEN: ${GITHUB_TOKEN}
     ports:
-      - "5001:5000"
+      - "7000:5000"
     depends_on:
       - db
     environment:
