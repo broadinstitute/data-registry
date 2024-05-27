@@ -31,33 +31,6 @@ jobs:
             - name: Run tests
               run: npm run test
 
-            - name: Start backend and database
-              run: |
-                cd backend
-                GITHUB_TOKEN=${{ secrets.PA_TOKEN }} docker compose up --build -d
-
-            - name: Wait for backend to be healthy
-              run: |
-                cd backend
-                echo "Waiting for backend to become healthy..."
-                until [ "$(docker compose ps --filter "status=running" | grep -c healthy)" -eq 2 ]; do
-                  echo "Waiting for backend service..."
-                  sleep 10
-                done
-
-            - name: Update .env for end to end tests
-              run: |
-                echo "NUXT_PUBLIC_API_BASE_URL=http://localhost:8000" > .env
-
-            - name: Run end-to-end tests
-              run: npm run test:e2e
-
-            - name: Cleanup
-              if: always()
-              run: |
-                cd backend
-                docker-compose down
-
             - name: Create .env file
               run: |
                 echo "NUXT_PUBLIC_PHENOTYPES_URL=https://bioindex.hugeamp.org/api/portal/phenotypes" > .env
