@@ -18,7 +18,7 @@ describe('Login page tests', () => {
   it('should allow the user login', () => {
     cy.visit('/');
     cy.get('input[id="email"]').type('admin');
-    cy.get('input[type="password"]').type('password');
+    cy.get('input[type="password"]').type('password11');
     cy.contains('button', 'Sign In').click();
     cy.contains('th', 'Name').should('exist');
   });
