@@ -13,7 +13,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
     const userStore = useUserStore();
     const isLoggedIn = await userStore.isUserLoggedIn();
-    if (userStore.user && JSON.stringify(userStore.user.groups) === JSON.stringify(['hermes'])
+    if (isLoggedIn && userStore.user && JSON.stringify(userStore.user.groups) === JSON.stringify(['hermes'])
       && !to.path.startsWith('/hermes')) {
         // eslint-disable-next-line no-undef
         throw createError({

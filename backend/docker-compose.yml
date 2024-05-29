@@ -30,10 +30,15 @@ services:
       args:
         BACKEND_REPO: https://github.com/broadinstitute/data-registry-api
         GITHUB_TOKEN: ${GITHUB_TOKEN}
+        AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+        AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     ports:
       - "7000:5000"
     depends_on:
       - db
     environment:
       DATA_REGISTRY_DB_CONNECTION: mysql+pymysql://dataregistry:dataregistry@db:3306/dataregistry
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      DATA_REGISTRY_BUCKET: dig-data-registry-qa
 

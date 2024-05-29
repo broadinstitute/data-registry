@@ -10,7 +10,7 @@
         "lintfix": "eslint --fix --ext .js,.vue --ignore-path .gitignore .",
         "cy:open": "cypress open",
         "cy:run": "cypress run",
-        "test:e2e": "start-server-and-test dev-auth http://localhost:3000 cy:run"
+        "test:e2e": "start-server-and-test dev-auth http://local.kpndataregistry.org:3000 cy:run"
     },
     "devDependencies": {
         "@nuxt/devtools": "1.2.0",
@@ -22,6 +22,7 @@
         "@vitejs/plugin-vue": "5.0.4",
         "@vue/test-utils": "2.4.5",
         "cypress": "^13.9.0",
+        "cypress-file-upload": "^5.0.8",
         "eslint": "8.57.0",
         "eslint-config-standard": "17.1.0",
         "eslint-plugin-import": "2.29.1",
