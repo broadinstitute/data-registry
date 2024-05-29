@@ -25,5 +25,6 @@ describe('Hermes Upload', () => {
     cy.get('.p-dropdown-label.p-inputtext').eq(8).type('pVale').type('{enter}');
     cy.get('button[aria-label="Upload"]').click();
     cy.location('pathname').should('eq', '/hermes');
+    cy.contains('td', 'Cypress dataset').should('exist');
   });
 });
