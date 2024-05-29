@@ -30,7 +30,7 @@ services:
       ssh:
         - default
       args:
-        BACKEND_REPO: ${BACKEND_REPO}
+        BACKEND_REPO: git@github.com:broadinstitute/data-registry-api.git
         AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
         AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     ports:
