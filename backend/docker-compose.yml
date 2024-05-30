@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  db:
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    image: mysql:8.0.32
+    volumes:
+      - /var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: dataregistry
+      MYSQL_DATABASE: dataregistry
+      MYSQL_USER: dataregistry
+      MYSQL_PASSWORD: dataregistry
+    ports:
+      - "3307:3306"
+    restart: always
+
+  api:
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5000/docs"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+    build:
+      context: .
+      dockerfile: Dockerfile
+      ssh:
+        - default
+      args:
+        BACKEND_REPO: git@github.com:broadinstitute/data-registry-api.git
+        AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+        AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    ports:
+      - "7000:5000"
+    depends_on:
+      - db
+    environment:
+      SSH_AUTH_SOCK: /tmp/ssh-agent
+      DATA_REGISTRY_DB_CONNECTION: mysql+pymysql://dataregistry:dataregistry@db:3306/dataregistry
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      DATA_REGISTRY_BUCKET: dig-data-registry-qa
+    volumes:
+      - ${SSH_AUTH_SOCK}:/tmp/ssh-agent

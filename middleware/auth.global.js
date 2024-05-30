@@ -8,9 +8,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
         return;
     }
     const nuxtApp = useNuxtApp();
+    if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login')){
+        return;
+    }
     const userStore = useUserStore();
     const isLoggedIn = await userStore.isUserLoggedIn();
-    if (userStore.user && JSON.stringify(userStore.user.groups) === JSON.stringify(['hermes'])
+    if (isLoggedIn && userStore.user && JSON.stringify(userStore.user.groups) === JSON.stringify(['hermes'])
       && !to.path.startsWith('/hermes')) {
         // eslint-disable-next-line no-undef
         throw createError({
@@ -19,7 +22,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
         });
     }
 
-    if (userStore.user || to.path.startsWith('/login') || to.path.startsWith('/hermes/login')) {
+    if (userStore.user) {
         return;
     }
 
