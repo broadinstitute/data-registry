@@ -108,7 +108,7 @@
                         <div
                             class="grid border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center font-medium"
                         >
-                            <div class="col p-4">
+                            <div class="col-8 p-4">
                                 <div class="field p-fluid">
                                     <InputText
                                         type="text"
@@ -123,11 +123,9 @@
                                     >
                                 </div>
                             </div>
-                            <div class="col p-4">
+                            <div class="col-4 p-4">
                                 <!-- Group 2 items go here -->
-                                <div
-                                    class="flex justify-content-center align-items-center"
-                                >
+                                <div class="flex align-items-center">
                                     <InputSwitch
                                         v-model="overlap"
                                         inputId="overlap"
@@ -135,19 +133,20 @@
                                     /><label for="overlap" class="font-medium"
                                         >Overlap {{ overlap ? "ON" : "OFF" }}
                                     </label>
-                                    <div>
-                                        Analysis:
+                                </div>
+                                <div class="flex align-items-center">
+                                    <span
+                                        >Analysis:
                                         {{ overlap ? "Bottom-line" : "Naive" }}
-
-                                        <Button
-                                            icon="bi-info-circle-fill"
-                                            rounded
-                                            text
-                                            class="ml-1"
-                                            @click="showSidebar = true"
-                                            title="More information"
-                                        />
-                                    </div>
+                                    </span>
+                                    <Button
+                                        icon="bi-info-circle-fill"
+                                        rounded
+                                        text
+                                        class="ml-1"
+                                        @click="showSidebar = true"
+                                        title="More information"
+                                    />
                                 </div>
                             </div>
                         </div>
