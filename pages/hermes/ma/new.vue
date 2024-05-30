@@ -133,19 +133,21 @@
                                         inputId="overlap"
                                         class="mr-2"
                                     /><label for="overlap" class="font-medium"
-                                        >Overlap {{ overlap ? "ON" : "OFF" }} -
-                                        [{{
-                                            overlap ? "Bottom-line" : "Naive"
-                                        }}]</label
-                                    >
-                                    <Button
-                                        icon="bi-info-circle-fill"
-                                        rounded
-                                        text
-                                        class="ml-1"
-                                        @click="showSidebar = true"
-                                        title="More information"
-                                    />
+                                        >Overlap {{ overlap ? "ON" : "OFF" }}
+                                    </label>
+                                    <div>
+                                        Analysis:
+                                        {{ overlap ? "Bottom-line" : "Naive" }}
+
+                                        <Button
+                                            icon="bi-info-circle-fill"
+                                            rounded
+                                            text
+                                            class="ml-1"
+                                            @click="showSidebar = true"
+                                            title="More information"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -168,12 +170,12 @@
             v-model:visible="showSidebar"
             header="Meta-Analyses"
             position="right"
-            ><h5>Bottom-line integrative analysis</h5>
+            ><h5>Bottom-line</h5>
             <p>
-                Our bottom line analysis estimates the sample overlap between
-                each pair of studies/datasets and accounts for it when weighting
-                each study’s contribution to the final effect estimate. The
-                method is implemented in METAL (documented
+                Our bottom-line integrative analysis estimates the sample
+                overlap between each pair of studies/datasets and accounts for
+                it when weighting each study’s contribution to the final effect
+                estimate. The method is implemented in METAL (documented
                 <a
                     href="https://genome.sph.umich.edu/wiki/METAL_Documentation#Sample_Overlap_Correction"
                     target="_blank"
@@ -189,10 +191,9 @@
 
             <h5>Naive</h5>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat.
+                Our naive analysis conducts an fixed-effect inverse variance
+                weighted meta-analysis, assuming that all studies are
+                independent.
             </p>
         </Sidebar>
     </div>
@@ -214,9 +215,11 @@ const finished = ref(false);
 const selectedDatasets = ref([]);
 
 onMounted(async () => {
-    let availablePhenotypes = await store.fetchHermesPhenotypes();
-    console.log("Available phenotypes:", availablePhenotypes);
-    phenotypes = availablePhenotypes;
+    let params = {
+        statuses: "REVIEW+APPROVED",
+    };
+    let query = paramsToString(params);
+    phenotypes = await store.fetchHermesPhenotypes(query);
 });
 
 function matchPhenotypes(event) {
@@ -235,10 +238,9 @@ const fetchFileUploads = async () => {
     tableLoading.value = true;
     let params = {
         phenotype: selectedPhenotype.value.name,
+        statuses: "REVIEW+APPROVED",
     };
-    let query = Object.keys(params)
-        .map((key) => key + "=" + params[key])
-        .join("&");
+    let query = paramsToString(params);
     fileUploads.value = await store.fetchFileUploads(query);
     tableLoading.value = false;
     finished.value = true;
@@ -265,6 +267,12 @@ const formatDate = (value) => {
         month: "2-digit",
         year: "numeric",
     });
+};
+
+const paramsToString = (params) => {
+    return Object.keys(params)
+        .map((key) => key + "=" + params[key])
+        .join("&");
 };
 
 const runAnalysis = async () => {

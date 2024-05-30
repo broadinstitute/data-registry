@@ -166,18 +166,15 @@ export const useDatasetStore = defineStore("DatasetStore", {
             }
         },
 
-        async fetchHermesPhenotypes() {
-            //fetPhenotypes as phenotypeMap, then fetch the hermes phenotypes, return only the phenotypes that are in the phenotypeMap
-            await this.fetchPhenotypes();
-            console.log("phenotypes ", this.phenotypes);
+        async fetchHermesPhenotypes(params = null) {
+            await this.fetchPhenotypes(); //get phenotype mapping
             const { data } = await configuredAxios.get(
-                "/api/hermes-uploaded-phenotypes",
+                params
+                    ? `/api/hermes-uploaded-phenotypes?${params}`
+                    : "/api/hermes-uploaded-phenotypes",
             );
-            let hermesPhenotypes = data;
-            console.log("hermes ", hermesPhenotypes);
-            //for each hermesPhenotype, check if it is in the phenotypeMap, if it is, add it to the new array with info from the phenotypeMap
             let mappedPhenotypes = [];
-            hermesPhenotypes.forEach((hp) => {
+            data.forEach((hp) => {
                 if (this.phenotypes[hp]) {
                     mappedPhenotypes.push(this.phenotypes[hp]);
                 }
@@ -191,10 +188,11 @@ export const useDatasetStore = defineStore("DatasetStore", {
             );
             return data;
         },
-        async fetchFileUploads(query) {
+        async fetchFileUploads(params = null) {
             const { data } = await configuredAxios.get(
-                "/api/upload-hermes?" + query,
+                params ? `/api/upload-hermes?${params}` : "/api/upload-hermes",
             );
+
             return data;
         },
         async fetchStudies() {
