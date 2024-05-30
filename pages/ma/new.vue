@@ -215,14 +215,6 @@ const getSeverity = (status) => {
     }
 };
 
-const formatDate = (value) => {
-    return value.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
-};
-
 const runAnalysis = async () => {
     console.log("Running analysis...");
     let dsIDs = selectedDatasets.value.length ? selectedDatasets.value.map((ds) => ds.id) : [];

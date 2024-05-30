@@ -30,6 +30,22 @@ export const useUserStore = defineStore("UserStore", {
                 return false;
             }
         },
+        async createNewHermesUser(user_name, password, user_type) {
+            if (!this.axios) {
+                this.init();
+            }
+            await this.axios.post(
+                "/api/add-hermes-user",
+                JSON.stringify({ user_name, password, "user_type": user_type.value}),
+            );
+        },
+        async getHermesUsers() {
+            if (!this.axios) {
+                this.init();
+            }
+            const { data } = await this.axios.get("/api/hermes-users");
+            return data;
+        },
         async changePassword(password) {
             if (!this.axios) {
                 this.init();

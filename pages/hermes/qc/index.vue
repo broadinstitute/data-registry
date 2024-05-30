@@ -129,13 +129,6 @@ const getSeverity = (status) => {
     }
 };
 
-const formatDate = (value) => {
-    return value.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
-};
 const getIcon = (status) => {
     switch (status) {
         case "FAILED QC":

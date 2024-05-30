@@ -36,7 +36,7 @@ const onTopBarMenuButton = () => {
 
 const onSettingsClick = () => {
     topbarMenuActive.value = false;
-    router.push("/");
+    router.push("/hermes/changepassword");
 };
 
 const topbarMenuClasses = computed(() => {
@@ -83,6 +83,7 @@ const items = ref([
             {
                 label: "Settings",
                 icon: "bi-gear",
+                command: onSettingsClick,
             },
             {
                 label: "Sign out",

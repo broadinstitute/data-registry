@@ -3,8 +3,8 @@
     <div class="card p-fluid">
     <form @submit.prevent="handleSubmit" class="form">
       <div class="field">
-        <label for="name">Username/Email</label>
-        <InputText v-model="user.name" placeholder="Username/Email" autofocus />
+        <label for="name">Email</label>
+        <InputText v-model="user.name" placeholder="Email" autofocus />
       </div>
       <div class="field">
         <label for="password">Password</label>
@@ -25,19 +25,21 @@
         ></dropdown>
       </div>
 
-
-      <Button label="Create User" />
+      <Button label="Create User" @click="handleSubmit"/>
     </form>
     </div>
+    <Toast position="top-left" />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import { useUserStore } from '~/stores/UserStore';
+const store = useUserStore();
+const toast = useToast();
 
 const user = ref({
   name: '',
-  email: '',
   password: '',
   confirmPassword: '',
   userType: null
@@ -48,13 +50,42 @@ const userTypes = ref([
   { name: 'Reviewer', value: 'reviewer' }
 ]);
 
-function handleSubmit() {
+async function handleSubmit() {
   if (user.value.password !== user.value.confirmPassword) {
-    alert("Passwords do not match!");
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Passwords do not match",
+      life: 3000,
+    });
     return;
   }
-  console.log('User created:', user.value);
-  // Handle user creation logic here
+  try {
+    await store.createNewHermesUser(user.value.name, user.value.password, user.value.userType);
+    toast.add({
+      severity: "success",
+      summary: "Success",
+      detail: "Dataset status updated successfully",
+      life: 3000,
+    });
+  } catch (error) {
+    if (error.response.status === 409) {
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: "User already exists",
+        life: 3000,
+      });
+      return;
+    } else {
+      toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: error.message,
+        life: 3000,
+      });
+    }
+  }
 }
 </script>
 
