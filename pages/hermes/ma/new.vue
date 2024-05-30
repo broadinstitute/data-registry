@@ -135,9 +135,17 @@
                                     /><label for="overlap" class="font-medium"
                                         >Overlap {{ overlap ? "ON" : "OFF" }} -
                                         [{{
-                                            overlap ? "Bottom-Line" : "Naive"
+                                            overlap ? "Bottom-line" : "Naive"
                                         }}]</label
                                     >
+                                    <Button
+                                        icon="bi-info-circle-fill"
+                                        rounded
+                                        text
+                                        class="ml-1"
+                                        @click="showSidebar = true"
+                                        title="More information"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -155,8 +163,38 @@
                         />
                     </div>
                 </template>
-            </StepperPanel>
-        </Stepper>
+            </StepperPanel> </Stepper
+        ><Sidebar
+            v-model:visible="showSidebar"
+            header="Meta-Analyses"
+            position="right"
+            ><h5>Bottom-line integrative analysis</h5>
+            <p>
+                Our bottom line analysis estimates the sample overlap between
+                each pair of studies/datasets and accounts for it when weighting
+                each study’s contribution to the final effect estimate. The
+                method is implemented in METAL (documented
+                <a
+                    href="https://genome.sph.umich.edu/wiki/METAL_Documentation#Sample_Overlap_Correction"
+                    target="_blank"
+                    >here</a
+                >) and was developed at the University of Michigan.
+            </p>
+            <p>
+                More information
+                <a href="https://hugeamp.org/help.html?page=911" target="_blank"
+                    >here</a
+                >.
+            </p>
+
+            <h5>Naive</h5>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+            </p>
+        </Sidebar>
     </div>
 </template>
 <script setup>
@@ -168,6 +206,7 @@ let phenotypes = {};
 const selectedPhenotype = ref({});
 const filteredPhenotypes = ref();
 const overlap = ref(false);
+const showSidebar = ref(false);
 const name = ref("");
 const fileUploads = ref([]);
 const tableLoading = ref(false);

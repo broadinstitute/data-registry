@@ -105,6 +105,11 @@ const menuBar = computed(() => {
             icon: "bi-file-earmark-check",
             url: "/hermes/qc/",
         },
+        {
+            label: "Meta-Analyses",
+            icon: "bi-file-earmark-bar-graph",
+            url: "/hermes/ma/",
+        },
     ];
     if (isAdmin.value) {
         return [

@@ -1,11 +1,8 @@
 <template>
     <div>
         <h2>Meta-Analyses</h2>
-        <div class="card">
-            <div class="card-header">
-                <h3>Meta-Analysis</h3>
-            </div>
-            <div class="card-body">
+        <Card>
+            <template #content>
                 <DataTable :value="sampleData">
                     <Column field="name" header="Name"></Column>
                     <Column field="phenotype" header="Phenotype">
@@ -15,22 +12,24 @@
                     </Column>
                     <Column field="datasets" header="Datasets">
                         <template #body="{ data }">
-                            <span
+                            <!-- <span
                                 v-for="dataset in data.datasets"
                                 :key="dataset"
                             >
                                 <NuxtLink :to="`/hermes/ma/${dataset}`">
                                     {{ dataset }}
                                 </NuxtLink>
-                            </span>
+                            </span> -->
+                            {{ data.datasets.join(", ") }}
                         </template>
                     </Column>
+                    <Column field="started" header="Started"></Column>
                     <Column field="status" header="Status"></Column>
                     <Column field="actions" header="Actions"></Column>
                 </DataTable>
-            </div>
-        </div>
-        <Card>
+            </template>
+        </Card>
+        <Card class="mt-4">
             <template #content>
                 <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
                     <div class="text-700 text-center">
@@ -65,6 +64,7 @@ const sampleData = ref([
         phenotype: "T2D",
         datasets: ["Dataset 1", "Dataset 2", "Dataset 3"],
         status: "Running",
+        started: "2021-10-01",
     },
     {
         id: 2,
@@ -72,6 +72,7 @@ const sampleData = ref([
         phenotype: "BMI",
         datasets: ["Dataset 4", "Dataset 5", "Dataset 6"],
         status: "Completed",
+        started: "2021-10-02",
     },
     {
         id: 3,
@@ -79,6 +80,7 @@ const sampleData = ref([
         phenotype: "T1D",
         datasets: ["Dataset 7", "Dataset 8", "Dataset 9"],
         status: "Failed",
+        started: "2021-10-03",
     },
 ]);
 onMounted(async () => {
