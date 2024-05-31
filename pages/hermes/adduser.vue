@@ -12,7 +12,7 @@
       </div>
       <div class="field">
         <label for="confirmPassword">Confirm Password</label>
-        <password v-model="user.confirmPassword" placeholder="Confirm password" />
+        <Password v-model="user.confirmPassword" placeholder="Confirm password" />
       </div>
 
       <div class="field">
@@ -50,6 +50,11 @@ const userTypes = ref([
   { name: 'Reviewer', value: 'reviewer' }
 ]);
 
+function isValidEmail(email) {
+  const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  return regex.test(email);
+}
+
 async function handleSubmit() {
   if (user.value.password !== user.value.confirmPassword) {
     toast.add({
@@ -60,12 +65,23 @@ async function handleSubmit() {
     });
     return;
   }
+
+  if(!isValidEmail(user.value.name)){
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Invalid email address",
+      life: 3000,
+    });
+    return;
+  }
+
   try {
     await store.createNewHermesUser(user.value.name, user.value.password, user.value.userType);
     toast.add({
       severity: "success",
       summary: "Success",
-      detail: "Dataset status updated successfully",
+      detail: `User ${user.value.name} created successfully`,
       life: 3000,
     });
   } catch (error) {
@@ -76,7 +92,6 @@ async function handleSubmit() {
         detail: "User already exists",
         life: 3000,
       });
-      return;
     } else {
       toast.add({
         severity: "error",
@@ -90,5 +105,4 @@ async function handleSubmit() {
 </script>
 
 <style>
-/* Add any component-specific styles here */
 </style>

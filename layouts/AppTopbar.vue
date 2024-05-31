@@ -1,19 +1,14 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { useLayout } from "./composables/layout";
+import { onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/UserStore";
 const userStore = useUserStore();
 const User = userStore.user;
-const isUploader = User.roles.includes("uploader");
 const isAdmin = User.roles.includes("admin");
-
-//check if user isLoggedIn from auth global middleware
 
 function signOut() {
     userStore.logout('/hermes/login');
 }
-const { layoutConfig } = useLayout();
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
@@ -24,19 +19,15 @@ onMounted(() => {
 onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
-const logoUrl = computed(() => {
-    return `/layout/images/${
-        layoutConfig.darkTheme.value ? "logo-white" : "logo-dark"
-    }.svg`;
-});
 
-const onTopBarMenuButton = () => {
-    topbarMenuActive.value = !topbarMenuActive.value;
-};
-
-const onSettingsClick = () => {
+const changepassword = () => {
     topbarMenuActive.value = false;
     router.push("/hermes/changepassword");
+};
+
+const adduser = () => {
+  topbarMenuActive.value = false;
+  router.push("/hermes/adduser");
 };
 
 const topbarMenuClasses = computed(() => {
@@ -78,21 +69,35 @@ const isOutsideClicked = (event) => {
 };
 const items = ref([
     {
-        label: "Profile",
-        items: [
-            {
-                label: "Settings",
-                icon: "bi-gear",
-                command: onSettingsClick,
-            },
-            {
-                label: "Sign out",
-                icon: "bi-door-open",
-                command: signOut,
-            },
-        ],
+      label: "Profile",
+      items: [
+        {
+          label: 'Add User',
+          icon: 'bi-key',
+          command: adduser,
+          permission: 'addUser'
+        },
+        {
+          label: 'Change Password',
+          icon: 'bi-key',
+          command: changepassword
+        },
+        {
+          label: 'Sign out',
+          icon: 'bi-door-open',
+          command: signOut
+        }
+      ]
     },
 ]);
+const filteredItems = computed(() => {
+  return items.value[0].items.filter(item => {
+    if (item.permission) {
+      return userStore.user.permissions.includes(item.permission);
+    }
+    return true;
+  });
+});
 const menuBar = computed(() => {
     if (isAdmin.value) {
         return [
@@ -144,7 +149,7 @@ const toggle = (event) => {
                     <Menu
                         ref="menu"
                         id="overlay_menu"
-                        :model="items"
+                        :model="filteredItems"
                         :popup="true"
                     />
                 </template>

@@ -1,6 +1,5 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
-import { ref, onMounted } from "vue";
 
 const route = useRouter();
 const store = useDatasetStore();

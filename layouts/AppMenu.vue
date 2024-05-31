@@ -37,19 +37,6 @@ const model = ref([
     {
         separator: true,
     },
-    // {
-    //     label: "Help",
-    //     items: [
-    //         {
-    //             label: "Documentation",
-    //             icon: "bi-journals",
-    //         },
-    //         {
-    //             label: "Support",
-    //             icon: "bi-chat",
-    //         },
-    //     ],
-    // },
 ]);
 </script>
 
