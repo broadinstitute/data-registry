@@ -29,8 +29,30 @@
                 </template>
             </StepperPanel>
             <StepperPanel header="Select Datasets">
+                <template #title="{ index }">
+                    <div
+                        class="flex justify-content-between align-items-center"
+                    >
+                        <div class="text-700">Step1 {{ index + 1 }}</div>
+                        <div class="text-700">Select Datasets</div>
+                    </div>
+                </template>
                 <template #content="{ prevCallback, nextCallback }">
                     <div class="flex flex-column">
+                        <Message v-if="fileUploads.length < 2" severity="warn">
+                            <p>
+                                You need at least two datasets to run a
+                                meta-analysis. Please upload more datasets or
+                                approve existing ones.
+                            </p>
+                        </Message>
+                        <Message v-else severity="info">
+                            <p>
+                                Select the datasets you want to include in the
+                                meta-analysis.
+                            </p>
+                        </Message>
+
                         <div
                             class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium"
                         >
