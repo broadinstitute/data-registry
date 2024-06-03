@@ -27,7 +27,16 @@
                     <Column field="type" header="Type"></Column>
                     <Column field="started" header="Started"></Column>
                     <Column field="user" header="By"></Column>
-                    <Column field="status" header="Status"></Column>
+                    <Column field="status" header="Status">
+                        <template #body="{ data }">
+                            <Tag
+                                :severity="getSeverity(data.status)"
+                                :icon="getIcon(data.status)"
+                                :value="data.status"
+                                rounded
+                            />
+                        </template>
+                    </Column>
                 </DataTable>
             </template>
         </Card>
@@ -100,5 +109,31 @@ const formatPhenotype = (phenotype) => {
     return phenotypeMap.value[phenotype]
         ? phenotypeMap.value[phenotype].description
         : phenotype;
+};
+
+const getSeverity = (status) => {
+    switch (status) {
+        case "Running":
+            return "info";
+        case "Completed":
+            return "success";
+        case "Failed":
+            return "danger";
+        default:
+            return "secondary";
+    }
+};
+
+const getIcon = (status) => {
+    switch (status) {
+        case "Running":
+            return "bi-play-circle";
+        case "Completed":
+            return "bi-check-circle";
+        case "Failed":
+            return "bi-x-circle";
+        default:
+            return "bi-circle";
+    }
 };
 </script>

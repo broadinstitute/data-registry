@@ -24,7 +24,7 @@
                                 label="Meta-Analysis"
                                 icon="bi-plus-lg"
                                 class="mr-2"
-                                @click="route.push('/hermes/ma/new')"
+                                @click="router.push('/hermes/ma/new')"
                             ></Button>
                         </div>
                     </div>
@@ -35,6 +35,7 @@
 </template>
 <script setup>
 const route = useRoute();
+const router = useRouter();
 const maName = ref("Meta-Analysis");
 const id = route.params.id;
 </script>
