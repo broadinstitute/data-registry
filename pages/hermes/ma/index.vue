@@ -23,9 +23,10 @@
                             {{ data.datasets.join(", ") }}
                         </template>
                     </Column>
+                    <Column field="type" header="Type"></Column>
                     <Column field="started" header="Started"></Column>
+                    <Column field="user" header="By"></Column>
                     <Column field="status" header="Status"></Column>
-                    <Column field="actions" header="Actions"></Column>
                 </DataTable>
             </template>
         </Card>
@@ -65,6 +66,8 @@ const sampleData = ref([
         datasets: ["Dataset 1", "Dataset 2", "Dataset 3"],
         status: "Running",
         started: "2021-10-01",
+        type: "Bottom-line",
+        user: "User 1",
     },
     {
         id: 2,
@@ -73,6 +76,8 @@ const sampleData = ref([
         datasets: ["Dataset 4", "Dataset 5", "Dataset 6"],
         status: "Completed",
         started: "2021-10-02",
+        type: "Bottom-line",
+        user: "User 2",
     },
     {
         id: 3,
@@ -81,6 +86,8 @@ const sampleData = ref([
         datasets: ["Dataset 7", "Dataset 8", "Dataset 9"],
         status: "Failed",
         started: "2021-10-03",
+        type: "Naive",
+        user: "User 3",
     },
 ]);
 onMounted(async () => {
