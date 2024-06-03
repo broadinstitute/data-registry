@@ -4,7 +4,13 @@
         <Card>
             <template #content>
                 <DataTable :value="sampleData">
-                    <Column field="name" header="Name"></Column>
+                    <Column field="name" header="Name">
+                        <template #body="{ data }">
+                            <NuxtLink :to="`/hermes/ma/${data.id}`">
+                                {{ data.name }}
+                            </NuxtLink>
+                        </template>
+                    </Column>
                     <Column field="phenotype" header="Phenotype">
                         <template #body="{ data }">
                             {{ formatPhenotype(data.phenotype) }}
@@ -12,15 +18,10 @@
                     </Column>
                     <Column field="datasets" header="Datasets">
                         <template #body="{ data }">
-                            <!-- <span
-                                v-for="dataset in data.datasets"
-                                :key="dataset"
-                            >
-                                <NuxtLink :to="`/hermes/ma/${dataset}`">
-                                    {{ dataset }}
-                                </NuxtLink>
-                            </span> -->
-                            {{ data.datasets.join(", ") }}
+                            {{
+                                data.datasets.slice(0, 3).join(", ") +
+                                (data.datasets.length > 3 ? ", ..." : "")
+                            }}
                         </template>
                     </Column>
                     <Column field="type" header="Type"></Column>
@@ -63,7 +64,7 @@ const sampleData = ref([
         id: 1,
         name: "Meta-Analysis 1",
         phenotype: "T2D",
-        datasets: ["Dataset 1", "Dataset 2", "Dataset 3"],
+        datasets: ["Dataset 1", "Dataset 2", "Dataset 3", "Dataset 4"],
         status: "Running",
         started: "2021-10-01",
         type: "Bottom-line",
