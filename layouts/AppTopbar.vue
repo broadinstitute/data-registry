@@ -73,7 +73,7 @@ const items = ref([
       items: [
         {
           label: 'Add User',
-          icon: 'bi-key',
+          icon: 'bi-person-plus',
           command: adduser,
           permission: 'addUser'
         },
@@ -92,7 +92,7 @@ const items = ref([
 ]);
 const filteredItems = computed(() => {
   return items.value[0].items.filter(item => {
-    if (item.permission) {
+    if (item.permission && userStore.user) {
       return userStore.user.permissions.includes(item.permission);
     }
     return true;

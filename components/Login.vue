@@ -1,10 +1,10 @@
 <script setup>
-import { ref } from "vue";
+import { useToast } from 'primevue/usetoast';
+const toast = useToast();
 import { useUserStore } from "~/stores/UserStore";
 const email = ref("");
 const password = ref("");
 const remember = ref(false);
-const errorMessage = ref("");
 
 const route = useRoute();
 const config = useRuntimeConfig();
@@ -30,7 +30,12 @@ const submitForm = async () => {
     navigateTo(route.query.redirect ? route.query.redirect : defaultUrl);
   } catch (error) {
     console.log(error);
-    errorMessage.value = "Sorry, we could not log you in.";
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: error.message,
+      life: 3000,
+    });
   }
 };
 
@@ -50,7 +55,12 @@ function loginWithGoogle() {
 onMounted(() => {
   document.getElementById("email").focus();
   if (userStore.loginError) {
-    errorMessage.value = userStore.loginError;
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: userStore.loginError,
+      life: 3000,
+    });
     userStore.loginError = null;
   }
 });
@@ -95,13 +105,6 @@ onMounted(() => {
                   height="100"
               />
             </template>
-          </div>
-          <div
-              v-if="errorMessage"
-              class="alert alert-danger"
-              role="alert"
-          >
-            {{ errorMessage }}
           </div>
           <div>
             <label
@@ -166,6 +169,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    <Toast position="top-left" />
   </div>
 
 </template>

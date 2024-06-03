@@ -185,10 +185,5 @@ const getIcon = (status) => {
 </template>
 
 <style scoped>
-/* button span.icon {
-    margin-right: 10px;
-} */
-/* .p-tag .p-tag-icon {
-    margin-right: 0.25rem;
-} */
+
 </style>
