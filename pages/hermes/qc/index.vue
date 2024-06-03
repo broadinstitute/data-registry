@@ -155,7 +155,7 @@ const getIcon = (status) => {
 <template>
     <div class="grid">
         <div v-if="fileUploads.length && finished" class="col">
-            <h2>QC Reports</h2>
+            <h2>Quality Control (QC) Reports</h2>
             <Card>
                 <template #content>
                     <!-- ... your other code ... -->
@@ -217,7 +217,7 @@ const getIcon = (status) => {
                                 <span
                                     v-if="data.qc_status !== 'SUBMITTED TO QC'"
                                 >
-                                    <nuxt-link :to="`/data/qc/${data.id}`">
+                                    <nuxt-link :to="`/hermes/qc/${data.id}`">
                                         <Tag
                                             :severity="
                                                 getSeverity(data.qc_status)
@@ -250,12 +250,18 @@ const getIcon = (status) => {
                                     "
                                 >
                                     <Button
-                                        @mouseover="hoveredQQId = data.id"
-                                        @mouseleave="hoveredQQId = null"
+                                        @mouseover="
+                                            hoveredQQId = data.id;
+                                            hoveredMId = data.id;
+                                        "
+                                        @mouseleave="
+                                            hoveredQQId = null;
+                                            hoveredMId = null;
+                                        "
                                         size="small"
                                         outlined
                                         class="mr-2 plot"
-                                        >QQ</Button
+                                        >Plots</Button
                                     >
                                     <div
                                         v-if="hoveredQQId === data.id"
@@ -268,20 +274,6 @@ const getIcon = (status) => {
                                             width="400"
                                             height="400"
                                         />
-                                    </div>
-
-                                    <Button
-                                        @mouseover="hoveredMId = data.id"
-                                        @mouseleave="hoveredMId = null"
-                                        size="small"
-                                        outlined
-                                        class="plot"
-                                        >M</Button
-                                    >
-                                    <div
-                                        v-if="hoveredMId === data.id"
-                                        class="image-tooltip"
-                                    >
                                         <img
                                             :src="`https://hermes-qc.s3.amazonaws.com/images/${data.id}/manhattan_plot.png`"
                                             alt="Plot"
@@ -293,9 +285,9 @@ const getIcon = (status) => {
                                 </div>
                             </template>
                         </Column>
-                        <Column field="qc_report" header="QC Report">
+                        <Column field="qc_report" header="Full Report">
                             <template #body="{ data }">
-                                <NuxtLink :to="`/data/qc/${data.id}`">
+                                <NuxtLink :to="`/hermes/qc/${data.id}`">
                                     <Button
                                         v-if="
                                             data.qc_status !== 'SUBMITTED TO QC'
@@ -328,7 +320,7 @@ const getIcon = (status) => {
                                 label="Upload"
                                 icon="bi-upload"
                                 class="mr-2"
-                                @click="route.push('/data/new')"
+                                @click="route.push('/hermes/new')"
                             ></Button>
                         </div>
                     </div>
@@ -369,7 +361,7 @@ const getIcon = (status) => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 406px;
+    width: 806px;
     height: 406px;
     overflow: auto;
     border: 3px solid #6366f1;

@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useLayout } from "./composables/layout";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/UserStore";
+
 const userStore = useUserStore();
 const User = userStore.user;
 const isUploader = User.roles.includes("uploader");
@@ -11,7 +12,7 @@ const isAdmin = User.roles.includes("admin");
 //check if user isLoggedIn from auth global middleware
 
 function signOut() {
-    userStore.logout('/hermes/login');
+    userStore.logout("/hermes/login");
 }
 const { layoutConfig } = useLayout();
 const outsideClickListener = ref(null);
@@ -93,6 +94,23 @@ const items = ref([
     },
 ]);
 const menuBar = computed(() => {
+    let items = [
+        {
+            label: "Datasets",
+            icon: "bi-files",
+            url: "/hermes/",
+        },
+        {
+            label: "QC Reports",
+            icon: "bi-file-earmark-check",
+            url: "/hermes/qc/",
+        },
+        {
+            label: "Meta-Analyses",
+            icon: "bi-file-earmark-bar-graph",
+            url: "/hermes/ma/",
+        },
+    ];
     if (isAdmin.value) {
         return [
             {
@@ -100,20 +118,9 @@ const menuBar = computed(() => {
                 icon: "bi-house",
                 url: "/hermes/dashboard/",
             },
-            {
-                label: "Datasets",
-                icon: "bi-file-earmark-text",
-                url: "/hermes/",
-            },
-        ];
+        ].concat(items);
     } else {
-        return [
-            {
-                label: "Datasets",
-                icon: "bi-file-earmark-text",
-                url: "/hermes/",
-            },
-        ];
+        return items;
     }
 });
 
@@ -128,7 +135,6 @@ const toggle = (event) => {
         <nuxt-link to="/hermes" class="layout-topbar-logo">
             <img src="/tenants/hermes/logo.png" alt="logo" />
         </nuxt-link>
-
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
             <Menubar :model="menuBar">
