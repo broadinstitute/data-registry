@@ -35,8 +35,8 @@ async function reviewDataset(id, value) {
 
 <template>
     <Breadcrumb
-        :home="{ icon: 'bi-house', url: '/data/dashboard/' }"
-        :model="[{ label: 'Datasets', url: '/data/' }, { label: dsName }]"
+        :home="{ icon: 'bi-house', url: '/hermes/dashboard/' }"
+        :model="[{ label: 'Datasets', url: '/hermes/' }, { label: dsName }]"
         class="mb-3"
     />
     <div class="grid" v-if="reviewStatus != 'FAILED QC'">

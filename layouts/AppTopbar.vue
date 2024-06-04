@@ -2,12 +2,13 @@
 import { onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/UserStore";
+
 const userStore = useUserStore();
 const User = userStore.user;
 const isAdmin = User.roles.includes("admin");
 
 function signOut() {
-    userStore.logout('/hermes/login');
+    userStore.logout("/hermes/login");
 }
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -99,6 +100,23 @@ const filteredItems = computed(() => {
   });
 });
 const menuBar = computed(() => {
+    let items = [
+        {
+            label: "Datasets",
+            icon: "bi-files",
+            url: "/hermes/",
+        },
+        {
+            label: "QC Reports",
+            icon: "bi-file-earmark-check",
+            url: "/hermes/qc/",
+        },
+        {
+            label: "Meta-Analyses",
+            icon: "bi-file-earmark-bar-graph",
+            url: "/hermes/ma/",
+        },
+    ];
     if (isAdmin.value) {
         return [
             {
@@ -106,20 +124,9 @@ const menuBar = computed(() => {
                 icon: "bi-house",
                 url: "/hermes/dashboard/",
             },
-            {
-                label: "Datasets",
-                icon: "bi-file-earmark-text",
-                url: "/hermes/",
-            },
-        ];
+        ].concat(items);
     } else {
-        return [
-            {
-                label: "Datasets",
-                icon: "bi-file-earmark-text",
-                url: "/hermes/",
-            },
-        ];
+        return items;
     }
 });
 
@@ -134,7 +141,6 @@ const toggle = (event) => {
         <nuxt-link to="/hermes" class="layout-topbar-logo">
             <img src="/tenants/hermes/logo.png" alt="logo" />
         </nuxt-link>
-
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
             <Menubar :model="menuBar">

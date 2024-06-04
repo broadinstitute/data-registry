@@ -96,12 +96,13 @@ const pieOptions = {
                 <template #content
                     ><DataTable
                         :value="fileUploads"
-                        :paginator="false"
+                        :paginator="true"
                         rowHover
                         :rows="5"
                         :rowsPerPageOptions="[5, 10, 20]"
                         sortField="uploaded_at"
                         :sortOrder="-1"
+                        dataKey="id"
                         ><template #header>
                             <div
                                 class="flex justify-content-end flex-column sm:flex-row"
