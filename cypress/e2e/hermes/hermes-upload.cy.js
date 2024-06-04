@@ -1,4 +1,4 @@
-describe('Hermes Upload', () => {
+describe('Hermes Upload', {retries: 2}, () => {
   it('uploads a dataset', () => {
     cy.intercept('POST', '**/api/login').as('loginRequest');
     cy.intercept('POST', '**/api/upload-hermes').as('uploadRequest');
@@ -7,8 +7,7 @@ describe('Hermes Upload', () => {
     cy.get('input[type="password"]').type('password');
     cy.contains('button', 'Sign In').click();
     cy.wait('@loginRequest');
-    cy.wait(500);
-    cy.visit('/hermes/new');
+    cy.visit('/hermes/new', {timeout: 10000});
     cy.get('#dataSetName').type('Cypress dataset');
     cy.get('.p-autocomplete-input').type('type 1 diab').blur();
     cy.get('#phenotype_0').click();

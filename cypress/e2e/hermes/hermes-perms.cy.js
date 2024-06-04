@@ -18,12 +18,11 @@ describe('Tests that Verify Permissions', () => {
     cy.get('input[type="password"]').type('password');
     cy.contains('button', 'Sign In').click();
     cy.wait('@loginRequest');
-    cy.wait(500);
-    cy.get('.p-button.p-component.p-button-outlined.p-button-sm').eq(0).click();
+    cy.get('.p-button.p-component.p-button-outlined.p-button-sm',
+      {timeout: 10000}).first().click();
     cy.contains('span.p-button-label', 'Pass').click();
     cy.visit('/hermes');
-    cy.wait(500);
-    cy.contains('span.p-tag-value', 'REVIEW APPROVED').should('exist');
+    cy.contains('span.p-tag-value', 'REVIEW APPROVED', {timeout: 10000}).should('exist');
   });
 
   it('uploader should not be able to create a new user', () => {
@@ -33,8 +32,7 @@ describe('Tests that Verify Permissions', () => {
     cy.get('input[type="password"]').type('password');
     cy.contains('button', 'Sign In').click();
     cy.wait('@loginRequest');
-    cy.wait(500);
-    cy.get('i.bi-person').click();
+    cy.get('i.bi-person', {timeout: 10000}).click();
     cy.contains('span.p-menuitem-text', 'Add User').should('not.exist');
     cy.contains('span.p-menuitem-text', 'Show Users').should('not.exist');
   });
