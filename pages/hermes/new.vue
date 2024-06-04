@@ -148,9 +148,6 @@ function matchPhenotypes(event) {
 }
 
 async function upload() {
-    // if (!useFormValidation("uploadGwasForm")) {
-    //     return;
-    // }
 
     const metadata = {
         original_data: fileName,
@@ -166,9 +163,6 @@ async function upload() {
     const errors = await store.validateMetadata(metadata);
     if (errors.length > 0) {
         store.showNotification = true;
-        // store.errorMessage = `<ul class="dotted">${errors
-        //     .map((e) => `<li>${e}</li>`)
-        //     .join("")}</ul>`;
         store.errorMessage = errors;
     } else {
         store.showNotification = false;

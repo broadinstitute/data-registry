@@ -1,20 +1,15 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { useLayout } from "./composables/layout";
+import { onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/UserStore";
 
 const userStore = useUserStore();
 const User = userStore.user;
-const isUploader = User.roles.includes("uploader");
 const isAdmin = User.roles.includes("admin");
-
-//check if user isLoggedIn from auth global middleware
 
 function signOut() {
     userStore.logout("/hermes/login");
 }
-const { layoutConfig } = useLayout();
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
@@ -25,19 +20,20 @@ onMounted(() => {
 onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
-const logoUrl = computed(() => {
-    return `/layout/images/${
-        layoutConfig.darkTheme.value ? "logo-white" : "logo-dark"
-    }.svg`;
-});
 
-const onTopBarMenuButton = () => {
-    topbarMenuActive.value = !topbarMenuActive.value;
+const changepassword = () => {
+    topbarMenuActive.value = false;
+    router.push("/hermes/changepassword");
 };
 
-const onSettingsClick = () => {
-    topbarMenuActive.value = false;
-    router.push("/");
+const adduser = () => {
+  topbarMenuActive.value = false;
+  router.push("/hermes/adduser");
+};
+
+const showUsers = () => {
+  topbarMenuActive.value = false;
+  router.push("/hermes/users");
 };
 
 const topbarMenuClasses = computed(() => {
@@ -79,20 +75,41 @@ const isOutsideClicked = (event) => {
 };
 const items = ref([
     {
-        label: "Profile",
-        items: [
-            {
-                label: "Settings",
-                icon: "bi-gear",
-            },
-            {
-                label: "Sign out",
-                icon: "bi-door-open",
-                command: signOut,
-            },
-        ],
+      label: "Profile",
+      items: [
+        {
+          label: 'Add User',
+          icon: 'bi-person-plus',
+          command: adduser,
+          permission: 'addUser'
+        },
+        {
+          label: 'Show Users',
+          icon: 'bi-people-fill',
+          command: showUsers,
+          permission: 'addUser'
+        },
+        {
+          label: 'Change Password',
+          icon: 'bi-key',
+          command: changepassword
+        },
+        {
+          label: 'Sign out',
+          icon: 'bi-door-open',
+          command: signOut
+        }
+      ]
     },
 ]);
+const filteredItems = computed(() => {
+  return items.value[0].items.filter(item => {
+    if (item.permission && userStore.user) {
+      return userStore.user.permissions.includes(item.permission);
+    }
+    return true;
+  });
+});
 const menuBar = computed(() => {
     let items = [
         {
@@ -149,7 +166,7 @@ const toggle = (event) => {
                     <Menu
                         ref="menu"
                         id="overlay_menu"
-                        :model="items"
+                        :model="filteredItems"
                         :popup="true"
                     />
                 </template>
