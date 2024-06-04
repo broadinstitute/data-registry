@@ -111,11 +111,11 @@ const menuBar = computed(() => {
             url: "/hermes/ma/",
         },
     ];
-    if (isAdmin.value) {
+    if (isAdmin) {
         return [
             {
                 label: "Dashboard",
-                icon: "bi-house",
+                icon: "bi-columns-gap",
                 url: "/hermes/dashboard/",
             },
         ].concat(items);
