@@ -31,6 +31,11 @@ const adduser = () => {
   router.push("/hermes/adduser");
 };
 
+const showUsers = () => {
+  topbarMenuActive.value = false;
+  router.push("/hermes/users");
+};
+
 const topbarMenuClasses = computed(() => {
     return {
         "layout-topbar-menu-mobile-active": topbarMenuActive.value,
@@ -76,6 +81,12 @@ const items = ref([
           label: 'Add User',
           icon: 'bi-person-plus',
           command: adduser,
+          permission: 'addUser'
+        },
+        {
+          label: 'Show Users',
+          icon: 'bi-people-fill',
+          command: showUsers,
           permission: 'addUser'
         },
         {

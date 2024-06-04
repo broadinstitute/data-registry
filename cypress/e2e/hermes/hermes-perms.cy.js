@@ -36,6 +36,7 @@ describe('Tests that Verify Permissions', () => {
     cy.wait(500);
     cy.get('i.bi-person').click();
     cy.contains('span.p-menuitem-text', 'Add User').should('not.exist');
+    cy.contains('span.p-menuitem-text', 'Show Users').should('not.exist');
   });
 
   it('reviewer should be able to create a new user', () => {
@@ -48,6 +49,7 @@ describe('Tests that Verify Permissions', () => {
     cy.wait(500);
     cy.get('i.bi-person').click();
     cy.contains('span.p-menuitem-text', 'Add User').should('exist');
+    cy.contains('span.p-menuitem-text', 'Show Users').should('exist');
   });
 
 });
