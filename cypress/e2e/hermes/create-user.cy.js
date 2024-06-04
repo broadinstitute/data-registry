@@ -7,8 +7,7 @@ describe('Tests for creating a new user', () => {
       cy.get('input[type="password"]').type('password');
       cy.contains('button', 'Sign In').click();
       cy.wait('@loginRequest');
-      cy.wait(500);
-      cy.get('i.bi-person').click();
+      cy.get('i.bi-person', {timeout: 10000}).click();
       cy.contains('span.p-menuitem-text', 'Add User').click();
       cy.get('input[placeholder="Email"]').type('testuser5@foo.com');
       cy.get('input[placeholder="Enter password"]').type('test_pass').blur();
