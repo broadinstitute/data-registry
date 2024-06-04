@@ -157,7 +157,7 @@ const getIcon = (status) => {
                                 label="Upload"
                                 icon="bi-upload"
                                 class="mr-2"
-                                @click="route.push('/hermes/upload')"
+                                @click="route.push('/hermes/new')"
                             ></Button>
                         </div>
                     </div>

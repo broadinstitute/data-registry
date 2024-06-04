@@ -1,13 +1,14 @@
 describe('Hermes Upload', () => {
   it('uploads a dataset', () => {
     cy.intercept('POST', '**/api/login').as('loginRequest');
+    cy.intercept('POST', '**/api/upload-hermes').as('uploadRequest');
     cy.visit('/hermes/login');
     cy.get('input[id="email"]').type('uploader1');
     cy.get('input[type="password"]').type('password');
     cy.contains('button', 'Sign In').click();
     cy.wait('@loginRequest');
     cy.wait(500);
-    cy.visit('/hermes/upload');
+    cy.visit('/hermes/new');
     cy.get('#dataSetName').type('Cypress dataset');
     cy.get('.p-autocomplete-input').type('type 1 diab').blur();
     cy.get('#phenotype_0').click();
@@ -24,6 +25,8 @@ describe('Hermes Upload', () => {
     cy.get('.p-dropdown-label.p-inputtext').eq(7).type('stdErr').type('{enter}');
     cy.get('.p-dropdown-label.p-inputtext').eq(8).type('pVale').type('{enter}');
     cy.get('button[aria-label="Upload"]').click();
+    cy.wait('@uploadRequest');
+    cy.wait(500);
     cy.location('pathname').should('eq', '/hermes');
     cy.contains('td', 'Cypress dataset').should('exist');
   });
