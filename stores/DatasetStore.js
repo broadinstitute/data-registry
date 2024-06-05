@@ -381,6 +381,7 @@ export const useDatasetStore = defineStore("DatasetStore", {
             this.showNotification = true;
             this.isServerSuccess = true;
             this.processing = false;
+            this.successMessage = "File uploaded successfully.";
         },
         async deletePhenotypeDataSet(save_phenotype_id) {
             await configuredAxios.delete(
