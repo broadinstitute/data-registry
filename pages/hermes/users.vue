@@ -1,28 +1,33 @@
 <script setup>
-import { useUserStore } from '~/stores/UserStore';
+import { useUserStore } from "~/stores/UserStore";
 const store = useUserStore();
 const users = ref([]);
 
 onMounted(async () => {
-  users.value = await store.getHermesUsers();
+    users.value = await store.getHermesUsers();
 });
-
-
 </script>
 
 <template>
-  <DataTable :value="users" :paginator="false" row-hover sort-field="user_name">
-    <Column field="user_name" header="User"></Column>
-    <Column field="last_login" header="Last Login"></Column>
-    <Column field="created_at" header="Created At">
-      <template #body="{ data }">
-        {{ formatDate(new Date(data.created_at)) }}
-      </template>
-    </Column>
-    <Column field="role" header="Role"></Column>
-  </DataTable>
+    <div class="grid">
+        <div class="col">
+            <DataTable
+                :value="users"
+                :paginator="false"
+                row-hover
+                sort-field="user_name"
+            >
+                <Column field="user_name" header="User"></Column>
+                <Column field="last_login" header="Last Login"></Column>
+                <Column field="created_at" header="Created At">
+                    <template #body="{ data }">
+                        {{ formatDate(new Date(data.created_at)) }}
+                    </template>
+                </Column>
+                <Column field="role" header="Role"></Column>
+            </DataTable>
+        </div>
+    </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
