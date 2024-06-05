@@ -1,6 +1,5 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
-import { ref, onMounted } from "vue";
 import Chart from "primevue/chart";
 const store = useDatasetStore();
 const fileUploads = ref([]);
@@ -30,13 +29,6 @@ const getSeverity = (status) => {
     }
 };
 
-const formatDate = (value) => {
-    return value.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
-};
 const getIcon = (status) => {
     switch (status) {
         case "FAILED QC":

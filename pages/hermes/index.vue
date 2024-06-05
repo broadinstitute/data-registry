@@ -1,6 +1,5 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
-import { ref, onMounted } from "vue";
 
 const route = useRouter();
 const store = useDatasetStore();
@@ -30,13 +29,6 @@ const getSeverity = (status) => {
     }
 };
 
-const formatDate = (value) => {
-    return value.toLocaleDateString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
-};
 const getIcon = (status) => {
     switch (status) {
         case "FAILED QC":
@@ -165,7 +157,7 @@ const getIcon = (status) => {
                                 label="Upload"
                                 icon="bi-upload"
                                 class="mr-2"
-                                @click="route.push('/hermes/upload')"
+                                @click="route.push('/hermes/new')"
                             ></Button>
                         </div>
                     </div>
@@ -192,10 +184,5 @@ const getIcon = (status) => {
 </template>
 
 <style scoped>
-/* button span.icon {
-    margin-right: 10px;
-} */
-/* .p-tag .p-tag-icon {
-    margin-right: 0.25rem;
-} */
+
 </style>
