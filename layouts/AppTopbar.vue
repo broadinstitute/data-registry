@@ -78,18 +78,6 @@ const items = ref([
         label: "Profile",
         items: [
             {
-                label: "Add User",
-                icon: "bi-person-plus",
-                command: addUser,
-                permission: "addUser",
-            },
-            {
-                label: "Show Users",
-                icon: "bi-people-fill",
-                command: showUsers,
-                permission: "addUser",
-            },
-            {
                 label: "Change Password",
                 icon: "bi-key",
                 command: changePassword,
@@ -171,7 +159,7 @@ const toggle = (event) => {
                     <Menu
                         ref="menu"
                         id="overlay_menu"
-                        :model="filteredItems"
+                        :model="items"
                         :popup="true"
                     />
                 </template>

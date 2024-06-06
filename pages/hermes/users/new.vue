@@ -2,7 +2,7 @@
     <div class="grid">
         <div class="col-6 col-offset-3">
             <div class="card p-fluid">
-                <h4>Add a new user</h4>
+                <h4>Add new user</h4>
                 <form @submit.prevent="handleSubmit" class="form">
                     <div class="field col">
                         <label for="name">Email</label>
