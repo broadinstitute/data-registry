@@ -21,19 +21,19 @@ onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
 
-const changepassword = () => {
+const changePassword = () => {
     topbarMenuActive.value = false;
     router.push("/hermes/changepassword");
 };
 
-const adduser = () => {
-  topbarMenuActive.value = false;
-  router.push("/hermes/adduser");
+const addUser = () => {
+    topbarMenuActive.value = false;
+    router.push("/hermes/adduser");
 };
 
 const showUsers = () => {
-  topbarMenuActive.value = false;
-  router.push("/hermes/users");
+    topbarMenuActive.value = false;
+    router.push("/hermes/users");
 };
 
 const topbarMenuClasses = computed(() => {
@@ -75,40 +75,28 @@ const isOutsideClicked = (event) => {
 };
 const items = ref([
     {
-      label: "Profile",
-      items: [
-        {
-          label: 'Add User',
-          icon: 'bi-person-plus',
-          command: adduser,
-          permission: 'addUser'
-        },
-        {
-          label: 'Show Users',
-          icon: 'bi-people-fill',
-          command: showUsers,
-          permission: 'addUser'
-        },
-        {
-          label: 'Change Password',
-          icon: 'bi-key',
-          command: changepassword
-        },
-        {
-          label: 'Sign out',
-          icon: 'bi-door-open',
-          command: signOut
-        }
-      ]
+        label: "Profile",
+        items: [
+            {
+                label: "Change Password",
+                icon: "bi-key",
+                command: changePassword,
+            },
+            {
+                label: "Sign out",
+                icon: "bi-door-open",
+                command: signOut,
+            },
+        ],
     },
 ]);
 const filteredItems = computed(() => {
-  return items.value[0].items.filter(item => {
-    if (item.permission && userStore.user) {
-      return userStore.user.permissions.includes(item.permission);
-    }
-    return true;
-  });
+    return items.value[0].items.filter((item) => {
+        if (item.permission && userStore.user) {
+            return userStore.user.permissions.includes(item.permission);
+        }
+        return true;
+    });
 });
 const menuBar = computed(() => {
     let items = [
@@ -129,16 +117,21 @@ const menuBar = computed(() => {
         },
     ];
     if (isAdmin) {
-        return [
-            {
-                label: "Dashboard",
-                icon: "bi-columns-gap",
-                url: "/hermes/dashboard/",
-            },
-        ].concat(items);
-    } else {
-        return items;
+        items.unshift({
+            label: "Dashboard",
+            icon: "bi-columns-gap",
+            url: "/hermes/dashboard/",
+        });
     }
+    if (userStore.user.permissions.includes("addUser")) {
+        items.push({
+            label: "Users",
+            icon: "bi-people-fill",
+            url: "/hermes/users/",
+        });
+    }
+
+    return items;
 });
 
 const menu = ref();
@@ -166,7 +159,7 @@ const toggle = (event) => {
                     <Menu
                         ref="menu"
                         id="overlay_menu"
-                        :model="filteredItems"
+                        :model="items"
                         :popup="true"
                     />
                 </template>
