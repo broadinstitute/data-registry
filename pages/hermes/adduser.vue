@@ -44,7 +44,7 @@
                 </form>
             </div>
         </div>
-        <Toast position="top-right" />
+        <Toast position="top-center" />
     </div>
 </template>
 
