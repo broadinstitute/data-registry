@@ -21,19 +21,19 @@ onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
 
-const changepassword = () => {
+const changePassword = () => {
     topbarMenuActive.value = false;
     router.push("/hermes/changepassword");
 };
 
-const adduser = () => {
-  topbarMenuActive.value = false;
-  router.push("/hermes/adduser");
+const addUser = () => {
+    topbarMenuActive.value = false;
+    router.push("/hermes/adduser");
 };
 
 const showUsers = () => {
-  topbarMenuActive.value = false;
-  router.push("/hermes/users");
+    topbarMenuActive.value = false;
+    router.push("/hermes/users");
 };
 
 const topbarMenuClasses = computed(() => {
@@ -75,40 +75,40 @@ const isOutsideClicked = (event) => {
 };
 const items = ref([
     {
-      label: "Profile",
-      items: [
-        {
-          label: 'Add User',
-          icon: 'bi-person-plus',
-          command: adduser,
-          permission: 'addUser'
-        },
-        {
-          label: 'Show Users',
-          icon: 'bi-people-fill',
-          command: showUsers,
-          permission: 'addUser'
-        },
-        {
-          label: 'Change Password',
-          icon: 'bi-key',
-          command: changepassword
-        },
-        {
-          label: 'Sign out',
-          icon: 'bi-door-open',
-          command: signOut
-        }
-      ]
+        label: "Profile",
+        items: [
+            {
+                label: "Add User",
+                icon: "bi-person-plus",
+                command: addUser,
+                permission: "addUser",
+            },
+            {
+                label: "Show Users",
+                icon: "bi-people-fill",
+                command: showUsers,
+                permission: "addUser",
+            },
+            {
+                label: "Change Password",
+                icon: "bi-key",
+                command: changePassword,
+            },
+            {
+                label: "Sign out",
+                icon: "bi-door-open",
+                command: signOut,
+            },
+        ],
     },
 ]);
 const filteredItems = computed(() => {
-  return items.value[0].items.filter(item => {
-    if (item.permission && userStore.user) {
-      return userStore.user.permissions.includes(item.permission);
-    }
-    return true;
-  });
+    return items.value[0].items.filter((item) => {
+        if (item.permission && userStore.user) {
+            return userStore.user.permissions.includes(item.permission);
+        }
+        return true;
+    });
 });
 const menuBar = computed(() => {
     let items = [
