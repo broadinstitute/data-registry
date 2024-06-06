@@ -151,7 +151,6 @@ const getIcon = (status) => {
             <h2>Quality Control (QC) Reports</h2>
             <Card>
                 <template #content>
-                    <!-- ... your other code ... -->
                     <Chart
                         type="bar"
                         :data="dataCollection"
