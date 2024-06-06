@@ -129,16 +129,21 @@ const menuBar = computed(() => {
         },
     ];
     if (isAdmin) {
-        return [
-            {
-                label: "Dashboard",
-                icon: "bi-columns-gap",
-                url: "/hermes/dashboard/",
-            },
-        ].concat(items);
-    } else {
-        return items;
+        items.unshift({
+            label: "Dashboard",
+            icon: "bi-columns-gap",
+            url: "/hermes/dashboard/",
+        });
     }
+    if (userStore.user.permissions.includes("addUser")) {
+        items.push({
+            label: "Users",
+            icon: "bi-people-fill",
+            url: "/hermes/users/",
+        });
+    }
+
+    return items;
 });
 
 const menu = ref();
