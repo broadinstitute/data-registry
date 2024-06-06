@@ -46,8 +46,8 @@ describe('Tests that Verify Permissions', () => {
     cy.wait('@loginRequest');
     cy.wait(500);
     cy.get('i.bi-person').click();
-    cy.contains('span.p-menuitem-text', 'Add User').should('exist');
-    cy.contains('span.p-menuitem-text', 'Show Users').should('exist');
+    cy.visit('/hermes/users/new');
+    cy.contains("span.p-button-label", "Create User").should("exist");
   });
 
 });
