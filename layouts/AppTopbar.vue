@@ -26,16 +26,6 @@ const changePassword = () => {
     router.push("/hermes/changepassword");
 };
 
-const addUser = () => {
-    topbarMenuActive.value = false;
-    router.push("/hermes/adduser");
-};
-
-const showUsers = () => {
-    topbarMenuActive.value = false;
-    router.push("/hermes/users");
-};
-
 const topbarMenuClasses = computed(() => {
     return {
         "layout-topbar-menu-mobile-active": topbarMenuActive.value,
@@ -90,14 +80,6 @@ const items = ref([
         ],
     },
 ]);
-const filteredItems = computed(() => {
-    return items.value[0].items.filter((item) => {
-        if (item.permission && userStore.user) {
-            return userStore.user.permissions.includes(item.permission);
-        }
-        return true;
-    });
-});
 const menuBar = computed(() => {
     let items = [
         {
