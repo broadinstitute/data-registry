@@ -9,7 +9,7 @@ let file = null;
 let fileName = null;
 let phenotypes = {};
 const selectedPhenotype = ref({});
-const filteredPhenotypes = ref();
+const filteredPhenotypes = ref([]);
 const cases = ref(0);
 const subjects = ref(0);
 const controls = ref(0);
@@ -148,7 +148,6 @@ function matchPhenotypes(event) {
 }
 
 async function upload() {
-
     const metadata = {
         original_data: fileName,
         phenotype: selectedPhenotype.value.name,
@@ -242,9 +241,8 @@ async function upload() {
                         :suggestions="filteredPhenotypes"
                         @complete="matchPhenotypes"
                         dataKey="name"
-                        dropdown
-                        forceSelection
-                        dropdown-mode="current"
+                        :dropdown="filteredPhenotypes?.length > 0"
+                        dropdownMode="current"
                         auto-option-focus
                     />
                 </div>
