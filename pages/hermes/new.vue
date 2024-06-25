@@ -1,13 +1,16 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
+import { useUserStore } from "~/stores/UserStore";
 import { ref, onMounted, computed } from "vue";
 
 const store = useDatasetStore();
+const userStore = useUserStore();
 const route = useRouter();
 const fileInfo = ref({});
 let file = null;
 let fileName = null;
 let phenotypes = {};
+let previousMapping = {};
 const selectedPhenotype = ref({});
 const filteredPhenotypes = ref([]);
 const cases = ref(0);
@@ -19,6 +22,19 @@ const requiredFields = ref([]);
 const selectedFields = ref({});
 
 onMounted(async () => {
+    let params = {
+        uploader: userStore.user.user_name,
+        limit: 1,
+    };
+    let fileInfos = await store.fetchFileUploads(paramsToString(params));
+    if (fileInfos.length > 0) {
+        let map = fileInfos[0]?.metadata?.column_map;
+        //transpose the object to have the value as the key and the key as the value
+        previousMapping = Object.fromEntries(
+            Object.entries(map).map(([key, value]) => [value, key]),
+        );
+    }
+
     await store.fetchPhenotypes();
     const { required, optional } = await store.fetchColumnOptions();
     //list of objects with required fields with an asterisk at the end
@@ -125,6 +141,22 @@ async function sampleFile(e) {
     }
 }
 
+function loadMapping() {
+    //for each key in selectedFields, find the corresponding value in previousMapping
+    //and set the value of selectedFields to the value of previousMapping
+    Object.keys(selectedFields.value).forEach((key) => {
+        if (previousMapping[key]) {
+            selectedFields.value[key] = previousMapping[key];
+        }
+    });
+}
+
+function resetMapping() {
+    //reset all values in selectedFields to null
+    Object.keys(selectedFields.value).forEach((key) => {
+        selectedFields.value[key] = null;
+    });
+}
 function resetFile() {
     fileInfo.value = {};
     selectedFields.value = {};
@@ -334,6 +366,32 @@ async function upload() {
                     />
                     <Chip v-else label="maf | eaf" />
                 </div>
+                <div v-if="fileInfo.columns" class="grid">
+                    <div class="col">
+                        <Button
+                            v-if="Object.keys(previousMapping).length > 0"
+                            type="button"
+                            label="Load Previous Mapping"
+                            icon="bi-arrow-counterclockwise"
+                            @click="loadMapping"
+                            severity="help"
+                            text
+                            outlined
+                        ></Button>
+                    </div>
+                    <div class="col text-right">
+                        <Button
+                            type="button"
+                            label="Reset Mapping"
+                            icon="bi-arrow-repeat"
+                            @click="resetMapping"
+                            severity="help"
+                            text
+                            outlined
+                        ></Button>
+                    </div>
+                </div>
+
                 <DataTable :value="tableRows" v-if="fileInfo.columns" rowHover>
                     <Column field="column" header="Column" class="col-4">
                     </Column>
