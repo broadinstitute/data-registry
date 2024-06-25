@@ -1,11 +1,12 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
 import { useUserStore } from "~/stores/UserStore";
-import { ref, onMounted, computed } from "vue";
+import { useToast } from "primevue/usetoast";
 
 const store = useDatasetStore();
 const userStore = useUserStore();
 const route = useRouter();
+const toast = useToast();
 const fileInfo = ref({});
 let file = null;
 let fileName = null;
@@ -149,6 +150,16 @@ function loadMapping() {
             selectedFields.value[key] = previousMapping[key];
         }
     });
+
+    //if the selectedFields does not contain any of the previous mapping, set alert toasts
+    if (Object.values(selectedFields.value).every((value) => value === null)) {
+        toast.add({
+            severity: "warn",
+            summary: "Alert",
+            detail: "Previous mapping does not match any column for this file.",
+            life: 5000,
+        });
+    }
 }
 
 function resetMapping() {
@@ -229,6 +240,7 @@ async function upload() {
             :animation-duration="0"
         />
     </Dialog>
+    <Toast position="top-center" />
 
     <div class="grid">
         <div class="col mb-4">
