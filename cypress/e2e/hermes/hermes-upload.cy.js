@@ -1,4 +1,4 @@
-describe('Hermes Upload', {retries: 2}, () => {
+describe('Hermes Upload', {retries: 0}, () => {
   it('uploads a dataset', () => {
     cy.intercept('POST', '**/api/login').as('loginRequest');
     cy.intercept('POST', '**/api/upload-hermes').as('uploadRequest');
@@ -7,13 +7,12 @@ describe('Hermes Upload', {retries: 2}, () => {
     cy.get('input[type="password"]').type('password');
     cy.contains('button', 'Sign In').click();
     cy.wait('@loginRequest');
-    cy.visit('/hermes/new', {timeout: 10000});
+    cy.visit('/hermes/new', { timeout: 10000 });
     cy.get('#dataSetName').type('Cypress dataset');
-    cy.get('.p-autocomplete-input').type('type 1 diab').blur();
-    cy.get('#phenotype_0').click();
+    cy.get('#genomeBuild').type('GRCh38').type('{enter}');
+    cy.get('#cohort').type('My Hermes Cohort');
+    cy.get('#acknowledgements').type('My Hermes Acknowledgements');
     cy.get("#cases").type("1000{enter}");
-    cy.get("#controls").type("100{enter}");
-    cy.get("#subjects").type("100{enter}");
     cy.get('input[type="file"]').attachFile('sample-gwas.csv');
     cy.get('.p-dropdown-label.p-inputtext').eq(1).type('chromosome').type('{enter}');
     cy.get('.p-dropdown-label.p-inputtext').eq(2).type('position').type('{enter}');
