@@ -338,7 +338,7 @@ async function upload() {
                 <div class="field">
                   <label for="ancestry">Ancestry</label>
                   <Dropdown id="ancestry" v-model="selectedAncestry" :options="ancestryOptions"
-                            optionLabel="name" optionValue="value" placeholder="Select Ancestry"/>
+                            optionLabel="name" optionValue="value" placeholder="Select Ancestry" data-cy="ancestry"/>
                 </div>
                 <div class="field">
                   <label for="acknowledgements">Acknowledgements</label>
@@ -364,7 +364,7 @@ async function upload() {
                       :options="caseAscertainmentOptions"
                       optionLabel="name"
                       optionValue="value"
-                      placeholder="Select Case Ascertainment"/>
+                      placeholder="Select Case Ascertainment" data-cy="case-ascertainment" />
                 </div>
                 <div class="field">
                   <label for="caseType">Case Type</label>
@@ -374,7 +374,7 @@ async function upload() {
                       :options="caseTypeOptions"
                       optionLabel="name"
                       optionValue="value"
-                      placeholder="Select Case Type"/>
+                      placeholder="Select Case Type" data-cy="case-type"/>
                 </div>
                 <div class="field">
                   <label for="phenotype">Phenotype</label>
@@ -393,7 +393,7 @@ async function upload() {
                   <InputText v-model="sexProportion" id="sexProportion" type="number" />
                 </div>
                 <div class="field">
-                  <label for="ages">Age At First Documented Study Phenotype</label>
+                  <label for="age">Age At First Documented Study Phenotype</label>
                   <InputText v-model="age" id="age" type="number" />
                 </div>
               <div class="field">
@@ -540,6 +540,7 @@ async function upload() {
                     <Column header="Represents" class="col-7">
                         <template #body="{ data }">
                             <Dropdown
+                                data-cy="column-dropdown"
                                 class="w-full"
                                 :options="colOptions"
                                 option-label="name"
