@@ -1,4 +1,4 @@
-describe('Hermes Upload', {retries: 2}, () => {
+describe('Hermes Upload', {retries: 0}, () => {
   it('uploads a dataset', () => {
     cy.intercept('POST', '**/api/login').as('loginRequest');
     cy.intercept('POST', '**/api/upload-hermes').as('uploadRequest');
@@ -7,22 +7,33 @@ describe('Hermes Upload', {retries: 2}, () => {
     cy.get('input[type="password"]').type('password');
     cy.contains('button', 'Sign In').click();
     cy.wait('@loginRequest');
-    cy.visit('/hermes/new', {timeout: 10000});
+    cy.visit('/hermes/new', { timeout: 10000 });
     cy.get('#dataSetName').type('Cypress dataset');
-    cy.get('.p-autocomplete-input').type('type 1 diab').blur();
-    cy.get('#phenotype_0').click();
+    cy.get('#genomeBuild').type('GRCh38').type('{enter}');
+    cy.get('#cohort').type('My Hermes Cohort');
+    cy.get('#acknowledgements').type('My Hermes Acknowledgements');
     cy.get("#cases").type("1000{enter}");
-    cy.get("#controls").type("100{enter}");
-    cy.get("#subjects").type("100{enter}");
+    cy.get('[data-cy="ancestry"]').type('European').type('{enter}');
+    cy.get('[data-cy="case-ascertainment"]').eq(0).type('Electronic').type('{enter}');
+    cy.get('[data-cy="case-type"]').type('Prevalent').type('{enter}');
+    cy.get("#phenotype").type('T2D');
+    cy.get("#participants").type('20');
+    cy.get("#sexProportion").type('20');
+    cy.get("#age").type('20');
+    cy.get("#analysisSoftware").type('Big Analysis Software');
+    cy.get("#statisticalModel").type('Complex Model');
+    cy.get("#covariates").type('Here are some covariates');
     cy.get('input[type="file"]').attachFile('sample-gwas.csv');
-    cy.get('.p-dropdown-label.p-inputtext').eq(1).type('chromosome').type('{enter}');
-    cy.get('.p-dropdown-label.p-inputtext').eq(2).type('position').type('{enter}');
-    cy.get('.p-dropdown-label.p-inputtext').eq(3).type('alt').type('{enter}');
-    cy.get('.p-dropdown-label.p-inputtext').eq(4).type('reference').type('{enter}');
-    cy.get('.p-dropdown-label.p-inputtext').eq(5).type('eaf').type('{enter}');
-    cy.get('.p-dropdown-label.p-inputtext').eq(6).type('beta').type('{enter}');
-    cy.get('.p-dropdown-label.p-inputtext').eq(7).type('stdErr').type('{enter}');
-    cy.get('.p-dropdown-label.p-inputtext').eq(8).type('pVale').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(1).type('chromosome').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(2).type('position').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(3).type('alt').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(4).type('reference').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(5).type('eaf').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(6).type('beta').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(7).type('stdErr').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(8).type('pVale').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(9).type('N tot').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(10).type('Imputa').type('{enter}');
     cy.get('button[aria-label="Upload"]').click();
     cy.wait('@uploadRequest');
     cy.wait(500);

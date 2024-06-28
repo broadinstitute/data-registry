@@ -10,14 +10,59 @@ const toast = useToast();
 const fileInfo = ref({});
 let file = null;
 let fileName = null;
-let phenotypes = {};
 let previousMapping = {};
-const selectedPhenotype = ref({});
-const filteredPhenotypes = ref([]);
-const cases = ref(0);
+const selectedGenomeBuild = ref('');
+const selectedAncestry = ref('');
+const caseAscertainment = ref('');
+const caseType = ref('');
+const caseAscertainmentOptions = ref([
+    { name: "Electronic Health Records", value: "Electronic Health Records" },
+    { name: "Research Study", value: "Research Study" }
+]);
+const caseTypeOptions = ref([
+    { name: "Prevalent", value: "Prevalent" },
+    { name: "Incident", value: "Incident" },
+    { name: "Prevalent+Incident", value: "Prevalent+Incident" },
+]);
+const ancestryOptions = ref([
+    { name: "African", value: "AF" },
+    { name: "African American", value: "AA" },
+    { name: "Sub-Sahara African", value: "SSAF" },
+    { name: "East Asian", value: "EA" },
+    { name: "European", value: "EU" },
+    { name: "Hispanic", value: "HS" },
+    { name: "South Asian", value: "SA" },
+    { name: "Mixed", value: "Mixed" },
+    { name: "Greater Middle Eastern", value: "GME" },
+]);
+const genomeBuildOptions = ref([
+    { name: "GRCh38/hg38", value: "GRCh38/hg38" },
+    { name: "GRCh37/b37", value: "GRCh37/b37" },
+]);
 const subjects = ref(0);
-const controls = ref(0);
 const dataSetName = ref("");
+const cohort = ref("");
+const phenotype = ref("");
+const participants = ref(null);
+const cases = ref(null);
+const sexProportion = ref(null);
+const age = ref(null);
+const acknowledgements = ref("");
+const keyReferences = ref("");
+const analysisSoftware = ref("");
+const statisticalModel = ref("");
+const covariates = ref("");
+const arrayName = ref("");
+const callingAlgorithm = ref("");
+const variantCallRate = ref(null);
+const sampleCallRate = ref(null);
+const hwePValue = ref(null);
+const maf = ref(null);
+const otherQCFilters = ref("");
+const nVariantsForImputation = ref("");
+const prephasingAndImputationSoftware = ref("");
+const imputationReference = ref("");
+const imputationQualityMeasure = ref("");
 const colOptions = ref([]);
 const requiredFields = ref([]);
 const selectedFields = ref({});
@@ -31,12 +76,13 @@ onMounted(async () => {
     if (fileInfos.length > 0) {
         let map = fileInfos[0]?.metadata?.column_map;
         //transpose the object to have the value as the key and the key as the value
-        previousMapping = Object.fromEntries(
-            Object.entries(map).map(([key, value]) => [value, key]),
-        );
+        if(map){
+          previousMapping = Object.fromEntries(
+              Object.entries(map).map(([key, value]) => [value, key]),
+          );
+        }
     }
 
-    await store.fetchPhenotypes();
     const { required, optional } = await store.fetchColumnOptions();
     //list of objects with required fields with an asterisk at the end
     const requiredAnnotated = required.map((r) => ({
@@ -48,7 +94,6 @@ onMounted(async () => {
         value: o,
     }));
     colOptions.value = requiredAnnotated.concat(optionalFields);
-    phenotypes = store.phenotypes;
     requiredFields.value = required;
 });
 
@@ -85,14 +130,7 @@ const steps = ref([
 ]);
 
 const step1Complete = computed(() => {
-    return Boolean(
-        dataSetName.value &&
-            selectedPhenotype.value?.name &&
-            subjects.value &&
-            (selectedPhenotype.value?.dichotomous
-                ? cases.value && controls.value
-                : true),
-    );
+    return Boolean(dataSetName.value);
 });
 const step2Complete = computed(() => {
     return Boolean(fileInfo.value.columns);
@@ -174,32 +212,39 @@ function resetFile() {
     file = null;
     fileName = null;
 }
-function matchPhenotypes(event) {
-    setTimeout(() => {
-        if (!event.query.trim().length || event.query.trim().length < 2) {
-            filteredPhenotypes.value = phenotypes.value;
-        } else {
-            filteredPhenotypes.value = Object.values(phenotypes)
-                .filter((p) => {
-                    return p.description
-                        .toLowerCase()
-                        .includes(event.query.toLowerCase());
-                })
-                .sort((a, b) => a.description.length - b.description.length);
-        }
-    }, 250);
-}
 
 async function upload() {
     const metadata = {
         original_data: fileName,
-        phenotype: selectedPhenotype.value.name,
+        phenotype: phenotype.value,
         dataset: dataSetName.value,
         cases: cases.value,
-        controls: controls.value,
         subjects: subjects.value,
         column_map: colMap.value,
-        dichotomous: selectedPhenotype.value.dichotomous,
+        ancestry: selectedAncestry.value,
+        cohort: cohort.value,
+        acknowledgements: acknowledgements.value,
+        key_references: keyReferences.value,
+        case_ascertainment: caseAscertainment.value,
+        case_type: caseType.value,
+        participants: participants.value,
+        sex_proportion: sexProportion.value,
+        age_at_first_documented_study_phenotype: age.value,
+        statistical_model: statisticalModel.value,
+        covariates: covariates.value,
+        array_name_and_version: arrayName.value,
+        variant_call_rate: variantCallRate.value,
+        sample_call_rate: sampleCallRate.value,
+        hwe_p_value: hwePValue.value,
+        maf: maf.value,
+        other_qc_filters: otherQCFilters.value,
+        n_variants_for_imputation: nVariantsForImputation.value,
+        prephasing_and_imputation_software: prephasingAndImputationSoftware.value,
+        imputation_reference: imputationReference.value,
+        imputation_quality_measure: imputationQualityMeasure.value,
+        genome_build: selectedGenomeBuild.value,
+        analysis_software: analysisSoftware.value,
+        calling_algorithm: callingAlgorithm.value,
     };
 
     const errors = await store.validateMetadata(metadata);
@@ -277,77 +322,161 @@ async function upload() {
                     />
                 </div>
                 <div class="field">
-                    <label for="phenotype">Phenotype</label>
-                    <AutoComplete
-                        id="phenotype"
-                        v-model="selectedPhenotype"
-                        optionLabel="description"
-                        :suggestions="filteredPhenotypes"
-                        @complete="matchPhenotypes"
-                        dataKey="name"
-                        :dropdown="filteredPhenotypes?.length > 0"
-                        dropdownMode="current"
-                        auto-option-focus
-                    />
-                </div>
-                <div
-                    v-if="selectedPhenotype?.dichotomous"
-                    class="formgrid grid"
-                >
-                    <div class="field col">
-                        <label for="cases">Cases</label>
-                        <InputNumber
-                            id="cases"
-                            type="number"
-                            v-model="cases"
-                            :min="0"
-                        />
-                    </div>
-                    <div class="field col">
-                        <label for="controls">Controls</label>
-                        <InputNumber
-                            id="controls"
-                            type="number"
-                            v-model="controls"
-                            :min="0"
-                        />
-                    </div>
+                  <label for="genomeBuild">Genome Build</label>
+                  <Dropdown
+                      id="genomeBuild"
+                      v-model="selectedGenomeBuild"
+                      :options="genomeBuildOptions"
+                      optionLabel="name"
+                      optionValue="value"
+                      placeholder="Select Genome Build"/>
                 </div>
                 <div class="field">
-                    <label for="subjects">Subjects/Samples</label>
-                    <InputNumber
-                        v-model="subjects"
-                        id="subjects"
-                        type="number"
-                        inputId="withoutgrouping"
-                        :useGrouping="false"
-                        :min="0"
-                    />
+                  <label for="cohort">Cohort</label>
+                  <InputText v-model="cohort" id="cohort" type="text"/>
                 </div>
+                <div class="field">
+                  <label for="ancestry">Ancestry</label>
+                  <Dropdown id="ancestry" v-model="selectedAncestry" :options="ancestryOptions"
+                            optionLabel="name" optionValue="value" placeholder="Select Ancestry" data-cy="ancestry"/>
+                </div>
+                <div class="field">
+                  <label for="acknowledgements">Acknowledgements</label>
+                  <InputText
+                      v-model="acknowledgements"
+                      id="acknowledgements"
+                      type="text"
+                  />
+                </div>
+                <div class="field">
+                  <label for="keyReferences">Key References</label>
+                  <InputText
+                      v-model="keyReferences"
+                      id="keyReferences"
+                      type="text"
+                  />
+                </div>
+                <div class="field">
+                  <label for="caseAscertainment">Case Ascertainment</label>
+                  <Dropdown
+                      id="caseAscertainment"
+                      v-model="caseAscertainment"
+                      :options="caseAscertainmentOptions"
+                      optionLabel="name"
+                      optionValue="value"
+                      placeholder="Select Case Ascertainment" data-cy="case-ascertainment" />
+                </div>
+                <div class="field">
+                  <label for="caseType">Case Type</label>
+                  <Dropdown
+                      id="caseType"
+                      v-model="caseType"
+                      :options="caseTypeOptions"
+                      optionLabel="name"
+                      optionValue="value"
+                      placeholder="Select Case Type" data-cy="case-type"/>
+                </div>
+                <div class="field">
+                  <label for="phenotype">Phenotype</label>
+                  <InputText v-model="phenotype" id="phenotype" type="text" />
+                </div>
+                <div class="field">
+                  <label for="participants">Participants</label>
+                  <InputText v-model="participants" id="participants" type="number" />
+                </div>
+                <div class="field">
+                  <label for="cases">Cases</label>
+                  <InputText v-model="cases" id="cases" type="number" />
+                </div>
+                <div class="field">
+                  <label for="cases">Sex Proportion</label>
+                  <InputText v-model="sexProportion" id="sexProportion" type="number" />
+                </div>
+                <div class="field">
+                  <label for="age">Age At First Documented Study Phenotype</label>
+                  <InputText v-model="age" id="age" type="number" />
+                </div>
+              <div class="field">
+                <label for="analysisSoftware">Analysis Software</label>
+                <InputText v-model="analysisSoftware" id="analysisSoftware" type="text" />
+              </div>
+              <div class="field">
+                <label for="statisticalModel">Statistical Model</label>
+                <InputText v-model="statisticalModel" id="statisticalModel" type="text" />
+              </div>
+              <div class="field">
+                <label for="covariates">Covariates</label>
+                <InputText v-model="covariates" id="covariates" type="text" />
+              </div>
+              <div class="field">
+                <label for="arrayName">Array Name and Version</label>
+                <InputText v-model="arrayName" id="arrayName" type="text" />
+              </div>
+              <div class="field">
+                <label for="callingAlgorithm">Calling Algorithm</label>
+                <InputText v-model="callingAlgorithm" id="callingAlgorithm" type="text" />
+              </div>
+              <div class="field">
+                <label for="variantCallRate">Variant Call Rate</label>
+                <InputText v-model="variantCallRate" id="variantCallRate" type="number" />
+              </div>
+              <div class="field">
+                <label for="sampleCallRate">Sample Call Rate</label>
+                <InputText v-model="sampleCallRate" id="sampleCallRate" type="number" />
+              </div>
+              <div class="field">
+                <label for="hwePValue">HWE P-value</label>
+                <InputText v-model="hwePValue" id="hwePValue" type="number" />
+              </div>
+              <div class="field">
+                <label for="maf">MAF</label>
+                <InputText v-model="maf" id="maf" type="number" />
+              </div>
+              <div class="field">
+                <label for="otherQCFilters">Other QC Filters</label>
+                <InputText v-model="otherQCFilters" id="otherQCFilters" type="text" />
+              </div>
+              <div class="field">
+                <label for="nVariantsForImputation">N Variants For Imputation</label>
+                <InputText v-model="nVariantsForImputation" id="nVariantsForImputation" type="number" />
+              </div>
+              <div class="field">
+                <label for="prephasingAndImputationSoftware">Prephasing And Imputation Software</label>
+                <InputText v-model="prephasingAndImputationSoftware" id="prephasingAndImputationSoftware" type="text" />
+              </div>
+              <div class="field">
+                <label for="imputationReference">Imputation Reference</label>
+                <InputText v-model="imputationReference" id="imputationReference" type="text" />
+              </div>
+              <div class="field">
+                <label for="imputationQualityMeasure">Imputation Quality Measure</label>
+                <InputText v-model="imputationQualityMeasure" id="imputationQualityMeasure" type="text" />
+              </div>
             </div>
 
-            <div class="card p-fluid">
-                <h5>Select file to upload</h5>
-                <FileUpload
-                    name="file"
-                    id="fileInput"
-                    accept=".csv, .tsv, .gz, .bgzip, .gzip"
-                    :showUploadButton="false"
-                    :previewWidth="0"
-                    @select="sampleFile"
-                    @clear="resetFile"
-                    @remove="resetFile"
-                >
-                    <template #empty>
-                        <p>
-                            Drag and drop files to here to upload. (.csv, .tsv,
-                            .gz, .bgzip, .gzip)
-                        </p>
-                    </template>
-                </FileUpload>
-            </div>
+
         </div>
         <div class="col-12 md:col-6">
+          <div class="card p-fluid">
+            <h5>Select file to upload</h5>
+            <FileUpload
+                name="file"
+                id="fileInput"
+                accept=".csv, .tsv, .gz, .bgzip, .gzip"
+                :showUploadButton="false"
+                :previewWidth="0"
+                @select="sampleFile"
+                @clear="resetFile"
+                @remove="resetFile"
+            >
+              <template #empty>
+                <p>
+                  Drag and drop files to here to upload. (.csv, .tsv,
+                  .gz, .bgzip, .gzip)
+                </p>
+              </template>
+            </FileUpload>
+          </div>
             <div class="card">
                 <h5>Map column names to their representations.</h5>
                 <small
@@ -411,6 +540,7 @@ async function upload() {
                     <Column header="Represents" class="col-7">
                         <template #body="{ data }">
                             <Dropdown
+                                data-cy="column-dropdown"
                                 class="w-full"
                                 :options="colOptions"
                                 option-label="name"
