@@ -76,11 +76,9 @@ onMounted(async () => {
     if (fileInfos.length > 0) {
         let map = fileInfos[0]?.metadata?.column_map;
         //transpose the object to have the value as the key and the key as the value
-        if(map){
-          previousMapping = Object.fromEntries(
-              Object.entries(map).map(([key, value]) => [value, key]),
-          );
-        }
+        previousMapping = Object.fromEntries(
+            Object.entries(map).map(([key, value]) => [value, key]),
+        );
     }
 
     const { required, optional } = await store.fetchColumnOptions();

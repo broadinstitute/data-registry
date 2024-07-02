@@ -27,7 +27,7 @@ insert into role_permissions(permission_id, role_id) values (@add_user_id, @revi
 insert into user_roles(user_id, role_id) values (@uploader1_id, @uploader_role_id);
 insert into user_roles(user_id, role_id) values (@uploader2_id, @uploader_role_id);
 insert into user_roles(user_id, role_id) values (@reviewer_user_id, @reviewer_role_id);
---admin role id is created via migrations
+-- admin role id is created via migrations
 insert into user_roles(user_id, role_id) values (@admin_user_id, 1);
 
 insert into `groups`(group_name) values ('hermes');
