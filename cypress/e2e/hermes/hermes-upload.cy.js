@@ -32,8 +32,8 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('[data-cy="column-dropdown"]').eq(6).type('beta').type('{enter}');
     cy.get('[data-cy="column-dropdown"]').eq(7).type('stdErr').type('{enter}');
     cy.get('[data-cy="column-dropdown"]').eq(8).type('pVale').type('{enter}');
-    cy.get('[data-cy="column-dropdown"]').eq(9).type('N tot').type('{enter}');
-    cy.get('[data-cy="column-dropdown"]').eq(10).type('Imputa').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(9).type('n').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(10).type('Impute').type('{enter}');
     cy.get('button[aria-label="Upload"]').click();
     cy.wait('@uploadRequest');
     cy.wait(500);
