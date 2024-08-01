@@ -155,6 +155,10 @@ export const useDatasetStore = defineStore("DatasetStore", {
           const {data}  = await configuredAxios.get('/api/hermes-meta-analysis');
           return data;
         },
+        async fetchMetaAnalysis(id) {
+            const {data}  = await configuredAxios.get(`/api/hermes-meta-analysis/${id}`);
+            return data;
+        },
         async startMetaAnalysis(req) {
             const {data} = await configuredAxios.post('/api/hermes-meta-analysis',
               JSON.stringify(req));
