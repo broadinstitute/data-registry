@@ -30,11 +30,13 @@
             </StepperPanel>
             <StepperPanel header="Select Datasets">
                 <template #title="{ index }">
-                    <div
-                        class="flex justify-between items-center"
-                    >
-                        <div class="text-surface-700 dark:text-surface-100">Step1 {{ index + 1 }}</div>
-                        <div class="text-surface-700 dark:text-surface-100">Select Datasets</div>
+                    <div class="flex justify-between items-center">
+                        <div class="text-surface-700 dark:text-surface-100">
+                            Step1 {{ index + 1 }}
+                        </div>
+                        <div class="text-surface-700 dark:text-surface-100">
+                            Select Datasets
+                        </div>
                     </div>
                 </template>
                 <template #content="{ prevCallback, nextCallback }">
@@ -148,7 +150,7 @@
                             <div class="col-span-4 p-6">
                                 <!-- Group 2 items go here -->
                                 <div class="flex items-center">
-                                    <InputSwitch
+                                    <ToggleSwitch
                                         v-model="overlap"
                                         inputId="overlap"
                                         class="mr-2"
@@ -166,7 +168,7 @@
                                         rounded
                                         text
                                         class="ml-1"
-                                        @click="showSidebar = true"
+                                        @click="showDrawer = true"
                                         title="More information"
                                     />
                                 </div>
@@ -187,8 +189,8 @@
                     </div>
                 </template>
             </StepperPanel> </Stepper
-        ><Sidebar
-            v-model:visible="showSidebar"
+        ><Drawer
+            v-model:visible="showDrawer"
             header="Meta-Analyses"
             position="right"
             ><h5>Bottom-line</h5>
@@ -216,8 +218,8 @@
                 weighted meta-analysis, assuming that all studies are
                 independent.
             </p>
-        </Sidebar>
-      <Toast position="top-center" />
+        </Drawer>
+        <Toast position="top-center" />
     </div>
 </template>
 <script setup>
@@ -231,7 +233,7 @@ let phenotypes = {};
 const selectedPhenotype = ref({});
 const filteredPhenotypes = ref();
 const overlap = ref(false);
-const showSidebar = ref(false);
+const showDrawer = ref(false);
 const name = ref("");
 const fileUploads = ref([]);
 const tableLoading = ref(false);
@@ -270,23 +272,22 @@ const fetchFileUploads = async () => {
     finished.value = true;
 };
 
-
 const runAnalysis = async () => {
     let dsIDs = selectedDatasets.value.length
         ? selectedDatasets.value.map((ds) => ds.id)
         : [];
     toast.add({
-      severity: "warn",
-      summary: "Alert",
-      detail: "Copying data files. This may take a moment.",
-      life: 0,
+        severity: "warn",
+        summary: "Alert",
+        detail: "Copying data files. This may take a moment.",
+        life: 0,
     });
     await store.startMetaAnalysis({
         name: name.value,
-        method: 'intake',
+        method: "intake",
         datasets: dsIDs,
         phenotype: selectedPhenotype.value.name,
     });
-    await route.push({ path: '/hermes/ma' });
+    await route.push({ path: "/hermes/ma" });
 };
 </script>
