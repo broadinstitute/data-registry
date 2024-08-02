@@ -19,14 +19,14 @@
                     <Column field="datasets" header="Datasets">
                         <template #body="{ data }">
                             {{
-                                data.datasets.slice(0, 3).join(", ") +
-                                (data.datasets.length > 3 ? ", ..." : "")
+                                data.dataset_names.slice(0, 3).join(", ") +
+                                (data.dataset_names.length > 3 ? ", ..." : "")
                             }}
                         </template>
                     </Column>
-                    <Column field="type" header="Type"></Column>
-                    <Column field="started" header="Started"></Column>
-                    <Column field="user" header="By"></Column>
+                    <Column field="method" header="Method"></Column>
+                    <Column field="created_at" header="Started"></Column>
+                    <Column field="created_by" header="By"></Column>
                     <Column field="status" header="Status">
                         <template #body="{ data }">
                             <Tag
@@ -68,40 +68,10 @@ import { useDatasetStore } from "~/stores/DatasetStore";
 const route = useRouter();
 const store = useDatasetStore();
 const phenotypeMap = ref([]);
-const sampleData = ref([
-    {
-        id: 1,
-        name: "Meta-Analysis 1",
-        phenotype: "T2D",
-        datasets: ["Dataset 1", "Dataset 2", "Dataset 3", "Dataset 4"],
-        status: "Running",
-        started: "2021-10-01",
-        type: "Bottom-line",
-        user: "User 1",
-    },
-    {
-        id: 2,
-        name: "Meta-Analysis 2",
-        phenotype: "BMI",
-        datasets: ["Dataset 4", "Dataset 5", "Dataset 6"],
-        status: "Completed",
-        started: "2021-10-02",
-        type: "Bottom-line",
-        user: "User 2",
-    },
-    {
-        id: 3,
-        name: "Meta-Analysis 3",
-        phenotype: "T1D",
-        datasets: ["Dataset 7", "Dataset 8", "Dataset 9"],
-        status: "Failed",
-        started: "2021-10-03",
-        type: "Naive",
-        user: "User 3",
-    },
-]);
+const sampleData = ref([]);
 onMounted(async () => {
     await store.fetchPhenotypes();
+    sampleData.value = await store.fetchMetaAnalyses();
     phenotypeMap.value = store.phenotypes;
 });
 

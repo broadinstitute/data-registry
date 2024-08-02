@@ -1,6 +1,6 @@
-# Nuxt 3 Minimal Starter
+# Data Registry Front End
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+This is a Nuxt application, which is a structured way to do Vue development. Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 We use pinia in some places for state management, see [pinia docs](https://pinia.vuejs.org/) and within this project see [DatasetStore.js](./stores/DatasetStore.js).
 
 ## Setup
@@ -16,13 +16,22 @@ We use a cookie for authentication so you need to use the same domain for the fr
 The easiest way to do this is to add an entry in your `/etc/hosts` file like this:
 `127.0.0.1   local.kpndataregistry.org`
 If you're running the API server locally and want to access it from your local front end dev
-server, in your `.env` file set `NUXT_PUBLIC_API_BASE_URL=http://local.kpndatregistry.org:5000`
+server, in your `.env` file set `NUXT_PUBLIC_API_BASE_URL=http://local.kpndatregistry.org:5000` as 
+an example.
 
-If you're only making front end changes and want to use the qa deployed api server, set 
-`NUXT_PUBLIC_API_BASE_URL='http://api.kpndataregistry.org'`  
+If you're only making front end changes and want to use the qa deployed api server, in your `.env` 
+set `NUXT_PUBLIC_API_BASE_URL=https://api.kpndataregistry.org` but you'll need to use https when 
+serving this project because QA is https and browsers don't allow you to mix http and https communications.  
+You can set up https proxy back to you dev server by using [this docker file](./Dockerfile).  Build and 
+start that container and then start your dev server as per the instructions below and you'll be 
+able to access the front end at `https://local.kpndataregistry.org:8000`.
 
-In either case, use `http://local.kpndataregistry.org:3000` to access your local server.
+To start the development server:
 
+```bash
+npm run dev-auth # with authentication (you'll need to point to an API server and use *.kpndataregistry.org host name)
+npm run dev # without authentication (you can just localhost)
+```
 
 ## Deployment
 Deploy to QA occurs automatically upon push to the `main` branch via [github actions](.github/workflows/continuous-integration.yml). 

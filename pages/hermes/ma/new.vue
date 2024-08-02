@@ -217,13 +217,16 @@
                 independent.
             </p>
         </Sidebar>
+      <Toast position="top-center" />
     </div>
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
 import { useDatasetStore } from "@/stores/DatasetStore";
-
+const route = useRouter();
 const store = useDatasetStore();
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
 let phenotypes = {};
 const selectedPhenotype = ref({});
 const filteredPhenotypes = ref();
@@ -267,28 +270,23 @@ const fetchFileUploads = async () => {
     finished.value = true;
 };
 
-const getSeverity = (status) => {
-    switch (status) {
-        case "FAILED QC":
-            return "danger";
-        case "READY FOR REVIEW":
-            return "success";
-        case "SUBMITTED TO QC":
-            return "secondary";
-        case "REVIEW REJECTED":
-            return "warning";
-        default:
-            return "info";
-    }
-};
 
 const runAnalysis = async () => {
-    console.log("Running analysis...");
     let dsIDs = selectedDatasets.value.length
         ? selectedDatasets.value.map((ds) => ds.id)
         : [];
-    console.log("Selected datasets:", dsIDs);
-    console.log("Name:", name.value);
-    console.log("Overlap:", overlap.value);
+    toast.add({
+      severity: "warn",
+      summary: "Alert",
+      detail: "Copying data files. This may take a moment.",
+      life: 0,
+    });
+    await store.startMetaAnalysis({
+        name: name.value,
+        method: 'intake',
+        datasets: dsIDs,
+        phenotype: selectedPhenotype.value.name,
+    });
+    await route.push({ path: '/hermes/ma' });
 };
 </script>
