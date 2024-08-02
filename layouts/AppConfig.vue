@@ -161,10 +161,10 @@ const onRippleChange = (value) => {
             </div>
 
             <h5>Ripple Effect</h5>
-            <InputSwitch
+            <ToggleSwitch
                 :modelValue="rippleActive"
                 @update:modelValue="onRippleChange"
-            ></InputSwitch>
+            ></ToggleSwitch>
         </template>
 
         <h5>Bootstrap</h5>
