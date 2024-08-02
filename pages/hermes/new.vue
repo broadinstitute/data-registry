@@ -11,13 +11,13 @@ const fileInfo = ref({});
 let file = null;
 let fileName = null;
 let previousMapping = {};
-const selectedGenomeBuild = ref('');
-const selectedAncestry = ref('');
-const caseAscertainment = ref('');
-const caseType = ref('');
+const selectedGenomeBuild = ref("");
+const selectedAncestry = ref("");
+const caseAscertainment = ref("");
+const caseType = ref("");
 const caseAscertainmentOptions = ref([
     { name: "Electronic Health Records", value: "Electronic Health Records" },
-    { name: "Research Study", value: "Research Study" }
+    { name: "Research Study", value: "Research Study" },
 ]);
 const caseTypeOptions = ref([
     { name: "Prevalent", value: "Prevalent" },
@@ -237,7 +237,8 @@ async function upload() {
         maf: maf.value,
         other_qc_filters: otherQCFilters.value,
         n_variants_for_imputation: nVariantsForImputation.value,
-        prephasing_and_imputation_software: prephasingAndImputationSoftware.value,
+        prephasing_and_imputation_software:
+            prephasingAndImputationSoftware.value,
         imputation_reference: imputationReference.value,
         imputation_quality_measure: imputationQualityMeasure.value,
         genome_build: selectedGenomeBuild.value,
@@ -320,161 +321,237 @@ async function upload() {
                     />
                 </div>
                 <div class="field">
-                  <label for="genomeBuild">Genome Build</label>
-                  <Dropdown
-                      id="genomeBuild"
-                      v-model="selectedGenomeBuild"
-                      :options="genomeBuildOptions"
-                      optionLabel="name"
-                      optionValue="value"
-                      placeholder="Select Genome Build"/>
+                    <label for="genomeBuild">Genome Build</label>
+                    <Select
+                        id="genomeBuild"
+                        v-model="selectedGenomeBuild"
+                        :options="genomeBuildOptions"
+                        optionLabel="name"
+                        optionValue="value"
+                        placeholder="Select Genome Build"
+                    />
                 </div>
                 <div class="field">
-                  <label for="cohort">Cohort</label>
-                  <InputText v-model="cohort" id="cohort" type="text"/>
+                    <label for="cohort">Cohort</label>
+                    <InputText v-model="cohort" id="cohort" type="text" />
                 </div>
                 <div class="field">
-                  <label for="ancestry">Ancestry</label>
-                  <Dropdown id="ancestry" v-model="selectedAncestry" :options="ancestryOptions"
-                            optionLabel="name" optionValue="value" placeholder="Select Ancestry" data-cy="ancestry"/>
+                    <label for="ancestry">Ancestry</label>
+                    <Select
+                        id="ancestry"
+                        v-model="selectedAncestry"
+                        :options="ancestryOptions"
+                        optionLabel="name"
+                        optionValue="value"
+                        placeholder="Select Ancestry"
+                        data-cy="ancestry"
+                    />
                 </div>
                 <div class="field">
-                  <label for="acknowledgements">Acknowledgements</label>
-                  <InputText
-                      v-model="acknowledgements"
-                      id="acknowledgements"
-                      type="text"
-                  />
+                    <label for="acknowledgements">Acknowledgements</label>
+                    <InputText
+                        v-model="acknowledgements"
+                        id="acknowledgements"
+                        type="text"
+                    />
                 </div>
                 <div class="field">
-                  <label for="keyReferences">Key References</label>
-                  <InputText
-                      v-model="keyReferences"
-                      id="keyReferences"
-                      type="text"
-                  />
+                    <label for="keyReferences">Key References</label>
+                    <InputText
+                        v-model="keyReferences"
+                        id="keyReferences"
+                        type="text"
+                    />
                 </div>
                 <div class="field">
-                  <label for="caseAscertainment">Case Ascertainment</label>
-                  <Dropdown
-                      id="caseAscertainment"
-                      v-model="caseAscertainment"
-                      :options="caseAscertainmentOptions"
-                      optionLabel="name"
-                      optionValue="value"
-                      placeholder="Select Case Ascertainment" data-cy="case-ascertainment" />
+                    <label for="caseAscertainment">Case Ascertainment</label>
+                    <Select
+                        id="caseAscertainment"
+                        v-model="caseAscertainment"
+                        :options="caseAscertainmentOptions"
+                        optionLabel="name"
+                        optionValue="value"
+                        placeholder="Select Case Ascertainment"
+                        data-cy="case-ascertainment"
+                    />
                 </div>
                 <div class="field">
-                  <label for="caseType">Case Type</label>
-                  <Dropdown
-                      id="caseType"
-                      v-model="caseType"
-                      :options="caseTypeOptions"
-                      optionLabel="name"
-                      optionValue="value"
-                      placeholder="Select Case Type" data-cy="case-type"/>
+                    <label for="caseType">Case Type</label>
+                    <Select
+                        id="caseType"
+                        v-model="caseType"
+                        :options="caseTypeOptions"
+                        optionLabel="name"
+                        optionValue="value"
+                        placeholder="Select Case Type"
+                        data-cy="case-type"
+                    />
                 </div>
                 <div class="field">
-                  <label for="phenotype">Phenotype</label>
-                  <InputText v-model="phenotype" id="phenotype" type="text" />
+                    <label for="phenotype">Phenotype</label>
+                    <InputText v-model="phenotype" id="phenotype" type="text" />
                 </div>
                 <div class="field">
-                  <label for="participants">Participants</label>
-                  <InputText v-model="participants" id="participants" type="number" />
+                    <label for="participants">Participants</label>
+                    <InputText
+                        v-model="participants"
+                        id="participants"
+                        type="number"
+                    />
                 </div>
                 <div class="field">
-                  <label for="cases">Cases</label>
-                  <InputText v-model="cases" id="cases" type="number" />
+                    <label for="cases">Cases</label>
+                    <InputText v-model="cases" id="cases" type="number" />
                 </div>
                 <div class="field">
-                  <label for="cases">Sex Proportion</label>
-                  <InputText v-model="sexProportion" id="sexProportion" type="number" />
+                    <label for="cases">Sex Proportion</label>
+                    <InputText
+                        v-model="sexProportion"
+                        id="sexProportion"
+                        type="number"
+                    />
                 </div>
                 <div class="field">
-                  <label for="age">Age At First Documented Study Phenotype</label>
-                  <InputText v-model="age" id="age" type="number" />
+                    <label for="age"
+                        >Age At First Documented Study Phenotype</label
+                    >
+                    <InputText v-model="age" id="age" type="number" />
                 </div>
-              <div class="field">
-                <label for="analysisSoftware">Analysis Software</label>
-                <InputText v-model="analysisSoftware" id="analysisSoftware" type="text" />
-              </div>
-              <div class="field">
-                <label for="statisticalModel">Statistical Model</label>
-                <InputText v-model="statisticalModel" id="statisticalModel" type="text" />
-              </div>
-              <div class="field">
-                <label for="covariates">Covariates</label>
-                <InputText v-model="covariates" id="covariates" type="text" />
-              </div>
-              <div class="field">
-                <label for="arrayName">Array Name and Version</label>
-                <InputText v-model="arrayName" id="arrayName" type="text" />
-              </div>
-              <div class="field">
-                <label for="callingAlgorithm">Calling Algorithm</label>
-                <InputText v-model="callingAlgorithm" id="callingAlgorithm" type="text" />
-              </div>
-              <div class="field">
-                <label for="variantCallRate">Variant Call Rate</label>
-                <InputText v-model="variantCallRate" id="variantCallRate" type="number" />
-              </div>
-              <div class="field">
-                <label for="sampleCallRate">Sample Call Rate</label>
-                <InputText v-model="sampleCallRate" id="sampleCallRate" type="number" />
-              </div>
-              <div class="field">
-                <label for="hwePValue">HWE P-value</label>
-                <InputText v-model="hwePValue" id="hwePValue" type="number" />
-              </div>
-              <div class="field">
-                <label for="maf">MAF</label>
-                <InputText v-model="maf" id="maf" type="number" />
-              </div>
-              <div class="field">
-                <label for="otherQCFilters">Other QC Filters</label>
-                <InputText v-model="otherQCFilters" id="otherQCFilters" type="text" />
-              </div>
-              <div class="field">
-                <label for="nVariantsForImputation">N Variants For Imputation</label>
-                <InputText v-model="nVariantsForImputation" id="nVariantsForImputation" type="number" />
-              </div>
-              <div class="field">
-                <label for="prephasingAndImputationSoftware">Prephasing And Imputation Software</label>
-                <InputText v-model="prephasingAndImputationSoftware" id="prephasingAndImputationSoftware" type="text" />
-              </div>
-              <div class="field">
-                <label for="imputationReference">Imputation Reference</label>
-                <InputText v-model="imputationReference" id="imputationReference" type="text" />
-              </div>
-              <div class="field">
-                <label for="imputationQualityMeasure">Imputation Quality Measure</label>
-                <InputText v-model="imputationQualityMeasure" id="imputationQualityMeasure" type="text" />
-              </div>
+                <div class="field">
+                    <label for="analysisSoftware">Analysis Software</label>
+                    <InputText
+                        v-model="analysisSoftware"
+                        id="analysisSoftware"
+                        type="text"
+                    />
+                </div>
+                <div class="field">
+                    <label for="statisticalModel">Statistical Model</label>
+                    <InputText
+                        v-model="statisticalModel"
+                        id="statisticalModel"
+                        type="text"
+                    />
+                </div>
+                <div class="field">
+                    <label for="covariates">Covariates</label>
+                    <InputText
+                        v-model="covariates"
+                        id="covariates"
+                        type="text"
+                    />
+                </div>
+                <div class="field">
+                    <label for="arrayName">Array Name and Version</label>
+                    <InputText v-model="arrayName" id="arrayName" type="text" />
+                </div>
+                <div class="field">
+                    <label for="callingAlgorithm">Calling Algorithm</label>
+                    <InputText
+                        v-model="callingAlgorithm"
+                        id="callingAlgorithm"
+                        type="text"
+                    />
+                </div>
+                <div class="field">
+                    <label for="variantCallRate">Variant Call Rate</label>
+                    <InputText
+                        v-model="variantCallRate"
+                        id="variantCallRate"
+                        type="number"
+                    />
+                </div>
+                <div class="field">
+                    <label for="sampleCallRate">Sample Call Rate</label>
+                    <InputText
+                        v-model="sampleCallRate"
+                        id="sampleCallRate"
+                        type="number"
+                    />
+                </div>
+                <div class="field">
+                    <label for="hwePValue">HWE P-value</label>
+                    <InputText
+                        v-model="hwePValue"
+                        id="hwePValue"
+                        type="number"
+                    />
+                </div>
+                <div class="field">
+                    <label for="maf">MAF</label>
+                    <InputText v-model="maf" id="maf" type="number" />
+                </div>
+                <div class="field">
+                    <label for="otherQCFilters">Other QC Filters</label>
+                    <InputText
+                        v-model="otherQCFilters"
+                        id="otherQCFilters"
+                        type="text"
+                    />
+                </div>
+                <div class="field">
+                    <label for="nVariantsForImputation"
+                        >N Variants For Imputation</label
+                    >
+                    <InputText
+                        v-model="nVariantsForImputation"
+                        id="nVariantsForImputation"
+                        type="number"
+                    />
+                </div>
+                <div class="field">
+                    <label for="prephasingAndImputationSoftware"
+                        >Prephasing And Imputation Software</label
+                    >
+                    <InputText
+                        v-model="prephasingAndImputationSoftware"
+                        id="prephasingAndImputationSoftware"
+                        type="text"
+                    />
+                </div>
+                <div class="field">
+                    <label for="imputationReference"
+                        >Imputation Reference</label
+                    >
+                    <InputText
+                        v-model="imputationReference"
+                        id="imputationReference"
+                        type="text"
+                    />
+                </div>
+                <div class="field">
+                    <label for="imputationQualityMeasure"
+                        >Imputation Quality Measure</label
+                    >
+                    <InputText
+                        v-model="imputationQualityMeasure"
+                        id="imputationQualityMeasure"
+                        type="text"
+                    />
+                </div>
             </div>
-
-
         </div>
         <div class="col-span-12 md:col-span-6">
-          <div class="card p-fluid">
-            <h5>Select file to upload</h5>
-            <FileUpload
-                name="file"
-                id="fileInput"
-                accept=".csv, .tsv, .gz, .bgzip, .gzip"
-                :showUploadButton="false"
-                :previewWidth="0"
-                @select="sampleFile"
-                @clear="resetFile"
-                @remove="resetFile"
-            >
-              <template #empty>
-                <p>
-                  Drag and drop files to here to upload. (.csv, .tsv,
-                  .gz, .bgzip, .gzip)
-                </p>
-              </template>
-            </FileUpload>
-          </div>
+            <div class="card p-fluid">
+                <h5>Select file to upload</h5>
+                <FileUpload
+                    name="file"
+                    id="fileInput"
+                    accept=".csv, .tsv, .gz, .bgzip, .gzip"
+                    :showUploadButton="false"
+                    :previewWidth="0"
+                    @select="sampleFile"
+                    @clear="resetFile"
+                    @remove="resetFile"
+                >
+                    <template #empty>
+                        <p>
+                            Drag and drop files to here to upload. (.csv, .tsv,
+                            .gz, .bgzip, .gzip)
+                        </p>
+                    </template>
+                </FileUpload>
+            </div>
             <div class="card">
                 <h5>Map column names to their representations.</h5>
                 <small
@@ -537,7 +614,7 @@ async function upload() {
                     <Column header=">>" class="col-span-1"></Column>
                     <Column header="Represents" class="col-span-7">
                         <template #body="{ data }">
-                            <Dropdown
+                            <Select
                                 data-cy="column-dropdown"
                                 class="w-full"
                                 :options="colOptions"

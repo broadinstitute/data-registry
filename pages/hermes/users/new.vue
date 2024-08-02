@@ -32,12 +32,12 @@
 
                     <div class="field col">
                         <label for="userType">User Type</label>
-                        <Dropdown
+                        <Select
                             v-model="user.userType"
                             :options="userTypes"
                             optionLabel="name"
                             placeholder="Select user type"
-                        ></Dropdown>
+                        ></Select>
                     </div>
 
                     <Button label="Create User" @click="handleSubmit" />
