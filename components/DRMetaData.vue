@@ -190,7 +190,7 @@ function filterStudies (q) {
 <template>
   <form id="mdForm" class="needs-validation dr-form" novalidate>
     <div class="row dr-status-section">
-      <div class="col col-6">
+      <div class="col col-span-6">
         <div class="label">
           Dataset name<sup>*</sup>
         </div>
@@ -205,7 +205,7 @@ function filterStudies (q) {
         >
       </div>
 
-      <div class="col col-6">
+      <div class="col col-span-6">
         <div class="label">
           Status<sup>*</sup>
         </div>

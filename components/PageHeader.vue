@@ -1,7 +1,7 @@
 <template>
-  <nav class="navbar navbar-expand-lg p-3 mb-3 border-bottom">
+  <nav class="navbar navbar-expand-lg p-4 mb-4 border-bottom">
     <div class="container">
-      <a href="/" class="navbar-brand mr-4">
+      <a href="/" class="navbar-brand mr-6">
         <span>[ Data Registry <i class="bi bi-r-square-fill" /> ]</span>
       </a>
 

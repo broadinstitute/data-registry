@@ -22,7 +22,7 @@ const formatRole = (role) => {
 </script>
 
 <template>
-    <div class="grid">
+    <div class="grid grid-cols-12 gap-4">
         <div class="col">
             <Card>
                 <template #content>
@@ -33,7 +33,7 @@ const formatRole = (role) => {
                         sort-field="user_name"
                         ><template #header>
                             <div
-                                class="flex justify-content-end flex-column sm:flex-row"
+                                class="flex justify-end flex-col sm:flex-row"
                             >
                                 <Button
                                     type="button"

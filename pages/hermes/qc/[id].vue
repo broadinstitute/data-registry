@@ -37,9 +37,9 @@ async function reviewDataset(id, value) {
     <Breadcrumb
         :home="{ icon: 'bi-house', url: '/hermes/dashboard/' }"
         :model="[{ label: 'Datasets', url: '/hermes/' }, { label: dsName }]"
-        class="mb-3"
+        class="mb-4"
     />
-    <div class="grid" v-if="reviewStatus != 'FAILED QC'">
+    <div class="grid grid-cols-12 gap-4" v-if="reviewStatus != 'FAILED QC'">
         <div class="col text-center">
             <Card>
                 <template #title>QQ Plot</template>
@@ -68,8 +68,8 @@ async function reviewDataset(id, value) {
             </Card>
         </div>
     </div>
-    <div class="grid">
-        <div class="col col-md-12 mb-4">
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col col-md-12 mb-6">
             <Card>
                 <template #title>Log Output</template>
                 <template #content>
@@ -89,11 +89,11 @@ async function reviewDataset(id, value) {
     </div>
 
     <div
-        class="grid"
+        class="grid grid-cols-12 gap-4"
         v-can="'approveUpload'"
         v-if="reviewStatus === 'READY FOR REVIEW' && showReview"
     >
-        <div class="col-4 col-offset-4 mt-2 mb-4">
+        <div class="col-span-4 col-start-5 mt-2 mb-6">
             <InputGroup>
                 <Button
                     label="Fail"

@@ -69,9 +69,9 @@ onMounted(() => {
 
 <template>
     <div
-        class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden"
+        class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden"
     >
-        <div class="flex flex-column align-items-center justify-content-center">
+        <div class="flex flex-col items-center justify-center">
             <div
                 style="
                     border-radius: 56px;
@@ -84,16 +84,16 @@ onMounted(() => {
                 "
             >
                 <div
-                    class="w-full surface-card py-8 px-5 sm:px-8"
+                    class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20"
                     style="border-radius: 53px"
                 >
-                    <div class="text-center mb-5">
+                    <div class="text-center mb-8">
                         <template v-if="tenantWebsite !== '/'"
                             ><NuxtLink :to="tenantWebsite" target="_blank">
                                 <img
                                     :src="tenantLogo"
                                     alt="logo"
-                                    class="mb-5 flex-shrink-0"
+                                    class="mb-8 shrink-0"
                                     height="100"
                                 />
                             </NuxtLink>
@@ -102,7 +102,7 @@ onMounted(() => {
                             <img
                                 :src="tenantLogo"
                                 alt="logo"
-                                class="mb-5 flex-shrink-0"
+                                class="mb-8 shrink-0"
                                 height="100"
                             />
                         </template>
@@ -110,7 +110,7 @@ onMounted(() => {
                     <div>
                         <label
                             for="email"
-                            class="block text-900 text-xl font-medium mb-2"
+                            class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2"
                             >Email</label
                         >
                         <InputText
@@ -119,13 +119,13 @@ onMounted(() => {
                             v-model="email"
                             type="text"
                             placeholder="Enter username or email"
-                            class="w-full md:w-30rem mb-5"
+                            class="w-full md:w-[30rem] mb-8"
                             style="padding: 1rem"
                         />
 
                         <label
                             for="password"
-                            class="block text-900 font-medium text-xl mb-2"
+                            class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2"
                             >Password</label
                         >
                         <Password
@@ -133,7 +133,7 @@ onMounted(() => {
                             v-model="password"
                             placeholder="Enter password"
                             :toggleMask="true"
-                            class="w-full mb-3"
+                            class="w-full mb-4"
                             inputClass="w-full"
                             :inputStyle="{ padding: '1rem' }"
                             @keydown.enter="submitForm()"
@@ -141,9 +141,9 @@ onMounted(() => {
                         ></Password>
 
                         <div
-                            class="flex align-items-center justify-content-between mb-5 gap-5"
+                            class="flex items-center justify-between mb-8 gap-8"
                         >
-                            <div class="flex align-items-center">
+                            <div class="flex items-center">
                                 <Checkbox
                                     id="rememberme"
                                     v-model="remember"
@@ -155,13 +155,13 @@ onMounted(() => {
                         </div>
                         <Button
                             label="Sign In"
-                            class="w-full p-3 text-xl"
+                            class="w-full p-4 text-xl"
                             icon="bi-person"
                             @click="submitForm()"
                         ></Button>
                         <Button
                             label="Sign In With Google"
-                            class="w-full p-3 text-xl mt-3"
+                            class="w-full p-4 text-xl mt-4"
                             icon="bi-google"
                             outlined
                             @click="loginWithGoogle()"

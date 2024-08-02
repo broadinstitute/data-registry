@@ -89,8 +89,8 @@ const pieOptions = {
 </script>
 
 <template>
-    <div class="grid">
-        <div class="col-8">
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-8">
             <Card>
                 <template #title>Recently Added</template>
                 <template #content
@@ -105,7 +105,7 @@ const pieOptions = {
                         dataKey="id"
                         ><template #header>
                             <div
-                                class="flex justify-content-end flex-column sm:flex-row"
+                                class="flex justify-end flex-col sm:flex-row"
                             >
                                 <Button
                                     type="button"
@@ -160,7 +160,7 @@ const pieOptions = {
                 ></template>
             </Card>
         </div>
-        <div class="col-4">
+        <div class="col-span-4">
             <Card id="pieChart" v-if="fileUploads.length">
                 <template #title>Dataset Status</template>
                 <template #content>
@@ -168,13 +168,13 @@ const pieOptions = {
                         type="doughnut"
                         :data="pieData"
                         :options="pieOptions"
-                        class="h-20rem flex items-center justify-center"
+                        class="h-80 flex items-center justify-center"
                     ></Chart>
                 </template>
             </Card>
             <Card v-else>
                 <template #content>
-                    <div class="text-center h-10rem">No datasets found</div>
+                    <div class="text-center h-40">No datasets found</div>
                 </template>
             </Card>
         </div>

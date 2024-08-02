@@ -9,7 +9,7 @@
     <form id="createBioIndexForm" enctype="multipart/form-data">
       <div class="row">
         <div class="col-md-6 offset-md-3">
-          <h2 class="text-center mb-4">
+          <h2 class="text-center mb-6">
             Create Query API
           </h2>
 

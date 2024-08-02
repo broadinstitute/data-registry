@@ -55,7 +55,7 @@ const model = ref([
                 <img
                     src="/layout/images/hermes-logo-full.png"
                     alt="Prime Blocks"
-                    class="w-full mt-3"
+                    class="w-full mt-4"
                 />
             </a>
         </li>

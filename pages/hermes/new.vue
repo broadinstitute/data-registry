@@ -285,17 +285,17 @@ async function upload() {
     </Dialog>
     <Toast position="top-center" />
 
-    <div class="grid">
-        <div class="col mb-4">
-            <h2 class="text-center mb-4">
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col mb-6">
+            <h2 class="text-center mb-6">
                 Upload GWAS for Quality Control (QC)
             </h2>
             <Steps id="steps" :activeStep="currentStep" :model="steps" />
         </div>
     </div>
 
-    <div class="grid" v-if="store.showNotification">
-        <div class="col-6 col-offset-3">
+    <div class="grid grid-cols-12 gap-4" v-if="store.showNotification">
+        <div class="col-span-6 col-start-4">
             <Message
                 v-for="msg in store.errorMessage"
                 severity="error"
@@ -307,8 +307,8 @@ async function upload() {
         </div>
     </div>
 
-    <div class="grid">
-        <div class="col-12 md:col-6">
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 md:col-span-6">
             <div class="card p-fluid">
                 <h5>Metadata</h5>
                 <div class="field">
@@ -454,7 +454,7 @@ async function upload() {
 
 
         </div>
-        <div class="col-12 md:col-6">
+        <div class="col-span-12 md:col-span-6">
           <div class="card p-fluid">
             <h5>Select file to upload</h5>
             <FileUpload
@@ -505,7 +505,7 @@ async function upload() {
                     />
                     <Chip v-else label="maf | eaf" />
                 </div>
-                <div v-if="fileInfo.columns" class="grid">
+                <div v-if="fileInfo.columns" class="grid grid-cols-12 gap-4">
                     <div class="col">
                         <Button
                             v-if="Object.keys(previousMapping).length > 0"
@@ -532,10 +532,10 @@ async function upload() {
                 </div>
 
                 <DataTable :value="tableRows" v-if="fileInfo.columns" rowHover>
-                    <Column field="column" header="Column" class="col-4">
+                    <Column field="column" header="Column" class="col-span-4">
                     </Column>
-                    <Column header=">>" class="col-1"></Column>
-                    <Column header="Represents" class="col-7">
+                    <Column header=">>" class="col-span-1"></Column>
+                    <Column header="Represents" class="col-span-7">
                         <template #body="{ data }">
                             <Dropdown
                                 data-cy="column-dropdown"
@@ -560,7 +560,7 @@ async function upload() {
                         </template>
                     </Column>
                 </DataTable>
-                <div class="w-full text-center mt-4">
+                <div class="w-full text-center mt-6">
                     <span
                         style="display: inline-block"
                         v-tooltip.top="

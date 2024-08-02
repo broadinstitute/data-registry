@@ -1,6 +1,6 @@
 <template>
-    <div class="grid">
-        <div class="col-6 col-offset-3">
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6 col-start-4">
             <div class="card p-fluid">
                 <h4>Add new user</h4>
                 <form @submit.prevent="handleSubmit" class="form">

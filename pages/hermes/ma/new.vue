@@ -4,9 +4,9 @@
         <Stepper orientation="vertical">
             <StepperPanel header="Select Phenotype">
                 <template #content="{ nextCallback }">
-                    <div class="flex flex-column h-6rem">
+                    <div class="flex flex-col h-24">
                         <div
-                            class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium"
+                            class="border-2 border-dashed border-surface rounded-border bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"
                         >
                             <AutoComplete
                                 id="phenotype"
@@ -23,7 +23,7 @@
                             />
                         </div>
                     </div>
-                    <div class="flex py-4">
+                    <div class="flex py-6">
                         <Button label="Next" @click="nextCallback" />
                     </div>
                 </template>
@@ -31,14 +31,14 @@
             <StepperPanel header="Select Datasets">
                 <template #title="{ index }">
                     <div
-                        class="flex justify-content-between align-items-center"
+                        class="flex justify-between items-center"
                     >
-                        <div class="text-700">Step1 {{ index + 1 }}</div>
-                        <div class="text-700">Select Datasets</div>
+                        <div class="text-surface-700 dark:text-surface-100">Step1 {{ index + 1 }}</div>
+                        <div class="text-surface-700 dark:text-surface-100">Select Datasets</div>
                     </div>
                 </template>
                 <template #content="{ prevCallback, nextCallback }">
-                    <div class="flex flex-column">
+                    <div class="flex flex-col">
                         <Message v-if="fileUploads.length < 2" severity="warn">
                             <p>
                                 You need at least two datasets to run a
@@ -54,7 +54,7 @@
                         </Message>
 
                         <div
-                            class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium"
+                            class="border-2 border-dashed border-surface rounded-border bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"
                         >
                             <!-- <Button @click="fetchFileUploads" label="Fetch" /> -->
                             <DataTable
@@ -114,7 +114,7 @@
                             </DataTable>
                         </div>
                     </div>
-                    <div class="flex py-4 gap-2">
+                    <div class="flex py-6 gap-2">
                         <Button
                             label="Back"
                             severity="secondary"
@@ -126,11 +126,11 @@
             </StepperPanel>
             <StepperPanel header="Configure Options">
                 <template #content="{ prevCallback }">
-                    <div class="flex flex-column h-6rem">
+                    <div class="flex flex-col h-24">
                         <div
-                            class="grid border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center font-medium"
+                            class="grid grid-cols-12 gap-4 border-2 border-dashed border-surface rounded-border bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center font-medium"
                         >
-                            <div class="col-8 p-4">
+                            <div class="col-span-8 p-6">
                                 <div class="field p-fluid">
                                     <InputText
                                         type="text"
@@ -145,9 +145,9 @@
                                     >
                                 </div>
                             </div>
-                            <div class="col-4 p-4">
+                            <div class="col-span-4 p-6">
                                 <!-- Group 2 items go here -->
-                                <div class="flex align-items-center">
+                                <div class="flex items-center">
                                     <InputSwitch
                                         v-model="overlap"
                                         inputId="overlap"
@@ -156,7 +156,7 @@
                                         >Overlap {{ overlap ? "ON" : "OFF" }}
                                     </label>
                                 </div>
-                                <div class="flex align-items-center">
+                                <div class="flex items-center">
                                     <span
                                         >Analysis:
                                         {{ overlap ? "Bottom-line" : "Naive" }}
@@ -173,7 +173,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex py-4 gap-2">
+                    <div class="flex py-6 gap-2">
                         <Button
                             label="Back"
                             severity="secondary"

@@ -33,10 +33,10 @@ async function copyApiToken(){
 </script>
 
 <template>
-  <div class="container py-4">
-    <h3 class="mb-4">User Profile</h3>
+  <div class="container py-6">
+    <h3 class="mb-6">User Profile</h3>
 
-    <div class="card mb-4">
+    <div class="card mb-6">
       <div class="card-body">
         <p class="card-text"><strong>User:</strong> {{ store.user.user_name }}</p>
         <p class="card-text"><strong>Roles:</strong> {{ store.user.roles.join(', ') }}</p>
@@ -63,11 +63,11 @@ async function copyApiToken(){
           </div>
 
           <form @submit.prevent="changePassword">
-            <div class="mb-3">
+            <div class="mb-4">
               <input id="password1" v-model="password1" type="password" class="form-control"
                      placeholder="New Password">
             </div>
-            <div class="mb-3">
+            <div class="mb-4">
               <input id="password2" v-model="password2" type="password" class="form-control"
                      placeholder="Confirm New Password">
             </div>

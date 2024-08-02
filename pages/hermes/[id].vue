@@ -24,7 +24,7 @@ async function reviewDataset() {
 <template>
     <div class="container">
         <div class="row" v-can="'approveUpload'">
-            <div class="col col-3">
+            <div class="col col-span-3">
                 <div class="label">Review Status:</div>
                 <select
                     class="form-select form-control form-control-sm"
@@ -35,7 +35,7 @@ async function reviewDataset() {
                     <option value="REVIEW REJECTED">Fail</option>
                 </select>
             </div>
-            <div class="col col-3 d-flex align-items-end">
+            <div class="col col-span-3 d-flex items-end">
                 <button
                     :disabled="reviewStatus === ''"
                     class="btn btn-primary"
@@ -46,7 +46,7 @@ async function reviewDataset() {
             </div>
         </div>
         <div class="row">
-            <div class="col col-md-12 mb-4">
+            <div class="col col-md-12 mb-6">
                 <h3>Log Output</h3>
                 <div
                     class="text-box"
@@ -60,7 +60,7 @@ async function reviewDataset() {
                 </div>
             </div>
 
-            <div class="col-6">
+            <div class="col-span-6">
                 <h3>QQ Plot</h3>
                 <img
                     :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/qq_plot.png`"
@@ -69,7 +69,7 @@ async function reviewDataset() {
                 />
             </div>
 
-            <div class="col-6">
+            <div class="col-span-6">
                 <h3>Manhattan Plot</h3>
                 <img
                     :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/manhattan_plot.png`"
