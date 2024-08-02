@@ -120,12 +120,6 @@ const tableRows = computed(() => {
           }))
         : [];
 });
-const steps = ref([
-    { label: "Enter Metadata" },
-    { label: "Select File" },
-    { label: "Map Columns" },
-    { label: "Upload" },
-]);
 
 const step1Complete = computed(() => {
     return Boolean(dataSetName.value);
@@ -291,7 +285,38 @@ async function upload() {
             <h2 class="text-center mb-6">
                 Upload GWAS for Quality Control (QC)
             </h2>
-            <Steps id="steps" :activeStep="currentStep" :model="steps" />
+            <Stepper id="steps" :value="currentStep">
+                <StepList>
+                    <Step
+                        title="Enter Metadata"
+                        :complete="step1Complete"
+                        :active="currentStep === 0"
+                        value="0"
+                        >Enter Metadata</Step
+                    >
+                    <Step
+                        title="Select File"
+                        :complete="step2Complete"
+                        :active="currentStep === 1"
+                        value="1"
+                        >Select File</Step
+                    >
+                    <Step
+                        title="Map Columns"
+                        :complete="step3Complete"
+                        :active="currentStep === 2"
+                        value="2"
+                        >Map Columns</Step
+                    >
+                    <Step
+                        title="Upload"
+                        :complete="currentStep === 3"
+                        :active="currentStep === 3"
+                        value="3"
+                        >Upload</Step
+                    >
+                </StepList>
+            </Stepper>
         </div>
     </div>
 

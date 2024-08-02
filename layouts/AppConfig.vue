@@ -75,7 +75,7 @@ const onRippleChange = (value) => {
         <i class="pi pi-cog"></i>
     </button>
 
-    <Sidebar
+    <Drawer
         v-model:visible="visible"
         position="right"
         class="layout-config-sidebar w-80"
@@ -602,7 +602,7 @@ const onRippleChange = (value) => {
                 </button>
             </div>
         </div>
-    </Sidebar>
+    </Drawer>
 </template>
 
 <style lang="scss" scoped></style>
