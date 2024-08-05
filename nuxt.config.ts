@@ -1,4 +1,23 @@
 import Aura from "@primevue/themes/aura";
+import { definePreset } from "@primevue/themes";
+const IndigoPreset = definePreset(Aura, {
+    semantic: {
+        primary: {
+            50: "{indigo.50}",
+            100: "{indigo.100}",
+            200: "{indigo.200}",
+            300: "{indigo.300}",
+            400: "{indigo.400}",
+            500: "{indigo.500}",
+            600: "{indigo.600}",
+            700: "{indigo.700}",
+            800: "{indigo.800}",
+            900: "{indigo.900}",
+            950: "{indigo.950}",
+        },
+    },
+});
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     ssr: false,
@@ -25,7 +44,7 @@ export default defineNuxtConfig({
         // "primeflex/primeflex.scss",
         // "primevue/resources/primevue.min.css",
         "@/assets/styles.scss",
-        // "assets/css/base.css",
+        "assets/css/base.css",
         // "primevue/resources/themes/aura-light-indigo/theme.css",
     ],
 
@@ -51,9 +70,9 @@ export default defineNuxtConfig({
             unstyled: false,
             ripple: true,
             theme: {
-                preset: Aura,
+                preset: IndigoPreset,
                 options: {
-                    darkModeSelector: ".dark-mode",
+                    darkModeSelector: ".dark-mode-on",
                     cssLayer: {
                         name: "primevue",
                         order: "tailwind-base, primevue, tailwind-utilities",
