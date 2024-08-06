@@ -39,57 +39,51 @@ async function reviewDataset(id, value) {
         :model="[{ label: 'Datasets', url: '/hermes/' }, { label: dsName }]"
         class="mb-4"
     />
-    <div class="grid grid-cols-12 gap-4" v-if="reviewStatus != 'FAILED QC'">
-        <div class="col text-center">
-            <Card>
-                <template #title>QQ Plot</template>
-                <template #content>
-                    <Image
-                        :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/qq_plot.png`"
-                        alt="QQ Plot"
-                        width="400"
-                        preview
-                    />
-                </template>
-            </Card>
-        </div>
+    <div class="columns-2" v-if="reviewStatus != 'FAILED QC'">
+        <Card class="text-center">
+            <template #title>QQ Plot</template>
+            <template #content>
+                <Image
+                    :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/qq_plot.png`"
+                    alt="QQ Plot"
+                    width="400"
+                    preview
+                />
+            </template>
+        </Card>
 
-        <div class="col text-center">
-            <Card>
-                <template #title>Manhattan Plot</template>
-                <template #content>
-                    <Image
-                        :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/manhattan_plot.png`"
-                        alt="Manhattan Plot"
-                        width="400"
-                        preview
-                    />
-                </template>
-            </Card>
-        </div>
+        <Card class="text-center">
+            <template #title>Manhattan Plot</template>
+            <template #content>
+                <Image
+                    :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/manhattan_plot.png`"
+                    alt="Manhattan Plot"
+                    width="400"
+                    preview
+                />
+            </template>
+        </Card>
     </div>
-    <div class="grid grid-cols-12 gap-4">
-        <div class="col col-md-12 mb-6">
-            <Card>
-                <template #title>Log Output</template>
-                <template #content>
-                    <Shiki
-                        :code="logText"
-                        lang="r"
-                        :theme="'nord'"
-                        style="
-                            height: 400px;
-                            overflow-y: scroll;
-                            white-space: pre-wrap;
-                        "
-                    />
-                </template>
-            </Card>
-        </div>
+    <div class="columns-1 mt-4">
+        <Card>
+            <template #title>Log Output</template>
+            <template #content>
+                <Shiki
+                    :code="logText"
+                    lang="r"
+                    :theme="'nord'"
+                    style="
+                        height: 400px;
+                        overflow-y: scroll;
+                        white-space: pre-wrap;
+                    "
+                />
+            </template>
+        </Card>
     </div>
 
     <div
-        class="grid grid-cols-12 gap-4"
+        class="columns-1"
         v-can="'approveUpload'"
         v-if="reviewStatus === 'READY FOR REVIEW' && showReview"
     >

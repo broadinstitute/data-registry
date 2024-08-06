@@ -146,210 +146,199 @@ const getIcon = (status) => {
 </script>
 
 <template>
-    <div class="grid grid-cols-12 gap-4">
-        <div v-if="fileUploads.length && finished" class="col">
-            <h2>Quality Control (QC) Reports</h2>
-            <Card>
-                <template #content>
-                    <Chart
-                        type="bar"
-                        :data="dataCollection"
-                        :options="chartOptions"
-                    />
-                </template>
-            </Card>
-            <Card class="mt-6">
-                <template #content>
-                    <DataTable
-                        :value="datasetRows"
-                        :paginator="false"
-                        rowHover
-                        :rows="10"
-                        :rowsPerPageOptions="[5, 10, 20]"
-                        :loading="tableLoading"
-                        sortField="uploaded_at"
-                        :sortOrder="-1"
-                        ><template #header>
-                            <div class="flex justify-end flex-col sm:flex-row">
-                                <ToggleSwitch
-                                    v-model="includeFailedRejected"
-                                    inputID="includeFailedRejected"
-                                    class="mr-2"
-                                /><label for="includeFailedRejected"
-                                    >Include Failed/Rejected</label
-                                >
-                            </div>
+    <template v-if="fileUploads.length && finished">
+        <h2>Quality Control (QC) Reports</h2>
+        <Card>
+            <template #content>
+                <Chart
+                    type="bar"
+                    :data="dataCollection"
+                    :options="chartOptions"
+                />
+            </template>
+        </Card>
+        <Card class="mt-6">
+            <template #content>
+                <DataTable
+                    :value="datasetRows"
+                    :paginator="false"
+                    rowHover
+                    :rows="10"
+                    :rowsPerPageOptions="[5, 10, 20]"
+                    :loading="tableLoading"
+                    sortField="uploaded_at"
+                    :sortOrder="-1"
+                    ><template #header>
+                        <div class="flex justify-end flex-col sm:flex-row">
+                            <ToggleSwitch
+                                v-model="includeFailedRejected"
+                                inputID="includeFailedRejected"
+                                class="mr-2"
+                            /><label for="includeFailedRejected"
+                                >Include Failed/Rejected</label
+                            >
+                        </div>
+                    </template>
+                    <template #empty> No dataset found. </template>
+                    <template #loading>
+                        Loading dataset data. Please wait...
+                    </template>
+                    <Column field="dataset_name" header="Dataset"></Column>
+                    <Column field="file_name" header="File Name"></Column>
+                    <Column field="file_size" header="File Size">
+                        <template #body="{ data }">
+                            {{
+                                (data.file_size / (1024 * 1024)).toFixed(2) +
+                                " mb"
+                            }}
                         </template>
-                        <template #empty> No dataset found. </template>
-                        <template #loading>
-                            Loading dataset data. Please wait...
+                    </Column>
+                    <Column field="uploaded_at" header="Date Uploaded">
+                        <template #body="{ data }">
+                            {{ formatDate(new Date(data.uploaded_at)) }}
                         </template>
-                        <Column field="dataset_name" header="Dataset"></Column>
-                        <Column field="file_name" header="File Name"></Column>
-                        <Column field="file_size" header="File Size">
-                            <template #body="{ data }">
-                                {{
-                                    (data.file_size / (1024 * 1024)).toFixed(
-                                        2,
-                                    ) + " mb"
-                                }}
-                            </template>
-                        </Column>
-                        <Column field="uploaded_at" header="Date Uploaded">
-                            <template #body="{ data }">
-                                {{ formatDate(new Date(data.uploaded_at)) }}
-                            </template>
-                        </Column>
-                        <Column field="uploaded_by" header="Uploader"></Column>
-                        <Column field="phenotype" header="Phenotype"></Column>
-                        <Column field="qc_status" header="Status">
-                            <template #body="{ data }">
-                                <span
-                                    v-if="data.qc_status !== 'SUBMITTED TO QC'"
-                                >
-                                    <nuxt-link :to="`/hermes/qc/${data.id}`">
-                                        <Tag
-                                            :severity="
-                                                getSeverity(data.qc_status)
-                                            "
-                                            :icon="getIcon(data.qc_status)"
-                                            :value="
-                                                data.qc_status.toUpperCase()
-                                            "
-                                            rounded
-                                        />
-                                    </nuxt-link>
-                                </span>
-                                <span v-else>
+                    </Column>
+                    <Column field="uploaded_by" header="Uploader"></Column>
+                    <Column field="phenotype" header="Phenotype"></Column>
+                    <Column field="qc_status" header="Status">
+                        <template #body="{ data }">
+                            <span v-if="data.qc_status !== 'SUBMITTED TO QC'">
+                                <nuxt-link :to="`/hermes/qc/${data.id}`">
                                     <Tag
                                         :severity="getSeverity(data.qc_status)"
                                         :icon="getIcon(data.qc_status)"
                                         :value="data.qc_status.toUpperCase()"
                                         rounded
                                     />
-                                </span>
-                            </template>
-                        </Column>
+                                </nuxt-link>
+                            </span>
+                            <span v-else>
+                                <Tag
+                                    :severity="getSeverity(data.qc_status)"
+                                    :icon="getIcon(data.qc_status)"
+                                    :value="data.qc_status.toUpperCase()"
+                                    rounded
+                                />
+                            </span>
+                        </template>
+                    </Column>
 
-                        <Column header="Plots">
-                            <template #body="{ data }">
-                                <div
-                                    v-if="
-                                        data.qc_status !== 'SUBMITTED TO QC' &&
-                                        data.qc_status !== 'FAILED QC'
+                    <Column header="Plots">
+                        <template #body="{ data }">
+                            <div
+                                v-if="
+                                    data.qc_status !== 'SUBMITTED TO QC' &&
+                                    data.qc_status !== 'FAILED QC'
+                                "
+                            >
+                                <Button
+                                    @mouseover="
+                                        hoveredQQId = data.id;
+                                        hoveredMId = data.id;
                                     "
+                                    @mouseleave="
+                                        hoveredQQId = null;
+                                        hoveredMId = null;
+                                    "
+                                    size="small"
+                                    outlined
+                                    class="mr-2 plot"
+                                    >Plots</Button
                                 >
-                                    <Button
-                                        @mouseover="
-                                            hoveredQQId = data.id;
-                                            hoveredMId = data.id;
-                                        "
-                                        @mouseleave="
-                                            hoveredQQId = null;
-                                            hoveredMId = null;
-                                        "
-                                        size="small"
-                                        outlined
-                                        class="mr-2 plot"
-                                        >Plots</Button
-                                    >
-                                    <div
-                                        v-if="hoveredQQId === data.id"
-                                        class="image-tooltip"
-                                    >
-                                        <img
-                                            :src="`https://hermes-qc.s3.amazonaws.com/images/${data.id}/qq_plot.png`"
-                                            alt="Plot"
-                                            class="plot-image"
-                                            width="400"
-                                            height="400"
-                                        />
-                                        <img
-                                            :src="`https://hermes-qc.s3.amazonaws.com/images/${data.id}/manhattan_plot.png`"
-                                            alt="Plot"
-                                            class="plot-image"
-                                            width="400"
-                                            height="400"
-                                        />
-                                    </div>
+                                <div
+                                    v-if="hoveredQQId === data.id"
+                                    class="image-tooltip"
+                                >
+                                    <img
+                                        :src="`https://hermes-qc.s3.amazonaws.com/images/${data.id}/qq_plot.png`"
+                                        alt="Plot"
+                                        class="plot-image"
+                                        width="400"
+                                        height="400"
+                                    />
+                                    <img
+                                        :src="`https://hermes-qc.s3.amazonaws.com/images/${data.id}/manhattan_plot.png`"
+                                        alt="Plot"
+                                        class="plot-image"
+                                        width="400"
+                                        height="400"
+                                    />
                                 </div>
-                            </template>
-                        </Column>
-                        <Column field="qc_report" header="Full Report">
-                            <template #body="{ data }">
-                                <NuxtLink :to="`/hermes/qc/${data.id}`">
-                                    <Button
-                                        v-if="
-                                            data.qc_status !== 'SUBMITTED TO QC'
-                                        "
-                                        outlined
-                                        size="small"
-                                    >
-                                        View
-                                    </Button></NuxtLink
+                            </div>
+                        </template>
+                    </Column>
+                    <Column field="qc_report" header="Full Report">
+                        <template #body="{ data }">
+                            <NuxtLink :to="`/hermes/qc/${data.id}`">
+                                <Button
+                                    v-if="data.qc_status !== 'SUBMITTED TO QC'"
+                                    outlined
+                                    size="small"
                                 >
-                            </template>
-                        </Column>
-                    </DataTable>
-                </template>
-            </Card>
-        </div>
-        <div v-else-if="finished && !fileUploads.length" class="col">
-            <Card>
-                <template #content>
+                                    View
+                                </Button></NuxtLink
+                            >
+                        </template>
+                    </Column>
+                </DataTable>
+            </template>
+        </Card>
+    </template>
+    <template v-else-if="finished && !fileUploads.length">
+        <Card>
+            <template #content>
+                <div
+                    class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20"
+                >
                     <div
-                        class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20"
+                        class="text-surface-700 dark:text-surface-100 text-center"
                     >
                         <div
-                            class="text-surface-700 dark:text-surface-100 text-center"
+                            class="text-surface-900 dark:text-surface-0 font-bold text-5xl mb-4"
                         >
-                            <div
-                                class="text-surface-900 dark:text-surface-0 font-bold text-5xl mb-4"
-                            >
-                                Upload your datasets.
-                            </div>
-                            <div
-                                class="text-surface-700 dark:text-surface-100 text-2xl mb-8"
-                            >
-                                You don't have any dataset yet. Start uploading
-                                your first dataset today.
-                            </div>
-                            <Button
-                                label="Upload"
-                                icon="bi-upload"
-                                class="mr-2"
-                                @click="route.push('/hermes/new')"
-                            ></Button>
+                            Upload your datasets.
                         </div>
+                        <div
+                            class="text-surface-700 dark:text-surface-100 text-2xl mb-8"
+                        >
+                            You don't have any dataset yet. Start uploading your
+                            first dataset today.
+                        </div>
+                        <Button
+                            label="Upload"
+                            icon="bi-upload"
+                            class="mr-2"
+                            @click="route.push('/hermes/new')"
+                        ></Button>
                     </div>
-                </template>
-            </Card>
-        </div>
-        <div v-else class="col">
-            <Card>
-                <template #content>
+                </div>
+            </template>
+        </Card>
+    </template>
+    <template v-else>
+        <Card>
+            <template #content>
+                <div
+                    class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20"
+                >
                     <div
-                        class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20"
+                        class="text-surface-700 dark:text-surface-100 text-center"
                     >
                         <div
-                            class="text-surface-700 dark:text-surface-100 text-center"
+                            class="text-surface-600 dark:text-surface-200 font-bold text-4xl mb-4"
                         >
-                            <div
-                                class="text-surface-600 dark:text-surface-200 font-bold text-4xl mb-4"
-                            >
-                                Loading...
-                            </div>
-                            <div
-                                class="text-surface-700 dark:text-surface-100 text-2xl mb-8"
-                            >
-                                Please wait while we load your datasets.
-                            </div>
+                            Loading...
+                        </div>
+                        <div
+                            class="text-surface-700 dark:text-surface-100 text-2xl mb-8"
+                        >
+                            Please wait while we load your datasets.
                         </div>
                     </div>
-                </template>
-            </Card>
-        </div>
-    </div>
+                </div>
+            </template>
+        </Card>
+    </template>
 </template>
 
 <style scoped>
