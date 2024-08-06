@@ -46,7 +46,7 @@ const getIcon = (status) => {
 </script>
 
 <template>
-    <div class="grid grid-cols-12 gap-4">
+    <div class="grid grid-cols-1">
         <div v-if="fileUploads.length && finished" class="col">
             <Card>
                 <template #content>
@@ -60,9 +60,7 @@ const getIcon = (status) => {
                         sortField="uploaded_at"
                         :sortOrder="-1"
                         ><template #header>
-                            <div
-                                class="flex justify-end flex-col sm:flex-row"
-                            >
+                            <div class="flex justify-end flex-col sm:flex-row">
                                 <Button
                                     type="button"
                                     label="Upload New Dataset"
@@ -144,12 +142,20 @@ const getIcon = (status) => {
         <div v-else-if="finished && !fileUploads.length" class="col">
             <Card>
                 <template #content>
-                    <div class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20">
-                        <div class="text-surface-700 dark:text-surface-100 text-center">
-                            <div class="text-surface-900 dark:text-surface-0 font-bold text-5xl mb-4">
+                    <div
+                        class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20"
+                    >
+                        <div
+                            class="text-surface-700 dark:text-surface-100 text-center"
+                        >
+                            <div
+                                class="text-surface-900 dark:text-surface-0 font-bold text-5xl mb-4"
+                            >
                                 Upload your datasets.
                             </div>
-                            <div class="text-surface-700 dark:text-surface-100 text-2xl mb-8">
+                            <div
+                                class="text-surface-700 dark:text-surface-100 text-2xl mb-8"
+                            >
                                 You don't have any dataset yet. Start uploading
                                 your first dataset today.
                             </div>
@@ -167,12 +173,20 @@ const getIcon = (status) => {
         <div v-else class="col">
             <Card>
                 <template #content>
-                    <div class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20">
-                        <div class="text-surface-700 dark:text-surface-100 text-center">
-                            <div class="text-surface-600 dark:text-surface-200 font-bold text-4xl mb-4">
+                    <div
+                        class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20"
+                    >
+                        <div
+                            class="text-surface-700 dark:text-surface-100 text-center"
+                        >
+                            <div
+                                class="text-surface-600 dark:text-surface-200 font-bold text-4xl mb-4"
+                            >
                                 Loading...
                             </div>
-                            <div class="text-surface-700 dark:text-surface-100 text-2xl mb-8">
+                            <div
+                                class="text-surface-700 dark:text-surface-100 text-2xl mb-8"
+                            >
                                 Please wait while we load your datasets.
                             </div>
                         </div>
@@ -183,6 +197,4 @@ const getIcon = (status) => {
     </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

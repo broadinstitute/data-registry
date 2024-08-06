@@ -1,4 +1,13 @@
-// /** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+    darkMode: ["selector", '[class*="dark-mode-on"]'],
+    content: [
+        "./pages/**/*.{vue,js}",
+        "./components/**/*.{vue,js}",
+        "./layouts/**/*.{vue,js}",
+    ],
+    plugins: [require("tailwindcss-primeui")],
+};
 // module.exports = {
 //     content: ["presets/**/*.{js,vue,ts}"],
 //     theme: {
@@ -32,8 +41,3 @@
 //     },
 //     plugins: [],
 // };
-
-// tailwind.config.js
-module.exports = {
-    plugins: [require("tailwindcss-primeui")],
-};

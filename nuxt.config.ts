@@ -1,6 +1,6 @@
 import Aura from "@primevue/themes/aura";
 import { definePreset } from "@primevue/themes";
-const IndigoPreset = definePreset(Aura, {
+const IndigoAura = definePreset(Aura, {
     semantic: {
         primary: {
             50: "{indigo.50}",
@@ -43,9 +43,11 @@ export default defineNuxtConfig({
         "primeicons/primeicons.css",
         // "primeflex/primeflex.scss",
         // "primevue/resources/primevue.min.css",
+
         "@/assets/styles.scss",
         "assets/css/base.css",
         // "primevue/resources/themes/aura-light-indigo/theme.css",
+        "@/assets/css/tailwind.css",
     ],
 
     runtimeConfig: {
@@ -59,6 +61,7 @@ export default defineNuxtConfig({
     },
 
     modules: [
+        "@nuxtjs/tailwindcss",
         "@pinia/nuxt",
         "@nuxt/devtools",
         "@primevue/nuxt-module",
@@ -70,7 +73,7 @@ export default defineNuxtConfig({
             unstyled: false,
             ripple: true,
             theme: {
-                preset: IndigoPreset,
+                preset: IndigoAura,
                 options: {
                     darkModeSelector: ".dark-mode-on",
                     cssLayer: {
@@ -80,12 +83,13 @@ export default defineNuxtConfig({
                 },
             },
         },
+        autoImport: true,
         //importPT: {
         //    from: "/presets/lara/",
         //}, //import and apply preset
-        components: {
-            // prefix: "Prime",
-        },
+        // components: {
+        // prefix: "Prime",
+        // },
     },
 
     shiki: {
