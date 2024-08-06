@@ -1,7 +1,7 @@
 <script setup>
-import Login from '~/components/Login.vue';
+import Login from "~/components/Login.vue";
 definePageMeta({
-  layout: false,
+    layout: false,
 });
 </script>
 
@@ -9,6 +9,4 @@ definePageMeta({
     <Login tenantLogo="/tenants/default/dr-logo.png" tenantWebsite="/" />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

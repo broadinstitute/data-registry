@@ -87,13 +87,13 @@ onMounted(() => {
                     class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20"
                     style="border-radius: 53px"
                 >
-                    <div class="text-center mb-8">
+                    <div class="text-center mb-8 flex justify-center">
                         <template v-if="tenantWebsite !== '/'"
                             ><NuxtLink :to="tenantWebsite" target="_blank">
                                 <img
                                     :src="tenantLogo"
                                     alt="logo"
-                                    class="mb-8 shrink-0"
+                                    class="logo mb-8 shrink-0"
                                     height="100"
                                 />
                             </NuxtLink>
@@ -102,7 +102,7 @@ onMounted(() => {
                             <img
                                 :src="tenantLogo"
                                 alt="logo"
-                                class="mb-8 shrink-0"
+                                class="logo mb-8 shrink-0"
                                 height="100"
                             />
                         </template>
@@ -120,7 +120,6 @@ onMounted(() => {
                             type="text"
                             placeholder="Enter username or email"
                             class="w-full md:w-[30rem] mb-8"
-                            style="padding: 1rem"
                         />
 
                         <label
@@ -135,7 +134,6 @@ onMounted(() => {
                             :toggleMask="true"
                             class="w-full mb-4"
                             inputClass="w-full"
-                            :inputStyle="{ padding: '1rem' }"
                             @keydown.enter="submitForm()"
                             :feedback="false"
                         ></Password>
@@ -155,13 +153,13 @@ onMounted(() => {
                         </div>
                         <Button
                             label="Sign In"
-                            class="w-full p-4 text-xl"
+                            class="w-full"
                             icon="bi-person"
                             @click="submitForm()"
                         ></Button>
                         <Button
                             label="Sign In With Google"
-                            class="w-full p-4 text-xl mt-4"
+                            class="w-full mt-4"
                             icon="bi-google"
                             outlined
                             @click="loginWithGoogle()"
@@ -177,5 +175,8 @@ onMounted(() => {
 <style scoped>
 label {
     white-space: nowrap;
+}
+.logo {
+    height: 100px;
 }
 </style>
