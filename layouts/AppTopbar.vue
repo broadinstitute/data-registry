@@ -1,7 +1,10 @@
 <script setup>
+import { useLayout } from "@/composables/layout";
 import { onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/UserStore";
+
+const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
 
 const userStore = useUserStore();
 const User = userStore.user;
@@ -124,28 +127,45 @@ const toggle = (event) => {
 
 <template>
     <div class="layout-topbar">
-        <nuxt-link to="/hermes" class="layout-topbar-logo">
-            <img src="/tenants/hermes/logo.png" alt="logo" />
-        </nuxt-link>
-
-        <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <Menubar :model="menuBar">
-                <template #end>
-                    <button
-                        @click="toggle"
-                        class="p-link layout-topbar-button btn"
-                    >
-                        <i class="bi-person"></i>
-                        <span>Settings</span>
-                    </button>
-                    <Menu
-                        ref="menu"
-                        id="overlay_menu"
-                        :model="items"
-                        :popup="true"
-                    />
-                </template>
-            </Menubar>
+        <div class="layout-topbar-logo-container">
+            <nuxt-link to="/hermes" class="layout-topbar-logo">
+                <img src="/tenants/hermes/logo.png" alt="logo" />
+            </nuxt-link>
+        </div>
+        <div class="layout-topbar-actions">
+            <div class="layout-config-menu">
+                <Menubar :model="menuBar">
+                    <template #end>
+                        <button
+                            @click="toggle"
+                            class="p-link layout-topbar-button btn"
+                        >
+                            <i class="bi-person"></i>
+                        </button>
+                        <Menu
+                            ref="menu"
+                            id="overlay_menu"
+                            :model="items"
+                            :popup="true"
+                        />
+                        <button
+                            type="button"
+                            class="layout-topbar-action"
+                            @click="toggleDarkMode"
+                        >
+                            <i
+                                :class="[
+                                    'pi',
+                                    {
+                                        'pi-moon': isDarkTheme,
+                                        'pi-sun': !isDarkTheme,
+                                    },
+                                ]"
+                            ></i>
+                        </button>
+                    </template>
+                </Menubar>
+            </div>
         </div>
     </div>
 </template>

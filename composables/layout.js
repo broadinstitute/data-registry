@@ -1,11 +1,11 @@
-import { toRefs, reactive, computed } from "vue";
+import { computed, reactive, readonly } from "vue";
 
 const layoutConfig = reactive({
+    preset: "Aura",
+    primary: "indigo",
+    surface: null,
     darkTheme: false,
     menuMode: "static",
-    theme: "lara-light-indigo",
-    scale: 14,
-    activeMenuItem: null,
 });
 
 const layoutState = reactive({
@@ -15,20 +15,43 @@ const layoutState = reactive({
     configSidebarVisible: false,
     staticMenuMobileActive: false,
     menuHoverActive: false,
+    activeMenuItem: null,
 });
 
 export function useLayout() {
-    const changeThemeSettings = (theme, darkTheme) => {
-        layoutConfig.darkTheme = darkTheme;
-        layoutConfig.theme = theme;
+    const setPrimary = (value) => {
+        layoutConfig.primary = value;
     };
 
-    const setScale = (scale) => {
-        layoutConfig.scale = scale;
+    const setSurface = (value) => {
+        layoutConfig.surface = value;
+    };
+
+    const setPreset = (value) => {
+        layoutConfig.preset = value;
     };
 
     const setActiveMenuItem = (item) => {
-        layoutConfig.activeMenuItem = item.value || item;
+        layoutState.activeMenuItem = item.value || item;
+    };
+
+    const setMenuMode = (mode) => {
+        layoutConfig.menuMode = mode;
+    };
+
+    const toggleDarkMode = () => {
+        if (!document.startViewTransition) {
+            executeDarkModeToggle();
+
+            return;
+        }
+
+        document.startViewTransition(() => executeDarkModeToggle(event));
+    };
+
+    const executeDarkModeToggle = () => {
+        layoutConfig.darkTheme = !layoutConfig.darkTheme;
+        document.documentElement.classList.toggle("app-dark");
     };
 
     const onMenuToggle = () => {
@@ -45,6 +68,12 @@ export function useLayout() {
         }
     };
 
+    const resetMenu = () => {
+        layoutState.overlayMenuActive = false;
+        layoutState.staticMenuMobileActive = false;
+        layoutState.menuHoverActive = false;
+    };
+
     const isSidebarActive = computed(
         () =>
             layoutState.overlayMenuActive || layoutState.staticMenuMobileActive,
@@ -52,14 +81,24 @@ export function useLayout() {
 
     const isDarkTheme = computed(() => layoutConfig.darkTheme);
 
+    const getPrimary = computed(() => layoutConfig.primary);
+
+    const getSurface = computed(() => layoutConfig.surface);
+
     return {
-        layoutConfig: toRefs(layoutConfig),
-        layoutState: toRefs(layoutState),
-        changeThemeSettings,
-        setScale,
+        layoutConfig: readonly(layoutConfig),
+        layoutState: readonly(layoutState),
         onMenuToggle,
         isSidebarActive,
         isDarkTheme,
+        getPrimary,
+        getSurface,
         setActiveMenuItem,
+        toggleDarkMode,
+        setPrimary,
+        setSurface,
+        setPreset,
+        resetMenu,
+        setMenuMode,
     };
 }

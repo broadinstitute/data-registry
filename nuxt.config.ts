@@ -47,7 +47,7 @@ export default defineNuxtConfig({
         "@/assets/styles.scss",
         "assets/css/base.css",
         // "primevue/resources/themes/aura-light-indigo/theme.css",
-        "@/assets/css/tailwind.css",
+        //"@/assets/css/tailwind.css",
     ],
 
     runtimeConfig: {
@@ -75,7 +75,7 @@ export default defineNuxtConfig({
             theme: {
                 preset: IndigoAura,
                 options: {
-                    darkModeSelector: ".dark-mode-on",
+                    darkModeSelector: ".app-dark",
                     cssLayer: {
                         name: "primevue",
                         order: "tailwind-base, primevue, tailwind-utilities",
