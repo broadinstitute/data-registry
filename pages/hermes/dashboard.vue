@@ -8,12 +8,13 @@ onMounted(async () => {
     fileUploads.value = await store.fetchFileUploads();
 });
 const statusColors = {
-    "FAILED QC": "danger",
-    "READY FOR REVIEW": "success",
-    "SUBMITTED TO QC": "secondary",
-    "REVIEW REJECTED": "warning",
-    "REVIEW APPROVED": "info",
+    "FAILED QC": "#ef4444",
+    "READY FOR REVIEW": "#22c55e",
+    "SUBMITTED TO QC": "#475569",
+    "REVIEW REJECTED": "#4338ca",
+    "REVIEW APPROVED": "#0ea5e9",
 };
+
 const getSeverity = (status) => {
     switch (status) {
         case "FAILED QC":
@@ -64,13 +65,18 @@ const pieData = computed(() => {
         datasets: [
             {
                 data: Object.values(statusCounts.value),
-                backgroundColor: [
-                    "#FFC107",
-                    "#007bff",
-                    "#28a745",
-                    "#dc3545",
-                    "#6c757d",
-                ],
+                //generate array of background colors for each status in the pie chart that corresponds to the statusColors object using color variables
+
+                backgroundColor: Object.keys(statusCounts.value).map(
+                    (status) => statusColors[status],
+                ),
+                // backgroundColor: [
+                //     "#FFC107",
+                //     "#007bff",
+                //     "#28a745",
+                //     "#dc3545",
+                //     "#6c757d",
+                // ],
             },
         ],
     };
@@ -104,9 +110,7 @@ const pieOptions = {
                         :sortOrder="-1"
                         dataKey="id"
                         ><template #header>
-                            <div
-                                class="flex justify-end flex-col sm:flex-row"
-                            >
+                            <div class="flex justify-end flex-col sm:flex-row">
                                 <Button
                                     type="button"
                                     label="View All Dataset"
