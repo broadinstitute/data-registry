@@ -3,10 +3,21 @@ import { useDatasetStore } from "~/stores/DatasetStore";
 import Chart from "primevue/chart";
 const store = useDatasetStore();
 const fileUploads = ref([]);
+const metaAnalyses = ref([]);
 
 onMounted(async () => {
     fileUploads.value = await store.fetchFileUploads();
+    metaAnalyses.value = await store.fetchMetaAnalyses();
 });
+
+const latest5Datasets = computed(() => {
+    return fileUploads.value.slice(0, 5);
+});
+
+const latest5Analyses = computed(() => {
+    return metaAnalyses.value.slice(0, 5);
+});
+
 const statusColors = {
     "FAILED QC": "#ef4444",
     "READY FOR REVIEW": "#22c55e",
@@ -98,11 +109,10 @@ const pieOptions = {
     <div class="grid grid-cols-12 gap-4">
         <div class="col-span-8">
             <Card>
-                <template #title>Recently Added</template>
                 <template #content
                     ><DataTable
-                        :value="fileUploads"
-                        :paginator="true"
+                        :value="latest5Datasets"
+                        :paginator="false"
                         rowHover
                         :rows="5"
                         :rowsPerPageOptions="[5, 10, 20]"
@@ -110,7 +120,12 @@ const pieOptions = {
                         :sortOrder="-1"
                         dataKey="id"
                         ><template #header>
-                            <div class="flex justify-end flex-col sm:flex-row">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-2"
+                            >
+                                <span class="text-xl font-bold"
+                                    >Recent Datasets</span
+                                >
                                 <Button
                                     type="button"
                                     label="View All Dataset"
@@ -125,14 +140,13 @@ const pieOptions = {
                             Loading dataset data. Please wait...
                         </template>
                         <Column field="dataset_name" header="Dataset"></Column>
-
-                        <Column field="uploaded_at" header="Date Uploaded">
+                        <Column field="uploaded_at" header="Date">
                             <template #body="{ data }">
                                 {{ formatDate(new Date(data.uploaded_at)) }}
                             </template>
                         </Column>
-                        <Column field="uploaded_by" header="Uploader"></Column>
                         <Column field="phenotype" header="Phenotype"></Column>
+                        <Column field="uploaded_by" header="Uploader"></Column>
                         <Column field="qc_status" header="Status">
                             <template #body="{ data }">
                                 <span
@@ -162,6 +176,70 @@ const pieOptions = {
                             </template>
                         </Column> </DataTable
                 ></template>
+            </Card>
+
+            <Card class="mt-4">
+                <template #content>
+                    <DataTable
+                        :value="latest5Analyses"
+                        :paginator="false"
+                        rowHover
+                        :rows="5"
+                        :rowsPerPageOptions="[5, 10, 20]"
+                        sortField="created_at"
+                        :sortOrder="-1"
+                        dataKey="id"
+                        ><template #header>
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-2"
+                            >
+                                <span class="text-xl font-bold"
+                                    >Recent Meta-Analyses</span
+                                >
+                                <Button
+                                    type="button"
+                                    label="View All Meta-Analyses"
+                                    icon="bi-card-list"
+                                    outlined
+                                    @click="() => $router.push('/hermes/ma/')"
+                                />
+                            </div>
+                        </template>
+                        <template #empty> No dataset found. </template>
+                        <template #loading>
+                            Loading dataset data. Please wait...
+                        </template>
+                        <Column field="name" header="Name">
+                            <template #body="{ data }">
+                                <NuxtLink :to="`/hermes/ma/${data.id}`">
+                                    {{ data.name }}
+                                </NuxtLink>
+                            </template>
+                        </Column>
+                        <Column field="created_at" header="Date">
+                            <template #body="{ data }">
+                                {{ formatDate(new Date(data.created_at)) }}
+                            </template>
+                        </Column>
+                        <Column field="phenotype" header="Phenotype">
+                            <template #body="{ data }">
+                                {{ data.phenotype }}
+                            </template>
+                        </Column>
+                        <Column field="datasets" header="Datasets">
+                            <template #body="{ data }">
+                                {{
+                                    data.dataset_names.slice(0, 3).join(", ") +
+                                    (data.dataset_names.length > 3
+                                        ? ", ..."
+                                        : "")
+                                }}
+                            </template>
+                        </Column>
+                        <Column field="method" header="Method"></Column>
+                        <Column field="status" header="Status"> </Column
+                    ></DataTable>
+                </template>
             </Card>
         </div>
         <div class="col-span-4">
