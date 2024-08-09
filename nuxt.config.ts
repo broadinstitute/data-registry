@@ -48,6 +48,7 @@ export default defineNuxtConfig({
         "assets/css/base.css",
         // "primevue/resources/themes/aura-light-indigo/theme.css",
         //"@/assets/css/tailwind.css",
+        "@/assets/css/shiki.css",
     ],
 
     runtimeConfig: {
@@ -104,6 +105,11 @@ export default defineNuxtConfig({
             "markdown",
             "r",
         ],
+        bundledThemes: ["min-light", "min-dark"],
+        defaultTheme: {
+            light: "min-light",
+            dark: "min-dark",
+        },
     },
 
     // https://stackoverflow.com/questions/74003458/cannot-find-module-pinia-dist-pinia-mjs-when-using-run-dev

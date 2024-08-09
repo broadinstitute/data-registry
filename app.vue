@@ -9,4 +9,4 @@
     </div> -->
 </template>
 
-<style lang="scss"></style>
+<style></style>

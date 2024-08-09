@@ -71,7 +71,6 @@ async function reviewDataset(id, value) {
                 <Shiki
                     :code="logText"
                     lang="r"
-                    :theme="'nord'"
                     style="
                         height: 400px;
                         overflow-y: scroll;
