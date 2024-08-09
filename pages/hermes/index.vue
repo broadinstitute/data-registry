@@ -1,11 +1,17 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
+import { FilterMatchMode } from "@primevue/core/api";
 
 const route = useRouter();
 const store = useDatasetStore();
 const fileUploads = ref([]);
 const tableLoading = ref(false);
 const finished = ref(false);
+const filters = ref({
+    uploaded_by: { value: null, matchMode: FilterMatchMode.IN },
+    phenotype: { value: null, matchMode: FilterMatchMode.EQUALS },
+    qc_status: { value: null, matchMode: FilterMatchMode.EQUALS },
+});
 
 onMounted(async () => {
     tableLoading.value = true;
@@ -43,6 +49,27 @@ const getIcon = (status) => {
             return "bi-check-square";
     }
 };
+const uploaders = computed(() => {
+    return fileUploads.value
+        .map((file) => file.uploaded_by)
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .map((value) => ({ label: value, value }));
+});
+
+const phenotypes = computed(() => {
+    return fileUploads.value
+        .map((file) => file.phenotype)
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .map((value) => ({ name: value, value }));
+});
+
+const statuses = [
+    { label: "Failed QC", value: "FAILED QC" },
+    { label: "Ready for Review", value: "READY FOR REVIEW" },
+    { label: "Submitted to QC", value: "SUBMITTED TO QC" },
+    { label: "Review Rejected", value: "REVIEW REJECTED" },
+    { label: "Review Approved", value: "REVIEW APPROVED" },
+];
 </script>
 
 <template>
@@ -57,6 +84,8 @@ const getIcon = (status) => {
                 :loading="tableLoading"
                 sortField="uploaded_at"
                 :sortOrder="-1"
+                v-model:filters="filters"
+                filterDisplay="row"
                 ><template #header>
                     <div class="flex justify-end flex-col sm:flex-row">
                         <Button
@@ -86,9 +115,64 @@ const getIcon = (status) => {
                         {{ formatDate(new Date(data.uploaded_at)) }}
                     </template>
                 </Column>
-                <Column field="uploaded_by" header="Uploader"></Column>
-                <Column field="phenotype" header="Phenotype"></Column>
-                <Column field="qc_status" header="Status">
+                <Column
+                    field="uploaded_by"
+                    header="Uploader"
+                    :showFilterMatchModes="false"
+                    :showFilterMenu="false"
+                >
+                    <template #body="{ data }">{{ data.uploaded_by }}</template>
+                    <template #filter="{ filterModel, filterCallback }">
+                        <MultiSelect
+                            v-model="filterModel.value"
+                            @change="filterCallback()"
+                            :options="uploaders"
+                            placeholder="Filter by Uploader"
+                            optionLabel="label"
+                            optionValue="value"
+                            :maxSelectedLabels="1"
+                            filter
+                        >
+                        </MultiSelect>
+                    </template>
+                </Column>
+                <Column
+                    field="phenotype"
+                    header="Phenotype"
+                    :showFilterMatchModes="false"
+                    :showFilterMenu="false"
+                    :showClearButton="false"
+                >
+                    <template #filter="{ filterModel, filterCallback }">
+                        <Select
+                            v-model="filterModel.value"
+                            @change="filterCallback()"
+                            :options="phenotypes"
+                            placeholder="Filter by Phenotype"
+                            optionLabel="name"
+                            optionValue="value"
+                            :showClear="true"
+                        />
+                    </template>
+                </Column>
+                <Column
+                    field="qc_status"
+                    header="Status"
+                    :showFilterMatchModes="false"
+                    :showFilterMenu="false"
+                    :showClearButton="false"
+                >
+                    <template #filter="{ filterModel, filterCallback }">
+                        <Select
+                            v-model="filterModel.value"
+                            @change="filterCallback()"
+                            :options="statuses"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Filter by Status"
+                            :showClear="true"
+                        />
+                    </template>
                     <template #body="{ data }">
                         <span v-if="data.qc_status !== 'SUBMITTED TO QC'">
                             <nuxt-link :to="`/hermes/qc/${data.id}`">
@@ -177,4 +261,8 @@ const getIcon = (status) => {
     </Card>
 </template>
 
-<style scoped></style>
+<style scoped>
+.p-tag :deep(.p-tag-icon) {
+    height: unset;
+}
+</style>
