@@ -1,9 +1,10 @@
 <template>
     <h2>+ New Meta-Analysis</h2>
     <div class="card">
-        <Stepper orientation="vertical">
-            <StepperPanel header="Select Phenotype">
-                <template #content="{ nextCallback }">
+        <Stepper orientation="vertical" value="1">
+            <StepItem value="1">
+                <Step>Select Phenotype</Step>
+                <StepPanel v-slot="{ activateCallback }">
                     <div class="flex flex-col h-24">
                         <div
                             class="border-2 border-dashed border-surface rounded-border bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"
@@ -20,35 +21,40 @@
                                 forceSelection
                                 dropdown-mode="current"
                                 auto-option-focus
+                                placeholder="Select a phenotype"
+                                clearButton
                             />
                         </div>
                     </div>
                     <div class="flex py-6">
-                        <Button label="Next" @click="nextCallback" />
+                        <Button label="Next" @click="activateCallback('2')" />
                     </div>
-                </template>
-            </StepperPanel>
-            <StepperPanel header="Select Datasets">
-                <template #title="{ index }">
-                    <div class="flex justify-between items-center">
-                        <div class="text-surface-700 dark:text-surface-100">
-                            Step1 {{ index + 1 }}
-                        </div>
-                        <div class="text-surface-700 dark:text-surface-100">
-                            Select Datasets
-                        </div>
-                    </div>
-                </template>
-                <template #content="{ prevCallback, nextCallback }">
-                    <div class="flex flex-col">
-                        <Message v-if="fileUploads.length < 2" severity="warn">
+                </StepPanel>
+            </StepItem>
+            <StepItem value="2">
+                <Step>Select Datasets</Step>
+                <StepPanel v-slot="{ activateCallback }">
+                    <div class="columns-1">
+                        <Message
+                            v-if="fileUploads.length < 2"
+                            severity="warn"
+                            class="mb-4"
+                            closable
+                            icon="bi-exclamation-triangle"
+                        >
                             <p>
                                 You need at least two datasets to run a
                                 meta-analysis. Please upload more datasets or
                                 approve existing ones.
                             </p>
                         </Message>
-                        <Message v-else severity="info">
+                        <Message
+                            v-else
+                            severity="info"
+                            class="mb-4"
+                            closable
+                            icon="bi-info-circle"
+                        >
                             <p>
                                 Select the datasets you want to include in the
                                 meta-analysis.
@@ -120,20 +126,21 @@
                         <Button
                             label="Back"
                             severity="secondary"
-                            @click="prevCallback"
+                            @click="activateCallback('1')"
                         />
-                        <Button label="Next" @click="nextCallback" />
+                        <Button label="Next" @click="activateCallback('3')" />
                     </div>
-                </template>
-            </StepperPanel>
-            <StepperPanel header="Configure Options">
-                <template #content="{ prevCallback }">
-                    <div class="flex flex-col h-24">
+                </StepPanel>
+            </StepItem>
+            <StepItem value="3">
+                <Step>Configure Options</Step>
+                <StepPanel v-slot="{ activateCallback }">
+                    <div class="flex flex-col">
                         <div
                             class="grid grid-cols-12 gap-4 border-2 border-dashed border-surface rounded-border bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center font-medium"
                         >
                             <div class="col-span-8 p-6">
-                                <div class="field p-fluid">
+                                <div class="flex flex-col gap-2">
                                     <InputText
                                         type="text"
                                         v-model="name"
@@ -155,7 +162,8 @@
                                         inputId="overlap"
                                         class="mr-2"
                                     /><label for="overlap" class="font-medium"
-                                        >Overlap {{ overlap ? "ON" : "OFF" }}
+                                        >Overlap
+                                        {{ overlap ? "ON" : "OFF" }}
                                     </label>
                                 </div>
                                 <div class="flex items-center">
@@ -179,7 +187,7 @@
                         <Button
                             label="Back"
                             severity="secondary"
-                            @click="prevCallback"
+                            @click="activateCallback('2')"
                         />
                         <Button
                             label="Run Analysis"
@@ -187,8 +195,8 @@
                             @click="runAnalysis"
                         />
                     </div>
-                </template>
-            </StepperPanel> </Stepper
+                </StepPanel>
+            </StepItem> </Stepper
         ><Drawer
             v-model:visible="showDrawer"
             header="Meta-Analyses"
