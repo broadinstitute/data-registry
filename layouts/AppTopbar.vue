@@ -4,7 +4,7 @@ import { onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "~/stores/UserStore";
 
-const { onMenuToggle, toggleDarkMode, isDarkTheme } = useLayout();
+const { onMenuToggle, toggleDarkMode, initDarkMode, isDarkTheme } = useLayout();
 
 const userStore = useUserStore();
 const User = userStore.user;
@@ -19,6 +19,7 @@ const router = useRouter();
 
 onMounted(() => {
     bindOutsideClickListener();
+    initDarkMode();
 });
 onBeforeUnmount(() => {
     unbindOutsideClickListener();

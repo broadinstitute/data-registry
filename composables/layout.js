@@ -42,16 +42,40 @@ export function useLayout() {
     const toggleDarkMode = () => {
         if (!document.startViewTransition) {
             executeDarkModeToggle();
-
             return;
         }
-
-        document.startViewTransition(() => executeDarkModeToggle(event));
+        document.startViewTransition(() => executeDarkModeToggle());
     };
 
     const executeDarkModeToggle = () => {
+        console.log(
+            "typeof layoutConfig.darkTheme",
+            typeof layoutConfig.darkTheme,
+        );
+        // Convert to boolean if it's a string
+        if (typeof layoutConfig.darkTheme === "string") {
+            layoutConfig.darkTheme = layoutConfig.darkTheme === "true";
+        }
+
         layoutConfig.darkTheme = !layoutConfig.darkTheme;
+
+        localStorage.setItem("app-dark", layoutConfig.darkTheme.toString());
         document.documentElement.classList.toggle("app-dark");
+    };
+
+    const initDarkMode = () => {
+        console.log("initDarkMode");
+        const value = localStorage.getItem("app-dark");
+        if (value) {
+            layoutConfig.darkTheme = value === "true";
+        }
+
+        if (value === "true") {
+            document.documentElement.classList.add("app-dark");
+            return;
+        } else {
+            document.documentElement.classList.remove("app-dark");
+        }
     };
 
     const onMenuToggle = () => {
@@ -79,7 +103,9 @@ export function useLayout() {
             layoutState.overlayMenuActive || layoutState.staticMenuMobileActive,
     );
 
-    const isDarkTheme = computed(() => layoutConfig.darkTheme);
+    const isDarkTheme = computed(() => {
+        return layoutConfig.darkTheme;
+    });
 
     const getPrimary = computed(() => layoutConfig.primary);
 
@@ -95,6 +121,7 @@ export function useLayout() {
         getSurface,
         setActiveMenuItem,
         toggleDarkMode,
+        initDarkMode,
         setPrimary,
         setSurface,
         setPreset,
