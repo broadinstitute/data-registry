@@ -280,47 +280,43 @@ async function upload() {
     </Dialog>
     <Toast position="top-center" />
 
-    <div class="grid grid-cols-12 gap-4">
-        <div class="col mb-6">
-            <h2 class="text-center mb-6">
-                Upload GWAS for Quality Control (QC)
-            </h2>
-            <Stepper id="steps" :value="currentStep">
-                <StepList>
-                    <Step
-                        title="Enter Metadata"
-                        :complete="step1Complete"
-                        :active="currentStep === 0"
-                        value="0"
-                        >Enter Metadata</Step
-                    >
-                    <Step
-                        title="Select File"
-                        :complete="step2Complete"
-                        :active="currentStep === 1"
-                        value="1"
-                        >Select File</Step
-                    >
-                    <Step
-                        title="Map Columns"
-                        :complete="step3Complete"
-                        :active="currentStep === 2"
-                        value="2"
-                        >Map Columns</Step
-                    >
-                    <Step
-                        title="Upload"
-                        :complete="currentStep === 3"
-                        :active="currentStep === 3"
-                        value="3"
-                        >Upload</Step
-                    >
-                </StepList>
-            </Stepper>
-        </div>
+    <div class="columns-1">
+        <h2 class="text-center mb-6">Upload GWAS for Quality Control (QC)</h2>
+        <Stepper id="steps" :value="currentStep">
+            <StepList>
+                <Step
+                    title="Enter Metadata"
+                    :complete="step1Complete"
+                    :active="currentStep === 0"
+                    value="1"
+                    >Enter Metadata</Step
+                >
+                <Step
+                    title="Select File"
+                    :complete="step2Complete"
+                    :active="currentStep === 1"
+                    value="2"
+                    >Select File</Step
+                >
+                <Step
+                    title="Map Columns"
+                    :complete="step3Complete"
+                    :active="currentStep === 2"
+                    value="3"
+                    >Map Columns</Step
+                >
+                <Step
+                    title="Upload"
+                    :complete="currentStep === 3"
+                    :active="currentStep === 3"
+                    value="4"
+                    >Upload</Step
+                >
+            </StepList>
+        </Stepper>
     </div>
 
-    <div class="grid grid-cols-12 gap-4" v-if="store.showNotification">
+    <div class="columns-1" v-if="store.showNotification">
         <div class="col-span-6 col-start-4">
             <Message
                 v-for="msg in store.errorMessage"
@@ -333,20 +329,24 @@ async function upload() {
         </div>
     </div>
 
-    <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-12 md:col-span-6">
-            <div class="card p-fluid">
-                <h5>Metadata</h5>
-                <div class="field">
-                    <label for="dataSetName">Dataset Name</label>
+    <div class="grid grid-cols-2 gap-4">
+        <div class="card">
+            <div class="columns-1"><h5>Metadata</h5></div>
+            <div class="grid grid-cols-1 gap-2">
+                <div class="grid grid-cols-2">
+                    <label for="dataSetName" class="label-middle"
+                        >Dataset Name</label
+                    >
                     <InputText
                         v-model="dataSetName"
                         id="dataSetName"
                         type="text"
                     />
                 </div>
-                <div class="field">
-                    <label for="genomeBuild">Genome Build</label>
+                <div class="grid grid-cols-2">
+                    <label for="genomeBuild" class="label-middle"
+                        >Genome Build</label
+                    >
                     <Select
                         id="genomeBuild"
                         v-model="selectedGenomeBuild"
@@ -356,12 +356,12 @@ async function upload() {
                         placeholder="Select Genome Build"
                     />
                 </div>
-                <div class="field">
-                    <label for="cohort">Cohort</label>
+                <div class="grid grid-cols-2">
+                    <label for="cohort" class="label-middle">Cohort</label>
                     <InputText v-model="cohort" id="cohort" type="text" />
                 </div>
-                <div class="field">
-                    <label for="ancestry">Ancestry</label>
+                <div class="grid grid-cols-2">
+                    <label for="ancestry" class="label-middle">Ancestry</label>
                     <Select
                         id="ancestry"
                         v-model="selectedAncestry"
@@ -372,24 +372,30 @@ async function upload() {
                         data-cy="ancestry"
                     />
                 </div>
-                <div class="field">
-                    <label for="acknowledgements">Acknowledgements</label>
+                <div class="grid grid-cols-2">
+                    <label for="acknowledgements" class="label-middle"
+                        >Acknowledgements</label
+                    >
                     <InputText
                         v-model="acknowledgements"
                         id="acknowledgements"
                         type="text"
                     />
                 </div>
-                <div class="field">
-                    <label for="keyReferences">Key References</label>
+                <div class="grid grid-cols-2">
+                    <label for="keyReferences" class="label-middle"
+                        >Key References</label
+                    >
                     <InputText
                         v-model="keyReferences"
                         id="keyReferences"
                         type="text"
                     />
                 </div>
-                <div class="field">
-                    <label for="caseAscertainment">Case Ascertainment</label>
+                <div class="grid grid-cols-2">
+                    <label for="caseAscertainment" class="label-middle"
+                        >Case Ascertainment</label
+                    >
                     <Select
                         id="caseAscertainment"
                         v-model="caseAscertainment"
@@ -400,8 +406,8 @@ async function upload() {
                         data-cy="case-ascertainment"
                     />
                 </div>
-                <div class="field">
-                    <label for="caseType">Case Type</label>
+                <div class="grid grid-cols-2">
+                    <label for="caseType" class="label-middle">Case Type</label>
                     <Select
                         id="caseType"
                         v-model="caseType"
@@ -412,110 +418,134 @@ async function upload() {
                         data-cy="case-type"
                     />
                 </div>
-                <div class="field">
-                    <label for="phenotype">Phenotype</label>
+                <div class="grid grid-cols-2">
+                    <label for="phenotype" class="label-middle"
+                        >Phenotype</label
+                    >
                     <InputText v-model="phenotype" id="phenotype" type="text" />
                 </div>
-                <div class="field">
-                    <label for="participants">Participants</label>
+                <div class="grid grid-cols-2">
+                    <label for="participants" class="label-middle"
+                        >Participants</label
+                    >
                     <InputText
                         v-model="participants"
                         id="participants"
                         type="number"
                     />
                 </div>
-                <div class="field">
-                    <label for="cases">Cases</label>
+                <div class="grid grid-cols-2">
+                    <label for="cases" class="label-middle">Cases</label>
                     <InputText v-model="cases" id="cases" type="number" />
                 </div>
-                <div class="field">
-                    <label for="cases">Sex Proportion</label>
+                <div class="grid grid-cols-2">
+                    <label for="proportion" class="label-middle"
+                        >Sex Proportion</label
+                    >
                     <InputText
                         v-model="sexProportion"
-                        id="sexProportion"
+                        id="proportion"
                         type="number"
                     />
                 </div>
-                <div class="field">
-                    <label for="age"
+                <div class="grid grid-cols-2">
+                    <label for="age" class="label-middle"
                         >Age At First Documented Study Phenotype</label
                     >
                     <InputText v-model="age" id="age" type="number" />
                 </div>
-                <div class="field">
-                    <label for="analysisSoftware">Analysis Software</label>
+                <div class="grid grid-cols-2">
+                    <label for="analysisSoftware" class="label-middle"
+                        >Analysis Software</label
+                    >
                     <InputText
                         v-model="analysisSoftware"
                         id="analysisSoftware"
                         type="text"
                     />
                 </div>
-                <div class="field">
-                    <label for="statisticalModel">Statistical Model</label>
+                <div class="grid grid-cols-2">
+                    <label for="statisticalModel" class="label-middle"
+                        >Statistical Model</label
+                    >
                     <InputText
                         v-model="statisticalModel"
                         id="statisticalModel"
                         type="text"
                     />
                 </div>
-                <div class="field">
-                    <label for="covariates">Covariates</label>
+                <div class="grid grid-cols-2">
+                    <label for="covariates" class="label-middle"
+                        >Covariates</label
+                    >
                     <InputText
                         v-model="covariates"
                         id="covariates"
                         type="text"
                     />
                 </div>
-                <div class="field">
-                    <label for="arrayName">Array Name and Version</label>
+                <div class="grid grid-cols-2">
+                    <label for="arrayName" class="label-middle"
+                        >Array Name and Version</label
+                    >
                     <InputText v-model="arrayName" id="arrayName" type="text" />
                 </div>
-                <div class="field">
-                    <label for="callingAlgorithm">Calling Algorithm</label>
+                <div class="grid grid-cols-2">
+                    <label for="callingAlgorithm" class="label-middle"
+                        >Calling Algorithm</label
+                    >
                     <InputText
                         v-model="callingAlgorithm"
                         id="callingAlgorithm"
                         type="text"
                     />
                 </div>
-                <div class="field">
-                    <label for="variantCallRate">Variant Call Rate</label>
+                <div class="grid grid-cols-2">
+                    <label for="variantCallRate" class="label-middle"
+                        >Variant Call Rate</label
+                    >
                     <InputText
                         v-model="variantCallRate"
                         id="variantCallRate"
                         type="number"
                     />
                 </div>
-                <div class="field">
-                    <label for="sampleCallRate">Sample Call Rate</label>
+                <div class="grid grid-cols-2">
+                    <label for="sampleCallRate" class="label-middle"
+                        >Sample Call Rate</label
+                    >
                     <InputText
                         v-model="sampleCallRate"
                         id="sampleCallRate"
                         type="number"
                     />
                 </div>
-                <div class="field">
-                    <label for="hwePValue">HWE P-value</label>
+                <div class="grid grid-cols-2">
+                    <label for="hwePValue" class="label-middle"
+                        >HWE P-value</label
+                    >
                     <InputText
                         v-model="hwePValue"
                         id="hwePValue"
                         type="number"
                     />
                 </div>
-                <div class="field">
-                    <label for="maf">MAF</label>
+                <div class="grid grid-cols-2">
+                    <label for="maf" class="label-middle">MAF</label>
                     <InputText v-model="maf" id="maf" type="number" />
                 </div>
-                <div class="field">
-                    <label for="otherQCFilters">Other QC Filters</label>
+                <div class="grid grid-cols-2">
+                    <label for="otherQCFilters" class="label-middle"
+                        >Other QC Filters</label
+                    >
                     <InputText
                         v-model="otherQCFilters"
                         id="otherQCFilters"
                         type="text"
                     />
                 </div>
-                <div class="field">
-                    <label for="nVariantsForImputation"
+                <div class="grid grid-cols-2">
+                    <label for="nVariantsForImputation" class="label-middle"
                         >N Variants For Imputation</label
                     >
                     <InputText
@@ -524,8 +554,10 @@ async function upload() {
                         type="number"
                     />
                 </div>
-                <div class="field">
-                    <label for="prephasingAndImputationSoftware"
+                <div class="grid grid-cols-2">
+                    <label
+                        for="prephasingAndImputationSoftware"
+                        class="label-middle"
                         >Prephasing And Imputation Software</label
                     >
                     <InputText
@@ -534,8 +566,8 @@ async function upload() {
                         type="text"
                     />
                 </div>
-                <div class="field">
-                    <label for="imputationReference"
+                <div class="grid grid-cols-2">
+                    <label for="imputationReference" class="label-middle"
                         >Imputation Reference</label
                     >
                     <InputText
@@ -544,8 +576,8 @@ async function upload() {
                         type="text"
                     />
                 </div>
-                <div class="field">
-                    <label for="imputationQualityMeasure"
+                <div class="grid grid-cols-2">
+                    <label for="imputationQualityMeasure" class="label-middle"
                         >Imputation Quality Measure</label
                     >
                     <InputText
@@ -556,7 +588,8 @@ async function upload() {
                 </div>
             </div>
         </div>
-        <div class="col-span-12 md:col-span-6">
+
+        <div>
             <div class="card p-fluid">
                 <h5>Select file to upload</h5>
                 <FileUpload
@@ -607,8 +640,8 @@ async function upload() {
                     />
                     <Chip v-else label="maf | eaf" />
                 </div>
-                <div v-if="fileInfo.columns" class="grid grid-cols-12 gap-4">
-                    <div class="col">
+                <div v-if="fileInfo.columns" class="grid grid-cols-2">
+                    <div>
                         <Button
                             v-if="Object.keys(previousMapping).length > 0"
                             type="button"
@@ -620,7 +653,7 @@ async function upload() {
                             outlined
                         ></Button>
                     </div>
-                    <div class="col text-right">
+                    <div class="text-right">
                         <Button
                             type="button"
                             label="Reset Mapping"
@@ -633,11 +666,16 @@ async function upload() {
                     </div>
                 </div>
 
-                <DataTable :value="tableRows" v-if="fileInfo.columns" rowHover>
-                    <Column field="column" header="Column" class="col-span-4">
+                <DataTable
+                    :value="tableRows"
+                    v-if="fileInfo.columns"
+                    rowHover
+                    size="small"
+                >
+                    <Column field="column" header="Column" style="width: 45%">
                     </Column>
-                    <Column header=">>" class="col-span-1"></Column>
-                    <Column header="Represents" class="col-span-7">
+                    <Column header=">>" style="width: 5%"></Column>
+                    <Column header="Represents" style="width: 50%">
                         <template #body="{ data }">
                             <Select
                                 data-cy="column-dropdown"
@@ -702,5 +740,9 @@ async function upload() {
 }
 * :deep(#steps span.p-menuitem-link) {
     background: transparent;
+}
+.label-middle {
+    display: flex;
+    align-items: center;
 }
 </style>

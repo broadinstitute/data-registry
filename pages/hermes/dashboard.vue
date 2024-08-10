@@ -139,7 +139,7 @@ const pieOptions = {
                         <template #loading>
                             Loading dataset data. Please wait...
                         </template>
-                        <Column field="dataset_name" header="Dataset"></Column>
+                        <Column field="dataset_name" header="Name"></Column>
                         <Column field="uploaded_at" header="Date">
                             <template #body="{ data }">
                                 {{ formatDate(new Date(data.uploaded_at)) }}
