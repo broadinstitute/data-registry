@@ -145,13 +145,13 @@ const requiredAF = computed(() => {
 
 const currentStep = computed(() => {
     if (step1Complete.value && step2Complete.value && step3Complete.value) {
-        return 3;
+        return 4;
     } else if (step1Complete.value && step2Complete.value) {
-        return 2;
+        return 3;
     } else if (step1Complete.value) {
-        return 1;
+        return 2;
     } else {
-        return 0;
+        return 1;
     }
 });
 
@@ -282,34 +282,34 @@ async function upload() {
 
     <div class="columns-1">
         <h2 class="text-center mb-6">Upload GWAS for Quality Control (QC)</h2>
-        <Stepper id="steps" :value="currentStep">
+        <Stepper id="steps" :value="currentStep" linear>
             <StepList>
                 <Step
                     title="Enter Metadata"
                     :complete="step1Complete"
-                    :active="currentStep === 0"
-                    value="1"
+                    :active="currentStep === 1"
+                    :value="1"
                     >Enter Metadata</Step
                 >
                 <Step
                     title="Select File"
                     :complete="step2Complete"
-                    :active="currentStep === 1"
-                    value="2"
+                    :active="currentStep === 2"
+                    :value="2"
                     >Select File</Step
                 >
                 <Step
                     title="Map Columns"
                     :complete="step3Complete"
-                    :active="currentStep === 2"
-                    value="3"
+                    :active="currentStep === 3"
+                    :value="3"
                     >Map Columns</Step
                 >
                 <Step
                     title="Upload"
-                    :complete="currentStep === 3"
-                    :active="currentStep === 3"
-                    value="4"
+                    :complete="currentStep === 4"
+                    :active="currentStep === 4"
+                    :value="4"
                     >Upload</Step
                 >
             </StepList>
@@ -586,140 +586,167 @@ async function upload() {
                         type="text"
                     />
                 </div>
+                <div class="mt-4 text-right">
+                    <Button
+                        type="button"
+                        label="Next"
+                        icon="bi-arrow-right"
+                        @click="() => (store.showNotification = false)"
+                        :disabled="!step1Complete"
+                        class="p-button-primary"
+                    ></Button>
+                </div>
             </div>
         </div>
 
         <div>
-            <div class="card p-fluid">
-                <h5>Select file to upload</h5>
-                <FileUpload
-                    name="file"
-                    id="fileInput"
-                    accept=".csv, .tsv, .gz, .bgzip, .gzip"
-                    :showUploadButton="false"
-                    :previewWidth="0"
-                    @select="sampleFile"
-                    @clear="resetFile"
-                    @remove="resetFile"
-                >
-                    <template #empty>
-                        <p>
-                            Drag and drop files to here to upload. (.csv, .tsv,
-                            .gz, .bgzip, .gzip)
-                        </p>
-                    </template>
-                </FileUpload>
-            </div>
-            <div class="card">
-                <h5>Map column names to their representations.</h5>
-                <small
-                    >Match all the required fields<span style="color: darkred"
-                        >*</span
-                    >, allele frequency (maf or eaf)<span style="color: darkred"
-                        >^</span
-                    >, and any optional field to upload file.</small
-                >
-                <div class="card flex flex-wrap gap-1 required-card">
-                    <h6 class="w-full">Required fields:</h6>
-                    <template v-for="field in requiredFields">
-                        <Chip
-                            v-if="Object.values(selectedFields).includes(field)"
-                            :key="field"
-                            icon="bi-check"
-                            :label="field"
-                            class="selected-chip"
-                        />
-
-                        <Chip v-else :label="field" :key="'else-' + field" />
-                    </template>
-                    <Chip
-                        v-if="requiredAF"
-                        icon="bi-check"
-                        label="maf | eaf"
-                        class="selected-chip"
-                    />
-                    <Chip v-else label="maf | eaf" />
+            <BlockUI :blocked="currentStep < 2" class="mb-4">
+                <div class="card p-fluid">
+                    <h5>Select file to upload</h5>
+                    <FileUpload
+                        name="file"
+                        id="fileInput"
+                        accept=".csv, .tsv, .gz, .bgzip, .gzip"
+                        :showUploadButton="false"
+                        :previewWidth="0"
+                        @select="sampleFile"
+                        @clear="resetFile"
+                        @remove="resetFile"
+                    >
+                        <template #empty>
+                            <p>
+                                Drag and drop files to here to upload. (.csv,
+                                .tsv, .gz, .bgzip, .gzip)
+                            </p>
+                        </template>
+                    </FileUpload>
                 </div>
-                <div v-if="fileInfo.columns" class="grid grid-cols-2">
-                    <div>
-                        <Button
-                            v-if="Object.keys(previousMapping).length > 0"
-                            type="button"
-                            label="Load Previous Mapping"
-                            icon="bi-arrow-counterclockwise"
-                            @click="loadMapping"
-                            severity="help"
-                            text
-                            outlined
-                        ></Button>
-                    </div>
-                    <div class="text-right">
-                        <Button
-                            type="button"
-                            label="Reset Mapping"
-                            icon="bi-arrow-repeat"
-                            @click="resetMapping"
-                            severity="help"
-                            text
-                            outlined
-                        ></Button>
-                    </div>
-                </div>
-
-                <DataTable
-                    :value="tableRows"
-                    v-if="fileInfo.columns"
-                    rowHover
-                    size="small"
-                >
-                    <Column field="column" header="Column" style="width: 45%">
-                    </Column>
-                    <Column header=">>" style="width: 5%"></Column>
-                    <Column header="Represents" style="width: 50%">
-                        <template #body="{ data }">
-                            <Select
-                                data-cy="column-dropdown"
-                                class="w-full"
-                                :options="colOptions"
-                                option-label="name"
-                                option-value="value"
-                                :option-disabled="
-                                    (option) => {
-                                        return (
-                                            Object.values(
-                                                selectedFields,
-                                            ).includes(option.value) &&
-                                            option.value !==
-                                                selectedFields[data.column]
-                                        );
-                                    }
+            </BlockUI>
+            <BlockUI :blocked="currentStep < 3">
+                <div class="card">
+                    <h5>Map column names to their representations.</h5>
+                    <small
+                        >Match all the required fields<span
+                            style="color: darkred"
+                            >*</span
+                        >, allele frequency (maf or eaf)<span
+                            style="color: darkred"
+                            >^</span
+                        >, and any optional field to upload file.</small
+                    >
+                    <div class="card flex flex-wrap gap-1 required-card">
+                        <h6 class="w-full">Required fields:</h6>
+                        <template v-for="field in requiredFields">
+                            <Chip
+                                v-if="
+                                    Object.values(selectedFields).includes(
+                                        field,
+                                    )
                                 "
-                                v-model="selectedFields[data.column]"
-                                showClear
+                                :key="field"
+                                icon="bi-check"
+                                :label="field"
+                                class="selected-chip"
+                            />
+
+                            <Chip
+                                v-else
+                                :label="field"
+                                :key="'else-' + field"
                             />
                         </template>
-                    </Column>
-                </DataTable>
-                <div class="w-full text-center mt-6">
-                    <span
-                        style="display: inline-block"
-                        v-tooltip.top="
-                            currentStep !== 3 &&
-                            'Complete all required steps to upload.'
-                        "
+                        <Chip
+                            v-if="requiredAF"
+                            icon="bi-check"
+                            label="maf | eaf"
+                            class="selected-chip"
+                        />
+                        <Chip v-else label="maf | eaf" />
+                    </div>
+                    <div v-if="fileInfo.columns" class="grid grid-cols-2">
+                        <div>
+                            <Button
+                                v-if="Object.keys(previousMapping).length > 0"
+                                type="button"
+                                label="Load Previous Mapping"
+                                icon="bi-arrow-counterclockwise"
+                                @click="loadMapping"
+                                severity="help"
+                                text
+                                outlined
+                            ></Button>
+                        </div>
+                        <div class="text-right">
+                            <Button
+                                type="button"
+                                label="Reset Mapping"
+                                icon="bi-arrow-repeat"
+                                @click="resetMapping"
+                                severity="help"
+                                text
+                                outlined
+                            ></Button>
+                        </div>
+                    </div>
+
+                    <DataTable
+                        :value="tableRows"
+                        v-if="fileInfo.columns"
+                        rowHover
+                        size="small"
                     >
-                        <Button
-                            type="button"
-                            label="Upload"
-                            class="p-button-primary"
-                            icon="bi-upload"
-                            @click="upload"
-                            raised
-                            :disabled="currentStep !== 3"
-                        ></Button>
-                    </span>
-                </div>
-            </div>
+                        <Column
+                            field="column"
+                            header="Column"
+                            style="width: 45%"
+                        >
+                        </Column>
+                        <Column header=">>" style="width: 5%"></Column>
+                        <Column header="Represents" style="width: 50%">
+                            <template #body="{ data }">
+                                <Select
+                                    data-cy="column-dropdown"
+                                    class="w-full"
+                                    :options="colOptions"
+                                    option-label="name"
+                                    option-value="value"
+                                    :option-disabled="
+                                        (option) => {
+                                            return (
+                                                Object.values(
+                                                    selectedFields,
+                                                ).includes(option.value) &&
+                                                option.value !==
+                                                    selectedFields[data.column]
+                                            );
+                                        }
+                                    "
+                                    v-model="selectedFields[data.column]"
+                                    showClear
+                                />
+                            </template>
+                        </Column>
+                    </DataTable>
+                    <div class="w-full text-center mt-6">
+                        <span
+                            style="display: inline-block"
+                            v-tooltip.top="
+                                currentStep !== 4 &&
+                                'Complete all required steps to upload.'
+                            "
+                        >
+                            <Button
+                                type="button"
+                                label="Upload"
+                                class="p-button-success"
+                                icon="bi-upload"
+                                @click="upload"
+                                raised
+                                :disabled="currentStep !== 4"
+                            ></Button>
+                        </span>
+                    </div></div
+            ></BlockUI>
         </div>
     </div>
 </template>
