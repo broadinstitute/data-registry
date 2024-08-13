@@ -27,33 +27,52 @@ const statusColors = {
 };
 
 const getSeverity = (status) => {
+    let severity = "";
     switch (status) {
         case "FAILED QC":
-            return "danger";
+        case "FAILED":
+            severity = "danger";
+            break;
         case "READY FOR REVIEW":
-            return "success";
+        case "SUCCEEDED":
+            severity = "success";
+            break;
         case "SUBMITTED TO QC":
-            return "secondary";
+            severity = "secondary";
+            break;
         case "REVIEW REJECTED":
-            return "warning";
+            severity = "warning";
+            break;
         default:
-            return "info";
+            severity = "info";
     }
+    return severity;
 };
 
 const getIcon = (status) => {
+    let icon = "";
     switch (status) {
         case "FAILED QC":
-            return "bi-x";
+        case "FAILED":
+            icon = "bi-x";
+            break;
         case "READY FOR REVIEW":
-            return "bi-check";
+        case "SUCCEEDED":
+            icon = "bi-check";
+            break;
         case "SUBMITTED TO QC":
-            return "bi-plus";
+            icon = "bi-plus";
+            break;
         case "REVIEW REJECTED":
-            return "bi-x-square";
+            icon = "bi-x-square";
+            break;
         case "REVIEW APPROVED":
-            return "bi-check-square";
+            icon = "bi-check-square";
+            break;
+        default:
+            icon = "bi-info-square";
     }
+    return icon;
 };
 
 //computed function to tally the number of datasets for each unique status
@@ -237,7 +256,15 @@ const pieOptions = {
                             </template>
                         </Column>
                         <Column field="method" header="Method"></Column>
-                        <Column field="status" header="Status"> </Column
+                        <Column field="status" header="Status">
+                            <template #body="{ data }">
+                                <Tag
+                                    :severity="getSeverity(data.status)"
+                                    :icon="getIcon(data.status)"
+                                    :value="data.status.toUpperCase()"
+                                    rounded
+                                />
+                            </template> </Column
                     ></DataTable>
                 </template>
             </Card>
@@ -264,6 +291,7 @@ const pieOptions = {
 </template>
 
 <style scoped>
+@import url("assets/css/fix.css");
 /* button span.icon {
     margin-right: 10px;
 } */
