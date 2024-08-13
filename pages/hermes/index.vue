@@ -20,35 +20,6 @@ onMounted(async () => {
     finished.value = true;
 });
 
-const getSeverity = (status) => {
-    switch (status) {
-        case "FAILED QC":
-            return "danger";
-        case "READY FOR REVIEW":
-            return "success";
-        case "SUBMITTED TO QC":
-            return "secondary";
-        case "REVIEW REJECTED":
-            return "warning";
-        default:
-            return "info";
-    }
-};
-
-const getIcon = (status) => {
-    switch (status) {
-        case "FAILED QC":
-            return "bi-x";
-        case "READY FOR REVIEW":
-            return "bi-check";
-        case "SUBMITTED TO QC":
-            return "bi-plus";
-        case "REVIEW REJECTED":
-            return "bi-x-square";
-        case "REVIEW APPROVED":
-            return "bi-check-square";
-    }
-};
 const uploaders = computed(() => {
     return fileUploads.value
         .map((file) => file.uploaded_by)
@@ -77,7 +48,7 @@ const statuses = [
         <template #content>
             <DataTable
                 :value="fileUploads"
-                :paginator="false"
+                :paginator="true"
                 rowHover
                 :rows="10"
                 :rowsPerPageOptions="[5, 10, 20]"
@@ -262,7 +233,5 @@ const statuses = [
 </template>
 
 <style scoped>
-.p-tag :deep(.p-tag-icon) {
-    height: unset;
-}
+@import url("assets/css/fix.css");
 </style>

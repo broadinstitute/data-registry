@@ -42,12 +42,20 @@
         </Card>
         <Card class="mt-6">
             <template #content>
-                <div class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20">
-                    <div class="text-surface-700 dark:text-surface-100 text-center">
-                        <div class="text-surface-900 dark:text-surface-0 font-bold text-5xl mb-4">
+                <div
+                    class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20"
+                >
+                    <div
+                        class="text-surface-700 dark:text-surface-100 text-center"
+                    >
+                        <div
+                            class="text-surface-900 dark:text-surface-0 font-bold text-5xl mb-4"
+                        >
                             Create a meta analysis.
                         </div>
-                        <div class="text-surface-700 dark:text-surface-100 text-2xl mb-8">
+                        <div
+                            class="text-surface-700 dark:text-surface-100 text-2xl mb-8"
+                        >
                             You don't have any meta analysis running. Start by
                             creating a new analysis.
                         </div>
@@ -80,30 +88,7 @@ const formatPhenotype = (phenotype) => {
         ? phenotypeMap.value[phenotype].description
         : phenotype;
 };
-
-const getSeverity = (status) => {
-    switch (status) {
-        case "Running":
-            return "info";
-        case "Completed":
-            return "success";
-        case "Failed":
-            return "danger";
-        default:
-            return "secondary";
-    }
-};
-
-const getIcon = (status) => {
-    switch (status) {
-        case "Running":
-            return "bi-play-circle";
-        case "Completed":
-            return "bi-check-circle";
-        case "Failed":
-            return "bi-x-circle";
-        default:
-            return "bi-circle";
-    }
-};
 </script>
+<style scoped>
+@import url("assets/css/fix.css");
+</style>

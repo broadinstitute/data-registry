@@ -1,0 +1,4 @@
+/* bootstrap icons alignment conflict*/
+.p-tag :deep(.p-tag-icon) {
+    height: unset;
+}

@@ -113,36 +113,6 @@ const datasetRows = computed(() => {
                   file.qc_status !== "REVIEW REJECTED",
           );
 });
-
-const getSeverity = (status) => {
-    switch (status) {
-        case "FAILED QC":
-            return "danger";
-        case "READY FOR REVIEW":
-            return "success";
-        case "SUBMITTED TO QC":
-            return "secondary";
-        case "REVIEW REJECTED":
-            return "warning";
-        default:
-            return "info";
-    }
-};
-
-const getIcon = (status) => {
-    switch (status) {
-        case "FAILED QC":
-            return "bi-x";
-        case "READY FOR REVIEW":
-            return "bi-check";
-        case "SUBMITTED TO QC":
-            return "bi-plus";
-        case "REVIEW REJECTED":
-            return "bi-x-square";
-        case "REVIEW APPROVED":
-            return "bi-check-square";
-    }
-};
 </script>
 
 <template>
@@ -342,6 +312,7 @@ const getIcon = (status) => {
 </template>
 
 <style scoped>
+@import url("assets/css/fix.css");
 /* button span.icon {
     margin-right: 10px;
 } */
