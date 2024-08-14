@@ -1,9 +1,16 @@
 <template>
     <div>
         <h2>Meta-Analyses</h2>
-        <Card>
+        <Card v-if="sampleData.length && finished">
             <template #content>
-                <DataTable :value="sampleData">
+                <DataTable
+                    :value="sampleData"
+                    :paginator="true"
+                    rowHover
+                    :rowsPerPageOptions="[10, 20, 50]"
+                    :rows="10"
+                    dataKey="id"
+                >
                     <Column field="name" header="Name">
                         <template #body="{ data }">
                             <NuxtLink :to="`/hermes/ma/${data.id}`">
@@ -25,7 +32,11 @@
                         </template>
                     </Column>
                     <Column field="method" header="Method"></Column>
-                    <Column field="created_at" header="Started"></Column>
+                    <Column field="created_at" header="Started">
+                        <template #body="{ data }">
+                            {{ formatDate(new Date(data.created_at)) }}
+                        </template></Column
+                    >
                     <Column field="created_by" header="By"></Column>
                     <Column field="status" header="Status">
                         <template #body="{ data }">
@@ -40,7 +51,7 @@
                 </DataTable>
             </template>
         </Card>
-        <Card class="mt-6">
+        <Card v-else-if="finished && !sampleData.length" class="mt-6">
             <template #content>
                 <div
                     class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20"
@@ -69,6 +80,28 @@
                 </div>
             </template>
         </Card>
+        <Card v-else>
+            <template #content>
+                <div
+                    class="bg-surface-0 dark:bg-surface-950 px-6 py-20 md:px-12 lg:px-20"
+                >
+                    <div
+                        class="text-surface-700 dark:text-surface-100 text-center"
+                    >
+                        <div
+                            class="text-surface-600 dark:text-surface-200 font-bold text-4xl mb-4"
+                        >
+                            Loading...
+                        </div>
+                        <div
+                            class="text-surface-700 dark:text-surface-100 text-2xl mb-8"
+                        >
+                            Please wait while we load your meta analyses.
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </Card>
     </div>
 </template>
 <script setup>
@@ -77,10 +110,15 @@ const route = useRouter();
 const store = useDatasetStore();
 const phenotypeMap = ref([]);
 const sampleData = ref([]);
+const tableLoading = ref(false);
+const finished = ref(false);
 onMounted(async () => {
+    tableLoading.value = true;
     await store.fetchPhenotypes();
     sampleData.value = await store.fetchMetaAnalyses();
     phenotypeMap.value = store.phenotypes;
+    tableLoading.value = false;
+    finished.value = true;
 });
 
 const formatPhenotype = (phenotype) => {

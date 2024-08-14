@@ -154,7 +154,6 @@ const pieOptions = {
                         :value="latest5Analyses"
                         :paginator="false"
                         rowHover
-                        :rows="5"
                         :rowsPerPageOptions="[5, 10, 20]"
                         sortField="created_at"
                         :sortOrder="-1"
