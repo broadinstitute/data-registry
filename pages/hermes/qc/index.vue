@@ -131,10 +131,10 @@ const datasetRows = computed(() => {
             <template #content>
                 <DataTable
                     :value="datasetRows"
-                    :paginator="false"
+                    :paginator="true"
                     rowHover
                     :rows="10"
-                    :rowsPerPageOptions="[5, 10, 20]"
+                    :rowsPerPageOptions="[10, 20, 50]"
                     :loading="tableLoading"
                     sortField="uploaded_at"
                     :sortOrder="-1"

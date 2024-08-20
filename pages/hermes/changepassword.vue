@@ -49,37 +49,44 @@ const changePassword = async () => {
 </script>
 
 <template>
-    <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-6 col-start-4">
-            <div class="card p-fluid">
-                <h4>Change Password</h4>
-                <form @submit.prevent="changePassword">
-                    <div class="field col">
-                        <label for="newPassword">New Password</label>
-                        <Password
-                            id="newPassword"
-                            type="password"
-                            v-model="passwords.newPassword"
-                            required
-                            toggleMask
-                        />
-                    </div>
-                    <div class="field col">
-                        <label for="confirmPassword"
-                            >Confirm New Password</label
-                        >
-                        <Password
-                            id="confirmPassword"
-                            type="password"
-                            v-model="passwords.confirmPassword"
-                            required
-                            toggleMask
-                            :feedback="false"
-                        />
-                    </div>
-                    <Button label="Change Password" @click="changePassword" />
-                </form>
-            </div>
+    <div class="grid grid-cols-3">
+        <div class="card p-fluid col-start-2">
+            <h4>Change Password</h4>
+            <form @submit.prevent="changePassword">
+                <div class="flex flex-col grow basis-0 gap-2 mb-4">
+                    <label for="newPassword" class="block">New Password</label>
+                    <Password
+                        id="newPassword"
+                        type="password"
+                        v-model="passwords.newPassword"
+                        required
+                        toggleMask
+                        fluid
+                    />
+                </div>
+                <div class="flex flex-col grow basis-0 gap-2 mb-8">
+                    <label for="confirmPassword" class="block"
+                        >Confirm New Password</label
+                    >
+                    <Password
+                        id="confirmPassword"
+                        type="password"
+                        v-model="passwords.confirmPassword"
+                        required
+                        toggleMask
+                        :feedback="false"
+                        fluid
+                    />
+                </div>
+                <div class="text-center">
+                    <Button
+                        label="Change Password"
+                        @click="changePassword"
+                        icon="bi-arrow-clockwise"
+                        severity="primary"
+                    />
+                </div>
+            </form>
         </div>
 
         <Toast position="top-center" />

@@ -1,10 +1,10 @@
 <template>
-    <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-6 col-start-4">
-            <div class="card p-fluid">
-                <h4>Add new user</h4>
-                <form @submit.prevent="handleSubmit" class="form">
-                    <div class="field col">
+    <div class="grid grid-cols-4">
+        <Card class="form col-start-2 col-span-2">
+            <template #title>Add new user</template>
+            <template #content>
+                <form @submit.prevent="handleSubmit">
+                    <div class="grid grid-cols-2 gap-4 mb-2">
                         <label for="name">Email</label>
                         <InputText
                             v-model="user.name"
@@ -12,25 +12,27 @@
                             autofocus
                         />
                     </div>
-                    <div class="field col">
+                    <div class="grid grid-cols-2 gap-4 mb-2">
                         <label for="password">Password</label>
                         <Password
                             v-model="user.password"
                             placeholder="Enter password"
                             toggleMask
+                            fluid
                         />
                     </div>
-                    <div class="field col">
+                    <div class="grid grid-cols-2 gap-4 mb-2">
                         <label for="confirmPassword">Confirm Password</label>
                         <Password
                             v-model="user.confirmPassword"
                             placeholder="Confirm password"
                             :feedback="false"
                             toggleMask
+                            fluid
                         />
                     </div>
 
-                    <div class="field col">
+                    <div class="grid grid-cols-2 gap-4 mb-8">
                         <label for="userType">User Type</label>
                         <Select
                             v-model="user.userType"
@@ -39,13 +41,20 @@
                             placeholder="Select user type"
                         ></Select>
                     </div>
-
-                    <Button label="Create User" @click="handleSubmit" />
+                    <div class="text-center">
+                        <Button
+                            label="Create User"
+                            @click="handleSubmit"
+                            severity="primary"
+                            icon="bi-person-plus-fill"
+                        />
+                    </div>
                 </form>
-            </div>
-        </div>
-        <Toast position="top-center" />
+            </template>
+        </Card>
     </div>
+
+    <Toast position="top-center" />
 </template>
 
 <script setup>
