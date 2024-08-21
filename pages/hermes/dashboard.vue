@@ -7,13 +7,6 @@ const fileUploads = ref([]);
 onMounted(async () => {
     fileUploads.value = await store.fetchFileUploads();
 });
-const statusColors = {
-    "FAILED QC": "danger",
-    "READY FOR REVIEW": "success",
-    "SUBMITTED TO QC": "secondary",
-    "REVIEW REJECTED": "warning",
-    "REVIEW APPROVED": "info",
-};
 const getSeverity = (status) => {
     switch (status) {
         case "FAILED QC":
