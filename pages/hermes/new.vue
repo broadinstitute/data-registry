@@ -1,7 +1,29 @@
 <script setup>
+
 import { useDatasetStore } from "~/stores/DatasetStore";
 import { useUserStore } from "~/stores/UserStore";
 import { useToast } from "primevue/usetoast";
+import { useForm } from 'vee-validate';
+import * as yup from 'yup';
+
+const formSchema = yup.object({
+  dataSetName: yup.string().label('Dataset Name').required(),
+  cohort: yup.string().label('Cohort').required(),
+  dataCollectionStart: yup.date().label('Data Collection Start').required(),
+  dataCollectionEnd: yup.date().label('Data Collection End').required(),
+  contactPerson: yup.string().label('Contact Person').required(),
+});
+
+
+const { defineField, handleSubmit, errors } = useForm({
+  validationSchema: formSchema,
+});
+
+const [dataSetName] = defineField('dataSetName');
+const [cohort] = defineField('cohort');
+const [dataCollectionStart] = defineField('dataCollectionStart');
+const [dataCollectionEnd] = defineField('dataCollectionEnd');
+const [contactPerson] = defineField('contactPerson');
 
 const store = useDatasetStore();
 const userStore = useUserStore();
@@ -39,9 +61,13 @@ const genomeBuildOptions = ref([
     { name: "GRCh38/hg38", value: "GRCh38/hg38" },
     { name: "GRCh37/b37", value: "GRCh37/b37" },
 ]);
+const cohortOptions = ref([
+  { name: "UK Biobank", value: "UK Biobank" },
+  { name: "23andMe", value: "23andMe" },
+  { name: "AncestryDNA", value: "AncestryDNA" }
+]);
 const subjects = ref(0);
-const dataSetName = ref("");
-const cohort = ref("");
+const references = ref(null);
 const phenotype = ref("");
 const participants = ref(null);
 const cases = ref(null);
@@ -211,6 +237,10 @@ function resetFile() {
     fileName = null;
 }
 
+const onSubmit = handleSubmit((values) => {
+  console.log(values);
+});
+
 async function upload() {
     const metadata = {
         original_data: fileName,
@@ -244,7 +274,7 @@ async function upload() {
         analysis_software: analysisSoftware.value,
         calling_algorithm: callingAlgorithm.value,
     };
-
+    // handleSubmit(metadata);
     const errors = await store.validateMetadata(metadata);
     if (errors.length > 0) {
         store.showNotification = true;
@@ -307,45 +337,93 @@ async function upload() {
         </div>
     </div>
 
+  <form @submit.prevent="onSubmit" id="metadataForm" novalidate class="needs-validation">
     <div class="grid">
         <div class="col-12 md:col-6">
             <div class="card p-fluid">
-                <h5>Metadata</h5>
-                <div class="field">
-                    <label for="dataSetName">Dataset Name</label>
-                    <InputText
-                        v-model="dataSetName"
-                        id="dataSetName"
-                        type="text"
+                <h5>Enter File Metadata</h5>
+                <Fieldset legend="Study Metadata">
+                  <div class="field">
+                      <label for="dataSetName">Dataset Name</label>
+                      <InputText v-tooltip="'e.g. “UKBB Heart Failure (female)'"
+                          v-model="dataSetName"
+                          id="dataSetName" :class="{ 'p-invalid': errors.dataSetName }"
+                                 aria-describedby="dataSetName-help"
+                          placeholder="Enter Dataset Name"
+                      />
+                    <small id="dataSetName-help" class="p-error">
+                      {{ errors.dataSetName }}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="cohort">Cohort</label>
+                    <div v-tooltip="'e.g. “UKBiobank”'">
+                    <Dropdown placeholder="Select Cohort" v-model="cohort" :options="cohortOptions" id="cohort" optionLabel="name"
+                              optionValue="value" :class="{ 'p-invalid': errors.cohort }"
+                              aria-describedby="cohort-help"
+
                     />
-                </div>
-                <div class="field">
-                  <label for="genomeBuild">Genome Build</label>
-                  <Dropdown
-                      id="genomeBuild"
-                      v-model="selectedGenomeBuild"
-                      :options="genomeBuildOptions"
-                      optionLabel="name"
-                      optionValue="value"
-                      placeholder="Select Genome Build"/>
-                </div>
-                <div class="field">
-                  <label for="cohort">Cohort</label>
-                  <InputText v-model="cohort" id="cohort" type="text"/>
-                </div>
+                    </div>
+                    <small id="cohort-help" class="p-error">
+                      {{ errors.cohort }}
+                    </small>
+                  </div>
+                  <div class="field">
+                      <label for="dataCollectionStart">Data Collection Start</label>
+                      <Calendar v-model="dataCollectionStart" id="dataCollectionStart" placeholder="yyyy/mm/dd"
+                                  showIcon fluid iconDisplay="input" date-format="yy/dd/mm"
+                                v-tooltip="'Date of first data collection, approximate if not known e.g. 2006/01/01'"
+                                :class="{ 'p-invalid': errors.dataCollectionStart }"
+                      aria-describedby="dataCollectionStart-help"/>
+                    <small id="dataCollectionStart-help" class="p-error">
+                      {{errors.dataCollectionStart}}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="dataCollectionEnd">Data Collection End</label>
+                    <Calendar v-model="dataCollectionEnd" id="dataCollectionEnd" placeholder="yyyy/mm/dd"
+                              showIcon fluid iconDisplay="input" date-format="yy/dd/mm"
+                              aria-describedby="dataCollectionEnd-help"
+                              :class="{ 'p-invalid': errors.dataCollectionEnd }"
+                              v-tooltip="'Date of last data collection, approximate if not known e.g. 2006/01/01'"/>
+                    <small id="dataCollectionEnd-help" class="p-error">
+                      {{errors.dataCollectionEnd}}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="contactPerson">Contact Person</label>
+                    <InputText
+                        v-model="contactPerson"
+                        id="contactPerson"
+                        type="text"
+                        v-tooltip="'Name and email addresses of the person to contact for follow up questions'"
+                        aria-describedby="contactPerson-help"
+                        :class="{ 'p-invalid': errors.contactPerson }"
+                    />
+                    <small id="contactPerson-help" class="p-error">
+                      {{ errors.contactPerson }}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="references">References</label>
+                    <InputText v-model="references" id="references" type="text"
+                               v-tooltip="'Key references (URL or PMID) for the cohort description'"/>
+                  </div>
+                  <div class="field">
+                    <label for="acknowledgements">Acknowledgements</label>
+                    <InputText
+                        v-model="acknowledgements"
+                        id="acknowledgements"
+                        type="text" v-tooltip="'Acknowledgments (e.g. funding sources)'"
+                    />
+                  </div>
+                </Fieldset>
                 <div class="field">
                   <label for="ancestry">Ancestry</label>
                   <Dropdown id="ancestry" v-model="selectedAncestry" :options="ancestryOptions"
                             optionLabel="name" optionValue="value" placeholder="Select Ancestry" data-cy="ancestry"/>
                 </div>
-                <div class="field">
-                  <label for="acknowledgements">Acknowledgements</label>
-                  <InputText
-                      v-model="acknowledgements"
-                      id="acknowledgements"
-                      type="text"
-                  />
-                </div>
+
                 <div class="field">
                   <label for="keyReferences">Key References</label>
                   <InputText
@@ -569,19 +647,18 @@ async function upload() {
                         "
                     >
                         <Button
-                            type="button"
+                            type="submit"
                             label="Upload"
                             class="p-button-primary"
                             icon="bi-upload"
-                            @click="upload"
                             raised
-                            :disabled="currentStep !== 3"
                         ></Button>
                     </span>
                 </div>
             </div>
         </div>
     </div>
+  </form>
 </template>
 
 <style scoped>
@@ -601,4 +678,5 @@ async function upload() {
 * :deep(#steps span.p-menuitem-link) {
     background: transparent;
 }
+
 </style>
