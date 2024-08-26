@@ -45,12 +45,14 @@
     "dependencies": {
         "@pinia/nuxt": "0.5.3",
         "@primevue/themes": "^4.0.4",
-        "axios": "1.7.3",
+        "axios": "1.7.4",
         "bootstrap": "5.3.3",
         "bootstrap-icons": "1.11.3",
         "chart.js": "4.4.3",
         "d3": "7.9.0",
         "primeicons": "7.0.0",
         "primevue": "4.0.4"
+        "vee-validate": "^4.13.2",
+        "yup": "^1.4.0"
     }
 }

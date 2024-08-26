@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch, ref, onMounted } from "vue";
+import { computed, ref } from "vue";
 import { useUserStore } from "@/stores/UserStore";
 import { usePrimeVue } from "primevue/config";
 import AppTopbar from "./AppTopbar.vue";
@@ -15,25 +15,8 @@ const outsideClickListener = ref(null);
 const userStore = useUserStore();
 const router = useRouter();
 
-onMounted(async () => {
-    // await userStore.isUserLoggedIn();
-    // const { user } = await userStore.isUserLoggedIn();
-    // if (!user) {
-    //     console.log("User not logged in");
-    //     //await router.push("/login");
-    // } else {
-    //     console.log("User is logged in");
-    // }
-    //console log if user is isLoggedIn from auth middleware
-});
 
-// watch(isSidebarActive, (newVal) => {
-//     if (newVal) {
-//         bindOutsideClickListener();
-//     } else {
-//         unbindOutsideClickListener();
-//     }
-// });
+
 const containerClass = computed(() => {
     return {
         "layout-theme-light": layoutConfig.darkTheme.value === "light",
