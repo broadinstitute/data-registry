@@ -28,7 +28,7 @@
         "eslint-plugin-n": "^16.6.2",
         "eslint-plugin-promise": "6.4.0",
         "eslint-plugin-vue": "9.27.0",
-        "nuxt": "3.12.4",
+        "nuxt": "3.13.0",
         "nuxt-primevue": "^3.0.0",
         "nuxt-shiki": "^0.3.0",
         "playwright-core": "1.45.1",
