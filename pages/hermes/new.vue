@@ -66,6 +66,22 @@ const imputationQualityMeasure = ref("");
 const colOptions = ref([]);
 const requiredFields = ref([]);
 const selectedFields = ref({});
+const requiredMetaFields = ref([
+    "dataset",
+    "cohort",
+    "ancestry",
+    "case_ascertainment",
+    "case_type",
+    "phenotype",
+    "participants",
+    "cases",
+    "sex_proportion",
+    "age_at_first_documented_study_phenotype",
+    "analysis_software",
+    "statistical_model",
+    "covariates",
+]);
+let invalidFields = ref([]);
 
 onMounted(async () => {
     let params = {
@@ -205,6 +221,16 @@ function resetFile() {
     fileName = null;
 }
 
+//frontend validation for metadata fields, check if the required fields are empty
+//will replace with validation library later
+function validateMetaFields(metadata) {
+    invalidFields.value = []; //reset invalid fields before checking
+    Object.entries(metadata).forEach(([key, value]) => {
+        if (requiredMetaFields.value.includes(key) && !value) {
+            invalidFields.value.push(key);
+        }
+    });
+}
 async function upload() {
     const metadata = {
         original_data: fileName,
@@ -239,6 +265,19 @@ async function upload() {
         analysis_software: analysisSoftware.value,
         calling_algorithm: callingAlgorithm.value,
     };
+
+    validateMetaFields(metadata);
+    if (invalidFields.value.length > 0) {
+        store.showNotification = true;
+        store.errorMessage = invalidFields.value.map(
+            (field) => `${field} is required.`,
+        );
+        console.log("refs", this.$vm.refs);
+        this.$vm.refs.pageTop.scrollIntoView({ behavior: "smooth" });
+        return;
+    } else {
+        console.log("No frontend errors.");
+    }
 
     const errors = await store.validateMetadata(metadata);
     if (errors.length > 0) {
@@ -280,8 +319,10 @@ async function upload() {
     </Dialog>
     <Toast position="top-center" />
 
-    <div class="columns-1">
-        <h2 class="text-center mb-6">Upload GWAS for Quality Control (QC)</h2>
+    <div class="columns-1" ref="pageTop">
+        <h2 class="text-center mb-6" ref="title">
+            Upload GWAS for Quality Control (QC)
+        </h2>
         <Stepper id="steps" :value="currentStep" linear>
             <StepList>
                 <Step
@@ -316,7 +357,7 @@ async function upload() {
         </Stepper>
     </div>
 
-    <div class="columns-1" v-if="store.showNotification">
+    <div class="columns-1 mt-4" v-if="store.showNotification">
         <div class="col-span-6 col-start-4">
             <Message
                 v-for="msg in store.errorMessage"
@@ -324,23 +365,25 @@ async function upload() {
                 :closable="false"
                 :sticky="true"
                 :key="msg"
+                class="mt-2"
                 >{{ msg }}</Message
             >
         </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-2 gap-8 mt-4">
         <div class="card">
             <div class="columns-1"><h5>Metadata</h5></div>
             <div class="grid grid-cols-1 gap-2">
                 <div class="grid grid-cols-2">
                     <label for="dataSetName" class="label-middle"
-                        >Dataset Name</label
+                        >Dataset Name<span class="required">*</span></label
                     >
                     <InputText
                         v-model="dataSetName"
                         id="dataSetName"
                         type="text"
+                        :invalid="invalidFields.includes('dataset')"
                     />
                 </div>
                 <div class="grid grid-cols-2">
@@ -357,11 +400,20 @@ async function upload() {
                     />
                 </div>
                 <div class="grid grid-cols-2">
-                    <label for="cohort" class="label-middle">Cohort</label>
-                    <InputText v-model="cohort" id="cohort" type="text" />
+                    <label for="cohort" class="label-middle"
+                        >Cohort<span class="required">*</span></label
+                    >
+                    <InputText
+                        v-model="cohort"
+                        id="cohort"
+                        type="text"
+                        :invalid="invalidFields.includes('cohort')"
+                    />
                 </div>
                 <div class="grid grid-cols-2">
-                    <label for="ancestry" class="label-middle">Ancestry</label>
+                    <label for="ancestry" class="label-middle"
+                        >Ancestry<span class="required">*</span></label
+                    >
                     <Select
                         id="ancestry"
                         v-model="selectedAncestry"
@@ -370,6 +422,7 @@ async function upload() {
                         optionValue="value"
                         placeholder="Select Ancestry"
                         data-cy="ancestry"
+                        :invalid="invalidFields.includes('ancestry')"
                     />
                 </div>
                 <div class="grid grid-cols-2">
@@ -394,7 +447,9 @@ async function upload() {
                 </div>
                 <div class="grid grid-cols-2">
                     <label for="caseAscertainment" class="label-middle"
-                        >Case Ascertainment</label
+                        >Case Ascertainment<span class="required"
+                            >*</span
+                        ></label
                     >
                     <Select
                         id="caseAscertainment"
@@ -404,10 +459,13 @@ async function upload() {
                         optionValue="value"
                         placeholder="Select Case Ascertainment"
                         data-cy="case-ascertainment"
+                        :invalid="invalidFields.includes('case_ascertainment')"
                     />
                 </div>
                 <div class="grid grid-cols-2">
-                    <label for="caseType" class="label-middle">Case Type</label>
+                    <label for="caseType" class="label-middle"
+                        >Case Type<span class="required">*</span></label
+                    >
                     <Select
                         id="caseType"
                         v-model="caseType"
@@ -416,72 +474,102 @@ async function upload() {
                         optionValue="value"
                         placeholder="Select Case Type"
                         data-cy="case-type"
+                        :invalid="invalidFields.includes('case_type')"
                     />
                 </div>
                 <div class="grid grid-cols-2">
                     <label for="phenotype" class="label-middle"
-                        >Phenotype</label
+                        >Phenotype<span class="required">*</span></label
                     >
-                    <InputText v-model="phenotype" id="phenotype" type="text" />
+                    <InputText
+                        v-model="phenotype"
+                        id="phenotype"
+                        type="text"
+                        :invalid="invalidFields.includes('phenotype')"
+                    />
                 </div>
                 <div class="grid grid-cols-2">
                     <label for="participants" class="label-middle"
-                        >Participants</label
+                        >Participants<span class="required">*</span></label
                     >
                     <InputText
                         v-model="participants"
                         id="participants"
                         type="number"
+                        :invalid="invalidFields.includes('participants')"
                     />
                 </div>
                 <div class="grid grid-cols-2">
-                    <label for="cases" class="label-middle">Cases</label>
-                    <InputText v-model="cases" id="cases" type="number" />
+                    <label for="cases" class="label-middle"
+                        >Cases<span class="required">*</span></label
+                    >
+                    <InputText
+                        v-model="cases"
+                        id="cases"
+                        type="number"
+                        :invalid="invalidFields.includes('cases')"
+                    />
                 </div>
                 <div class="grid grid-cols-2">
                     <label for="proportion" class="label-middle"
-                        >Sex Proportion</label
+                        >Sex Proportion<span class="required">*</span></label
                     >
                     <InputText
                         v-model="sexProportion"
                         id="proportion"
                         type="number"
+                        :invalid="invalidFields.includes('sex_proportion')"
                     />
                 </div>
                 <div class="grid grid-cols-2">
                     <label for="age" class="label-middle"
-                        >Age At First Documented Study Phenotype</label
+                        >Age At First Documented Study Phenotype<span
+                            class="required"
+                            >*</span
+                        ></label
                     >
-                    <InputText v-model="age" id="age" type="number" />
+                    <InputText
+                        v-model="age"
+                        id="age"
+                        type="number"
+                        :invalid="
+                            invalidFields.includes(
+                                'age_at_first_documented_study_phenotype',
+                            )
+                        "
+                    />
                 </div>
                 <div class="grid grid-cols-2">
                     <label for="analysisSoftware" class="label-middle"
-                        >Analysis Software</label
+                        >Analysis Software<span class="required">*</span></label
                     >
                     <InputText
                         v-model="analysisSoftware"
                         id="analysisSoftware"
                         type="text"
+                        :invalid="invalidFields.includes('analysis_software')"
                     />
                 </div>
                 <div class="grid grid-cols-2">
                     <label for="statisticalModel" class="label-middle"
-                        >Statistical Model</label
+                        >Statistical Model<span class="required">*</span></label
                     >
                     <InputText
                         v-model="statisticalModel"
                         id="statisticalModel"
                         type="text"
+                        :invalid="invalidFields.includes('statistical_model')"
                     />
                 </div>
                 <div class="grid grid-cols-2">
                     <label for="covariates" class="label-middle"
-                        >Covariates</label
+                        >Covariates<span class="required">*</span></label
                     >
                     <InputText
                         v-model="covariates"
                         id="covariates"
                         type="text"
+                        :invalid="invalidFields.includes('covariates')"
                     />
                 </div>
                 <div class="grid grid-cols-2">
@@ -587,14 +675,11 @@ async function upload() {
                     />
                 </div>
                 <div class="mt-4 text-right">
-                    <Button
-                        type="button"
-                        label="Next"
-                        icon="bi-arrow-right"
-                        @click="() => (store.showNotification = false)"
-                        :disabled="!step1Complete"
-                        class="p-button-primary"
-                    ></Button>
+                    <small
+                        >Fields marked with
+                        <span class="required">*</span>
+                        are required.</small
+                    >
                 </div>
             </div>
         </div>
@@ -755,5 +840,8 @@ async function upload() {
 .label-middle {
     display: flex;
     align-items: center;
+}
+.required {
+    color: darkred;
 }
 </style>

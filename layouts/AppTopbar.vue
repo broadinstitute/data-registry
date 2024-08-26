@@ -9,6 +9,8 @@ const { onMenuToggle, toggleDarkMode, initDarkMode, isDarkTheme } = useLayout();
 const userStore = useUserStore();
 const User = userStore.user;
 const isAdmin = User.roles.includes("admin");
+const isReviewer = User.roles.includes("reviewer");
+const canAddUser = User.permissions.includes("addUser");
 
 function signOut() {
     userStore.logout("/hermes/login");
@@ -96,12 +98,14 @@ const menuBar = computed(() => {
             icon: "bi-file-earmark-check",
             url: "/hermes/qc/",
         },
-        {
+    ];
+    if (isReviewer || isAdmin) {
+        items.push({
             label: "Meta-Analyses",
             icon: "bi-file-earmark-bar-graph",
             url: "/hermes/ma/",
-        },
-    ];
+        });
+    }
     if (isAdmin) {
         items.unshift({
             label: "Dashboard",
@@ -109,7 +113,7 @@ const menuBar = computed(() => {
             url: "/hermes/dashboard/",
         });
     }
-    if (userStore.user.permissions.includes("addUser")) {
+    if (canAddUser || isAdmin) {
         items.push({
             label: "Users",
             icon: "bi-people-fill",
@@ -124,6 +128,11 @@ const menu = ref();
 const toggle = (event) => {
     menu.value.toggle(event);
 };
+
+const userLabel = computed(() => {
+    console.log("user", User.username);
+    return User.user_name.charAt(0).toUpperCase() || "";
+});
 </script>
 
 <template>
@@ -137,19 +146,7 @@ const toggle = (event) => {
             <div class="layout-config-menu">
                 <Menubar :model="menuBar">
                     <template #end>
-                        <button
-                            @click="toggle"
-                            class="p-link layout-topbar-button btn"
-                        >
-                            <i class="bi-person"></i>
-                        </button>
-                        <Menu
-                            ref="menu"
-                            id="overlay_menu"
-                            :model="items"
-                            :popup="true"
-                        />
-                        <button
+                        <Button
                             type="button"
                             class="layout-topbar-action"
                             @click="toggleDarkMode"
@@ -163,7 +160,21 @@ const toggle = (event) => {
                                     },
                                 ]"
                             ></i>
-                        </button>
+                        </Button>
+                        <Button @click="toggle">
+                            <Avatar
+                                :label="userLabel"
+                                class="mr-2"
+                                size="large"
+                                shape="circle"
+                            />
+                        </Button>
+                        <Menu
+                            ref="menu"
+                            id="overlay_menu"
+                            :model="items"
+                            :popup="true"
+                        />
                     </template>
                 </Menubar>
             </div>
@@ -175,6 +186,7 @@ const toggle = (event) => {
 .p-menubar {
     border: none;
     background-color: transparent;
+    padding: 0;
 }
 .p-menubar button {
     background-color: transparent;
