@@ -429,7 +429,7 @@ async function uploadSubmit(){
                     <div v-tooltip="'e.g. “UKBiobank”'">
                     <Dropdown placeholder="Select Cohort" v-model="cohort" :options="cohortOptions" id="cohort" optionLabel="name"
                               optionValue="value" :class="{ 'p-invalid': errors.cohort }"
-                              aria-describedby="cohort-help"
+                              aria-describedby="cohort-help" data-cy="cohort"
 
                     />
                     </div>
@@ -545,6 +545,7 @@ async function uploadSubmit(){
                               optionLabel="name" optionValue="value"
                               placeholder="Select Sex Stratification"
                               aria-describedby="sex-help"
+                              data-cy="sex"
                               :class="{'p-invalid': errors.sex}"
                     />
                     <small id="sex-help" class="p-error">
