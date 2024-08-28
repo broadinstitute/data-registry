@@ -9,13 +9,80 @@ import * as yup from 'yup';
 const formSchema = yup.object({
   dataSetName: yup.string().label('Dataset Name').required(),
   cohort: yup.string().label('Cohort').required(),
-  dataCollectionStart: yup.date().label('Data Collection Start').required(),
-  dataCollectionEnd: yup.date().label('Data Collection End').required(),
+  dataCollectionStart: yup.date().label('Data Collection Start').required()
+      .max(yup.ref('dataCollectionEnd'),
+          'Data Collection Start must be on or before Data Collection End'),
+  dataCollectionEnd: yup.date().label('Data Collection End').required().min(yup.ref('dataCollectionStart'),
+      'Data Collection End must be on or after Data Collection Start'),
   contactPerson: yup.string().label('Contact Person').required(),
+  acknowledgements: yup.string().label('Acknowledgements'),
+  references: yup.string().label('References'),
+  phenotype: yup.string().label('Phenotype').required(),
+  caseAscertainment: yup.string().label('Case Ascertainment').required(),
+  caseDefinition: yup.string().label('Case Definition').required(),
+  caseType: yup.string().label('Case Type'),
+  sex: yup.string().label('Sex Stratification').required(),
+  ancestry: yup.string().label('Ancestry').required(),
+  totalSampleSize: yup.number().integer('Sample size must be an integer')
+      .positive('Sample size must be positive').label('Total Sample Size').required(),
+  cases: yup.number().integer('Cases must be an integer').positive('Cases must be positive')
+      .label('Cases').transform(value => (isNaN(value) ? undefined : value)),
+  maleProportionCohort: yup.number().min(0).max(1).required()
+      .label('Male propoportion (total cohort)'),
+  maleProportionCases: yup.number().min(0).max(1).label('Male proportion (cases)').when("cases", {
+    is: (value) => value > 0,
+    then: (schema) => schema.required('You must specifiy Male proportion (cases) when you specify cases'),
+    otherwise: (schema) => schema,
+  }),
+  maleProportionControls: yup.number().min(0).max(1).label('Male proportion (controls)').when("cases", {
+    is: (value) => value > 0,
+    then: (schema) => schema.required('You must specifiy Male proportion (controls) when you specify cases'),
+    otherwise: (schema) => schema,
+  }),
+  meanAgeCohort: yup.number().positive('Mean age for cohort must be positive').label('Mean Age (cohort)')
+      .transform(value => (isNaN(value) ? undefined : value)),
+  sdAgeCohort: yup.number().positive('Standard deviation for cohort age must be positive')
+      .label('Standard Deviation (cohort, years)').transform(value => (isNaN(value) ? undefined : value)),
+  meanAgeCases: yup.number().positive('Mean age (cases, years) must be positive').label('Mean Age (cases, years)')
+      .transform(value => (isNaN(value) ? undefined : value)).when("cases", {
+        is: (value) => value > 0,
+        then: (schema) => schema.required('You must specifiy mean age (cases) when you specify cases'),
+        otherwise: (schema) => schema,
+      }),
+  sdAgeCases: yup.number().positive('Age standard deviation for cases must be positive')
+      .label('Standard Deviation (cases, years)').transform(value => (isNaN(value) ? undefined : value)).when("cases", {
+        is: (value) => value > 0,
+        then: (schema) => schema.required('You must specifiy standard deviation age (cases) when you specify cases'),
+        otherwise: (schema) => schema,
+      }),
+  meanAgeControls: yup.number().positive('Mean age (controls, years) must be positive').label('Mean Age (controls, years)')
+      .transform(value => (isNaN(value) ? undefined : value)).when("cases", {
+        is: (value) => value > 0,
+        then: (schema) => schema.required('You must specifiy mean age (controls) when you specify cases'),
+        otherwise: (schema) => schema,
+      }),
+  sdAgeControls: yup.number().positive('Age standard deviation for controls must be positive')
+      .label('Standard Deviation (controls, years)').transform(value => (isNaN(value) ? undefined : value)).when("cases", {
+        is: (value) => value > 0,
+        then: (schema) => schema.required('You must specifiy standard deviation age (controls) when you specify cases'),
+        otherwise: (schema) => schema,
+      }),
+  meanDiagnosisAge: yup.number().positive('Mean diagnosis age must be positive')
+      .label('Mean diagnosis age').transform(value => (isNaN(value) ? undefined : value)).when("cases", {
+        is: (value) => value > 0,
+        then: (schema) => schema.required('You must mean diagnosis age when you specify cases'),
+        otherwise: (schema) => schema,
+    }),
+  sdDiagnosisAge: yup.number().positive('Standard deviation diagnosis age must be positive')
+      .label('Standard Deviation diagnosis age').transform(value => (isNaN(value) ? undefined : value)).when("cases", {
+        is: (value) => value > 0,
+        then: (schema) => schema.required('You must mean diagnosis age when you specify cases'),
+        otherwise: (schema) => schema,
+      }),
 });
 
 
-const { defineField, handleSubmit, errors } = useForm({
+const { defineField, errors, values, validate } = useForm({
   validationSchema: formSchema,
 });
 
@@ -24,6 +91,27 @@ const [cohort] = defineField('cohort');
 const [dataCollectionStart] = defineField('dataCollectionStart');
 const [dataCollectionEnd] = defineField('dataCollectionEnd');
 const [contactPerson] = defineField('contactPerson');
+const [acknowledgements] = defineField('acknowledgements');
+const [references] = defineField('references');
+const [phenotype] = defineField('phenotype');
+const [caseAscertainment] = defineField('caseAscertainment');
+const [caseDefinition] = defineField('caseDefinition');
+const [caseType] = defineField('caseType');
+const [sex] = defineField('sex');
+const [ancestry] = defineField('ancestry');
+const [totalSampleSize] = defineField('totalSampleSize');
+const [cases] = defineField('cases');
+const [maleProportionCohort] = defineField('maleProportionCohort');
+const [maleProportionCases] = defineField('maleProportionCases');
+const [maleProportionControls] = defineField('maleProportionControls');
+const [meanAgeCohort] = defineField('meanAgeCohort');
+const [sdAgeCohort] = defineField('sdAgeCohort');
+const [meanAgeCases] = defineField('meanAgeCases');
+const [sdAgeCases] = defineField('sdAgeCases');
+const [meanAgeControls] = defineField('meanAgeControls');
+const [sdAgeControls] = defineField('sdAgeControls');
+const [meanDiagnosisAge] = defineField('meanDiagnosisAge');
+const [sdDiagnosisAge] = defineField('sdDiagnosisAge');
 
 const store = useDatasetStore();
 const userStore = useUserStore();
@@ -31,15 +119,20 @@ const route = useRouter();
 const toast = useToast();
 const fileInfo = ref({});
 let file = null;
+const missingFileError = ref('');
+const missingMappingError = ref('');
 let fileName = null;
 let previousMapping = {};
 const selectedGenomeBuild = ref('');
-const selectedAncestry = ref('');
-const caseAscertainment = ref('');
-const caseType = ref('');
 const caseAscertainmentOptions = ref([
     { name: "Electronic Health Records", value: "Electronic Health Records" },
     { name: "Research Study", value: "Research Study" }
+]);
+const sexOptions = ref([
+  { name: "Not sex stratified", value: "Not sex stratified" },
+  { name: "Male only", value: "Male only" },
+  { name: "Female only", value: "Female only" },
+
 ]);
 const caseTypeOptions = ref([
     { name: "Prevalent", value: "Prevalent" },
@@ -67,13 +160,9 @@ const cohortOptions = ref([
   { name: "AncestryDNA", value: "AncestryDNA" }
 ]);
 const subjects = ref(0);
-const references = ref(null);
-const phenotype = ref("");
 const participants = ref(null);
-const cases = ref(null);
 const sexProportion = ref(null);
 const age = ref(null);
-const acknowledgements = ref("");
 const keyReferences = ref("");
 const analysisSoftware = ref("");
 const statisticalModel = ref("");
@@ -101,10 +190,11 @@ onMounted(async () => {
     let fileInfos = await store.fetchFileUploads(paramsToString(params));
     if (fileInfos.length > 0) {
         let map = fileInfos[0]?.metadata?.column_map;
-        //transpose the object to have the value as the key and the key as the value
-        previousMapping = Object.fromEntries(
-            Object.entries(map).map(([key, value]) => [value, key]),
-        );
+        if(map){
+          previousMapping = Object.fromEntries(
+              Object.entries(map).map(([key, value]) => [value, key]),
+          );
+        }
     }
 
     const { required, optional } = await store.fetchColumnOptions();
@@ -160,12 +250,9 @@ const step2Complete = computed(() => {
     return Boolean(fileInfo.value.columns);
 });
 const step3Complete = computed(() => {
-    //check if all items in requiredFields are in selectedFields
-    return (
-        requiredFields.value.every((field) =>
-            Object.values(selectedFields.value).includes(field),
-        ) && requiredAF.value
-    );
+  return requiredFields.value.every((field) =>
+      selectedFields.value && Object.values(selectedFields.value).includes(field)
+  ) && requiredAF.value;
 });
 const requiredAF = computed(() => {
     //check if selectedFields contains either maf or eaf
@@ -191,6 +278,7 @@ async function sampleFile(e) {
     store.showNotification = false;
     file = e.files[0];
     fileName = e.files[0].name;
+    missingFileError.value = '';
     try {
         fileInfo.value = await store.sampleTextFile(e.files[0]);
         //copy fileInfo.columns to selectedFields
@@ -233,67 +321,48 @@ function resetMapping() {
 function resetFile() {
     fileInfo.value = {};
     selectedFields.value = {};
+    missingMappingError.value = '';
     file = null;
     fileName = null;
 }
 
-const onSubmit = handleSubmit((values) => {
-  console.log(values);
+watch(step3Complete, () => {
+  if(step3Complete.value){
+    missingMappingError.value = '';
+  } else {
+    missingMappingError.value = "Please map all required fields to your file's columns";
+  }
 });
 
-async function upload() {
-    const metadata = {
-        original_data: fileName,
-        phenotype: phenotype.value,
-        dataset: dataSetName.value,
-        cases: cases.value,
-        subjects: subjects.value,
-        column_map: colMap.value,
-        ancestry: selectedAncestry.value,
-        cohort: cohort.value,
-        acknowledgements: acknowledgements.value,
-        key_references: keyReferences.value,
-        case_ascertainment: caseAscertainment.value,
-        case_type: caseType.value,
-        participants: participants.value,
-        sex_proportion: sexProportion.value,
-        age_at_first_documented_study_phenotype: age.value,
-        statistical_model: statisticalModel.value,
-        covariates: covariates.value,
-        array_name_and_version: arrayName.value,
-        variant_call_rate: variantCallRate.value,
-        sample_call_rate: sampleCallRate.value,
-        hwe_p_value: hwePValue.value,
-        maf: maf.value,
-        other_qc_filters: otherQCFilters.value,
-        n_variants_for_imputation: nVariantsForImputation.value,
-        prephasing_and_imputation_software: prephasingAndImputationSoftware.value,
-        imputation_reference: imputationReference.value,
-        imputation_quality_measure: imputationQualityMeasure.value,
-        genome_build: selectedGenomeBuild.value,
-        analysis_software: analysisSoftware.value,
-        calling_algorithm: callingAlgorithm.value,
-    };
-    // handleSubmit(metadata);
-    const errors = await store.validateMetadata(metadata);
-    if (errors.length > 0) {
-        store.showNotification = true;
-        store.errorMessage = errors;
-    } else {
-        store.showNotification = false;
-        try {
-            await store.uploadFileForHermes(
-                file,
-                fileName,
-                dataSetName.value,
-                metadata,
-            );
-            await route.push({ path: "/hermes" });
-        } catch (e) {
-            console.log(e);
-        }
-    }
+async function uploadSubmit(){
+  const isValid = await validate();
+
+  if(!file){
+    missingFileError.value = "Please upload your file"
+  } else {
+    missingFileError.value = '';
+  }
+  if(file && !step3Complete.value){
+    missingMappingError.value = "Please map all required fields to your file's columns";
+  }
+  if(!!missingMappingError.value || !!missingFileError.value || !isValid.valid){
+    return;
+  }
+  const metadata = JSON.parse(JSON.stringify(values));
+  metadata.column_map = colMap.value;
+  try {
+    await store.uploadFileForHermes(
+        file,
+        fileName,
+        dataSetName.value,
+        metadata,
+    );
+    await route.push({ path: "/hermes" });
+  } catch (e) {
+    console.log(e);
+  }
 }
+
 </script>
 
 <template>
@@ -309,8 +378,8 @@ async function upload() {
         <ProgressSpinner
             v-if="store.showProgressBar"
             :value="store.uploadProgress"
-            :stroke-width="4"
-            :animation-duration="0"
+            stroke-width="4"
+            animation-duration="0"
         />
     </Dialog>
     <Toast position="top-center" />
@@ -337,7 +406,7 @@ async function upload() {
         </div>
     </div>
 
-  <form @submit.prevent="onSubmit" id="metadataForm" novalidate class="needs-validation">
+  <form @submit.prevent="uploadSubmit" id="metadataForm" novalidate class="needs-validation">
     <div class="grid">
         <div class="col-12 md:col-6">
             <div class="card p-fluid">
@@ -396,7 +465,7 @@ async function upload() {
                         v-model="contactPerson"
                         id="contactPerson"
                         type="text"
-                        v-tooltip="'Name and email addresses of the person to contact for follow up questions'"
+                        v-tooltip="'Name and email address of the person to contact for follow up questions'"
                         aria-describedby="contactPerson-help"
                         :class="{ 'p-invalid': errors.contactPerson }"
                     />
@@ -418,123 +487,236 @@ async function upload() {
                     />
                   </div>
                 </Fieldset>
-                <div class="field">
-                  <label for="ancestry">Ancestry</label>
-                  <Dropdown id="ancestry" v-model="selectedAncestry" :options="ancestryOptions"
-                            optionLabel="name" optionValue="value" placeholder="Select Ancestry" data-cy="ancestry"/>
-                </div>
+                <Fieldset legend="Participants">
+                  <div class="field">
+                    <label for="phenotype">Phenotype</label>
+                    <InputText v-model="phenotype" id="phenotype" type="text"
+                               v-tooltip="'The phenotype description e.g. “all-cause heart failure'"
+                               aria-describedby="phenotype-help"
+                               :class="{ 'p-invalid': errors.phenotype }"
+                    />
+                    <small id="phenotype-help" class="p-error">
+                      {{ errors.phenotype }}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="caseAscertainment">Case Ascertainment</label>
+                    <Dropdown
+                        id="caseAscertainment"
+                        v-model="caseAscertainment"
+                        :options="caseAscertainmentOptions"
+                        optionLabel="name"
+                        optionValue="value"
+                        placeholder="Select Case Ascertainment" data-cy="case-ascertainment"
+                        aria-describedby="caseAscertainment-help"
+                        :class="{ 'p-invalid': errors.caseAscertainment }"
+                        />
+                    <small id="caseAscertainment-help" class="p-error">
+                      {{ errors.caseAscertainment }}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="caseDefinition">Case Definition</label>
+                    <Textarea
+                        v-model="caseDefinition"
+                        id="caseDefinition"
+                        type="text"
+                        v-tooltip="'The process used to define the cohort e.g., ICD10 codes I500, I509 and ICD9 codes XYZ; excluding codes #1, #2 , etc.'"
+                        aria-describedby="caseDefinition-help"
+                        :class="{ 'p-invalid': errors.caseDefinition }"
+                    />
+                    <small id="caseDefinition-help" class="p-error">
+                      {{ errors.caseDefinition }}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="caseType">Case Type</label>
+                    <Dropdown
+                        id="caseType"
+                        v-model="caseType"
+                        :options="caseTypeOptions"
+                        optionLabel="name"
+                        optionValue="value"
+                        placeholder="Select Case Type" data-cy="case-type"/>
+                  </div>
+                  <div class="field">
+                    <label for="sex">Sex</label>
+                    <Dropdown id="sex" v-model="sex" :options="sexOptions"
+                              optionLabel="name" optionValue="value"
+                              placeholder="Select Sex Stratification"
+                              aria-describedby="sex-help"
+                              :class="{'p-invalid': errors.sex}"
+                    />
+                    <small id="sex-help" class="p-error">
+                      {{ errors.sex }}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="ancestry">Ancestry</label>
+                    <Dropdown id="ancestry" v-model="ancestry" :options="ancestryOptions"
+                              optionLabel="name" optionValue="value" placeholder="Select Ancestry"
+                              data-cy="ancestry"
+                              aria-labelledby="ancestry-help"
+                              :class="{'p-invalid': errors.ancestry}"
+                    />
+                    <small id="ancestry-help" class="p-error">
+                      {{ errors.ancestry }}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="totalSampleSize">Total Sample Size</label>
+                    <InputText v-model="totalSampleSize" id="totalSampleSize" type="number" min="1"
+                    v-tooltip="'The total number of participants (e.g. cases + controls)'"
+                               aria-labelledby="totalSampleSize-help"
+                               :class="{'p-invalid': errors.totalSampleSize}"
+                    />
+                    <small id="totalSampleSize-help" class="p-error">
+                      {{ errors.totalSampleSize }}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="cases">Number of Cases</label>
+                    <InputText v-model="cases" id="cases" type="number" min="1"
+                    v-tooltip="'(optional) The number of cases in the cohort if a case-control design'"
+                    aria-labelledby="cases-help" :class="{'p-invalid': errors.cases}"
+                    />
+                    <small id="cases-help" class="p-error">
+                      {{ errors.cases }}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="maleProportionCohort">Male Proportion Cohort</label>
+                    <InputText v-model="maleProportionCohort" id="maleProportionCohort" type="number" min="0" max="1"
+                               v-tooltip="'The fraction of the total cohort that are male (e.g. 0.51)'"
+                               aria-labelledby="maleProportionCohort-help"
+                               :class="{'p-invalid': errors.maleProportionCohort}"
+                    />
+                    <small id="maleProportionCohort-help" class="p-error">
+                      {{ errors.maleProportionCohort }}
+                    </small>
+                  </div>
+                  <div class="field" v-if="cases">
+                    <label for="maleProportionCases" >Male Proportion Cases</label>
+                    <InputText v-model="maleProportionCases" id="maleProportionCases" type="number" min="0" max="1"
+                    v-tooltip="'The fraction of the cases that are male (e.g. 0.51)'"
+                               aria-labelledby="maleProportionCases-help"
+                               :class="{'p-invalid': errors.maleProportionCases}"
+                    />
+                    <small id="maleProportionCases-help" class="p-error">
+                      {{ errors.maleProportionCases }}
+                    </small>
+                  </div>
+                  <div class="field" v-if="cases">
+                    <label for="maleProportionControls">Male Proportion Controls</label>
+                    <InputText v-model="maleProportionControls" id="maleProportionControls" type="number" min="0" max="1"
+                               v-tooltip="'The fraction of the controls that are male (e.g. 0.51)'"
+                               aria-labelledby="maleProportionControls-help"
+                               :class="{'p-invalid': errors.maleProportionControls}"
+                    />
+                    <small id="maleProportionControls-help" class="p-error">
+                      {{ errors.maleProportionControls }}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="meanAgeCohort">Mean Age (total cohort, years)</label>
+                    <InputText v-model="meanAgeCohort" id="meanAgeCohort" type="number" min="0"
+                               v-tooltip="'The mean age of the total cohort at first documented study phenotype (e.g. 54.2)'"
+                               aria-labelledby="meanAgeCohort-help"
+                               :class="{'p-invald': errors.meanAgeCohort}"
+                    />
+                    <small id="meanAgeCohort-help" class="p-error">
+                      {{ errors.meanAgeCohort }}
+                    </small>
+                  </div>
+                  <div class="field">
+                    <label for="sdAgeCohort">Standard Deviation Age (total cohort, years)</label>
+                    <InputText v-model="sdAgeCohort" id="sdAgeCohort" type="number" min="0"
+                               v-tooltip="'The age standard deviation of the total cohort  at first documented study phenotype (e.g. 10.2)'"
+                               aria-labelledby="sdAgeCohort-help"
+                               :class="{'p-invalid': errors.sdAgeCohort}"
+                    />
+                    <small id="sdAgeCohort-help" class="p-error">
+                      {{ errors.sdAgeCohort }}
+                    </small>
+                  </div>
+                  <div class="field" v-if="cases">
+                    <label for="meanAgeCases">Mean Age (cases, years)</label>
+                    <InputText v-model="meanAgeCases" id="meanAgeCases" type="number" min="0"
+                               v-tooltip="'The mean age of the cases at first documented study phenotype (e.g. 54.2)'"
+                               aria-labelledby="meanAgeCases-help"
+                               :class="{'p-invalid': errors.meanAgeCases}"
+                    />
+                    <small id="meanAgeCases-help" class="p-error">
+                      {{ errors.meanAgeCases }}
+                    </small>
+                  </div>
+                  <div class="field" v-if="cases">
+                    <label for="sdAgeCases">Standard Deviation Age (cases, years)</label>
+                    <InputText v-model="sdAgeCases" id="sdAgeCases" type="number" min="0"
+                               v-tooltip="'The age standard deviation of the cases at first documented study phenotype (e.g. 10.2)'"
+                               aria-labelledby="sdAgeCases-help"
+                               :class="{'p-invalid': errors.sdAgeCases}"
+                    />
+                    <small id="sdAgeCases-help" class="p-error">
+                      {{ errors.sdAgeCases }}
+                    </small>
+                  </div>
+                  <div class="field" v-if="cases">
+                    <label for="meanAgeControls">Mean Age (controls, years)</label>
+                    <InputText v-model="meanAgeControls" id="meanAgeControls" type="number" min="0"
+                               v-tooltip="'The mean age of the controls at first documented study phenotype (e.g. 54.2)'"
+                               aria-labelledby="meanAgeControls-help"
+                               :class="{'p-invalid': errors.meanAgeControls}"
+                    />
+                    <small id="meanAgeControls-help" class="p-error">
+                      {{ errors.meanAgeControls }}
+                    </small>
+                  </div>
+                  <div class="field" v-if="cases">
+                    <label for="sdAgeControls">Standard Deviation Age (controls, years)</label>
+                    <InputText v-model="sdAgeControls" id="sdAgeControls" type="number" min="0"
+                               v-tooltip="'The age standard deviation of the controls at first documented study phenotype (e.g. 10.2)'"
+                               aria-labelledby="sdAgeControls-help"
+                               :class="{'p-invalid': errors.sdAgeControls}"
+                    />
+                    <small id="sdAgeControls-help" class="p-error">
+                      {{ errors.sdAgeControls }}
+                    </small>
+                  </div>
 
-                <div class="field">
-                  <label for="keyReferences">Key References</label>
-                  <InputText
-                      v-model="keyReferences"
-                      id="keyReferences"
-                      type="text"
-                  />
-                </div>
-                <div class="field">
-                  <label for="caseAscertainment">Case Ascertainment</label>
-                  <Dropdown
-                      id="caseAscertainment"
-                      v-model="caseAscertainment"
-                      :options="caseAscertainmentOptions"
-                      optionLabel="name"
-                      optionValue="value"
-                      placeholder="Select Case Ascertainment" data-cy="case-ascertainment" />
-                </div>
-                <div class="field">
-                  <label for="caseType">Case Type</label>
-                  <Dropdown
-                      id="caseType"
-                      v-model="caseType"
-                      :options="caseTypeOptions"
-                      optionLabel="name"
-                      optionValue="value"
-                      placeholder="Select Case Type" data-cy="case-type"/>
-                </div>
-                <div class="field">
-                  <label for="phenotype">Phenotype</label>
-                  <InputText v-model="phenotype" id="phenotype" type="text" />
-                </div>
-                <div class="field">
-                  <label for="participants">Participants</label>
-                  <InputText v-model="participants" id="participants" type="number" />
-                </div>
-                <div class="field">
-                  <label for="cases">Cases</label>
-                  <InputText v-model="cases" id="cases" type="number" />
-                </div>
-                <div class="field">
-                  <label for="cases">Sex Proportion</label>
-                  <InputText v-model="sexProportion" id="sexProportion" type="number" />
-                </div>
-                <div class="field">
-                  <label for="age">Age At First Documented Study Phenotype</label>
-                  <InputText v-model="age" id="age" type="number" />
-                </div>
-              <div class="field">
-                <label for="analysisSoftware">Analysis Software</label>
-                <InputText v-model="analysisSoftware" id="analysisSoftware" type="text" />
-              </div>
-              <div class="field">
-                <label for="statisticalModel">Statistical Model</label>
-                <InputText v-model="statisticalModel" id="statisticalModel" type="text" />
-              </div>
-              <div class="field">
-                <label for="covariates">Covariates</label>
-                <InputText v-model="covariates" id="covariates" type="text" />
-              </div>
-              <div class="field">
-                <label for="arrayName">Array Name and Version</label>
-                <InputText v-model="arrayName" id="arrayName" type="text" />
-              </div>
-              <div class="field">
-                <label for="callingAlgorithm">Calling Algorithm</label>
-                <InputText v-model="callingAlgorithm" id="callingAlgorithm" type="text" />
-              </div>
-              <div class="field">
-                <label for="variantCallRate">Variant Call Rate</label>
-                <InputText v-model="variantCallRate" id="variantCallRate" type="number" />
-              </div>
-              <div class="field">
-                <label for="sampleCallRate">Sample Call Rate</label>
-                <InputText v-model="sampleCallRate" id="sampleCallRate" type="number" />
-              </div>
-              <div class="field">
-                <label for="hwePValue">HWE P-value</label>
-                <InputText v-model="hwePValue" id="hwePValue" type="number" />
-              </div>
-              <div class="field">
-                <label for="maf">MAF</label>
-                <InputText v-model="maf" id="maf" type="number" />
-              </div>
-              <div class="field">
-                <label for="otherQCFilters">Other QC Filters</label>
-                <InputText v-model="otherQCFilters" id="otherQCFilters" type="text" />
-              </div>
-              <div class="field">
-                <label for="nVariantsForImputation">N Variants For Imputation</label>
-                <InputText v-model="nVariantsForImputation" id="nVariantsForImputation" type="number" />
-              </div>
-              <div class="field">
-                <label for="prephasingAndImputationSoftware">Prephasing And Imputation Software</label>
-                <InputText v-model="prephasingAndImputationSoftware" id="prephasingAndImputationSoftware" type="text" />
-              </div>
-              <div class="field">
-                <label for="imputationReference">Imputation Reference</label>
-                <InputText v-model="imputationReference" id="imputationReference" type="text" />
-              </div>
-              <div class="field">
-                <label for="imputationQualityMeasure">Imputation Quality Measure</label>
-                <InputText v-model="imputationQualityMeasure" id="imputationQualityMeasure" type="text" />
-              </div>
+                  <div class="field" v-if="cases">
+                    <label for="meanDiagnosisAge">Mean diagnosis age (cases, years)</label>
+                    <InputText v-model="meanDiagnosisAge" id="meanDiagnosisAge" type="number" min="0"
+                               v-tooltip="'The mean age of the total cohort at first documented study phenotype (e.g. 54.2)'"
+                               aria-labelledby="meanDiagnosisAge-help"
+                               :class="{'p-invalid': errors.meanDiagnosisAge}"
+                    />
+                    <small id="meanDiagnosisAge-help" class="p-error">
+                      {{ errors.meanDiagnosisAges }}
+                    </small>
+                  </div>
+                  <div class="field" v-if="cases">
+                    <label for="sdDiagnosisAge">Standard Deviation Age (controls, years)</label>
+                    <InputText v-model="sdDiagnosisAge" id="sdDiagnosisAge" type="number" min="0"
+                               v-tooltip="'The age standard deviation of the total cohort  at first documented study phenotype (e.g. 10.2)'"
+                               aria-labelledby="sdDiagnosisAge-help"
+                               :class="{'p-invalid': errors.sdDiagnosisAge}"
+                    />
+                    <small id="sdDiagnosisAge-help" class="p-error">
+                      {{ errors.sdDiagnosisAge }}
+                    </small>
+                  </div>
+
+                </Fieldset>
+
+
+
             </div>
-
-
         </div>
         <div class="col-12 md:col-6">
-          <div class="card p-fluid">
+          <div class="card p-fluid" >
             <h5>Select file to upload</h5>
+            <div class="field" :class="{ 'p-invalid-file':  missingFileError}">
             <FileUpload
                 name="file"
                 id="fileInput"
@@ -544,6 +726,7 @@ async function upload() {
                 @select="sampleFile"
                 @clear="resetFile"
                 @remove="resetFile"
+                aria-describedby="fileInput-help"
             >
               <template #empty>
                 <p>
@@ -552,6 +735,11 @@ async function upload() {
                 </p>
               </template>
             </FileUpload>
+
+            </div>
+            <small id="fileInput-help" class="p-error">
+              {{ missingFileError }}
+            </small>
           </div>
             <div class="card">
                 <h5>Map column names to their representations.</h5>
@@ -608,7 +796,7 @@ async function upload() {
                         ></Button>
                     </div>
                 </div>
-
+                <div class="field" :class="{'p-invalid-file': missingMappingError}">
                 <DataTable :value="tableRows" v-if="fileInfo.columns" rowHover>
                     <Column field="column" header="Column" class="col-4">
                     </Column>
@@ -638,6 +826,10 @@ async function upload() {
                         </template>
                     </Column>
                 </DataTable>
+                </div>
+                <small class="p-error" v-if="missingMappingError">
+                  {{ missingMappingError }}
+                </small>
                 <div class="w-full text-center mt-4">
                     <span
                         style="display: inline-block"
@@ -677,6 +869,10 @@ async function upload() {
 }
 * :deep(#steps span.p-menuitem-link) {
     background: transparent;
+}
+
+.p-invalid-file {
+  border: solid 1px #f87171;
 }
 
 </style>
