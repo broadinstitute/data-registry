@@ -10,7 +10,7 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.visit('/hermes/new', { timeout: 10000 });
     cy.get('#dataSetName').type('Cypress dataset');
     // cy.get('#genomeBuild').type('GRCh38').type('{enter}');
-    cy.get('[data-cy="cohort"]').type('UKBio').type('{enter}');
+    cy.get('#cohort').type('UKBiobank');
     cy.get('#contactPerson').type('Point of Contact');
     cy.get('#dataCollectionStart').type('2006/01/01');
     cy.get('[data-cy="sex"]').type('Male').type('{enter}');

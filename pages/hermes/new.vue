@@ -154,11 +154,7 @@ const genomeBuildOptions = ref([
     { name: "GRCh38/hg38", value: "GRCh38/hg38" },
     { name: "GRCh37/b37", value: "GRCh37/b37" },
 ]);
-const cohortOptions = ref([
-  { name: "UK Biobank", value: "UK Biobank" },
-  { name: "23andMe", value: "23andMe" },
-  { name: "AncestryDNA", value: "AncestryDNA" }
-]);
+
 const subjects = ref(0);
 const participants = ref(null);
 const sexProportion = ref(null);
@@ -414,12 +410,14 @@ async function uploadSubmit(){
                 <Fieldset legend="Study Metadata">
                   <div class="field">
                       <label for="dataSetName">Dataset Name</label>
-                      <InputText v-tooltip="'e.g. “UKBB Heart Failure (female)'"
+                      <div v-tooltip="'e.g. “UKBB Heart Failure (female)”'">
+                      <InputText
                           v-model="dataSetName"
                           id="dataSetName" :class="{ 'p-invalid': errors.dataSetName }"
                                  aria-describedby="dataSetName-help"
                           placeholder="Enter Dataset Name"
-                      />
+                        />
+                        </div>
                     <small id="dataSetName-help" class="p-error">
                       {{ errors.dataSetName }}
                     </small>
@@ -427,11 +425,8 @@ async function uploadSubmit(){
                   <div class="field">
                     <label for="cohort">Cohort</label>
                     <div v-tooltip="'e.g. “UKBiobank”'">
-                    <Dropdown placeholder="Select Cohort" v-model="cohort" :options="cohortOptions" id="cohort" optionLabel="name"
-                              optionValue="value" :class="{ 'p-invalid': errors.cohort }"
-                              aria-describedby="cohort-help" data-cy="cohort"
-
-                    />
+                    <InputText v-model="cohort"  id="cohort" :class="{ 'p-invalid': errors.cohort }"
+                              aria-describedby="cohort-help" />
                     </div>
                     <small id="cohort-help" class="p-error">
                       {{ errors.cohort }}
@@ -490,11 +485,12 @@ async function uploadSubmit(){
                 <Fieldset legend="Participants">
                   <div class="field">
                     <label for="phenotype">Phenotype</label>
-                    <InputText v-model="phenotype" id="phenotype" type="text"
-                               v-tooltip="'The phenotype description e.g. “all-cause heart failure'"
-                               aria-describedby="phenotype-help"
-                               :class="{ 'p-invalid': errors.phenotype }"
-                    />
+                    <div v-tooltip="'The phenotype description e.g. “all-cause heart failure”'">
+                      <InputText v-model="phenotype" id="phenotype" type="text"
+                      aria-describedby="phenotype-help"
+                      :class="{ 'p-invalid': errors.phenotype }"
+                      />
+                    </div>
                     <small id="phenotype-help" class="p-error">
                       {{ errors.phenotype }}
                     </small>
