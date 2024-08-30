@@ -24,6 +24,10 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('#callingAlgorithm').type("You called, algorithm?");
     cy.get('#genotypingArray').type("Array against you");
     cy.get('[data-cy="referenceGenome"]').type('Hg19').type('{enter}');
+    cy.get('#imputationSoftware').type('Imputate this software');
+    cy.get('#imputationReference').type('Imputation reference');
+    cy.get('#numberOfVariantsForImputation').type('47');
+    cy.get('#imputationQualityMeasure').type('highest quality');
 
     // cy.get("#participants").type('20');
     // cy.get("#sexProportion").type('20');

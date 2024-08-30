@@ -70,7 +70,7 @@ const formSchema = yup.object({
   meanDiagnosisAge: yup.number().positive('Mean diagnosis age must be positive')
       .label('Mean diagnosis age').transform(value => (isNaN(value) ? undefined : value)).when("cases", {
         is: (value) => value > 0,
-        then: (schema) => schema.required('You must mean diagnosis age when you specify cases'),
+        then: (schema) => schema.required('You must specify mean diagnosis age when you specify cases'),
         otherwise: (schema) => schema,
     }),
   sdDiagnosisAge: yup.number().positive('Standard deviation diagnosis age must be positive')
@@ -82,6 +82,13 @@ const formSchema = yup.object({
   referenceGenome: yup.string().label('Reference Genome').required(),
   genotypingArray: yup.string().label('Genotyping Array').required(),
   callingAlgorithm: yup.string().label('Calling Algorithm').required(),
+  imputationSoftware: yup.string().label('Imputation Software').required(),
+  imputationReference: yup.string().label('Imputation Reference').required(),
+  numberOfVariantsForImputation: yup.number().positive("Number of variants for imputation must be positive")
+      .transform(value => (isNaN(value) ? undefined : value))
+      .integer("Number of variants should be a whole number")
+      .label("Number of Variants for Imputation").required(),
+  imputationQualityMeasure: yup.string().label("Imputation Quality Measure").required(),
 });
 
 
@@ -118,6 +125,10 @@ const [sdDiagnosisAge] = defineField('sdDiagnosisAge');
 const [referenceGenome] = defineField('referenceGenome');
 const [genotypingArray] = defineField('genotypingArray');
 const [callingAlgorithm] = defineField('callingAlgorithm');
+const [imputationSoftware] = defineField('imputationSoftware');
+const [imputationReference] = defineField('imputationReference');
+const [numberOfVariantsForImputation] = defineField('numberOfVariantsForImputation');
+const [imputationQualityMeasure] = defineField('imputationQualityMeasure');
 
 const store = useDatasetStore();
 const userStore = useUserStore();
@@ -180,8 +191,6 @@ const maf = ref(null);
 const otherQCFilters = ref("");
 const nVariantsForImputation = ref("");
 const prephasingAndImputationSoftware = ref("");
-const imputationReference = ref("");
-const imputationQualityMeasure = ref("");
 const colOptions = ref([]);
 const requiredFields = ref([]);
 const selectedFields = ref({});
@@ -713,6 +722,7 @@ async function uploadSubmit(){
                   </div>
 
                 </Fieldset>
+
               <Fieldset legend="Genotyping Information">
                 <div class="field">
                   <label for="reference">Reference Genome</label>
@@ -751,6 +761,52 @@ async function uploadSubmit(){
                   />
                   <small id="callingAlgorithm-help" class="p-error">
                     {{ errors.callingAlgorithm }}
+                  </small>
+                </div>
+              </Fieldset>
+              <Fieldset legend="Imputation Information">
+                <div class="field">
+                  <label for="imputationSoftware">Imputation Software</label>
+                  <InputText v-model="imputationSoftware" id="imputationSoftware" type="text"
+                             v-tooltip="'The prephasing and imputation software and version used in the GWAS analysis (e.g. IMPUTE2 v2.3.2)'"
+                             aria-labelledby="imputationSoftware-help"
+                             :class="{'p-invalid': errors.imputationSoftware}"
+                  />
+                  <small id="imputationSoftware-help" class="p-error">
+                    {{ errors.imputationSoftware }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="imputationReference">Imputation Reference</label>
+                  <InputText v-model="imputationReference" id="imputationReference" type="text"
+                             v-tooltip="'The imputation reference used (e.g. HRCr1.1)'"
+                             aria-labelledby="imputationReference-help"
+                             :class="{'p-invalid': errors.imputationReference}"
+                  />
+                  <small id="imputationReference-help" class="p-error">
+                    {{ errors.imputationReference }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="numberOfVariantsForImputation">Number of Variants for Imputation</label>
+                  <InputText v-model="numberOfVariantsForImputation" id="numberOfVariantsForImputation" type="number"
+                             v-tooltip="'The number of variants used for imputation (e.g. 10,000)'"
+                             aria-labelledby="numberOfVariantsForImputation-help"
+                             :class="{'p-invalid': errors.numberOfVariantsForImputation}"
+                  />
+                  <small id="numberOfVariantsForImputation-help" class="p-error">
+                    {{ errors.numberOfVariantsForImputation }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="imputationQualityMeasure">Imputation Quality Measure</label>
+                  <InputText v-model="imputationQualityMeasure" id="imputationQualityMeasure" type="text"
+                             v-tooltip="'The imputation quality measure used and any threshold applied (e.g. INFO > 0.98 / R^2 > 0.85 / MACH R^2 > 0.92)'"
+                             aria-labelledby="imputationQualityMeasure-help"
+                             :class="{'p-invalid': errors.imputationQualityMeasure}"
+                  />
+                  <small id="imputationQualityMeasure-help" class="p-error">
+                    {{ errors.imputationQualityMeasure }}
                   </small>
                 </div>
               </Fieldset>
