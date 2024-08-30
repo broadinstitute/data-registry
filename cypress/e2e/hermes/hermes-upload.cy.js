@@ -21,6 +21,9 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get("#caseDefinition").type("My case definition");
     cy.get("#totalSampleSize").type("989");
     cy.get("#maleProportionCohort").type("1");
+    cy.get('#callingAlgorithm').type("You called, algorithm?");
+    cy.get('#genotypingArray').type("Array against you");
+    cy.get('[data-cy="referenceGenome"]').type('Hg19').type('{enter}');
 
     // cy.get("#participants").type('20');
     // cy.get("#sexProportion").type('20');

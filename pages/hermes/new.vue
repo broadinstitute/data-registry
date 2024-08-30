@@ -79,6 +79,9 @@ const formSchema = yup.object({
         then: (schema) => schema.required('You must mean diagnosis age when you specify cases'),
         otherwise: (schema) => schema,
       }),
+  referenceGenome: yup.string().label('Reference Genome').required(),
+  genotypingArray: yup.string().label('Genotyping Array').required(),
+  callingAlgorithm: yup.string().label('Calling Algorithm').required(),
 });
 
 
@@ -112,6 +115,9 @@ const [meanAgeControls] = defineField('meanAgeControls');
 const [sdAgeControls] = defineField('sdAgeControls');
 const [meanDiagnosisAge] = defineField('meanDiagnosisAge');
 const [sdDiagnosisAge] = defineField('sdDiagnosisAge');
+const [referenceGenome] = defineField('referenceGenome');
+const [genotypingArray] = defineField('genotypingArray');
+const [callingAlgorithm] = defineField('callingAlgorithm');
 
 const store = useDatasetStore();
 const userStore = useUserStore();
@@ -123,10 +129,13 @@ const missingFileError = ref('');
 const missingMappingError = ref('');
 let fileName = null;
 let previousMapping = {};
-const selectedGenomeBuild = ref('');
 const caseAscertainmentOptions = ref([
     { name: "Electronic Health Records", value: "Electronic Health Records" },
     { name: "Research Study", value: "Research Study" }
+]);
+const referenceGenomeOptions = ref([
+  { name: "Hg38", value: "Hg38" },
+  { name: "Hg19", value: "Hg19" }
 ]);
 const sexOptions = ref([
   { name: "Not sex stratified", value: "Not sex stratified" },
@@ -164,7 +173,6 @@ const analysisSoftware = ref("");
 const statisticalModel = ref("");
 const covariates = ref("");
 const arrayName = ref("");
-const callingAlgorithm = ref("");
 const variantCallRate = ref(null);
 const sampleCallRate = ref(null);
 const hwePValue = ref(null);
@@ -705,6 +713,47 @@ async function uploadSubmit(){
                   </div>
 
                 </Fieldset>
+              <Fieldset legend="Genotyping Information">
+                <div class="field">
+                  <label for="reference">Reference Genome</label>
+                  <Dropdown
+                      id="referenceGenome"
+                      v-model="referenceGenome"
+                      :options="referenceGenomeOptions"
+                      optionLabel="name"
+                      optionValue="value"
+                      placeholder="Select Reference Genome" data-cy="referenceGenome"
+                      aria-describedby="referenceGenome-help"
+                      :class="{ 'p-invalid': errors.referenceGenome }"
+
+                  />
+                  <small id="referenceGenome-help" class="p-error">
+                    {{ errors.referenceGenome }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="genotypingArray">Genotyping Array</label>
+                  <InputText v-model="genotypingArray" id="genotypingArray" type="text"
+                             v-tooltip="'The genotyping array name and version used to generate the genetic data (e.g.  Illumina Omni2.5)'"
+                             aria-labelledby="genotypingArray-help"
+                             :class="{'p-invalid': errors.genotypingArray}"
+                  />
+                  <small id="genotypingArray-help" class="p-error">
+                    {{ errors.genotypingArray }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="callingAlgorithm">Calling Algorithm</label>
+                  <InputText v-model="callingAlgorithm" id="callingAlgorithm" type="text"
+                             v-tooltip="'The calling algorithm used (e.g. GATK HaplotypeCaller v4.1)'"
+                             aria-labelledby="callingAlgorithm-help"
+                             :class="{'p-invalid': errors.callingAlgorithm}"
+                  />
+                  <small id="callingAlgorithm-help" class="p-error">
+                    {{ errors.callingAlgorithm }}
+                  </small>
+                </div>
+              </Fieldset>
 
 
 
