@@ -28,6 +28,12 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('#imputationReference').type('Imputation reference');
     cy.get('#numberOfVariantsForImputation').type('47');
     cy.get('#imputationQualityMeasure').type('highest quality');
+    cy.get('[data-cy="relatedIndividualsRemoved"]').type('Yes').type('{enter}');
+    cy.get('#variantCallRate').type('.22');
+    cy.get('#sampleCallRate').type('.2247');
+    cy.get('#hwePValue').type('.09121');
+    cy.get('#maf').type('1');
+    cy.get('#otherFilters').type('My Filters');
 
     // cy.get("#participants").type('20');
     // cy.get("#sexProportion").type('20');

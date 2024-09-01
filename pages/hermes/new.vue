@@ -28,6 +28,7 @@ const formSchema = yup.object({
   cases: yup.number().integer('Cases must be an integer').positive('Cases must be positive')
       .label('Cases').transform(value => (isNaN(value) ? undefined : value)),
   maleProportionCohort: yup.number().min(0).max(1).required()
+      .transform(value => (isNaN(value) ? undefined : value))
       .label('Male propoportion (total cohort)'),
   maleProportionCases: yup.number().min(0).max(1).label('Male proportion (cases)').when("cases", {
     is: (value) => value > 0,
@@ -89,6 +90,17 @@ const formSchema = yup.object({
       .integer("Number of variants should be a whole number")
       .label("Number of Variants for Imputation").required(),
   imputationQualityMeasure: yup.string().label("Imputation Quality Measure").required(),
+  relatedIndividualsRemoved: yup.string().label("Related Individuals Removed").required(),
+  variantCallRate: yup.number().min(0).max(1).transform(value => (isNaN(value) ? undefined : value))
+      .label("Variant Call Rate").required(),
+  sampleCallRate: yup.number().min(0).max(1).transform(value => (isNaN(value) ? undefined : value))
+      .label("Sample Call Rate").required(),
+  hwePValue: yup.number().min(0).max(1).transform(value => (isNaN(value) ? undefined : value))
+      .label("HWE p-value").required(),
+  maf: yup.number().min(0).max(1).transform(value => (isNaN(value) ? undefined : value))
+      .label("MAF").required(),
+  otherFilters: yup.string().label("Other QC Filters").required(),
+
 });
 
 
@@ -129,6 +141,12 @@ const [imputationSoftware] = defineField('imputationSoftware');
 const [imputationReference] = defineField('imputationReference');
 const [numberOfVariantsForImputation] = defineField('numberOfVariantsForImputation');
 const [imputationQualityMeasure] = defineField('imputationQualityMeasure');
+const [relatedIndividualsRemoved] = defineField('relatedIndividualsRemoved');
+const [variantCallRate] = defineField('variantCallRate');
+const [sampleCallRate] = defineField('sampleCallRate');
+const [hwePValue] = defineField('hwePValue');
+const [maf] = defineField('maf');
+const [otherFilters] = defineField('otherFilters');
 
 const store = useDatasetStore();
 const userStore = useUserStore();
@@ -147,6 +165,10 @@ const caseAscertainmentOptions = ref([
 const referenceGenomeOptions = ref([
   { name: "Hg38", value: "Hg38" },
   { name: "Hg19", value: "Hg19" }
+]);
+const relatedIndividualsRemovedOptions = ref([
+  {name: "Yes", value: "Yes"},
+  {name: "No", value: "No"},
 ]);
 const sexOptions = ref([
   { name: "Not sex stratified", value: "Not sex stratified" },
@@ -184,11 +206,6 @@ const analysisSoftware = ref("");
 const statisticalModel = ref("");
 const covariates = ref("");
 const arrayName = ref("");
-const variantCallRate = ref(null);
-const sampleCallRate = ref(null);
-const hwePValue = ref(null);
-const maf = ref(null);
-const otherQCFilters = ref("");
 const nVariantsForImputation = ref("");
 const prephasingAndImputationSoftware = ref("");
 const colOptions = ref([]);
@@ -810,7 +827,79 @@ async function uploadSubmit(){
                   </small>
                 </div>
               </Fieldset>
-
+              <Fieldset legend="Genotyping Quality Control">
+                <div class="field">
+                    <label for="relatedIndividualsRemoved">Related Individuals Removed?</label>
+                    <Dropdown
+                        id="relatedIndividualsRemoved"
+                        v-model="relatedIndividualsRemoved"
+                        :options="relatedIndividualsRemovedOptions"
+                        optionLabel="name"
+                        optionValue="value"
+                        placeholder="Related Individuals Removed?" data-cy="relatedIndividualsRemoved"
+                        aria-describedby="relatedIndividualsRemoved-help"
+                        :class="{ 'p-invalid': errors.relatedIndividualsRemoved }"
+                    />
+                    <small id="relatedIndividualsRemoved-help" class="p-error">
+                      {{ errors.relatedIndividualsRemoved }}
+                    </small>
+                </div>
+                <div class="field">
+                  <label for="variantCallRate">Variant Call Rate</label>
+                  <InputText v-model="variantCallRate" id="variantCallRate" type="number" min="0" max="1"
+                             v-tooltip="'The variant call rate threshold used (e.g. 0.95)'"
+                             aria-labelledby="variantCallRate-help"
+                             :class="{'p-invalid': errors.variantCallRate}"
+                  />
+                  <small id="variantCallRate-help" class="p-error">
+                    {{ errors.variantCallRate }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="sampleCallRate">Sample Call Rate</label>
+                  <InputText v-model="sampleCallRate" id="sampleCallRate" type="number" min="0" max="1"
+                             v-tooltip="'The sample call rate threshold used (e.g. 0.97)'"
+                             aria-labelledby="sampleCallRate-help"
+                             :class="{'p-invalid': errors.sampleCallRate}"
+                  />
+                  <small id="sampleCallRate-help" class="p-error">
+                    {{ errors.sampleCallRate }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="hwePValue">HWE p-value</label>
+                  <InputText v-model="hwePValue" id="hwePValue" type="number" min="0" max="1"
+                             v-tooltip="'The Hardy-Weinberg Equilibrium p-value threshold used (e.g. 0.05)'"
+                             aria-labelledby="hwePValue-help"
+                             :class="{'p-invalid': errors.hwePValue}"
+                  />
+                  <small id="hwePValue-help" class="p-error">
+                    {{ errors.hwePValue }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="maf">MAF Threshold</label>
+                  <InputText v-model="maf" id="maf" type="number" min="0" max="1"
+                             v-tooltip="'The minor allele frequency threshold used (e.g. 0.01)'"
+                             aria-labelledby="maf-help"
+                             :class="{'p-invalid': errors.maf}"
+                  />
+                  <small id="maf-help" class="p-error">
+                    {{ errors.maf }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="otherFilters">Other QC Filters</label>
+                  <InputText v-model="otherFilters" id="otherFilters" type="text"
+                             v-tooltip="'Other quality control filters that may have been implemented'"
+                             aria-labelledby="otherFilters-help"
+                             :class="{'p-invalid': errors.otherFilters}"
+                  />
+                  <small id="otherFilters-help" class="p-error">
+                    {{ errors.otherFilters }}
+                  </small>
+                </div>
+              </Fieldset>
 
 
             </div>
