@@ -28,6 +28,7 @@ const formSchema = yup.object({
   cases: yup.number().integer('Cases must be an integer').positive('Cases must be positive')
       .label('Cases').transform(value => (isNaN(value) ? undefined : value)),
   maleProportionCohort: yup.number().min(0).max(1).required()
+      .transform(value => (isNaN(value) ? undefined : value))
       .label('Male propoportion (total cohort)'),
   maleProportionCases: yup.number().min(0).max(1).label('Male proportion (cases)').when("cases", {
     is: (value) => value > 0,
@@ -70,7 +71,7 @@ const formSchema = yup.object({
   meanDiagnosisAge: yup.number().positive('Mean diagnosis age must be positive')
       .label('Mean diagnosis age').transform(value => (isNaN(value) ? undefined : value)).when("cases", {
         is: (value) => value > 0,
-        then: (schema) => schema.required('You must mean diagnosis age when you specify cases'),
+        then: (schema) => schema.required('You must specify mean diagnosis age when you specify cases'),
         otherwise: (schema) => schema,
     }),
   sdDiagnosisAge: yup.number().positive('Standard deviation diagnosis age must be positive')
@@ -79,6 +80,27 @@ const formSchema = yup.object({
         then: (schema) => schema.required('You must mean diagnosis age when you specify cases'),
         otherwise: (schema) => schema,
       }),
+  referenceGenome: yup.string().label('Reference Genome').required(),
+  genotypingArray: yup.string().label('Genotyping Array').required(),
+  callingAlgorithm: yup.string().label('Calling Algorithm').required(),
+  imputationSoftware: yup.string().label('Imputation Software').required(),
+  imputationReference: yup.string().label('Imputation Reference').required(),
+  numberOfVariantsForImputation: yup.number().positive("Number of variants for imputation must be positive")
+      .transform(value => (isNaN(value) ? undefined : value))
+      .integer("Number of variants should be a whole number")
+      .label("Number of Variants for Imputation").required(),
+  imputationQualityMeasure: yup.string().label("Imputation Quality Measure").required(),
+  relatedIndividualsRemoved: yup.string().label("Related Individuals Removed").required(),
+  variantCallRate: yup.number().min(0).max(1).transform(value => (isNaN(value) ? undefined : value))
+      .label("Variant Call Rate").required(),
+  sampleCallRate: yup.number().min(0).max(1).transform(value => (isNaN(value) ? undefined : value))
+      .label("Sample Call Rate").required(),
+  hwePValue: yup.number().min(0).max(1).transform(value => (isNaN(value) ? undefined : value))
+      .label("HWE p-value").required(),
+  maf: yup.number().min(0).max(1).transform(value => (isNaN(value) ? undefined : value))
+      .label("MAF").required(),
+  otherFilters: yup.string().label("Other QC Filters").required(),
+
 });
 
 
@@ -112,6 +134,19 @@ const [meanAgeControls] = defineField('meanAgeControls');
 const [sdAgeControls] = defineField('sdAgeControls');
 const [meanDiagnosisAge] = defineField('meanDiagnosisAge');
 const [sdDiagnosisAge] = defineField('sdDiagnosisAge');
+const [referenceGenome] = defineField('referenceGenome');
+const [genotypingArray] = defineField('genotypingArray');
+const [callingAlgorithm] = defineField('callingAlgorithm');
+const [imputationSoftware] = defineField('imputationSoftware');
+const [imputationReference] = defineField('imputationReference');
+const [numberOfVariantsForImputation] = defineField('numberOfVariantsForImputation');
+const [imputationQualityMeasure] = defineField('imputationQualityMeasure');
+const [relatedIndividualsRemoved] = defineField('relatedIndividualsRemoved');
+const [variantCallRate] = defineField('variantCallRate');
+const [sampleCallRate] = defineField('sampleCallRate');
+const [hwePValue] = defineField('hwePValue');
+const [maf] = defineField('maf');
+const [otherFilters] = defineField('otherFilters');
 
 const store = useDatasetStore();
 const userStore = useUserStore();
@@ -123,10 +158,17 @@ const missingFileError = ref('');
 const missingMappingError = ref('');
 let fileName = null;
 let previousMapping = {};
-const selectedGenomeBuild = ref('');
 const caseAscertainmentOptions = ref([
     { name: "Electronic Health Records", value: "Electronic Health Records" },
     { name: "Research Study", value: "Research Study" }
+]);
+const referenceGenomeOptions = ref([
+  { name: "Hg38", value: "Hg38" },
+  { name: "Hg19", value: "Hg19" }
+]);
+const relatedIndividualsRemovedOptions = ref([
+  {name: "Yes", value: "Yes"},
+  {name: "No", value: "No"},
 ]);
 const sexOptions = ref([
   { name: "Not sex stratified", value: "Not sex stratified" },
@@ -164,16 +206,8 @@ const analysisSoftware = ref("");
 const statisticalModel = ref("");
 const covariates = ref("");
 const arrayName = ref("");
-const callingAlgorithm = ref("");
-const variantCallRate = ref(null);
-const sampleCallRate = ref(null);
-const hwePValue = ref(null);
-const maf = ref(null);
-const otherQCFilters = ref("");
 const nVariantsForImputation = ref("");
 const prephasingAndImputationSoftware = ref("");
-const imputationReference = ref("");
-const imputationQualityMeasure = ref("");
 const colOptions = ref([]);
 const requiredFields = ref([]);
 const selectedFields = ref({});
@@ -706,6 +740,166 @@ async function uploadSubmit(){
 
                 </Fieldset>
 
+              <Fieldset legend="Genotyping Information">
+                <div class="field">
+                  <label for="reference">Reference Genome</label>
+                  <Dropdown
+                      id="referenceGenome"
+                      v-model="referenceGenome"
+                      :options="referenceGenomeOptions"
+                      optionLabel="name"
+                      optionValue="value"
+                      placeholder="Select Reference Genome" data-cy="referenceGenome"
+                      aria-describedby="referenceGenome-help"
+                      :class="{ 'p-invalid': errors.referenceGenome }"
+
+                  />
+                  <small id="referenceGenome-help" class="p-error">
+                    {{ errors.referenceGenome }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="genotypingArray">Genotyping Array</label>
+                  <InputText v-model="genotypingArray" id="genotypingArray" type="text"
+                             v-tooltip="'The genotyping array name and version used to generate the genetic data (e.g.  Illumina Omni2.5)'"
+                             aria-labelledby="genotypingArray-help"
+                             :class="{'p-invalid': errors.genotypingArray}"
+                  />
+                  <small id="genotypingArray-help" class="p-error">
+                    {{ errors.genotypingArray }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="callingAlgorithm">Calling Algorithm</label>
+                  <InputText v-model="callingAlgorithm" id="callingAlgorithm" type="text"
+                             v-tooltip="'The calling algorithm used (e.g. GATK HaplotypeCaller v4.1)'"
+                             aria-labelledby="callingAlgorithm-help"
+                             :class="{'p-invalid': errors.callingAlgorithm}"
+                  />
+                  <small id="callingAlgorithm-help" class="p-error">
+                    {{ errors.callingAlgorithm }}
+                  </small>
+                </div>
+              </Fieldset>
+              <Fieldset legend="Imputation Information">
+                <div class="field">
+                  <label for="imputationSoftware">Imputation Software</label>
+                  <InputText v-model="imputationSoftware" id="imputationSoftware" type="text"
+                             v-tooltip="'The prephasing and imputation software and version used in the GWAS analysis (e.g. IMPUTE2 v2.3.2)'"
+                             aria-labelledby="imputationSoftware-help"
+                             :class="{'p-invalid': errors.imputationSoftware}"
+                  />
+                  <small id="imputationSoftware-help" class="p-error">
+                    {{ errors.imputationSoftware }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="imputationReference">Imputation Reference</label>
+                  <InputText v-model="imputationReference" id="imputationReference" type="text"
+                             v-tooltip="'The imputation reference used (e.g. HRCr1.1)'"
+                             aria-labelledby="imputationReference-help"
+                             :class="{'p-invalid': errors.imputationReference}"
+                  />
+                  <small id="imputationReference-help" class="p-error">
+                    {{ errors.imputationReference }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="numberOfVariantsForImputation">Number of Variants for Imputation</label>
+                  <InputText v-model="numberOfVariantsForImputation" id="numberOfVariantsForImputation" type="number"
+                             v-tooltip="'The number of variants used for imputation (e.g. 10,000)'"
+                             aria-labelledby="numberOfVariantsForImputation-help"
+                             :class="{'p-invalid': errors.numberOfVariantsForImputation}"
+                  />
+                  <small id="numberOfVariantsForImputation-help" class="p-error">
+                    {{ errors.numberOfVariantsForImputation }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="imputationQualityMeasure">Imputation Quality Measure</label>
+                  <InputText v-model="imputationQualityMeasure" id="imputationQualityMeasure" type="text"
+                             v-tooltip="'The imputation quality measure used and any threshold applied (e.g. INFO > 0.98 / R^2 > 0.85 / MACH R^2 > 0.92)'"
+                             aria-labelledby="imputationQualityMeasure-help"
+                             :class="{'p-invalid': errors.imputationQualityMeasure}"
+                  />
+                  <small id="imputationQualityMeasure-help" class="p-error">
+                    {{ errors.imputationQualityMeasure }}
+                  </small>
+                </div>
+              </Fieldset>
+              <Fieldset legend="Genotyping Quality Control">
+                <div class="field">
+                    <label for="relatedIndividualsRemoved">Related Individuals Removed?</label>
+                    <Dropdown
+                        id="relatedIndividualsRemoved"
+                        v-model="relatedIndividualsRemoved"
+                        :options="relatedIndividualsRemovedOptions"
+                        optionLabel="name"
+                        optionValue="value"
+                        placeholder="Related Individuals Removed?" data-cy="relatedIndividualsRemoved"
+                        aria-describedby="relatedIndividualsRemoved-help"
+                        :class="{ 'p-invalid': errors.relatedIndividualsRemoved }"
+                    />
+                    <small id="relatedIndividualsRemoved-help" class="p-error">
+                      {{ errors.relatedIndividualsRemoved }}
+                    </small>
+                </div>
+                <div class="field">
+                  <label for="variantCallRate">Variant Call Rate</label>
+                  <InputText v-model="variantCallRate" id="variantCallRate" type="number" min="0" max="1"
+                             v-tooltip="'The variant call rate threshold used (e.g. 0.95)'"
+                             aria-labelledby="variantCallRate-help"
+                             :class="{'p-invalid': errors.variantCallRate}"
+                  />
+                  <small id="variantCallRate-help" class="p-error">
+                    {{ errors.variantCallRate }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="sampleCallRate">Sample Call Rate</label>
+                  <InputText v-model="sampleCallRate" id="sampleCallRate" type="number" min="0" max="1"
+                             v-tooltip="'The sample call rate threshold used (e.g. 0.97)'"
+                             aria-labelledby="sampleCallRate-help"
+                             :class="{'p-invalid': errors.sampleCallRate}"
+                  />
+                  <small id="sampleCallRate-help" class="p-error">
+                    {{ errors.sampleCallRate }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="hwePValue">HWE p-value</label>
+                  <InputText v-model="hwePValue" id="hwePValue" type="number" min="0" max="1"
+                             v-tooltip="'The Hardy-Weinberg Equilibrium p-value threshold used (e.g. 0.05)'"
+                             aria-labelledby="hwePValue-help"
+                             :class="{'p-invalid': errors.hwePValue}"
+                  />
+                  <small id="hwePValue-help" class="p-error">
+                    {{ errors.hwePValue }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="maf">MAF Threshold</label>
+                  <InputText v-model="maf" id="maf" type="number" min="0" max="1"
+                             v-tooltip="'The minor allele frequency threshold used (e.g. 0.01)'"
+                             aria-labelledby="maf-help"
+                             :class="{'p-invalid': errors.maf}"
+                  />
+                  <small id="maf-help" class="p-error">
+                    {{ errors.maf }}
+                  </small>
+                </div>
+                <div class="field">
+                  <label for="otherFilters">Other QC Filters</label>
+                  <InputText v-model="otherFilters" id="otherFilters" type="text"
+                             v-tooltip="'Other quality control filters that may have been implemented'"
+                             aria-labelledby="otherFilters-help"
+                             :class="{'p-invalid': errors.otherFilters}"
+                  />
+                  <small id="otherFilters-help" class="p-error">
+                    {{ errors.otherFilters }}
+                  </small>
+                </div>
+              </Fieldset>
 
 
             </div>
