@@ -1,29 +1,27 @@
 <script setup>
-
 import { useDatasetStore } from "~/stores/DatasetStore";
 import { useUserStore } from "~/stores/UserStore";
 import { useToast } from "primevue/usetoast";
-import { useForm } from 'vee-validate';
-import * as yup from 'yup';
+import { useForm } from "vee-validate";
+import * as yup from "yup";
 
 const formSchema = yup.object({
-  dataSetName: yup.string().label('Dataset Name').required(),
-  cohort: yup.string().label('Cohort').required(),
-  dataCollectionStart: yup.date().label('Data Collection Start').required(),
-  dataCollectionEnd: yup.date().label('Data Collection End').required(),
-  contactPerson: yup.string().label('Contact Person').required(),
+    dataSetName: yup.string().label("Dataset Name").required(),
+    cohort: yup.string().label("Cohort").required(),
+    dataCollectionStart: yup.date().label("Data Collection Start").required(),
+    dataCollectionEnd: yup.date().label("Data Collection End").required(),
+    contactPerson: yup.string().label("Contact Person").required(),
 });
-
 
 const { defineField, handleSubmit, errors } = useForm({
-  validationSchema: formSchema,
+    validationSchema: formSchema,
 });
 
-const [dataSetName] = defineField('dataSetName');
-const [cohort] = defineField('cohort');
-const [dataCollectionStart] = defineField('dataCollectionStart');
-const [dataCollectionEnd] = defineField('dataCollectionEnd');
-const [contactPerson] = defineField('contactPerson');
+const [dataSetName] = defineField("dataSetName");
+const [cohort] = defineField("cohort");
+const [dataCollectionStart] = defineField("dataCollectionStart");
+const [dataCollectionEnd] = defineField("dataCollectionEnd");
+const [contactPerson] = defineField("contactPerson");
 
 const store = useDatasetStore();
 const userStore = useUserStore();
@@ -62,9 +60,9 @@ const genomeBuildOptions = ref([
     { name: "GRCh37/b37", value: "GRCh37/b37" },
 ]);
 const cohortOptions = ref([
-  { name: "UK Biobank", value: "UK Biobank" },
-  { name: "23andMe", value: "23andMe" },
-  { name: "AncestryDNA", value: "AncestryDNA" }
+    { name: "UK Biobank", value: "UK Biobank" },
+    { name: "23andMe", value: "23andMe" },
+    { name: "AncestryDNA", value: "AncestryDNA" },
 ]);
 const subjects = ref(0);
 const references = ref(null);
@@ -248,7 +246,7 @@ function resetFile() {
 }
 
 const onSubmit = handleSubmit((values) => {
-  console.log(values);
+    console.log(values);
 });
 
 //frontend validation for metadata fields, check if the required fields are empty
@@ -847,7 +845,6 @@ async function upload() {
             </div>
         </div>
     </div>
-  </form>
 </template>
 
 <style scoped>
