@@ -336,6 +336,7 @@ function loadMapping() {
         toast.add({
             severity: "warn",
             summary: "Alert",
+            group: "default",
             detail: "Previous mapping does not match any column for this file.",
             life: 5000,
         });
@@ -381,13 +382,23 @@ async function uploadSubmit(){
   const metadata = JSON.parse(JSON.stringify(values));
   metadata.column_map = colMap.value;
   try {
-    await store.uploadFileForHermes(
+    const uploadRes = await store.uploadFileForHermes(
         file,
         fileName,
         dataSetName.value,
         metadata,
     );
-    await route.push({ path: "/hermes" });
+    console.log(JSON.stringify(uploadRes));
+    if (uploadRes.errors) {
+      toast.add({
+        severity: "error",
+        summary: "Alert",
+        group: "fileErrors",
+        errors: uploadRes.errors,
+      });
+    } else {
+      await route.push({ path: "/hermes" });
+    }
   } catch (e) {
     console.log(e);
   }
@@ -412,7 +423,23 @@ async function uploadSubmit(){
             animation-duration="0"
         />
     </Dialog>
-    <Toast position="top-center" />
+  <Toast position="top-center" group="default"/>
+  <Toast position="top-center" group="fileErrors">
+    <template #message="slotProps">
+      <div class="flex flex-column items-start flex-auto">
+        <div>
+          <span>File data problems:</span>
+        </div>
+        <div>
+          <ul>
+            <li v-for="error in slotProps.message.errors" :key="error">
+              {{ error }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </template>
+    </Toast>
 
     <div class="grid">
         <div class="col mb-4">

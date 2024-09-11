@@ -55,7 +55,7 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('button[aria-label="Upload"]').click();
     cy.wait('@uploadRequest');
     cy.wait(500);
-    cy.location('pathname').should('eq', '/hermes');
-    cy.contains('td', 'Cypress dataset').should('exist');
+    // cy.location('pathname').should('eq', '/hermes');
+    cy.contains('div.p-toast-message-content', 'File data problems:').should('exist');
   });
 });
