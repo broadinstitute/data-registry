@@ -56,7 +56,7 @@ const formSchema = yup.object({
         then: (schema) => schema.required('You must specifiy standard deviation age (cases) when you specify cases'),
         otherwise: (schema) => schema,
       }),
-  meanAgeControls: yup.number().positive('Mean age (controls, years) must be positive').label('Mean Age (controls, years)')
+  meanAgeControl: yup.number().positive('Mean age (controls, years) must be positive').label('Mean Age (controls, years)')
       .transform(value => (isNaN(value) ? undefined : value)).when("cases", {
         is: (value) => value > 0,
         then: (schema) => schema.required('You must specifiy mean age (controls) when you specify cases'),
@@ -100,6 +100,10 @@ const formSchema = yup.object({
   maf: yup.number().min(0).max(1).transform(value => (isNaN(value) ? undefined : value))
       .label("MAF").required(),
   otherFilters: yup.string().label("Other QC Filters").required(),
+  meanAgeRecruitment: yup.number().positive('Mean age (recruitment, years) must be positive')
+      .label('Mean Age (recruitment, years)').transform(value => (isNaN(value) ? undefined : value)),
+  sdAgeRecruitment: yup.number().positive('Standard deviation age (recruitment, years) must be positive')
+      .label('Standard deviation age (recruitment, years)').transform(value => (isNaN(value) ? undefined : value)),
 
 });
 
@@ -128,9 +132,6 @@ const [maleProportionCases] = defineField('maleProportionCases');
 const [maleProportionControls] = defineField('maleProportionControls');
 const [meanAgeCohort] = defineField('meanAgeCohort');
 const [sdAgeCohort] = defineField('sdAgeCohort');
-const [meanAgeCases] = defineField('meanAgeCases');
-const [sdAgeCases] = defineField('sdAgeCases');
-const [meanAgeControls] = defineField('meanAgeControls');
 const [sdAgeControls] = defineField('sdAgeControls');
 const [meanDiagnosisAge] = defineField('meanDiagnosisAge');
 const [sdDiagnosisAge] = defineField('sdDiagnosisAge');
@@ -147,6 +148,13 @@ const [sampleCallRate] = defineField('sampleCallRate');
 const [hwePValue] = defineField('hwePValue');
 const [maf] = defineField('maf');
 const [otherFilters] = defineField('otherFilters');
+
+const [meanAgeCases] = defineField('meanAgeCases');
+const [meanAgeControl] = defineField('meanAgeControl');
+const [meanAgeRecruitment] = defineField('meanAgeRecruitment');
+
+const [sdAgeCases] = defineField('sdAgeCases');
+const [sdAgeRecruitment] = defineField('sdAgeRecruitment');
 
 const store = useDatasetStore();
 const userStore = useUserStore();
@@ -642,129 +650,6 @@ async function uploadSubmit(){
                       {{ errors.cases }}
                     </small>
                   </div>
-                  <div class="field">
-                    <label for="maleProportionCohort">Male Proportion Cohort</label>
-                    <InputText v-model="maleProportionCohort" id="maleProportionCohort" type="number" min="0" max="1"
-                               v-tooltip="'The fraction of the total cohort that are male (e.g. 0.51)'"
-                               aria-labelledby="maleProportionCohort-help"
-                               :class="{'p-invalid': errors.maleProportionCohort}"
-                    />
-                    <small id="maleProportionCohort-help" class="p-error">
-                      {{ errors.maleProportionCohort }}
-                    </small>
-                  </div>
-                  <div class="field" v-if="cases">
-                    <label for="maleProportionCases" >Male Proportion Cases</label>
-                    <InputText v-model="maleProportionCases" id="maleProportionCases" type="number" min="0" max="1"
-                    v-tooltip="'The fraction of the cases that are male (e.g. 0.51)'"
-                               aria-labelledby="maleProportionCases-help"
-                               :class="{'p-invalid': errors.maleProportionCases}"
-                    />
-                    <small id="maleProportionCases-help" class="p-error">
-                      {{ errors.maleProportionCases }}
-                    </small>
-                  </div>
-                  <div class="field" v-if="cases">
-                    <label for="maleProportionControls">Male Proportion Controls</label>
-                    <InputText v-model="maleProportionControls" id="maleProportionControls" type="number" min="0" max="1"
-                               v-tooltip="'The fraction of the controls that are male (e.g. 0.51)'"
-                               aria-labelledby="maleProportionControls-help"
-                               :class="{'p-invalid': errors.maleProportionControls}"
-                    />
-                    <small id="maleProportionControls-help" class="p-error">
-                      {{ errors.maleProportionControls }}
-                    </small>
-                  </div>
-                  <div class="field">
-                    <label for="meanAgeCohort">Mean Age (total cohort, years)</label>
-                    <InputText v-model="meanAgeCohort" id="meanAgeCohort" type="number" min="0"
-                               v-tooltip="'The mean age of the total cohort at first documented study phenotype (e.g. 54.2)'"
-                               aria-labelledby="meanAgeCohort-help"
-                               :class="{'p-invald': errors.meanAgeCohort}"
-                    />
-                    <small id="meanAgeCohort-help" class="p-error">
-                      {{ errors.meanAgeCohort }}
-                    </small>
-                  </div>
-                  <div class="field">
-                    <label for="sdAgeCohort">Standard Deviation Age (total cohort, years)</label>
-                    <InputText v-model="sdAgeCohort" id="sdAgeCohort" type="number" min="0"
-                               v-tooltip="'The age standard deviation of the total cohort  at first documented study phenotype (e.g. 10.2)'"
-                               aria-labelledby="sdAgeCohort-help"
-                               :class="{'p-invalid': errors.sdAgeCohort}"
-                    />
-                    <small id="sdAgeCohort-help" class="p-error">
-                      {{ errors.sdAgeCohort }}
-                    </small>
-                  </div>
-                  <div class="field" v-if="cases">
-                    <label for="meanAgeCases">Mean Age (cases, years)</label>
-                    <InputText v-model="meanAgeCases" id="meanAgeCases" type="number" min="0"
-                               v-tooltip="'The mean age of the cases at first documented study phenotype (e.g. 54.2)'"
-                               aria-labelledby="meanAgeCases-help"
-                               :class="{'p-invalid': errors.meanAgeCases}"
-                    />
-                    <small id="meanAgeCases-help" class="p-error">
-                      {{ errors.meanAgeCases }}
-                    </small>
-                  </div>
-                  <div class="field" v-if="cases">
-                    <label for="sdAgeCases">Standard Deviation Age (cases, years)</label>
-                    <InputText v-model="sdAgeCases" id="sdAgeCases" type="number" min="0"
-                               v-tooltip="'The age standard deviation of the cases at first documented study phenotype (e.g. 10.2)'"
-                               aria-labelledby="sdAgeCases-help"
-                               :class="{'p-invalid': errors.sdAgeCases}"
-                    />
-                    <small id="sdAgeCases-help" class="p-error">
-                      {{ errors.sdAgeCases }}
-                    </small>
-                  </div>
-                  <div class="field" v-if="cases">
-                    <label for="meanAgeControls">Mean Age (controls, years)</label>
-                    <InputText v-model="meanAgeControls" id="meanAgeControls" type="number" min="0"
-                               v-tooltip="'The mean age of the controls at first documented study phenotype (e.g. 54.2)'"
-                               aria-labelledby="meanAgeControls-help"
-                               :class="{'p-invalid': errors.meanAgeControls}"
-                    />
-                    <small id="meanAgeControls-help" class="p-error">
-                      {{ errors.meanAgeControls }}
-                    </small>
-                  </div>
-                  <div class="field" v-if="cases">
-                    <label for="sdAgeControls">Standard Deviation Age (controls, years)</label>
-                    <InputText v-model="sdAgeControls" id="sdAgeControls" type="number" min="0"
-                               v-tooltip="'The age standard deviation of the controls at first documented study phenotype (e.g. 10.2)'"
-                               aria-labelledby="sdAgeControls-help"
-                               :class="{'p-invalid': errors.sdAgeControls}"
-                    />
-                    <small id="sdAgeControls-help" class="p-error">
-                      {{ errors.sdAgeControls }}
-                    </small>
-                  </div>
-
-                  <div class="field" v-if="cases">
-                    <label for="meanDiagnosisAge">Mean diagnosis age (cases, years)</label>
-                    <InputText v-model="meanDiagnosisAge" id="meanDiagnosisAge" type="number" min="0"
-                               v-tooltip="'The mean age of the total cohort at first documented study phenotype (e.g. 54.2)'"
-                               aria-labelledby="meanDiagnosisAge-help"
-                               :class="{'p-invalid': errors.meanDiagnosisAge}"
-                    />
-                    <small id="meanDiagnosisAge-help" class="p-error">
-                      {{ errors.meanDiagnosisAges }}
-                    </small>
-                  </div>
-                  <div class="field" v-if="cases">
-                    <label for="sdDiagnosisAge">Standard Deviation Age (controls, years)</label>
-                    <InputText v-model="sdDiagnosisAge" id="sdDiagnosisAge" type="number" min="0"
-                               v-tooltip="'The age standard deviation of the total cohort  at first documented study phenotype (e.g. 10.2)'"
-                               aria-labelledby="sdDiagnosisAge-help"
-                               :class="{'p-invalid': errors.sdDiagnosisAge}"
-                    />
-                    <small id="sdDiagnosisAge-help" class="p-error">
-                      {{ errors.sdDiagnosisAge }}
-                    </small>
-                  </div>
-
                 </Fieldset>
 
               <Fieldset legend="Genotyping Information">
@@ -1048,6 +933,7 @@ async function uploadSubmit(){
                 <small class="p-error" v-if="missingMappingError">
                   {{ missingMappingError }}
                 </small>
+
                 <div class="w-full text-center mt-4">
                     <span
                         style="display: inline-block"
@@ -1065,6 +951,98 @@ async function uploadSubmit(){
                         ></Button>
                     </span>
                 </div>
+            </div>
+            <div class="card p-fluid">
+              <Fieldset legend="Age and Sex Distribution">
+                <div class="grid">
+                  <div class="col-3"></div>
+                  <div class="col-2">Total</div>
+                  <div class="col-2">Cases</div>
+                  <div class="col-2">Control</div>
+                  <div class="col-3">Recruitment</div>
+                </div>
+
+                <div class="grid align-items-start mb-2">
+                  <div class="col-3 pt-2">Mean Age</div>
+                  <div class="col-2">
+                    <div class="field-wrapper">
+                      <InputText id="meanAgeCohort" v-model="meanAgeCohort" :class="{ 'p-invalid': errors.meanAgeCohort }" type="number"/>
+                      <small class="p-error">{{ errors.meanAgeCohort || ' ' }}</small>
+                    </div>
+                  </div>
+                  <div class="col-2">
+                    <div class="field-wrapper">
+                      <InputText id="meanAgeCases" v-model="meanAgeCases" :class="{ 'p-invalid': errors.meanAgeCases }" type="number"/>
+                      <small class="p-error">{{ errors.meanAgeCases || ' ' }}</small>
+                    </div>
+                  </div>
+                  <div class="col-2">
+                    <div class="field-wrapper">
+                      <InputText id="meanAgeControl" v-model="meanAgeControl" :class="{ 'p-invalid': errors.meanAgeControl }" type="number" />
+                      <small class="p-error">{{ errors.meanAgeControl || ' ' }}</small>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="field-wrapper">
+                      <InputText id="meanAgeRecruitment" v-model="meanAgeRecruitment" :class="{ 'p-invalid': errors.meanAgeRecruitment }" type="number"/>
+                      <small class="p-error">{{ errors.meanAgeRecruitment || ' ' }}</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid align-items-start mb-2">
+                  <div class="col-3 pt-2">SD Age</div>
+                  <div class="col-2">
+                    <div class="field-wrapper">
+                      <InputText id="sdAgeCohort" v-model="sdAgeCohort" :class="{ 'p-invalid': errors.sdAgeCohort }" type="number"/>
+                      <small class="p-error">{{ errors.sdAgeCohort || ' ' }}</small>
+                    </div>
+                  </div>
+                  <div class="col-2">
+                    <div class="field-wrapper">
+                      <InputText id="sdAgeCases" v-model="sdAgeCases" :class="{ 'p-invalid': errors.sdAgeCases }" type="number"/>
+                      <small class="p-error">{{ errors.sdAgeCases || ' ' }}</small>
+                    </div>
+                  </div>
+                  <div class="col-2">
+                    <div class="field-wrapper">
+                      <InputText id="sdAgeControls" v-model="sdAgeControls" :class="{ 'p-invalid': errors.sdAgeControls }" type="number" />
+                      <small class="p-error">{{ errors.sdAgeControls || ' ' }}</small>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="field-wrapper">
+                      <InputText id="sdAgeRecruitment" v-model="sdAgeRecruitment" :class="{ 'p-invalid': errors.sdAgeRecruitment }" type="number" />
+                      <small class="p-error">{{ errors.sdAgeRecruitment || ' ' }}</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid align-items-start">
+                  <div class="col-3 pt-2">Male Proportion</div>
+                  <div class="col-2">
+                    <div class="field-wrapper">
+                      <InputText id="maleProportionCohort" v-model="maleProportionCohort" :class="{ 'p-invalid': errors.maleProportionCohort }" type="number" />
+                      <small class="p-error">{{ errors.maleProportionCohort || ' ' }}</small>
+                    </div>
+                  </div>
+                  <div class="col-2">
+                    <div class="field-wrapper">
+                      <InputText id="maleProportionCases" v-model="maleProportionCases" :class="{ 'p-invalid': errors.maleProportionCases }" type="number" />
+                      <small class="p-error">{{ errors.maleProportionCases || ' ' }}</small>
+                    </div>
+                  </div>
+                  <div class="col-2">
+                    <div class="field-wrapper">
+                      <InputText id="maleProportionControls" v-model="maleProportionControls" :class="{ 'p-invalid': errors.maleProportionControls }" type="number" />
+                      <small class="p-error">{{ errors.maleProportionControls || ' ' }}</small>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    &nbsp;
+                  </div>
+                </div>
+              </Fieldset>
             </div>
         </div>
     </div>
@@ -1091,6 +1069,29 @@ async function uploadSubmit(){
 
 .p-invalid-file {
   border: solid 1px #f87171;
+}
+
+.p-inputnumber {
+  width: 100%;
+}
+
+.field-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.field-wrapper .p-inputnumber {
+  flex-grow: 0;
+}
+
+.field-wrapper small {
+  flex-grow: 1;
+  min-height: 1.5em; /* Adjust this value to match your design */
+}
+
+.pt-2 {
+  padding-top: 0.5rem;
 }
 
 </style>
