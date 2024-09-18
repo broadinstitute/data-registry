@@ -41,7 +41,7 @@ describe('Hermes Upload', {retries: 0}, () => {
     // cy.get("#analysisSoftware").type('Big Analysis Software');
     // cy.get("#statisticalModel").type('Complex Model');
     // cy.get("#covariates").type('Here are some covariates');
-    cy.get('input[type="file"]').attachFile('sample-gwas.csv');
+    cy.get('input[type="file"]').attachFile('sample-gwas-expanded.csv');
     cy.get('[data-cy="column-dropdown"]').eq(1).type('chromosome').type('{enter}');
     cy.get('[data-cy="column-dropdown"]').eq(2).type('position').type('{enter}');
     cy.get('[data-cy="column-dropdown"]').eq(3).type('alt').type('{enter}');
@@ -49,9 +49,11 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('[data-cy="column-dropdown"]').eq(5).type('eaf').type('{enter}');
     cy.get('[data-cy="column-dropdown"]').eq(6).type('beta').type('{enter}');
     cy.get('[data-cy="column-dropdown"]').eq(7).type('stdErr').type('{enter}');
-    cy.get('[data-cy="column-dropdown"]').eq(8).type('pVale').type('{enter}');
-    cy.get('[data-cy="column-dropdown"]').eq(9).type('n').type('{enter}');
-    cy.get('[data-cy="column-dropdown"]').eq(10).type('Impute').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(8).type('pValu').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(11).type('oddsRatio').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(12).type('oddsRatioLB').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(13).type('oddsRatioUB').type('{enter}');
+    cy.get('[data-cy="column-dropdown"]').eq(14).type('N').type('{enter}');
     cy.get('button[aria-label="Upload"]').click();
     cy.wait('@uploadRequest');
     cy.wait(500);
