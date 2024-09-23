@@ -377,7 +377,7 @@ async function uploadSubmit(){
   const isValid = await validate();
 
   if(!file){
-    missingFileError.value = "Please upload your file"
+    missingFileError.value = "Please upload your file";
   } else {
     missingFileError.value = '';
   }
@@ -477,30 +477,10 @@ async function uploadSubmit(){
             <div class="card p-fluid">
                 <h5>Enter File Metadata</h5>
                 <Fieldset legend="Study Metadata">
-                  <div class="field">
-                      <label for="dataSetName">Dataset Name</label>
-                      <div v-tooltip="'e.g. “UKBB Heart Failure (female)”'">
-                      <InputText
-                          v-model="dataSetName"
-                          id="dataSetName" :class="{ 'p-invalid': errors.dataSetName }"
-                                 aria-describedby="dataSetName-help"
-                          placeholder="Enter Dataset Name"
-                        />
-                        </div>
-                    <small id="dataSetName-help" class="p-error">
-                      {{ errors.dataSetName }}
-                    </small>
-                  </div>
-                  <div class="field">
-                    <label for="cohort">Cohort</label>
-                    <div v-tooltip="'e.g. “UKBiobank”'">
-                    <InputText v-model="cohort"  id="cohort" :class="{ 'p-invalid': errors.cohort }"
-                              aria-describedby="cohort-help" />
-                    </div>
-                    <small id="cohort-help" class="p-error">
-                      {{ errors.cohort }}
-                    </small>
-                  </div>
+                  <HermesValidatedInput id="dataSetName" label="Dataset Name" v-model="dataSetName"
+                                        tooltip='e.g. "UKBB Heart Failure (female)"'/>
+                  <HermesValidatedInput id="cohort" tooltip='e.g. "UKBiobank"' v-model="cohort"
+                                        label="Cohort" />
                   <div class="field">
                       <label for="dataCollectionStart">Data Collection Start</label>
                       <Calendar v-model="dataCollectionStart" id="dataCollectionStart" placeholder="yyyy/mm/dd"
@@ -523,20 +503,8 @@ async function uploadSubmit(){
                       {{errors.dataCollectionEnd}}
                     </small>
                   </div>
-                  <div class="field">
-                    <label for="contactPerson">Contact Person</label>
-                    <InputText
-                        v-model="contactPerson"
-                        id="contactPerson"
-                        type="text"
-                        v-tooltip="'Name and email address of the person to contact for follow up questions'"
-                        aria-describedby="contactPerson-help"
-                        :class="{ 'p-invalid': errors.contactPerson }"
-                    />
-                    <small id="contactPerson-help" class="p-error">
-                      {{ errors.contactPerson }}
-                    </small>
-                  </div>
+                  <HermesValidatedInput id="contactPerson" v-model="contactPerson" label="Contact Person"
+                                        tooltip="Name and email address of the person to contact for follow up questions"/>
                   <div class="field">
                     <label for="references">References</label>
                     <InputText v-model="references" id="references" type="text"
@@ -552,18 +520,8 @@ async function uploadSubmit(){
                   </div>
                 </Fieldset>
                 <Fieldset legend="Participants">
-                  <div class="field">
-                    <label for="phenotype">Phenotype</label>
-                    <div v-tooltip="'The phenotype description e.g. “all-cause heart failure”'">
-                      <InputText v-model="phenotype" id="phenotype" type="text"
-                      aria-describedby="phenotype-help"
-                      :class="{ 'p-invalid': errors.phenotype }"
-                      />
-                    </div>
-                    <small id="phenotype-help" class="p-error">
-                      {{ errors.phenotype }}
-                    </small>
-                  </div>
+                  <HermesValidatedInput id="phenotype" v-model="phenotype" label="Phenotype"
+                                        tooltip='The phenotype description e.g. "all-cause heart failure”'/>
                   <div class="field">
                     <label for="caseAscertainment">Case Ascertainment</label>
                     <Dropdown
@@ -629,27 +587,11 @@ async function uploadSubmit(){
                       {{ errors.ancestry }}
                     </small>
                   </div>
-                  <div class="field">
-                    <label for="totalSampleSize">Total Sample Size</label>
-                    <InputText v-model="totalSampleSize" id="totalSampleSize" type="number" min="1"
-                    v-tooltip="'The total number of participants (e.g. cases + controls)'"
-                               aria-labelledby="totalSampleSize-help"
-                               :class="{'p-invalid': errors.totalSampleSize}"
-                    />
-                    <small id="totalSampleSize-help" class="p-error">
-                      {{ errors.totalSampleSize }}
-                    </small>
-                  </div>
-                  <div class="field">
-                    <label for="cases">Number of Cases</label>
-                    <InputText v-model="cases" id="cases" type="number" min="1"
-                    v-tooltip="'(optional) The number of cases in the cohort if a case-control design'"
-                    aria-labelledby="cases-help" :class="{'p-invalid': errors.cases}"
-                    />
-                    <small id="cases-help" class="p-error">
-                      {{ errors.cases }}
-                    </small>
-                  </div>
+                  <HermesValidatedInput id="totalSampleSize" type="number" label="Total Sample Size"
+                                        tooltip="The total number of participants (e.g. cases + controls)"
+                                        v-model="totalSampleSize"/>
+                  <HermesValidatedInput id="cases" v-model="cases" label="Number of Cases" type="number"
+                                        tooltip="(optional) The number of cases in the cohort if a case-control design" />
                 </Fieldset>
 
               <Fieldset legend="Genotyping Information">
@@ -670,74 +612,26 @@ async function uploadSubmit(){
                     {{ errors.referenceGenome }}
                   </small>
                 </div>
-                <div class="field">
-                  <label for="genotypingArray">Genotyping Array</label>
-                  <InputText v-model="genotypingArray" id="genotypingArray" type="text"
-                             v-tooltip="'The genotyping array name and version used to generate the genetic data (e.g.  Illumina Omni2.5)'"
-                             aria-labelledby="genotypingArray-help"
-                             :class="{'p-invalid': errors.genotypingArray}"
-                  />
-                  <small id="genotypingArray-help" class="p-error">
-                    {{ errors.genotypingArray }}
-                  </small>
-                </div>
-                <div class="field">
-                  <label for="callingAlgorithm">Calling Algorithm</label>
-                  <InputText v-model="callingAlgorithm" id="callingAlgorithm" type="text"
-                             v-tooltip="'The calling algorithm used (e.g. GATK HaplotypeCaller v4.1)'"
-                             aria-labelledby="callingAlgorithm-help"
-                             :class="{'p-invalid': errors.callingAlgorithm}"
-                  />
-                  <small id="callingAlgorithm-help" class="p-error">
-                    {{ errors.callingAlgorithm }}
-                  </small>
-                </div>
+                <HermesValidatedInput id="genotypingArray" label="Genotyping Array" v-model="genotypingArray"
+                                      tooltip="The genotyping array name and version used to generate the genetic data (e.g.  Illumina Omni2.5)" />
+                <HermesValidatedInput id="callingAlgorithm" label="Calling Algorithm" v-model="callingAlgorithm"
+                                      tooltip="The calling algorithm used (e.g. GATK HaplotypeCaller v4.1)" />
+
               </Fieldset>
               <Fieldset legend="Imputation Information">
-                <div class="field">
-                  <label for="imputationSoftware">Imputation Software</label>
-                  <InputText v-model="imputationSoftware" id="imputationSoftware" type="text"
-                             v-tooltip="'The prephasing and imputation software and version used in the GWAS analysis (e.g. IMPUTE2 v2.3.2)'"
-                             aria-labelledby="imputationSoftware-help"
-                             :class="{'p-invalid': errors.imputationSoftware}"
-                  />
-                  <small id="imputationSoftware-help" class="p-error">
-                    {{ errors.imputationSoftware }}
-                  </small>
-                </div>
-                <div class="field">
-                  <label for="imputationReference">Imputation Reference</label>
-                  <InputText v-model="imputationReference" id="imputationReference" type="text"
-                             v-tooltip="'The imputation reference used (e.g. HRCr1.1)'"
-                             aria-labelledby="imputationReference-help"
-                             :class="{'p-invalid': errors.imputationReference}"
-                  />
-                  <small id="imputationReference-help" class="p-error">
-                    {{ errors.imputationReference }}
-                  </small>
-                </div>
-                <div class="field">
-                  <label for="numberOfVariantsForImputation">Number of Variants for Imputation</label>
-                  <InputText v-model="numberOfVariantsForImputation" id="numberOfVariantsForImputation" type="number"
-                             v-tooltip="'The number of variants used for imputation (e.g. 10,000)'"
-                             aria-labelledby="numberOfVariantsForImputation-help"
-                             :class="{'p-invalid': errors.numberOfVariantsForImputation}"
-                  />
-                  <small id="numberOfVariantsForImputation-help" class="p-error">
-                    {{ errors.numberOfVariantsForImputation }}
-                  </small>
-                </div>
-                <div class="field">
-                  <label for="imputationQualityMeasure">Imputation Quality Measure</label>
-                  <InputText v-model="imputationQualityMeasure" id="imputationQualityMeasure" type="text"
-                             v-tooltip="'The imputation quality measure used and any threshold applied (e.g. INFO > 0.98 / R^2 > 0.85 / MACH R^2 > 0.92)'"
-                             aria-labelledby="imputationQualityMeasure-help"
-                             :class="{'p-invalid': errors.imputationQualityMeasure}"
-                  />
-                  <small id="imputationQualityMeasure-help" class="p-error">
-                    {{ errors.imputationQualityMeasure }}
-                  </small>
-                </div>
+                <HermesValidatedInput id="imputationSoftware" v-model="imputationSoftware"
+                                      tooltip="The prephasing and imputation software and version used in the GWAS analysis (e.g. IMPUTE2 v2.3.2)"
+                                      label="Imputation Software"/>
+                <HermesValidatedInput id="imputationReference" v-model="imputationReference"
+                                      label="Imputation Reference"
+                                      tooltip="The imputation reference used (e.g. HRCr1.1)" />
+                <HermesValidatedInput id="numberOfVariantsForImputation"
+                                      v-model="numberOfVariantsForImputation" type="number"
+                                      label="Number of Variants for Imputation"
+                                      tooltip="The number of variants used for imputation (e.g. 10,000)"/>
+                <HermesValidatedInput id="imputationQualityMeasure" v-model="imputationQualityMeasure"
+                                      tooltip="The imputation quality measure used and any threshold applied (e.g. INFO > 0.98 / R^2 > 0.85 / MACH R^2 > 0.92)"
+                                      label="Imputation Quality Measure"/>
               </Fieldset>
               <Fieldset legend="Genotyping Quality Control">
                 <div class="field">
@@ -756,61 +650,21 @@ async function uploadSubmit(){
                       {{ errors.relatedIndividualsRemoved }}
                     </small>
                 </div>
-                <div class="field">
-                  <label for="variantCallRate">Variant Call Rate</label>
-                  <InputText v-model="variantCallRate" id="variantCallRate" type="number" min="0" max="1"
-                             v-tooltip="'The variant call rate threshold used (e.g. 0.95)'"
-                             aria-labelledby="variantCallRate-help"
-                             :class="{'p-invalid': errors.variantCallRate}"
-                  />
-                  <small id="variantCallRate-help" class="p-error">
-                    {{ errors.variantCallRate }}
-                  </small>
-                </div>
-                <div class="field">
-                  <label for="sampleCallRate">Sample Call Rate</label>
-                  <InputText v-model="sampleCallRate" id="sampleCallRate" type="number" min="0" max="1"
-                             v-tooltip="'The sample call rate threshold used (e.g. 0.97)'"
-                             aria-labelledby="sampleCallRate-help"
-                             :class="{'p-invalid': errors.sampleCallRate}"
-                  />
-                  <small id="sampleCallRate-help" class="p-error">
-                    {{ errors.sampleCallRate }}
-                  </small>
-                </div>
-                <div class="field">
-                  <label for="hwePValue">HWE p-value</label>
-                  <InputText v-model="hwePValue" id="hwePValue" type="number" min="0" max="1"
-                             v-tooltip="'The Hardy-Weinberg Equilibrium p-value threshold used (e.g. 0.05)'"
-                             aria-labelledby="hwePValue-help"
-                             :class="{'p-invalid': errors.hwePValue}"
-                  />
-                  <small id="hwePValue-help" class="p-error">
-                    {{ errors.hwePValue }}
-                  </small>
-                </div>
-                <div class="field">
-                  <label for="maf">MAF Threshold</label>
-                  <InputText v-model="maf" id="maf" type="number" min="0" max="1"
-                             v-tooltip="'The minor allele frequency threshold used (e.g. 0.01)'"
-                             aria-labelledby="maf-help"
-                             :class="{'p-invalid': errors.maf}"
-                  />
-                  <small id="maf-help" class="p-error">
-                    {{ errors.maf }}
-                  </small>
-                </div>
-                <div class="field">
-                  <label for="otherFilters">Other QC Filters</label>
-                  <InputText v-model="otherFilters" id="otherFilters" type="text"
-                             v-tooltip="'Other quality control filters that may have been implemented'"
-                             aria-labelledby="otherFilters-help"
-                             :class="{'p-invalid': errors.otherFilters}"
-                  />
-                  <small id="otherFilters-help" class="p-error">
-                    {{ errors.otherFilters }}
-                  </small>
-                </div>
+                <HermesValidatedInput id="variantCallRate" label="Variant Call Rate" v-model="variantCallRate"
+                                      tooltip="The variant call rate threshold used (e.g. 0.95)" type="number"/>
+                <HermesValidatedInput id="sampleCallRate" label="Sample Call Rate" type="number"
+                                      tooltip="The sample call rate threshold used (e.g. 0.97)"
+                                      v-model="sampleCallRate" />
+                <HermesValidatedInput id="hwePValue" type="number" v-model="hwePValue"
+                                      label="HWE p-value"
+                                      tooltip="The Hardy-Weinberg Equilibrium p-value threshold used (e.g. 0.05)" />
+                <HermesValidatedInput id="maf" type="number" label="MAF Threshold"
+                                      tooltip="The minor allele frequency threshold used (e.g. 0.01)"
+                                      v-model="maf"/>
+                <HermesValidatedInput id="otherFilters" label="Other QC Filters"
+                    tooltip="Other quality control filters that may have been implemented"
+                    v-model="otherFilters"
+                />
               </Fieldset>
 
 

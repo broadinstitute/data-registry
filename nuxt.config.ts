@@ -9,6 +9,9 @@ export default defineNuxtConfig({
           enabled: true,
       },
   },
+  build: {
+    sourcemap: true,  // Ensure this is enabled
+  },
 
   app: {
       head: {

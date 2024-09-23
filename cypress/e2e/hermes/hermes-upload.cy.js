@@ -12,9 +12,10 @@ describe('Hermes Upload', {retries: 0}, () => {
     // cy.get('#genomeBuild').type('GRCh38').type('{enter}');
     cy.get('#cohort').type('UKBiobank');
     cy.get('#contactPerson').type('Point of Contact');
-    cy.get('#dataCollectionStart').type('2006/01/01');
+    cy.get('#dataCollectionStart').type('2006/01/01{enter}');
+    cy.wait(500);
     cy.get('[data-cy="sex"]').type('Male').type('{enter}');
-    cy.get('#dataCollectionEnd').type('2006/01/31');
+    cy.get('#dataCollectionEnd').type('2006/01/31{enter}');
     cy.get('[data-cy="ancestry"]').type('European').type('{enter}');
     cy.get('[data-cy="case-ascertainment"]').eq(0).type('Electronic').type('{enter}');
     cy.get("#phenotype").type('T2D');
@@ -23,7 +24,7 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get("#maleProportionCohort").type("1");
     cy.get('#callingAlgorithm').type("You called, algorithm?");
     cy.get('#genotypingArray').type("Array against you");
-    cy.get('[data-cy="referenceGenome"]').type('Hg19').type('{enter}');
+    cy.get('[data-cy="referenceGenome"]').type('Hg19').type('{enter}');blur()
     cy.get('#imputationSoftware').type('Imputate this software');
     cy.get('#imputationReference').type('Imputation reference');
     cy.get('#numberOfVariantsForImputation').type('47');
@@ -57,7 +58,7 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('button[aria-label="Upload"]').click();
     cy.wait('@uploadRequest');
     cy.wait(500);
-    // cy.location('pathname').should('eq', '/hermes');
-    cy.contains('div.p-toast-message-content', 'File data problems:').should('exist');
+    cy.location('pathname').should('eq', '/hermes');
+    // cy.contains('div.p-toast-message-content', 'File data problems:').should('exist');
   });
 });
