@@ -101,9 +101,10 @@ const formSchema = yup.object({
       .label("MAF").required(),
   otherFilters: yup.string().label("Other QC Filters").required(),
   meanAgeRecruitment: yup.number().positive('Mean age (recruitment, years) must be positive')
-      .label('Mean Age (recruitment, years)').transform(value => (isNaN(value) ? undefined : value)),
+      .label('Mean Age (recruitment, years)'),
   sdAgeRecruitment: yup.number().positive('Standard deviation age (recruitment, years) must be positive')
-      .label('Standard deviation age (recruitment, years)').transform(value => (isNaN(value) ? undefined : value)),
+      .label('Standard deviation age (recruitment, years)'),
+  maleProportionRecruitment: yup.number().min(0).max(1).label("Sex male (recruitment)"),
 
 });
 
@@ -129,12 +130,11 @@ const [totalSampleSize] = defineField('totalSampleSize');
 const [cases] = defineField('cases');
 const [maleProportionCohort] = defineField('maleProportionCohort');
 const [maleProportionCases] = defineField('maleProportionCases');
+const [maleProportionRecruitment] = defineField('maleProportionRecruitment');
 const [maleProportionControls] = defineField('maleProportionControls');
 const [meanAgeCohort] = defineField('meanAgeCohort');
 const [sdAgeCohort] = defineField('sdAgeCohort');
 const [sdAgeControls] = defineField('sdAgeControls');
-const [meanDiagnosisAge] = defineField('meanDiagnosisAge');
-const [sdDiagnosisAge] = defineField('sdDiagnosisAge');
 const [referenceGenome] = defineField('referenceGenome');
 const [genotypingArray] = defineField('genotypingArray');
 const [callingAlgorithm] = defineField('callingAlgorithm');
@@ -205,17 +205,6 @@ const genomeBuildOptions = ref([
     { name: "GRCh37/b37", value: "GRCh37/b37" },
 ]);
 
-const subjects = ref(0);
-const participants = ref(null);
-const sexProportion = ref(null);
-const age = ref(null);
-const keyReferences = ref("");
-const analysisSoftware = ref("");
-const statisticalModel = ref("");
-const covariates = ref("");
-const arrayName = ref("");
-const nVariantsForImputation = ref("");
-const prephasingAndImputationSoftware = ref("");
 const colOptions = ref([]);
 const requiredFields = ref([]);
 const selectedFields = ref({});
@@ -281,6 +270,19 @@ const steps = ref([
     { label: "Upload" },
 ]);
 
+const requiredEffectFields = computed(() => {
+  const betaAndSe = selectedFields.value &&
+      Object.values(selectedFields.value).includes('beta') &&
+      Object.values(selectedFields.value).includes('se');
+
+  const oddsRatioFields = selectedFields.value &&
+      Object.values(selectedFields.value).includes('oddsRatio') &&
+      Object.values(selectedFields.value).includes('oddsRatioLB') &&
+      Object.values(selectedFields.value).includes('oddsRatioUB');
+
+  return betaAndSe || oddsRatioFields;
+});
+
 const step1Complete = computed(() => {
     return Boolean(dataSetName.value);
 });
@@ -290,7 +292,7 @@ const step2Complete = computed(() => {
 const step3Complete = computed(() => {
   return requiredFields.value.every((field) =>
       selectedFields.value && Object.values(selectedFields.value).includes(field)
-  ) && requiredAF.value;
+  ) && requiredAF.value && requiredEffectFields.value;
 });
 const requiredAF = computed(() => {
     //check if selectedFields contains either maf or eaf
@@ -727,6 +729,14 @@ async function uploadSubmit(){
                         class="selected-chip"
                     />
                     <Chip v-else label="maf | eaf" />
+
+                  <Chip
+                      v-if="requiredEffectFields"
+                      icon="bi-check"
+                      label="beta, se | oddsRatio, oddsRatioLB, oddsRatioUB"
+                      class="selected-chip"
+                  />
+                  <Chip v-else label="beta, se | oddsRatio, oddsRatioLB, oddsRatioUB" />
                 </div>
                 <div v-if="fileInfo.columns" class="grid">
                     <div class="col">
@@ -810,10 +820,15 @@ async function uploadSubmit(){
               <Fieldset legend="Age and Sex Distribution">
                 <div class="grid">
                   <div class="col-3"></div>
+                  <div class="col-6 text-center">At Recruitment</div>
+                  <div class="col-3 text-center">At Diagnosis</div>
+                </div>
+                <div class="grid">
+                  <div class="col-3"></div>
                   <div class="col-2">Total</div>
-                  <div class="col-2">Cases</div>
                   <div class="col-2">Control</div>
-                  <div class="col-3">Recruitment</div>
+                  <div class="col-2">Cases</div>
+                  <div class="col-3">Cases</div>
                 </div>
 
                 <div class="grid align-items-start mb-2">
@@ -826,14 +841,14 @@ async function uploadSubmit(){
                   </div>
                   <div class="col-2">
                     <div class="field-wrapper">
-                      <InputText id="meanAgeCases" v-model="meanAgeCases" :class="{ 'p-invalid': errors.meanAgeCases }" type="number"/>
-                      <small class="p-error">{{ errors.meanAgeCases || ' ' }}</small>
+                      <InputText id="meanAgeControl" v-model="meanAgeControl" :class="{ 'p-invalid': errors.meanAgeControl }" type="number" />
+                      <small class="p-error">{{ errors.meanAgeControl || ' ' }}</small>
                     </div>
                   </div>
                   <div class="col-2">
                     <div class="field-wrapper">
-                      <InputText id="meanAgeControl" v-model="meanAgeControl" :class="{ 'p-invalid': errors.meanAgeControl }" type="number" />
-                      <small class="p-error">{{ errors.meanAgeControl || ' ' }}</small>
+                      <InputText id="meanAgeCases" v-model="meanAgeCases" :class="{ 'p-invalid': errors.meanAgeCases }" type="number"/>
+                      <small class="p-error">{{ errors.meanAgeCases || ' ' }}</small>
                     </div>
                   </div>
                   <div class="col-3">
@@ -854,14 +869,14 @@ async function uploadSubmit(){
                   </div>
                   <div class="col-2">
                     <div class="field-wrapper">
-                      <InputText id="sdAgeCases" v-model="sdAgeCases" :class="{ 'p-invalid': errors.sdAgeCases }" type="number"/>
-                      <small class="p-error">{{ errors.sdAgeCases || ' ' }}</small>
+                      <InputText id="sdAgeControls" v-model="sdAgeControls" :class="{ 'p-invalid': errors.sdAgeControls }" type="number" />
+                      <small class="p-error">{{ errors.sdAgeControls || ' ' }}</small>
                     </div>
                   </div>
                   <div class="col-2">
                     <div class="field-wrapper">
-                      <InputText id="sdAgeControls" v-model="sdAgeControls" :class="{ 'p-invalid': errors.sdAgeControls }" type="number" />
-                      <small class="p-error">{{ errors.sdAgeControls || ' ' }}</small>
+                      <InputText id="sdAgeCases" v-model="sdAgeCases" :class="{ 'p-invalid': errors.sdAgeCases }" type="number"/>
+                      <small class="p-error">{{ errors.sdAgeCases || ' ' }}</small>
                     </div>
                   </div>
                   <div class="col-3">
@@ -873,7 +888,7 @@ async function uploadSubmit(){
                 </div>
 
                 <div class="grid align-items-start">
-                  <div class="col-3 pt-2">Male Proportion</div>
+                  <div class="col-3 pt-2">Sex Male</div>
                   <div class="col-2">
                     <div class="field-wrapper">
                       <InputText id="maleProportionCohort" v-model="maleProportionCohort" :class="{ 'p-invalid': errors.maleProportionCohort }" type="number" />
@@ -882,18 +897,21 @@ async function uploadSubmit(){
                   </div>
                   <div class="col-2">
                     <div class="field-wrapper">
-                      <InputText id="maleProportionCases" v-model="maleProportionCases" :class="{ 'p-invalid': errors.maleProportionCases }" type="number" />
-                      <small class="p-error">{{ errors.maleProportionCases || ' ' }}</small>
-                    </div>
-                  </div>
-                  <div class="col-2">
-                    <div class="field-wrapper">
                       <InputText id="maleProportionControls" v-model="maleProportionControls" :class="{ 'p-invalid': errors.maleProportionControls }" type="number" />
                       <small class="p-error">{{ errors.maleProportionControls || ' ' }}</small>
                     </div>
                   </div>
+                  <div class="col-2">
+                    <div class="field-wrapper">
+                      <InputText id="maleProportionCases" v-model="maleProportionCases" :class="{ 'p-invalid': errors.maleProportionCases }" type="number" />
+                      <small class="p-error">{{ errors.maleProportionCases || ' ' }}</small>
+                    </div>
+                  </div>
                   <div class="col-3">
-                    &nbsp;
+                    <div class="field-wrapper">
+                      <InputText id="maleProportionRecruitment" v-model="maleProportionRecruitment" :class="{ 'p-invalid': errors.maleProportionRecruitment }" type="number" />
+                      <small class="p-error">{{ errors.maleProportionRecruitment || ' ' }}</small>
+                    </div>
                   </div>
                 </div>
               </Fieldset>
