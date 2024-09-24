@@ -376,7 +376,9 @@ watch(step3Complete, () => {
 });
 
 async function uploadSubmit(){
+  console.log("Starting upload event handler");
   const isValid = await validate();
+  console.log(`Validate isValue = ${isValid.valid}`);
 
   if(!file){
     missingFileError.value = "Please upload your file";
@@ -387,6 +389,7 @@ async function uploadSubmit(){
     missingMappingError.value = "Please map all required fields to your file's columns";
   }
   if(!!missingMappingError.value || !!missingFileError.value || !isValid.valid){
+    console.log("Returning early due to missing mapping, missing file, or invalid data");
     return;
   }
   const metadata = JSON.parse(JSON.stringify(values));
