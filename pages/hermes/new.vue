@@ -379,7 +379,7 @@ async function uploadSubmit(){
   console.log("Starting upload event handler");
   const isValid = await validate();
   console.log(`Validate isValue = ${isValid.valid}`);
-  console.log(`Full validation result ${isValid}`);
+  console.log(`Full validation result ${JSON.stringify(isValid)}`);
 
   if(!file){
     missingFileError.value = "Please upload your file";
