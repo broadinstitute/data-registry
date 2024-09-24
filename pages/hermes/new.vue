@@ -74,12 +74,6 @@ const formSchema = yup.object({
         then: (schema) => schema.required('You must specify mean diagnosis age when you specify cases'),
         otherwise: (schema) => schema,
     }),
-  sdDiagnosisAge: yup.number().positive('Standard deviation diagnosis age must be positive')
-      .label('Standard Deviation diagnosis age').transform(value => (isNaN(value) ? undefined : value)).when("cases", {
-        is: (value) => value > 0,
-        then: (schema) => schema.required('You must mean diagnosis age when you specify cases'),
-        otherwise: (schema) => schema,
-      }),
   referenceGenome: yup.string().label('Reference Genome').required(),
   genotypingArray: yup.string().label('Genotyping Array').required(),
   callingAlgorithm: yup.string().label('Calling Algorithm').required(),
