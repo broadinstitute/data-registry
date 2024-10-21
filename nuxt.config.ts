@@ -25,10 +25,13 @@ export default defineNuxtConfig({
     devtools: {
         enabled: true,
 
-        timeline: {
-            enabled: true,
-        },
-    },
+      timeline: {
+          enabled: true,
+      },
+  },
+  build: {
+    sourcemap: true,  // Ensure this is enabled
+  },
 
     app: {
         head: {

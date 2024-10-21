@@ -30,6 +30,7 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('#imputationQualityMeasure').type('highest quality');
     cy.get('[data-cy="relatedIndividualsRemoved"]').type('Yes').type('{enter}');
     cy.get('#variantCallRate').type('.22');
+    cy.get('#cases').type(100);
     cy.get('#sampleCallRate').type('.2247');
     cy.get('#hwePValue').type('.09121');
     cy.get('#maf').type('1');
@@ -48,6 +49,13 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('[data-cy="column-dropdown"]').eq(12).type('oddsRatioLB').type('{enter}');
     cy.get('[data-cy="column-dropdown"]').eq(13).type('oddsRatioUB').type('{enter}');
     cy.get('[data-cy="column-dropdown"]').eq(14).type('N').type('{enter}');
+
+    cy.get('#meanAgeControl').type(47.5);
+    cy.get('#meanAgeCases').type(33.11);
+    cy.get('#sdAgeControls').type(22);
+    cy.get('#sdAgeCases').type(99);
+    cy.get('#maleProportionControls').type(.25);
+    cy.get('#maleProportionCases').type(.52);
     cy.get('button[aria-label="Upload"]').click();
     cy.wait('@uploadRequest');
     cy.wait(500);
