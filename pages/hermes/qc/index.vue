@@ -204,6 +204,21 @@ const getIcon = (status) => {
                         </Column>
                         <Column field="uploaded_by" header="Uploader"></Column>
                         <Column field="phenotype" header="Phenotype"></Column>
+                        <Column header="Report">
+                          <template #body="{ data }">
+                            <div v-if="data.qc_status !== 'SUBMITTED TO QC' &&
+                                        data.qc_status !== 'FAILED QC'"
+                            >
+                              <nuxt-link :to="`https://hermes-qc.s3.amazonaws.com/images/${data.id}/gwas_qc.html`" target="_blank">
+                              <Button as="a" label="QC Report" rel="noopener" size="small" outlined />
+                              </nuxt-link>
+                            </div>
+                            <div v-else>
+                              &nbsp;
+                            </div>
+                          </template>
+                        </Column>
+
                         <Column field="qc_status" header="Status">
                             <template #body="{ data }">
                                 <span
