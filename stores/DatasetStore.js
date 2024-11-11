@@ -288,27 +288,42 @@ export const useDatasetStore = defineStore("DatasetStore", {
                 JSON.stringify(request),
             );
         },
-        async uploadFileForHermes(file, fileName, dataset, metadata) {
+        async uploadToPresignedUrl(url, file){
+            const strippedFile = new Blob([file], { type: '' });
+            try {
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    body: strippedFile
+                });
+            } catch (error) {
+                this.processing = false;
+                console.error("File upload failed:", error);
+                throw error;
+            }
+        },
+        async getHermesPresignedUrl(fileName, dataset, contentType){
             this.showProgressBar = true;
             this.processing = true;
             this.modalMsg = "Uploading File";
-            this.uploadProgress = 0;
-            const formData = new FormData();
-            formData.append("file", file);
-            const { data } = await configuredAxios.post(
-                "/api/upload-hermes",
-                formData,
+            const {data} = await configuredAxios.get('/api/get-hermes-pre-signed-url', {
+                headers: {
+                    Dataset: dataset,
+                    FileName: fileName
+                }
+            });
+            return data;
+        },
+        async validateHermesUpload(fileName, dataset, metadata) {
+            const { data } = await configuredAxios.get(
+                "/api/validate-hermes",
                 {
                     headers: {
-                        "Content-Type": "multipart/form-data",
                         FileName: fileName,
                         Dataset: dataset,
                         Metadata: JSON.stringify(metadata),
                     },
-                    onUploadProgress: onUpload,
                 },
             );
-            this.processing = false;
             return data;
         },
         async uploadFileForBioindex(file, fileName) {

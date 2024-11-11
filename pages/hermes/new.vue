@@ -384,19 +384,21 @@ async function uploadSubmit(){
   const metadata = JSON.parse(JSON.stringify(values));
   metadata.column_map = colMap.value;
   try {
-    const uploadRes = await store.uploadFileForHermes(
-        file,
+    const {presigned_url} = await store.getHermesPresignedUrl(fileName, dataSetName.value);
+    console.log(`Got upload url ${presigned_url}`);
+    await store.uploadToPresignedUrl(presigned_url, file);
+    const validationRes = await store.validateHermesUpload(
         fileName,
         dataSetName.value,
         metadata,
     );
-    console.log(JSON.stringify(uploadRes));
-    if (uploadRes.errors) {
+    console.log(JSON.stringify(validationRes));
+    if (validationRes.errors) {
       toast.add({
         severity: "error",
         summary: "Alert",
         group: "fileErrors",
-        errors: uploadRes.errors,
+        errors: validationRes.errors,
       });
     } else {
       await route.push({ path: "/hermes" });

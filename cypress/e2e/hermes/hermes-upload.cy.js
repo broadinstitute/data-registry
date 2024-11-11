@@ -1,14 +1,15 @@
 describe('Hermes Upload', {retries: 0}, () => {
   it('uploads a dataset', () => {
     cy.intercept('POST', '**/api/login').as('loginRequest');
-    cy.intercept('POST', '**/api/upload-hermes').as('uploadRequest');
+    cy.intercept('GET', '**/api/validate-hermes').as('validateRequest');
     cy.visit('/hermes/login');
     cy.get('input[id="email"]').type('uploader1');
     cy.get('input[type="password"]').type('password');
     cy.contains('button', 'Sign In').click();
     cy.wait('@loginRequest');
     cy.visit('/hermes/new', { timeout: 10000 });
-    cy.get('#dataSetName').type('Cypress dataset');
+    const datasetName = `Cypress dataset ${new Date().getTime()}`;
+    cy.get('#dataSetName').type(datasetName);
     cy.get('#cohort').type('UKBiobank');
     cy.get('#contactPerson').type('Point of Contact');
     cy.get('#dataCollectionStart').type('2006/01/01{enter}');
@@ -49,8 +50,9 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('[data-cy="column-dropdown"]').eq(13).type('oddsRatioUB').type('{enter}');
     cy.get('[data-cy="column-dropdown"]').eq(14).type('N').type('{enter}');
     cy.get('button[aria-label="Upload"]').click();
-    cy.wait('@uploadRequest');
+    cy.wait('@validateRequest');
     cy.wait(500);
     cy.location('pathname').should('eq', '/hermes');
+    cy.contains(datasetName).should('be.visible');
   });
 });
