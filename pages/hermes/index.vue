@@ -1,17 +1,117 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
+import { ref, onMounted } from "vue";
+import Chart from "primevue/chart";
 
+const hoveredQQId = ref(null);
+const hoveredMId = ref(null);
 const route = useRouter();
 const store = useDatasetStore();
 const fileUploads = ref([]);
 const tableLoading = ref(false);
 const finished = ref(false);
+const includeFailedRejected = ref(true);
+
+const chartOptions = {
+    indexAxis: "y",
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+        x: {
+            display: false,
+            stacked: true,
+        },
+        y: {
+            stacked: true,
+            ticks: {
+                callback: function (index) {
+                    const count = dataCollection.value.datasets[0].data[index];
+                    const label = dataCollection.value.labels[index];
+                    return `${label} (${count})`;
+                },
+            },
+        },
+    },
+    plugins: {
+        title: {
+            display: true,
+            text: "Dataset Status",
+        },
+        legend: {
+            display: false,
+        },
+        tooltip: {
+            callbacks: {
+                label: function (context) {
+                    return context.raw;
+                },
+            },
+        },
+    },
+};
+
+const dataCollection = computed(() => {
+    const labels = [
+        "FAILED QC",
+        "READY FOR REVIEW",
+        "REVIEW REJECTED",
+        "REVIEW APPROVED",
+    ];
+    const data = {
+        labels: labels,
+        datasets: [
+            {
+                label: "Dataset Status",
+                data: [
+                    datasetRows.value.filter(
+                        (file) => file.qc_status === "FAILED QC",
+                    ).length,
+                    datasetRows.value.filter(
+                        (file) => file.qc_status === "READY FOR REVIEW",
+                    ).length,
+                    datasetRows.value.filter(
+                        (file) => file.qc_status === "REVIEW REJECTED",
+                    ).length,
+                    datasetRows.value.filter(
+                        (file) => file.qc_status === "REVIEW APPROVED",
+                    ).length,
+                ],
+                backgroundColor: [
+                    statusBgColors["FAILED QC"],
+                    statusBgColors["READY FOR REVIEW"],
+                    statusBgColors["REVIEW REJECTED"],
+                    statusBgColors["REVIEW APPROVED"],
+                ],
+            },
+        ],
+    };
+    return data;
+});
+
+const statusBgColors = {
+    "FAILED QC": "#ffd0ce",
+    "READY FOR REVIEW": "#caf1d8",
+    "REVIEW REJECTED": "#feddc7",
+    "REVIEW APPROVED": "#d0e1fd",
+};
 
 onMounted(async () => {
     tableLoading.value = true;
-    fileUploads.value = await store.fetchFileUploads();
+    fileUploads.value = await store.fetchFileUploads().then((data) => {
+        return data.filter((file) => file.qc_status !== "SUBMITTED TO QC");
+    });
     tableLoading.value = false;
     finished.value = true;
+});
+
+const datasetRows = computed(() => {
+    return includeFailedRejected.value
+        ? fileUploads.value
+        : fileUploads.value.filter(
+              (file) =>
+                  file.qc_status !== "FAILED QC" &&
+                  file.qc_status !== "REVIEW REJECTED",
+          );
 });
 
 const getSeverity = (status) => {
@@ -48,10 +148,20 @@ const getIcon = (status) => {
 <template>
     <div class="grid">
         <div v-if="fileUploads.length && finished" class="col">
+            <h2>Quality Control (QC) Reports</h2>
             <Card>
                 <template #content>
+                    <Chart
+                        type="bar"
+                        :data="dataCollection"
+                        :options="chartOptions"
+                    />
+                </template>
+            </Card>
+            <Card class="mt-4">
+                <template #content>
                     <DataTable
-                        :value="fileUploads"
+                        :value="datasetRows"
                         :paginator="false"
                         rowHover
                         :rows="10"
@@ -63,13 +173,13 @@ const getIcon = (status) => {
                             <div
                                 class="flex justify-content-end flex-column sm:flex-row"
                             >
-                                <Button
-                                    type="button"
-                                    label="Upload New Dataset"
-                                    icon="bi-upload"
-                                    outlined
-                                    @click="() => $router.push('/hermes/new')"
-                                />
+                                <InputSwitch
+                                    v-model="includeFailedRejected"
+                                    inputID="includeFailedRejected"
+                                    class="mr-2"
+                                /><label for="includeFailedRejected"
+                                    >Include Failed/Rejected</label
+                                >
                             </div>
                         </template>
                         <template #empty> No dataset found. </template>
@@ -94,6 +204,7 @@ const getIcon = (status) => {
                         </Column>
                         <Column field="uploaded_by" header="Uploader"></Column>
                         <Column field="phenotype" header="Phenotype"></Column>
+
                         <Column field="qc_status" header="Status">
                             <template #body="{ data }">
                                 <span
@@ -122,6 +233,8 @@ const getIcon = (status) => {
                                 </span>
                             </template>
                         </Column>
+
+
                         <Column field="qc_report" header="QC Report">
                             <template #body="{ data }">
                                 <NuxtLink :to="`/hermes/qc/${data.id}`">
@@ -184,5 +297,27 @@ const getIcon = (status) => {
 </template>
 
 <style scoped>
-
+/* button span.icon {
+    margin-right: 10px;
+} */
+/* .p-tag .p-tag-icon {
+    margin-right: 0.25rem;
+} */
+.image-tooltip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 806px;
+    height: 406px;
+    overflow: auto;
+    border: 3px solid #6366f1;
+    z-index: 1000;
+}
+button.plot {
+    cursor: help;
+}
 </style>

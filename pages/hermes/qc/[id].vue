@@ -40,33 +40,18 @@ async function reviewDataset(id, value) {
         class="mb-3"
     />
     <div class="grid" v-if="reviewStatus != 'FAILED QC'">
-        <div class="col text-center">
-            <Card>
-                <template #title>QQ Plot</template>
-                <template #content>
-                    <Image
-                        :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/qq_plot.png`"
-                        alt="QQ Plot"
-                        width="400"
-                        preview
-                    />
-                </template>
-            </Card>
-        </div>
-
-        <div class="col text-center">
-            <Card>
-                <template #title>Manhattan Plot</template>
-                <template #content>
-                    <Image
-                        :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/manhattan_plot.png`"
-                        alt="Manhattan Plot"
-                        width="400"
-                        preview
-                    />
-                </template>
-            </Card>
-        </div>
+      <div class="col col-md-12 mb-4">
+      <Card>
+        <template #title>QC Report</template>
+        <template #content>
+          <iframe
+              :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/gwas_qc.html`"
+              frameborder="0"
+              style="width: 100%; height: 600px;">
+          </iframe>
+        </template>
+      </Card>
+      </div>
     </div>
     <div class="grid">
         <div class="col col-md-12 mb-4">

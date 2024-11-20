@@ -1,5 +1,8 @@
 <script setup>
 import { useUserStore } from '~/stores/UserStore';
+definePageMeta({
+  layout: "bootstrap",
+});
 const store = useUserStore();
 
 const password1 = ref('');
