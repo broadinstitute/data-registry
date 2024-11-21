@@ -313,16 +313,17 @@ export const useDatasetStore = defineStore("DatasetStore", {
             });
             return data;
         },
-        async validateHermesUpload(fileName, dataset, metadata) {
-            const { data } = await configuredAxios.get(
+        async validateHermesUpload(fileName, dataset, metadata, qc_script_options) {
+            const { data } = await configuredAxios.post(
                 "/api/validate-hermes",
-                {
-                    headers: {
-                        FileName: fileName,
-                        Dataset: dataset,
-                        Metadata: JSON.stringify(metadata),
-                    },
-                },
+              JSON.stringify({'file_name': fileName, dataset, metadata, qc_script_options})
+            );
+            return data;
+        },
+        async rerunQC(file_id, qc_script_options){
+            const { data } = await configuredAxios.patch(
+              `/api/hermes-rerun-qc/${file_id}`,
+              JSON.stringify(qc_script_options)
             );
             return data;
         },

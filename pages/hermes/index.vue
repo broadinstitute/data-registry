@@ -3,8 +3,6 @@ import { useDatasetStore } from "~/stores/DatasetStore";
 import { ref, onMounted } from "vue";
 import Chart from "primevue/chart";
 
-const hoveredQQId = ref(null);
-const hoveredMId = ref(null);
 const route = useRouter();
 const store = useDatasetStore();
 const fileUploads = ref([]);
@@ -97,9 +95,7 @@ const statusBgColors = {
 
 onMounted(async () => {
     tableLoading.value = true;
-    fileUploads.value = await store.fetchFileUploads().then((data) => {
-        return data.filter((file) => file.qc_status !== "SUBMITTED TO QC");
-    });
+    fileUploads.value = await store.fetchFileUploads();
     tableLoading.value = false;
     finished.value = true;
 });
