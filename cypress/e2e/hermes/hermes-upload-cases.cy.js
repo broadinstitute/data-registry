@@ -1,7 +1,7 @@
 describe('Hermes Upload', {retries: 0}, () => {
   it('uploads a dataset', () => {
     cy.intercept('POST', '**/api/login').as('loginRequest');
-    cy.intercept('GET', '**/api/validate-hermes').as('validateRequest');
+    cy.intercept('POST', '**/api/validate-hermes').as('validateRequest');
     cy.visit('/hermes/login');
     cy.get('input[id="email"]').type('uploader1');
     cy.get('input[type="password"]').type('password');

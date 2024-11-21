@@ -391,6 +391,7 @@ async function uploadSubmit(){
         fileName,
         dataSetName.value,
         metadata,
+        {'fd': .2, 'noind': false}
     );
     console.log(JSON.stringify(validationRes));
     if (validationRes.errors) {
