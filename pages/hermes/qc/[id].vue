@@ -1,23 +1,23 @@
 <script setup>
-import { useDatasetStore } from '~/stores/DatasetStore'
-import { useToast } from 'primevue/usetoast'
+import { useDatasetStore } from '~/stores/DatasetStore';
+import { useToast } from 'primevue/usetoast';
 
 
-const route = useRoute()
-const id = route.params.id
-const store = useDatasetStore()
-const reviewStatus = ref('')
-const dsName = ref('')
-const toast = useToast()
-const showReview = ref(true)
-const indels = ref(null)
-const adjustment = ref(null)
+const route = useRoute();
+const id = route.params.id;
+const store = useDatasetStore();
+const reviewStatus = ref('');
+const dsName = ref('');
+const toast = useToast();
+const showReview = ref(true);
+const indels = ref(null);
+const adjustment = ref(null);
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 
 const logText = ref(
     'This is a long text that will be displayed in the text box.'
-)
+);
 
 const formSchema = yup.object({
   frequencyDifferential: yup.number().label("Frequency Differential").min(0).max(1).required(),
@@ -25,7 +25,7 @@ const formSchema = yup.object({
       .transform((value) => (isNaN(value) ? null : value))
 });
 
-const { defineField, errors, values, validate } = useForm({
+const { defineField, errors, validate } = useForm({
   validationSchema: formSchema,
 });
 
@@ -34,18 +34,18 @@ const [infoThreshold] = defineField('infoThreshold');
 
 
 onMounted(async () => {
-  const response = await store.fetchFileUpload(id)
-  logText.value = response.log
-  reviewStatus.value = response.status
-  dsName.value = response.dataset_name
-  const scriptOptions = response.qc_script_options
-  indels.value = scriptOptions.noind
-  adjustment.value = !scriptOptions.adj ? 'no adjustment' : scriptOptions.adj
-  frequencyDifferential.value = scriptOptions.fd
+  const response = await store.fetchFileUpload(id);
+  logText.value = response.log;
+  reviewStatus.value = response.status;
+  dsName.value = response.dataset_name;
+  const scriptOptions = response.qc_script_options;
+  indels.value = scriptOptions.noind;
+  adjustment.value = !scriptOptions.adj ? 'no adjustment' : scriptOptions.adj;
+  frequencyDifferential.value = scriptOptions.fd;
   if (scriptOptions.it) {
-    infoThreshold.value = scriptOptions.it
+    infoThreshold.value = scriptOptions.it;
   }
-})
+});
 
 async function rerunQC() {
   const validationResult = await validate();
@@ -59,7 +59,7 @@ async function rerunQC() {
     ...(indels.value && {noind: true}),
     ...(adjustment.value !== 'no adjustment' && { adj : adjustment.value }),
     ...(infoThreshold.value && { it: infoThreshold.value })
-  }
+  };
 
   try {
     await store.rerunQC(id, scriptOptions);
@@ -70,27 +70,27 @@ async function rerunQC() {
       life: '5000'
     });
   } catch (error) {
-    console.error('Error running QC:', error)
+    console.error('Error running QC:', error);
     toast.add({
       severity: 'error',
       summary: 'Error',
       detail: 'Failed to rerun QC for this dataset',
       life: '5000'
-    })
+    });
   }
 
 
 }
 
 async function reviewDataset(id, value) {
-  await store.reviewDataset(id, value)
+  await store.reviewDataset(id, value);
   toast.add({
     severity: 'success',
     summary: 'Success',
     detail: 'Dataset status updated successfully',
     life: '3000'
-  })
-  showReview.value = false
+  });
+  showReview.value = false;
 }
 </script>
 
@@ -172,14 +172,13 @@ async function reviewDataset(id, value) {
       </Card>
     </div>
   </div>
-  <div class="grid" v-if="reviewStatus != 'FAILED QC'">
+  <div class="grid" v-if="!['FAILED QC', 'SUBMITTED TO QC'].includes(reviewStatus)">
     <div class="col col-md-12 mb-4">
       <Card>
         <template #title>QC Report</template>
         <template #content>
           <iframe
               :src="`https://hermes-qc.s3.amazonaws.com/images/${id}/gwas_qc.html`"
-              frameborder="0"
               style="width: 100%; height: 600px;">
           </iframe>
         </template>
@@ -232,9 +231,4 @@ async function reviewDataset(id, value) {
   <Toast position="bottom-right"/>
 </template>
 
-<style scoped>
-.text-box {
-  border: 1px solid #ccc;
-  padding: 10px;
-}
-</style>
+
