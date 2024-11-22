@@ -39,7 +39,7 @@ onMounted(async () => {
   reviewStatus.value = response.status;
   dsName.value = response.dataset_name;
   const scriptOptions = response.qc_script_options;
-  indels.value = scriptOptions.noind;
+  indels.value = scriptOptions.noind ?? false;
   adjustment.value = !scriptOptions.adj ? 'no adjustment' : scriptOptions.adj;
   frequencyDifferential.value = scriptOptions.fd;
   if (scriptOptions.it) {
