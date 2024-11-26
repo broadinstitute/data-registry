@@ -110,7 +110,7 @@ async function reviewDataset(id, value) {
       :model="[{ label: 'Datasets', url: '/hermes/' }, { label: dsName }]"
       class="mb-3"
   />
-  <Button
+  <Button v-can="'approveUpload'"
       label="Download Dataset"
       icon="bi-download"
       class="w-auto"
