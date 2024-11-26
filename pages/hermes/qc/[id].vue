@@ -15,9 +15,13 @@ const adjustment = ref(null);
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 
+const config = useRuntimeConfig();
+
 const logText = ref(
     'This is a long text that will be displayed in the text box.'
 );
+
+const downloadUrl = computed(() => `${config.public.apiBaseUrl}/api/hermes/download/${id}`);
 
 const formSchema = yup.object({
   frequencyDifferential: yup.number().label("Frequency Differential").min(0).max(1).required(),
@@ -47,6 +51,10 @@ onMounted(async () => {
   }
 });
 
+function openDownloadLink() {
+  window.open(downloadUrl.value, '_blank');
+}
+
 async function rerunQC() {
   const validationResult = await validate();
 
@@ -63,6 +71,7 @@ async function rerunQC() {
 
   try {
     await store.rerunQC(id, scriptOptions);
+    reviewStatus.value = 'SUBMITTED TO QC';
     toast.add({
       severity: 'success',
       summary: 'Success',
@@ -95,12 +104,20 @@ async function reviewDataset(id, value) {
 </script>
 
 <template>
+  <div class="flex justify-content-between align-items-center mb-3">
   <Breadcrumb
       :home="{ icon: 'bi-house', url: '/hermes/dashboard/' }"
       :model="[{ label: 'Datasets', url: '/hermes/' }, { label: dsName }]"
       class="mb-3"
   />
-  <div class="grid">
+  <Button
+      label="Download Dataset"
+      icon="bi-download"
+      class="w-auto"
+      @click="openDownloadLink"
+  />
+  </div>
+  <div class="grid" v-can="'approveUpload'">
     <div class="col col-md-12 mb-4">
       <Card>
         <template #title>QC Settings</template>
@@ -158,15 +175,15 @@ async function reviewDataset(id, value) {
                 {{ errors.infoThreshold }}
               </small>
             </div>
-            <div class="w-full">
+            <div class="w-full" >
               <Button
                   label="Re-run QC"
                   icon="bi-arrow-clockwise"
                   class="w-full"
                   @click="rerunQC"
-
+                  :disabled="reviewStatus === 'SUBMITTED TO QC'"
               />
-            </div>
+              </div>
           </div>
         </template>
       </Card>
