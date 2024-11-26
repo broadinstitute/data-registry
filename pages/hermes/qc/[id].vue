@@ -222,11 +222,7 @@ async function reviewDataset(id, value) {
     </div>
   </div>
 
-  <div
-      class="grid"
-      v-can="'approveUpload'"
-      v-if="reviewStatus === 'READY FOR REVIEW' && showReview"
-  >
+  <div class="grid" v-can="'approveUpload'" v-if="reviewStatus === 'READY FOR REVIEW' && showReview">
     <div class="col-4 col-offset-4 mt-2 mb-4">
       <InputGroup>
         <Button
