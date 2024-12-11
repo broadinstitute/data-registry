@@ -166,17 +166,24 @@ const getIcon = (status) => {
                         sortField="uploaded_at"
                         :sortOrder="-1"
                         ><template #header>
-                            <div
-                                class="flex justify-content-end flex-column sm:flex-row"
-                            >
-                                <InputSwitch
-                                    v-model="includeFailedRejected"
-                                    inputID="includeFailedRejected"
-                                    class="mr-2"
-                                /><label for="includeFailedRejected"
-                                    >Include Failed/Rejected</label
-                                >
-                            </div>
+                           <div class="flex justify-content-between flex-column sm:flex-row">
+                             <div>
+                               <InputSwitch
+                                   v-model="includeFailedRejected"
+                                   inputID="includeFailedRejected"
+                                   class="mr-2"
+                               />
+                               <label for="includeFailedRejected">Include Failed/Rejected</label>
+                             </div>
+                             <div>
+                               <Button
+                                   label="Upload"
+                                   icon="bi-upload"
+                                   class="mr-2"
+                                   @click="route.push('/hermes/new')"
+                               ></Button>
+                             </div>
+                           </div>
                         </template>
                         <template #empty> No dataset found. </template>
                         <template #loading>
