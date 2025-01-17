@@ -24,7 +24,7 @@ function getPhenotypeDataSetUploadUrl(dataset_id, pType) {
     if (!pType.dichotomous) {
         return url;
     }
-    return url + `?controls=${pType.controls}&cases=${pType.cases}`;
+    return url + `&controls=${pType.controls}&cases=${pType.cases}`;
 }
 
 function readFilePart(file, partSize) {
