@@ -100,7 +100,7 @@ const formSchema = yup.object({
 const { defineField, errors, values, validate } = useForm({
   validationSchema: formSchema,
 });
-
+const phenotypeObj = ref({});
 const [dataSetName] = defineField('dataSetName');
 const [cohort] = defineField('cohort');
 const [dataCollectionStart] = defineField('dataCollectionStart');
@@ -196,6 +196,7 @@ const genomeBuildOptions = ref([
 const colOptions = ref([]);
 const requiredFields = ref([]);
 const selectedFields = ref({});
+const filteredPhenotypes = ref([]);
 
 onMounted(async () => {
     let params = {
@@ -224,6 +225,8 @@ onMounted(async () => {
     }));
     colOptions.value = requiredAnnotated.concat(optionalFields);
     requiredFields.value = required;
+    await store.fetchPhenotypes();
+
 });
 
 const colMap = computed(() => {
@@ -302,6 +305,19 @@ const currentStep = computed(() => {
     }
 });
 
+
+function filterFunc (q) {
+  filteredPhenotypes.value = Object.values(store.phenotypes).filter((p) => {
+    if (q.length < 2) { return false; }
+    const words = q.query.split(" ");
+    let matches = 0;
+    words.forEach((word) => {
+      if (p.description.toLowerCase().includes(word.toLowerCase())) { matches++; }
+    });
+    return matches === words.length;
+  });
+}
+
 async function sampleFile(e) {
     store.showNotification = false;
     file = e.files[0];
@@ -355,6 +371,10 @@ function resetFile() {
     fileName = null;
 }
 
+watch(phenotypeObj, (newValue) => {
+  phenotype.value = newValue.name;
+});
+
 watch(step3Complete, () => {
   if(step3Complete.value){
     missingMappingError.value = '';
@@ -383,6 +403,11 @@ async function uploadSubmit(){
   }
   const metadata = JSON.parse(JSON.stringify(values));
   metadata.column_map = colMap.value;
+  metadata.dataset = metadata.dataSetName;
+  metadata.column_map.reference = metadata.column_map['non-effect allele'];
+  metadata.column_map.alt = metadata.column_map['effect allele'];
+  metadata.column_map.n = metadata.column_map['N total'];
+  metadata.column_map.stdErr = metadata.column_map.se;
   try {
     const {presigned_url} = await store.getHermesPresignedUrl(fileName, dataSetName.value);
     console.log(`Got upload url ${presigned_url}`);
@@ -517,8 +542,22 @@ async function uploadSubmit(){
                   </div>
                 </Fieldset>
                 <Fieldset legend="Participants">
-                  <HermesValidatedInput id="phenotype" v-model="phenotype" label="Phenotype"
-                                        tooltip='The phenotype description e.g. "all-cause heart failure”'/>
+                  <div class="field">
+                    <label for="phenotype">Phenotype</label>
+                    <AutoComplete
+                        id="phenotype"
+                        v-model="phenotypeObj"
+                        :suggestions="filteredPhenotypes"
+                        optionLabel="description"
+                        placeholder="Phenotype Description"
+                        @complete="filterFunc"
+                        :class="{ 'p-invalid': errors.phenotype }"
+                        aria-describedby="phenotype-help"
+                    />
+                    <small id="phenotype-help" class="p-error">
+                      {{ errors.phenotype }}
+                    </small>
+                  </div>
                   <div class="field">
                     <label for="caseAscertainment">Case Ascertainment</label>
                     <Dropdown

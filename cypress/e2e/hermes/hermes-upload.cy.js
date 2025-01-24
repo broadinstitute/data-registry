@@ -18,7 +18,8 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('#dataCollectionEnd').type('2006/01/31{enter}');
     cy.get('[data-cy="ancestry"]').type('European').type('{enter}');
     cy.get('[data-cy="case-ascertainment"]').eq(0).type('Electronic').type('{enter}');
-    cy.get("#phenotype").type('T2D');
+    cy.get("#phenotype").type('Type 2 diabetes').wait(400);
+    cy.get('.p-autocomplete-item').eq(1).click();
     cy.get("#caseDefinition").type("My case definition");
     cy.get("#totalSampleSize").type("989");
     cy.get("#maleProportionCohort").type("1");
