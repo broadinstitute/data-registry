@@ -5,10 +5,35 @@ import Chart from "primevue/chart";
 
 const route = useRouter();
 const store = useDatasetStore();
+const deleteDialog = ref(false);
+const datasetToDelete = ref(null);
 const fileUploads = ref([]);
 const tableLoading = ref(false);
 const finished = ref(false);
 const includeFailedRejected = ref(true);
+
+const confirmDelete = (dataset) => {
+  datasetToDelete.value = dataset;
+  deleteDialog.value = true;
+};
+
+const canDeleteDataset = computed(() => {
+  const user = useUserStore().user;
+  return user.roles.includes('admin') || user.permissions.includes('deleteDataset');
+});
+
+const handleDelete = async () => {
+  try {
+    await store.deleteHermesDataset(datasetToDelete.value.id);
+    fileUploads.value = fileUploads.value.filter(
+        (dataset) => dataset.id !== datasetToDelete.value.id
+    );
+    deleteDialog.value = false;
+    datasetToDelete.value = null;
+  } catch (error) {
+    console.error('Error deleting dataset:', error);
+  }
+};
 
 const chartOptions = {
     indexAxis: "y",
@@ -253,6 +278,18 @@ const getIcon = (status) => {
                                 >
                             </template>
                         </Column>
+                      <Column header="" :style="{ width: '8rem' }" v-if="canDeleteDataset">
+                        <template #body="{ data }">
+                          <Button
+                              icon="bi-trash"
+                              severity="danger"
+                              outlined
+                              size="small"
+                              @click="confirmDelete(data)"
+                              v-tooltip.top="'Delete Dataset'"
+                          />
+                        </template>
+                      </Column>
                     </DataTable>
                 </template>
             </Card>
@@ -297,15 +334,43 @@ const getIcon = (status) => {
             </Card>
         </div>
     </div>
+  <Dialog
+      v-model:visible="deleteDialog"
+      modal
+      header="Confirm Delete"
+      :style="{ width: '450px' }"
+  >
+    <div class="confirmation-content">
+      <i class="bi bi-exclamation-triangle mr-3" style="color: var(--red-500)" />
+      <span>Are you sure you want to delete this dataset?</span>
+    </div>
+    <template #footer>
+      <Button
+          label="No"
+          icon="bi-x"
+          outlined
+          @click="deleteDialog = false"
+          class="mr-2"
+      />
+      <Button
+          label="Yes"
+          icon="bi-check"
+          severity="danger"
+          @click="handleDelete"
+      />
+    </template>
+  </Dialog>
 </template>
 
 <style scoped>
-/* button span.icon {
-    margin-right: 10px;
-} */
-/* .p-tag .p-tag-icon {
-    margin-right: 0.25rem;
-} */
+
+.confirmation-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
 .image-tooltip {
     display: flex;
     justify-content: center;

@@ -178,7 +178,14 @@ export const useDatasetStore = defineStore("DatasetStore", {
                 this.phenotypes = mappedPhenotypes;
             }
         },
-
+        async deleteHermesDataset(dsId) {
+            try {
+                await configuredAxios.delete(`/api/hermes-delete-dataset/${dsId}`);
+            } catch (error) {
+                console.error('Error deleting dataset:', error);
+                throw error;
+            }
+        },
         async fetchHermesPhenotypes(params = null) {
             await this.fetchPhenotypes(); //get phenotype mapping
             const { data } = await configuredAxios.get(
