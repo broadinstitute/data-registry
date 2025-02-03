@@ -243,6 +243,7 @@ onMounted(async () => {
         statuses: "REVIEW+APPROVED",
     };
     let query = paramsToString(params);
+    await store.fetchHermesPhenolist();
     phenotypes = await store.fetchHermesPhenotypes(query);
 });
 

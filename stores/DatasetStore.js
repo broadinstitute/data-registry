@@ -196,7 +196,7 @@ export const useDatasetStore = defineStore("DatasetStore", {
             );
             let mappedPhenotypes = [];
             data.forEach((hp) => {
-                if (this.phenotypes[hp]) {
+                if (this.hermesPhenotypes[hp]) {
                     mappedPhenotypes.push(this.phenotypes[hp]);
                 }
             });
