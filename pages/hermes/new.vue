@@ -225,7 +225,7 @@ onMounted(async () => {
     }));
     colOptions.value = requiredAnnotated.concat(optionalFields);
     requiredFields.value = required;
-    await store.fetchPhenotypes();
+    await store.fetchHermesPhenolist();
 
 });
 
@@ -307,7 +307,7 @@ const currentStep = computed(() => {
 
 
 function filterFunc (q) {
-  filteredPhenotypes.value = Object.values(store.phenotypes).filter((p) => {
+  filteredPhenotypes.value = Object.values(store.hermesPhenotypes).filter((p) => {
     if (q.length < 2) { return false; }
     const words = q.query.split(" ");
     let matches = 0;
@@ -410,15 +410,13 @@ async function uploadSubmit(){
   metadata.column_map.stdErr = metadata.column_map.se;
   try {
     const {presigned_url} = await store.getHermesPresignedUrl(fileName, dataSetName.value);
-    console.log(`Got upload url ${presigned_url}`);
     await store.uploadToPresignedUrl(presigned_url, file);
     const validationRes = await store.validateHermesUpload(
         fileName,
         dataSetName.value,
         metadata,
-        {'fd': .2, 'noind': false}
+        {'fd': .2}
     );
-    console.log(JSON.stringify(validationRes));
     if (validationRes.errors) {
       toast.add({
         severity: "error",

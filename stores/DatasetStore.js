@@ -124,6 +124,7 @@ export const useDatasetStore = defineStore("DatasetStore", {
             savedDataSetId: null,
             uploadProgress: 0,
             showProgressBar: false,
+            hermesPhenotypes: {},
         };
     },
     getters: {
@@ -201,6 +202,15 @@ export const useDatasetStore = defineStore("DatasetStore", {
             });
             console.log("mapped ", mappedPhenotypes);
             return mappedPhenotypes;
+        },
+        async fetchHermesPhenolist(){
+            if (Object.keys(this.hermesPhenotypes).length > 0) {
+                return;
+            }
+            const { data } = await configuredAxios.get('/api/hermes-phenotypes');
+            const mappedPhenotypes = {};
+            data.data.forEach((d) => (mappedPhenotypes[d.name] = d));
+            this.hermesPhenotypes = mappedPhenotypes;
         },
         async fetchFileUpload(fileId) {
             const { data } = await configuredAxios.get(

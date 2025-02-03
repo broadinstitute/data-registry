@@ -272,6 +272,15 @@ const fetchFileUploads = async () => {
 
 
 const runAnalysis = async () => {
+    if(!name.value){
+      toast.add({
+        severity: "error",
+        summary: "Alert",
+        detail: "Please specify a name for the meta analysis.",
+        life: 0
+      });
+      return;
+    }
     let dsIDs = selectedDatasets.value.length
         ? selectedDatasets.value.map((ds) => ds.id)
         : [];

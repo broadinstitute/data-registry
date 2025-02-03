@@ -21,8 +21,12 @@ set @approve_upload_id = LAST_INSERT_ID();
 insert into permissions(permission) values ('addUser');
 set @add_user_id = LAST_INSERT_ID();
 
+insert into permissions(permission) values ('deleteDataSet');
+set @delete_dataset_id = LAST_INSERT_ID();
+
 insert into role_permissions(permission_id, role_id) values (@approve_upload_id, @reviewer_role_id);
 insert into role_permissions(permission_id, role_id) values (@add_user_id, @reviewer_role_id);
+insert into role_permissions(permission_id, role_id) values (@delete_dataset_id, @reviewer_role_id);
 
 insert into user_roles(user_id, role_id) values (@uploader1_id, @uploader_role_id);
 insert into user_roles(user_id, role_id) values (@uploader2_id, @uploader_role_id);
