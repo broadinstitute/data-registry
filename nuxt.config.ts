@@ -17,6 +17,7 @@ export default defineNuxtConfig({
       head: {
           title: "KPN Data Registry",
       },
+      buildAssetsDir: `/_nuxt/${Date.now()}/`
   },
 
   css: [
