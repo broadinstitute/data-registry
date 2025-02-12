@@ -187,6 +187,14 @@ export const useDatasetStore = defineStore("DatasetStore", {
                 throw error;
             }
         },
+        async fetchHermesMetadata() {
+          try{
+              const {data} = await configuredAxios.get('/api/hermes-past-metadata');
+              return data;
+          } catch(error){
+              throw error;
+          }
+        },
         async fetchHermesPhenotypes(params = null) {
             await this.fetchPhenotypes(); //get phenotype mapping
             const { data } = await configuredAxios.get(

@@ -197,12 +197,15 @@ const colOptions = ref([]);
 const requiredFields = ref([]);
 const selectedFields = ref({});
 const filteredPhenotypes = ref([]);
+const previousMetadata = ref({});
+const selectedPreviousMD = ref('');
 
 onMounted(async () => {
     let params = {
         uploader: userStore.user.user_name,
         limit: 1,
     };
+    previousMetadata.value = await store.fetchHermesMetadata();
     let fileInfos = await store.fetchFileUploads(paramsToString(params));
     if (fileInfos.length > 0) {
         let map = fileInfos[0]?.metadata?.column_map;
@@ -254,6 +257,29 @@ const tableRows = computed(() => {
           }))
         : [];
 });
+
+const selectedMetadataDetails = computed(() => {
+  return selectedPreviousMD.value
+      ? previousMetadata.value[selectedPreviousMD.value]
+      : null
+});
+
+watch(selectedMetadataDetails, (newValue) => {
+  for (const [key, value] of Object.entries(newValue)) {
+    if (key === 'column_map' || key === 'dataSetName' || key === 'dataset'){
+      continue;
+    }
+    if (typeof eval(key) !== 'undefined') {
+      eval(`${key}.value = "${value}"`)
+    }
+  }
+  if(fileInfo.value.columns){
+    selectedFields.value = Object.fromEntries(
+        Object.entries(newValue.column_map).map(([key, value]) => [value, key])
+    );
+  }
+});
+
 const steps = ref([
     { label: "Enter Metadata" },
     { label: "Select File" },
@@ -496,6 +522,13 @@ async function uploadSubmit(){
         <div class="col-12 md:col-6">
             <div class="card p-fluid">
                 <h5>Enter File Metadata</h5>
+                <Fieldset legend="Apply Previous Values" v-if="previousMetadata && Object.keys(previousMetadata).length > 0">
+                  <div class="field">
+                    <label for="previousMD">Previous Upload:</label>
+                    <Dropdown id="previousMD" :options="Object.keys(previousMetadata)"
+                              v-model="selectedPreviousMD"></Dropdown>
+                  </div>
+                </Fieldset>
                 <Fieldset legend="Study Metadata">
                   <HermesValidatedInput id="dataSetName" label="Dataset Name" v-model="dataSetName"
                                         tooltip='e.g. "UKBB Heart Failure (female)"'/>
@@ -772,27 +805,15 @@ async function uploadSubmit(){
                 </div>
                 <div v-if="fileInfo.columns" class="grid">
                     <div class="col">
-                        <Button
-                            v-if="Object.keys(previousMapping).length > 0"
-                            type="button"
-                            label="Load Previous Mapping"
-                            icon="bi-arrow-counterclockwise"
-                            @click="loadMapping"
-                            severity="help"
-                            text
-                            outlined
-                        ></Button>
-                    </div>
-                    <div class="col text-right">
-                        <Button
-                            type="button"
-                            label="Reset Mapping"
-                            icon="bi-arrow-repeat"
-                            @click="resetMapping"
-                            severity="help"
-                            text
-                            outlined
-                        ></Button>
+                      <Button
+                          type="button"
+                          label="Reset Mapping"
+                          icon="bi-arrow-repeat"
+                          @click="resetMapping"
+                          severity="help"
+                          text
+                          outlined
+                      ></Button>
                     </div>
                 </div>
                 <div class="field" :class="{'p-invalid-file': missingMappingError}">
