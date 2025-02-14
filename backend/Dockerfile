@@ -4,11 +4,8 @@ FROM python:3.9-slim
 RUN apt-get update && apt-get install -y git && apt-get install -y default-mysql-client && apt-get install -y curl
 
 ARG BACKEND_REPO
-ARG GIT_HASH
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN --mount=type=ssh git clone ${BACKEND_REPO} /app && \
-    cd /app && \
-    git checkout ${GIT_HASH}
+RUN --mount=type=ssh git clone ${BACKEND_REPO} /app
 
 WORKDIR /app
 
