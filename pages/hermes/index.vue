@@ -2,6 +2,8 @@
 import { useDatasetStore } from "~/stores/DatasetStore";
 import { ref, onMounted } from "vue";
 import Chart from "primevue/chart";
+import { FilterMatchMode } from 'primevue/api';
+import MultiSelect from 'primevue/multiselect';
 
 const route = useRouter();
 const store = useDatasetStore();
@@ -126,13 +128,28 @@ onMounted(async () => {
 });
 
 const datasetRows = computed(() => {
-    return includeFailedRejected.value
-        ? fileUploads.value
-        : fileUploads.value.filter(
-              (file) =>
-                  file.qc_status !== "FAILED QC" &&
-                  file.qc_status !== "REVIEW REJECTED",
-          );
+  let filteredData = fileUploads.value;
+
+  if (!includeFailedRejected.value) {
+    filteredData = filteredData.filter(file => file.qc_status !== "FAILED QC" && file.qc_status !== "REVIEW REJECTED");
+  }
+
+  // attempted phenotype filter - this doesn't work...
+  const phenotypeFilter = filters.value.phenotype?.value;
+  if (phenotypeFilter?.length) {
+    filteredData = filteredData.filter(file => phenotypeFilter.some(f => f.phenotype === file.phenotype));
+  }
+
+  return filteredData;
+});
+
+const filters = ref({
+    phenotype: {value: null}  // Simple array to hold selected phenotypes
+});
+
+const uniquePhenotypes = computed(() => {
+  const phenotypes = [...new Set(fileUploads.value.map(f => f.phenotype))];
+  return phenotypes.map(phenotype => ({ phenotype: phenotype }));
 });
 
 const getSeverity = (status) => {
@@ -182,6 +199,7 @@ const getIcon = (status) => {
             <Card class="mt-4">
                 <template #content>
                     <DataTable
+                        v-model:filters="filters"
                         :value="datasetRows"
                         :paginator="false"
                         rowHover
@@ -190,6 +208,7 @@ const getIcon = (status) => {
                         :loading="tableLoading"
                         sortField="uploaded_at"
                         :sortOrder="-1"
+                        filterDisplay="menu"
                         ><template #header>
                            <div class="flex justify-content-between flex-column sm:flex-row">
                              <div>
@@ -231,7 +250,23 @@ const getIcon = (status) => {
                             </template>
                         </Column>
                         <Column field="uploaded_by" header="Uploader"></Column>
-                        <Column field="phenotype" header="Phenotype"></Column>
+
+
+                        <Column header="Phenotype" filterField="phenotype" :showFilterMatchModes="false">
+                          <template #body="{ data }">
+                            <span>{{ data.phenotype }}</span>
+                          </template>
+                          <template #filter="{ filterModel }">
+                            <MultiSelect
+                                v-model="filterModel.value"
+                                :options="uniquePhenotypes"
+                                optionLabel="phenotype"
+                                placeholder="All"
+                                @change="() => console.log('Selected Phenotypes:', filterModel.value)"
+                            >
+                            </MultiSelect>
+                          </template>
+                        </Column>
 
                         <Column field="qc_status" header="Status">
                             <template #body="{ data }">
