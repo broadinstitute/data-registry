@@ -1,7 +1,18 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
-import { ref, onMounted } from "vue";
-import Chart from "primevue/chart";
+import { ref, onMounted, h } from "vue";
+import Tag from 'primevue/tag';
+import Button from 'primevue/button';
+import { NuxtLink } from "#components";
+import MultiSelect from 'primevue/multiselect';
+import { FilterMatchMode, FilterService } from 'primevue/api';
+
+
+FilterService.register('inArray', (value, filters) => {
+  if (!filters || filters.length === 0) return true;
+  return filters.some(filter => value === filter);
+});
+
 
 const route = useRouter();
 const store = useDatasetStore();
@@ -10,7 +21,6 @@ const datasetToDelete = ref(null);
 const fileUploads = ref([]);
 const tableLoading = ref(false);
 const finished = ref(false);
-const includeFailedRejected = ref(true);
 
 const confirmDelete = (dataset) => {
   datasetToDelete.value = dataset;
@@ -35,104 +45,11 @@ const handleDelete = async () => {
   }
 };
 
-const chartOptions = {
-    indexAxis: "y",
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-        x: {
-            display: false,
-            stacked: true,
-        },
-        y: {
-            stacked: true,
-            ticks: {
-                callback: function (index) {
-                    const count = dataCollection.value.datasets[0].data[index];
-                    const label = dataCollection.value.labels[index];
-                    return `${label} (${count})`;
-                },
-            },
-        },
-    },
-    plugins: {
-        title: {
-            display: true,
-            text: "Dataset Status",
-        },
-        legend: {
-            display: false,
-        },
-        tooltip: {
-            callbacks: {
-                label: function (context) {
-                    return context.raw;
-                },
-            },
-        },
-    },
-};
-
-const dataCollection = computed(() => {
-    const labels = [
-        "FAILED QC",
-        "READY FOR REVIEW",
-        "REVIEW REJECTED",
-        "REVIEW APPROVED",
-    ];
-    const data = {
-        labels: labels,
-        datasets: [
-            {
-                label: "Dataset Status",
-                data: [
-                    datasetRows.value.filter(
-                        (file) => file.qc_status === "FAILED QC",
-                    ).length,
-                    datasetRows.value.filter(
-                        (file) => file.qc_status === "READY FOR REVIEW",
-                    ).length,
-                    datasetRows.value.filter(
-                        (file) => file.qc_status === "REVIEW REJECTED",
-                    ).length,
-                    datasetRows.value.filter(
-                        (file) => file.qc_status === "REVIEW APPROVED",
-                    ).length,
-                ],
-                backgroundColor: [
-                    statusBgColors["FAILED QC"],
-                    statusBgColors["READY FOR REVIEW"],
-                    statusBgColors["REVIEW REJECTED"],
-                    statusBgColors["REVIEW APPROVED"],
-                ],
-            },
-        ],
-    };
-    return data;
-});
-
-const statusBgColors = {
-    "FAILED QC": "#ffd0ce",
-    "READY FOR REVIEW": "#caf1d8",
-    "REVIEW REJECTED": "#feddc7",
-    "REVIEW APPROVED": "#d0e1fd",
-};
-
 onMounted(async () => {
     tableLoading.value = true;
     fileUploads.value = await store.fetchFileUploads();
     tableLoading.value = false;
     finished.value = true;
-});
-
-const datasetRows = computed(() => {
-    return includeFailedRejected.value
-        ? fileUploads.value
-        : fileUploads.value.filter(
-              (file) =>
-                  file.qc_status !== "FAILED QC" &&
-                  file.qc_status !== "REVIEW REJECTED",
-          );
 });
 
 const getSeverity = (status) => {
@@ -164,130 +81,192 @@ const getIcon = (status) => {
             return "bi-check-square";
     }
 };
+
+// flat array of possible phenotypes
+const uniquePhenotypes = computed(() => {
+  return [...new Set(fileUploads.value.map(f => f.phenotype))];
+});
+
+// flat array of possible statuses
+const uniqueQCstatuses = computed(() => {
+  return [...new Set(fileUploads.value.map(f => f.qc_status))];
+});
+
+// columns to dynamically create
+const columns = ref([
+  {
+    header: "Phenotype",
+    field: "phenotype",
+    filterType: "multiSelect",
+    options: uniquePhenotypes,
+    sortable: true
+  },
+  {
+    header: "Dataset",
+    field: "dataset_name",
+    filterType: "text",
+    placeholder: "Search datasets",
+    sortable: true
+  },
+  {
+    header: "File Name",
+    field: "file_name",
+    filterType: "text",
+    placeholder: "Search file names",
+    sortable: true
+  },
+  {
+    header: "File Size",
+    field: "file_size",
+    format: data => `${(data.file_size / (1024 * 1024)).toFixed(2)} mb`,
+    sortable: true
+  },
+  {
+    header: "Date Uploaded",
+    field: "uploaded_at",
+    format: data => new Date(data.uploaded_at).toISOString().split("T")[0],
+    sortable: true
+  },
+  {
+    header: "Uploader",
+    field: "uploaded_by",
+    filterType: "text",
+    placeholder: "Search uploader",
+    sortable: true
+  },
+  {
+    header: "Status",
+    field: "qc_status",
+    filterType: "multiSelect",
+    options: uniqueQCstatuses,
+    sortable: true,
+    component: (data) =>
+      h(
+        "span",
+        {},
+        data.qc_status !== "SUBMITTED TO QC"
+          ? h(
+              NuxtLink,
+              { to: `/hermes/qc/${data.id}` },
+              () =>
+                h(Tag, {
+                  severity: getSeverity(data.qc_status),
+                  icon: getIcon(data.qc_status),
+                  value: data.qc_status.toUpperCase(),
+                  rounded: true
+                })
+            )
+          : h(Tag, {
+              severity: getSeverity(data.qc_status),
+              icon: getIcon(data.qc_status),
+              value: data.qc_status.toUpperCase(),
+              rounded: true
+            })
+      )
+  },
+  {
+    header: "QC Report",
+    field: "qc_report",
+    component: (data) =>
+      data.qc_status !== "SUBMITTED TO QC"
+        ? h(
+            NuxtLink,
+            { to: `/hermes/qc/${data.id}` },
+            () => h(Button, { outlined: true, size: "small" }, () => "View")
+          )
+        : null
+  },
+  {
+    header: "",
+    field: "actions",
+    style: { width: "8rem" },
+    showIf: () => canDeleteDataset,
+    component: (data) =>
+      h(Button, {
+        icon: "bi-trash",
+        severity: "danger",
+        outlined: true,
+        size: "small",
+        onClick: () => confirmDelete(data)
+      })
+  }
+]);
+
+const filters = ref(
+    Object.fromEntries(
+        columns.value
+            .filter(col => col.filterType)
+            .map(col => [
+              col.field,
+              {
+                value: null,
+                matchMode: col.filterType === 'multiSelect' ? 'inArray' : FilterMatchMode.CONTAINS
+              }
+            ])
+    )
+);
 </script>
 
 <template>
     <div class="grid">
         <div v-if="fileUploads.length && finished" class="col">
             <h2>Quality Control (QC) Reports</h2>
-            <Card>
-                <template #content>
-                    <Chart
-                        type="bar"
-                        :data="dataCollection"
-                        :options="chartOptions"
-                    />
-                </template>
-            </Card>
             <Card class="mt-4">
                 <template #content>
-                    <DataTable
-                        :value="datasetRows"
-                        :paginator="false"
-                        rowHover
-                        :rows="10"
-                        :rowsPerPageOptions="[5, 10, 20]"
-                        :loading="tableLoading"
-                        sortField="uploaded_at"
-                        :sortOrder="-1"
-                        ><template #header>
-                           <div class="flex justify-content-between flex-column sm:flex-row">
-                             <div>
-                               <InputSwitch
-                                   v-model="includeFailedRejected"
-                                   inputID="includeFailedRejected"
-                                   class="mr-2"
-                               />
-                               <label for="includeFailedRejected">Include Failed/Rejected</label>
-                             </div>
-                             <div>
-                               <Button
-                                   label="Upload"
-                                   icon="bi-upload"
-                                   class="mr-2"
-                                   @click="route.push('/hermes/new')"
-                               ></Button>
-                             </div>
-                           </div>
-                        </template>
-                        <template #empty> No dataset found. </template>
-                        <template #loading>
-                            Loading dataset data. Please wait...
-                        </template>
-                        <Column field="dataset_name" header="Dataset"></Column>
-                        <Column field="file_name" header="File Name"></Column>
-                        <Column field="file_size" header="File Size">
-                            <template #body="{ data }">
-                                {{
-                                    (data.file_size / (1024 * 1024)).toFixed(
-                                        2,
-                                    ) + " mb"
-                                }}
-                            </template>
-                        </Column>
-                        <Column field="uploaded_at" header="Date Uploaded">
-                            <template #body="{ data }">
-                                {{ formatDate(new Date(data.uploaded_at)) }}
-                            </template>
-                        </Column>
-                        <Column field="uploaded_by" header="Uploader"></Column>
-                        <Column field="phenotype" header="Phenotype"></Column>
+                    <DataTable v-model:filters="filters"
+                               filterDisplay="row"
+                               :value="fileUploads"
+                               tableStyle="min-width: 50rem"
+                               paginator
+                               :rows="20"
+                               :loading="tableLoading"
+                               sortField="uploaded_at"
+                    >
+                      <template #empty> No data found. </template>
+                      <template #loading> Loading data. Please wait. </template>
 
-                        <Column field="qc_status" header="Status">
-                            <template #body="{ data }">
-                                <span
-                                    v-if="data.qc_status !== 'SUBMITTED TO QC'"
-                                >
-                                    <nuxt-link :to="`/hermes/qc/${data.id}`">
-                                        <Tag
-                                            :severity="
-                                                getSeverity(data.qc_status)
-                                            "
-                                            :icon="getIcon(data.qc_status)"
-                                            :value="
-                                                data.qc_status.toUpperCase()
-                                            "
-                                            rounded
-                                        />
-                                    </nuxt-link>
-                                </span>
-                                <span v-else>
-                                    <Tag
-                                        :severity="getSeverity(data.qc_status)"
-                                        :icon="getIcon(data.qc_status)"
-                                        :value="data.qc_status.toUpperCase()"
-                                        rounded
-                                    />
-                                </span>
-                            </template>
-                        </Column>
+                      <!-- dynamic column creation -->
+                      <Column v-for="col in columns.filter(c => !c.showIf || c.showIf())"
+                              :key="col.field"
+                              :header="col.header"
+                              :field="col.field"
+                              :showFilterMenu="false"
+                              :sortable="col.sortable"
+                              :style="col.style"
+                              style="min-width: 14rem">
 
-
-                        <Column field="qc_report" header="QC Report">
-                            <template #body="{ data }">
-                                <NuxtLink :to="`/hermes/qc/${data.id}`">
-                                    <Button
-                                        v-if="
-                                            data.qc_status !== 'SUBMITTED TO QC'
-                                        "
-                                        outlined
-                                        size="small"
-                                    >
-                                        View
-                                    </Button></NuxtLink
-                                >
-                            </template>
-                        </Column>
-                      <Column header="" :style="{ width: '8rem' }" v-if="canDeleteDataset">
+                        <!-- content template -->
                         <template #body="{ data }">
-                          <Button
-                              icon="bi-trash"
-                              severity="danger"
-                              outlined
-                              size="small"
-                              @click="confirmDelete(data)"
-                              v-tooltip.top="'Delete Dataset'"
-                          />
+                          <!-- render custom component -->
+                          <template v-if="col.component">
+                            <component :is="col.component(data)"></component>
+                          </template>
+                          <!-- render formatted text -->
+                          <template v-else-if="col.format">
+                            {{ col.format(data) }}
+                          </template>
+                          <!-- just render the data asis -->
+                          <template v-else>
+                            {{ data[col.field] }}
+                          </template>
+                        </template>
+
+                        <!-- filtering template -->
+                        <template v-if="col.filterType" #filter="{ filterModel, filterCallback }">
+                          <!-- multiple choice filtering -->
+                          <MultiSelect v-if="col.filterType === 'multiSelect'"
+                                       v-model="filterModel.value"
+                                       @change="filterCallback()"
+                                       :options="col.options"
+                                       :maxSelectedLabels="1"
+                                       placeholder="Any">
+                          </MultiSelect>
+                          <!-- or, text input filtering -->
+                          <InputText v-else
+                                     v-model="filterModel.value"
+                                     type="text"
+                                     @input="filterCallback()"
+                                     :placeholder="col.placeholder" />
                         </template>
                       </Column>
                     </DataTable>
@@ -334,6 +313,7 @@ const getIcon = (status) => {
             </Card>
         </div>
     </div>
+
   <Dialog
       v-model:visible="deleteDialog"
       modal
@@ -362,6 +342,8 @@ const getIcon = (status) => {
   </Dialog>
 </template>
 
+
+<!-- style sheet -->
 <style scoped>
 
 .confirmation-content {
@@ -388,4 +370,5 @@ const getIcon = (status) => {
 button.plot {
     cursor: help;
 }
+
 </style>
