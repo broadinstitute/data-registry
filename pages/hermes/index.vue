@@ -180,7 +180,7 @@ const columns = ref([
     header: "",
     field: "actions",
     style: { width: "8rem" },
-    showIf: () => canDeleteDataset,
+    showIf: () => canDeleteDataset.value,
     component: (data) =>
       h(Button, {
         icon: "bi-trash",
