@@ -7,7 +7,7 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('input[type="password"]').type('password');
     cy.contains('button', 'Sign In').click();
     cy.wait('@loginRequest');
-    cy.visit('/hermes/new', { timeout: 10000 });
+    cy.get('#upload_new').click();
     const datasetName = `Cypress dataset ${new Date().getTime()}`;
     cy.get('#dataSetName').type(datasetName);
     cy.get('#cohort').type('UKBiobank');

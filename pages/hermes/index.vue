@@ -211,6 +211,14 @@ const filters = ref(
     <div class="grid">
         <div v-if="fileUploads.length && finished" class="col">
             <h2>Quality Control (QC) Reports</h2>
+          <div class="flex justify-content-end mb-3">
+            <Button id="upload_new"
+                label="Upload"
+                icon="bi-upload"
+                class="mr-2"
+                @click="route.push('/hermes/new')"
+            ></Button>
+          </div>
             <Card class="mt-4">
                 <template #content>
                     <DataTable v-model:filters="filters"
