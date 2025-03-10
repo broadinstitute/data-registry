@@ -211,7 +211,7 @@ const filters = ref(
     <div class="grid">
         <div v-if="fileUploads.length && finished" class="col">
             <h2>Quality Control (QC) Reports</h2>
-          <div class="flex justify-content-end mb-3">
+          <div class="flex justify-content-start mb-3">
             <Button id="upload_new"
                 label="Upload"
                 icon="bi-upload"
