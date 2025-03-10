@@ -5,6 +5,13 @@ import Tag from 'primevue/tag';
 import Button from 'primevue/button';
 import { NuxtLink } from "#components";
 import MultiSelect from 'primevue/multiselect';
+import { FilterMatchMode, FilterService } from 'primevue/api';
+
+
+FilterService.register('inArray', (value, filters) => {
+  if (!filters || filters.length === 0) return true;
+  return filters.some(filter => value === filter);
+});
 
 
 const route = useRouter();
@@ -185,13 +192,18 @@ const columns = ref([
   }
 ]);
 
-// filters to dynamically create
 const filters = ref(
-  Object.fromEntries(
-    columns.value
-      .filter(col => col.filterType)
-      .map(col => [col.field, { value: null, matchMode: "contains" }])
-  )
+    Object.fromEntries(
+        columns.value
+            .filter(col => col.filterType)
+            .map(col => [
+              col.field,
+              {
+                value: null,
+                matchMode: col.filterType === 'multiSelect' ? 'inArray' : FilterMatchMode.CONTAINS
+              }
+            ])
+    )
 );
 </script>
 

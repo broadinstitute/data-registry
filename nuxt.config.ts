@@ -85,6 +85,11 @@ export default defineNuxtConfig({
           });
       }
   },
+    vite: {
+        server: {
+            allowedHosts: ['local.kpndataregistry.org']
+        }
+    },
 
   compatibilityDate: "2024-07-15"
 });
