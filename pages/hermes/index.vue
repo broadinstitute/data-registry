@@ -87,6 +87,12 @@ const uniquePhenotypes = computed(() => {
   return [...new Set(fileUploads.value.map(f => f.phenotype))];
 });
 
+// flat array of possible phenotypes
+const uniqueAncestries = computed(() => {
+  return ["I'm an ancestry", "Me too"];
+  //return [...new Set(fileUploads.value.map(f => f.ancestry))];
+});
+
 // flat array of possible statuses
 const uniqueQCstatuses = computed(() => {
   return [...new Set(fileUploads.value.map(f => f.qc_status))];
@@ -99,6 +105,13 @@ const columns = ref([
     field: "phenotype",
     filterType: "multiSelect",
     options: uniquePhenotypes,
+    sortable: true
+  },
+  {
+    header: "Ancestry",
+    field: "ancestry",
+    filterType: "multiSelect",
+    options: uniqueAncestries,
     sortable: true
   },
   {
