@@ -6,6 +6,10 @@ import { useToast } from "primevue/usetoast";
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 
+const r = useRoute();
+const fileId = ref(r.query.id);
+const isUpdate = computed(() => !!fileId.value);
+
 const formSchema = yup.object({
   dataSetName: yup.string().label('Dataset Name').required(),
   cohort: yup.string().label('Cohort').required(),
@@ -200,12 +204,92 @@ const filteredPhenotypes = ref([]);
 const previousMetadata = ref({});
 const selectedPreviousMD = ref('');
 
+async function loadExistingData() {
+  if (!fileId.value) return;
+
+  try {
+    const existingData = await store.fetchFileUpload(fileId.value);
+    const file_cols = existingData.all_columns;
+    const metadata = existingData.metadata;
+
+    dataSetName.value = existingData.dataset_name;
+    cohort.value = metadata.cohort;
+    dataCollectionStart.value = metadata.dataCollectionStart ? new Date(metadata.dataCollectionStart) : null;
+    dataCollectionEnd.value = metadata.dataCollectionEnd ? new Date(metadata.dataCollectionEnd) : null;
+    contactPerson.value = metadata.contactPerson;
+    acknowledgements.value = metadata.acknowledgements;
+    references.value = metadata.references;
+
+    phenotype.value = metadata.phenotype;
+
+    if (metadata.phenotype && store.hermesPhenotypes[metadata.phenotype]) {
+      phenotypeObj.value = store.hermesPhenotypes[metadata.phenotype];
+    }
+    caseAscertainment.value = metadata.caseAscertainment;
+    caseDefinition.value = metadata.caseDefinition;
+    caseType.value = metadata.caseType;
+    sex.value = metadata.sex;
+    ancestry.value = metadata.ancestry;
+
+    totalSampleSize.value = metadata.totalSampleSize;
+    cases.value = metadata.cases;
+
+    maleProportionCohort.value = metadata.maleProportionCohort;
+    maleProportionCases.value = metadata.maleProportionCases;
+    maleProportionControls.value = metadata.maleProportionControls;
+    maleProportionRecruitment.value = metadata.maleProportionRecruitment;
+
+    meanAgeCohort.value = metadata.meanAgeCohort;
+    meanAgeCases.value = metadata.meanAgeCases;
+    meanAgeControl.value = metadata.meanAgeControl;
+    meanAgeRecruitment.value = metadata.meanAgeRecruitment;
+
+    sdAgeCohort.value = metadata.sdAgeCohort;
+    sdAgeCases.value = metadata.sdAgeCases;
+    sdAgeControls.value = metadata.sdAgeControls;
+    sdAgeRecruitment.value = metadata.sdAgeRecruitment;
+
+    referenceGenome.value = metadata.referenceGenome;
+    genotypingArray.value = metadata.genotypingArray;
+    callingAlgorithm.value = metadata.callingAlgorithm;
+
+    imputationSoftware.value = metadata.imputationSoftware;
+    imputationReference.value = metadata.imputationReference;
+    numberOfVariantsForImputation.value = metadata.numberOfVariantsForImputation;
+    imputationQualityMeasure.value = metadata.imputationQualityMeasure;
+
+    relatedIndividualsRemoved.value = metadata.relatedIndividualsRemoved;
+    variantCallRate.value = metadata.variantCallRate;
+    sampleCallRate.value = metadata.sampleCallRate;
+    hwePValue.value = metadata.hwePValue;
+    maf.value = metadata.maf;
+    otherFilters.value = metadata.otherFilters;
+
+
+    fileInfo.value = {
+      columns: file_cols
+    };
+
+    selectedFields.value = Object.fromEntries(
+        Object.entries(metadata.column_map).filter(([key]) => key !== 'stdErr').map(([key, value]) => [value, key])
+    );
+
+    if (isUpdate.value) {
+      steps.value = steps.value.filter(step => step.label !== 'Select File');
+    }
+
+  } catch (error) {
+    console.error('Error loading existing data:', error);
+  }
+}
+
 onMounted(async () => {
     let params = {
         uploader: userStore.user.user_name,
         limit: 1,
     };
     previousMetadata.value = await store.fetchHermesMetadata();
+    await loadExistingData();
     let fileInfos = await store.fetchFileUploads(paramsToString(params));
     if (fileInfos.length > 0) {
         let map = fileInfos[0]?.metadata?.column_map;
@@ -362,27 +446,6 @@ async function sampleFile(e) {
     }
 }
 
-function loadMapping() {
-    //for each key in selectedFields, find the corresponding value in previousMapping
-    //and set the value of selectedFields to the value of previousMapping
-    Object.keys(selectedFields.value).forEach((key) => {
-        if (previousMapping[key]) {
-            selectedFields.value[key] = previousMapping[key];
-        }
-    });
-
-    //if the selectedFields does not contain any of the previous mapping, set alert toasts
-    if (Object.values(selectedFields.value).every((value) => value === null)) {
-        toast.add({
-            severity: "warn",
-            summary: "Alert",
-            group: "default",
-            detail: "Previous mapping does not match any column for this file.",
-            life: 5000,
-        });
-    }
-}
-
 function resetMapping() {
     //reset all values in selectedFields to null
     Object.keys(selectedFields.value).forEach((key) => {
@@ -410,10 +473,7 @@ watch(step3Complete, () => {
 });
 
 async function uploadSubmit(){
-  console.log("Starting upload event handler");
   const isValid = await validate();
-  console.log(`Validate isValue = ${isValid.valid}`);
-  console.log(`Full validation result ${JSON.stringify(isValid)}`);
 
   if(!file){
     missingFileError.value = "Please upload your file";
@@ -423,7 +483,7 @@ async function uploadSubmit(){
   if(file && !step3Complete.value){
     missingMappingError.value = "Please map all required fields to your file's columns";
   }
-  if(!!missingMappingError.value || !!missingFileError.value || !isValid.valid){
+  if(!!missingMappingError.value || (!!missingFileError.value && !isUpdate.value) || !isValid.valid){
     console.log("Returning early due to missing mapping, missing file, or invalid data");
     return;
   }
@@ -434,27 +494,36 @@ async function uploadSubmit(){
   metadata.column_map.alt = metadata.column_map['effect allele'];
   metadata.column_map.n = metadata.column_map['N total'];
   metadata.column_map.stdErr = metadata.column_map.se;
-  try {
-    const {presigned_url} = await store.getHermesPresignedUrl(fileName, dataSetName.value);
-    await store.uploadToPresignedUrl(presigned_url, file);
-    const validationRes = await store.validateHermesUpload(
-        fileName,
-        dataSetName.value,
-        metadata,
-        {'fd': .2}
-    );
-    if (validationRes.errors) {
-      toast.add({
-        severity: "error",
-        summary: "Alert",
-        group: "fileErrors",
-        errors: validationRes.errors,
-      });
-    } else {
+  if (isUpdate.value) {
+    try {
+      await store.updateHermesDatasetMetadata(fileId.value, metadata);
       await route.push({ path: "/hermes" });
+    } catch (error) {
+      console.error('Error updating dataset:', error);
     }
-  } catch (e) {
-    console.log(e);
+  } else {
+    try {
+      const { presigned_url } = await store.getHermesPresignedUrl(fileName, dataSetName.value)
+      await store.uploadToPresignedUrl(presigned_url, file)
+      const validationRes = await store.validateHermesUpload(
+          fileName,
+          dataSetName.value,
+          metadata,
+          { 'fd': .2 }
+      )
+      if (validationRes.errors) {
+        toast.add({
+          severity: 'error',
+          summary: 'Alert',
+          group: 'fileErrors',
+          errors: validationRes.errors
+        })
+      } else {
+        await route.push({ path: '/hermes' })
+      }
+    } catch (e) {
+      console.log(e)
+    }
   }
 }
 
@@ -498,7 +567,7 @@ async function uploadSubmit(){
     <div class="grid">
         <div class="col mb-4">
             <h2 class="text-center mb-4">
-                Upload GWAS for Quality Control (QC)
+                {{ isUpdate ? 'Update GWAS Metadata' : 'Upload GWAS for Quality Control (QC)' }}
             </h2>
             <Steps id="steps" :activeStep="currentStep" :model="steps" />
         </div>
@@ -531,7 +600,8 @@ async function uploadSubmit(){
                 </Fieldset>
                 <Fieldset legend="Study Metadata">
                   <HermesValidatedInput id="dataSetName" label="Dataset Name" v-model="dataSetName"
-                                        tooltip='e.g. "UKBB Heart Failure (female)"'/>
+                                        tooltip='e.g. "UKBB Heart Failure (female)"'
+                                        :readonly="isUpdate" :class="{'p-disabled': isUpdate}"/>
                   <HermesValidatedInput id="cohort" tooltip='e.g. "UKBiobank"' v-model="cohort"
                                         label="Cohort" />
                   <div class="field">
@@ -738,7 +808,7 @@ async function uploadSubmit(){
             </div>
         </div>
         <div class="col-12 md:col-6">
-          <div class="card p-fluid" >
+          <div class="card p-fluid" v-if="!isUpdate">
             <h5>Select file to upload</h5>
             <div class="field" :class="{ 'p-invalid-file':  missingFileError}">
             <FileUpload
@@ -764,6 +834,12 @@ async function uploadSubmit(){
             <small id="fileInput-help" class="p-error">
               {{ missingFileError }}
             </small>
+          </div>
+          <div class="card p-fluid" v-else>
+            <h5>Existing File</h5>
+            <div class="field">
+              <span>{{ dataSetName }}</span>
+            </div>
           </div>
             <div class="card">
                 <h5>Map column names to their representations.</h5>
@@ -861,9 +937,9 @@ async function uploadSubmit(){
                     >
                         <Button
                             type="submit"
-                            label="Upload"
+                            :label="isUpdate ? 'Update' : 'Upload'"
                             class="p-button-primary"
-                            icon="bi-upload"
+                            :icon="isUpdate ? 'bi-save': 'bi-upload'"
                             raised
                         ></Button>
                     </span>

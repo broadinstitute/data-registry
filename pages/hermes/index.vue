@@ -179,17 +179,28 @@ const columns = ref([
   {
     header: "",
     field: "actions",
-    style: { width: "8rem" },
-    showIf: () => canDeleteDataset.value,
+    style: { width: "12rem" }, // Increased width to accommodate both buttons
     component: (data) =>
-      h(Button, {
-        icon: "bi-trash",
-        severity: "danger",
-        outlined: true,
-        size: "small",
-        onClick: () => confirmDelete(data)
-      })
-  }
+        h("div", { class: "flex gap-2" }, [
+          data.qc_status !== "SUBMITTED TO QC" && h(
+              NuxtLink,
+              { to: `/hermes/new?id=${data.id}` },
+              () => h(Button, {
+                icon: "bi-pencil",
+                severity: "info",
+                outlined: true,
+                size: "small"
+              })
+          ),
+          canDeleteDataset.value && h(Button, {
+            icon: "bi-trash",
+            severity: "danger",
+            outlined: true,
+            size: "small",
+            onClick: () => confirmDelete(data)
+          })
+        ])
+  },
 ]);
 
 const filters = ref(
@@ -243,25 +254,19 @@ const filters = ref(
                               :style="col.style"
                               style="min-width: 14rem">
 
-                        <!-- content template -->
                         <template #body="{ data }">
-                          <!-- render custom component -->
                           <template v-if="col.component">
                             <component :is="col.component(data)"></component>
                           </template>
-                          <!-- render formatted text -->
                           <template v-else-if="col.format">
                             {{ col.format(data) }}
                           </template>
-                          <!-- just render the data asis -->
                           <template v-else>
                             {{ data[col.field] }}
                           </template>
                         </template>
 
-                        <!-- filtering template -->
                         <template v-if="col.filterType" #filter="{ filterModel, filterCallback }">
-                          <!-- multiple choice filtering -->
                           <MultiSelect v-if="col.filterType === 'multiSelect'"
                                        v-model="filterModel.value"
                                        @change="filterCallback()"
@@ -269,7 +274,6 @@ const filters = ref(
                                        :maxSelectedLabels="1"
                                        placeholder="Any">
                           </MultiSelect>
-                          <!-- or, text input filtering -->
                           <InputText v-else
                                      v-model="filterModel.value"
                                      type="text"

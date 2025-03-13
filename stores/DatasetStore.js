@@ -442,6 +442,9 @@ export const useDatasetStore = defineStore("DatasetStore", {
                 `/api/phenotypes/${save_phenotype_id}`,
             );
         },
+        async updateHermesDatasetMetadata(id, metadata){
+            await configuredAxios.patch(`/api/upload-hermes-metadata/${id}`, JSON.stringify(metadata));
+        },
         addStudy(study) {
             this.studies.push(study);
         },
