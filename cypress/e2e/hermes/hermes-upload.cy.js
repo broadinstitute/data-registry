@@ -37,7 +37,7 @@ describe('Hermes Upload', {retries: 0}, () => {
     cy.get('#maf').type('1');
     cy.get('#otherFilters').type('My Filters');
 
-    cy.get('input[type="file"]').attachFile('sample-gwas-expanded.csv');
+    cy.get('input[type="file"]').attachFile({ filePath: 'sample-gwas-expanded.csv.gz', encoding: 'binary'});
     cy.get('[data-cy="column-dropdown"]').eq(1).type('chromosome').type('{enter}');
     cy.get('[data-cy="column-dropdown"]').eq(2).type('position').type('{enter}');
     cy.get('[data-cy="column-dropdown"]').eq(3).type('alt').type('{enter}');

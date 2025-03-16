@@ -82,9 +82,12 @@ const getIcon = (status) => {
     }
 };
 
-// flat array of possible phenotypes
 const uniquePhenotypes = computed(() => {
   return [...new Set(fileUploads.value.map(f => f.phenotype))];
+});
+
+const uniqueAncestry = computed(() => {
+  return [...new Set(fileUploads.value.map(f => f.ancestry))];
 });
 
 // flat array of possible statuses
@@ -99,6 +102,13 @@ const columns = ref([
     field: "phenotype",
     filterType: "multiSelect",
     options: uniquePhenotypes,
+    sortable: true
+  },
+  {
+    header: "Ancestry",
+    field: "ancestry",
+    filterType: "multiSelect",
+    options: uniqueAncestry,
     sortable: true
   },
   {
@@ -235,7 +245,7 @@ const filters = ref(
                     <DataTable v-model:filters="filters"
                                filterDisplay="row"
                                :value="fileUploads"
-                               tableStyle="min-width: 50rem"
+                               class="w-full"
                                paginator
                                :rows="20"
                                :loading="tableLoading"
