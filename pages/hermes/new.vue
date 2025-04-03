@@ -586,7 +586,7 @@ async function uploadSubmit(){
         </div>
     </div>
 
-  <form @submit.prevent="uploadSubmit" id="metadataForm" novalidate class="needs-validation">
+  <form @submit.prevent="uploadSubmit" id="metadataForm" novalidate class="needs-validation" autocomplete="off">
     <div class="grid">
         <div class="col-12 md:col-6">
             <div class="card p-fluid">

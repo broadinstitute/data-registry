@@ -21,11 +21,16 @@ const datasetToDelete = ref(null);
 const fileUploads = ref([]);
 const tableLoading = ref(false);
 const finished = ref(false);
+const config = useRuntimeConfig();
 
 const confirmDelete = (dataset) => {
   datasetToDelete.value = dataset;
   deleteDialog.value = true;
 };
+
+const downloadMetadata = (dataset) => {
+  window.open(`${config.public.apiBaseUrl}/api/hermes/metadata/${dataset.id}`, '_blank');
+}
 
 const canDeleteDataset = computed(() => {
   const user = useUserStore().user;
@@ -202,6 +207,14 @@ const columns = ref([
                 size: "small"
               })
           ),
+          h(Button, {
+            icon: "bi-download",
+            severity: "info",
+            outlined: true,
+            size: "small",
+            title: "Download metadata as csv",
+            onClick: () => downloadMetadata(data)
+          }),
           canDeleteDataset.value && h(Button, {
             icon: "bi-trash",
             severity: "danger",
