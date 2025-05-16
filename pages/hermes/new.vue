@@ -576,12 +576,11 @@ async function uploadSubmit(){
     <div class="grid" v-if="store.showNotification">
         <div class="col-6 col-offset-3">
             <Message
-                v-for="msg in store.errorMessage"
                 severity="error"
                 :closable="false"
                 :sticky="true"
                 :key="msg"
-                >{{ msg }}</Message
+                >{{ store.errorMessage }}</Message
             >
         </div>
     </div>
