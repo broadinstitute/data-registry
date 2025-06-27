@@ -32,6 +32,10 @@ const downloadMetadata = (dataset) => {
   window.open(`${config.public.apiBaseUrl}/api/hermes/metadata/${dataset.id}`, '_blank');
 }
 
+const downloadAllMetadata = (dataset) => {
+  window.open(`${config.public.apiBaseUrl}/api/hermes/metadata`, '_blank');
+}
+
 const canDeleteDataset = computed(() => {
   const user = useUserStore().user;
   return user.roles.includes('admin') || user.permissions.includes('deleteDataset');
@@ -251,6 +255,12 @@ const filters = ref(
                 icon="bi-upload"
                 class="mr-2"
                 @click="route.push('/hermes/new')"
+            ></Button>
+            <Button id="download_all_metadata"
+                label="Download All Metadata"
+                icon="bi-download"
+                class="mr-2"
+                @click="downloadAllMetadata"
             ></Button>
           </div>
             <Card class="mt-4">
