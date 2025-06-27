@@ -30,11 +30,11 @@ const confirmDelete = (dataset) => {
 
 const downloadMetadata = (dataset) => {
   window.open(`${config.public.apiBaseUrl}/api/hermes/metadata/${dataset.id}`, '_blank');
-}
+};
 
-const downloadAllMetadata = (dataset) => {
+const downloadAllMetadata = () => {
   window.open(`${config.public.apiBaseUrl}/api/hermes/metadata`, '_blank');
-}
+};
 
 const canDeleteDataset = computed(() => {
   const user = useUserStore().user;
