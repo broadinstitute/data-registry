@@ -41,6 +41,11 @@ const canDeleteDataset = computed(() => {
   return user.roles.includes('admin') || user.permissions.includes('deleteDataset');
 });
 
+const canDownloadAllMetadata = computed(() => {
+  const user = useUserStore().user;
+  return user.roles.includes('admin') || user.roles.includes('reviewer') || user.roles.includes('analyst');
+});
+
 const handleDelete = async () => {
   try {
     await store.deleteHermesDataset(datasetToDelete.value.id);
@@ -256,7 +261,8 @@ const filters = ref(
                 class="mr-2"
                 @click="route.push('/hermes/new')"
             ></Button>
-            <Button id="download_all_metadata"
+            <Button v-if="canDownloadAllMetadata"
+                id="download_all_metadata"
                 label="Download All Metadata"
                 icon="bi-download"
                 class="mr-2"
