@@ -293,7 +293,7 @@ const runAnalysis = async () => {
     });
     await store.startMetaAnalysis({
         name: name.value,
-        method: 'intake bottom-line:PartitionStage bottom-line:AncestrySpecificStage bottom-line:LoadAncestrySpecificStage',
+        method: 'intake bottom-line:PartitionStage bottom-line:NaiveStage',
         datasets: dsIDs,
         phenotype: selectedPhenotype.value.name,
     });
