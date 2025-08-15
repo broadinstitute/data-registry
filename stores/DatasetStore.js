@@ -12,16 +12,6 @@ const configuredAxios = useAxios(config, undefined, (error) => {
     return Promise.reject(error);
 });
 
-const sgcAxios = useSGCAxios(config, undefined, (error) => {
-    const store = useDatasetStore();
-    store.processing = false;
-    store.errorMessage =
-        error.response?.data.detail || error.message || error.errorMessage;
-    store.serverSuccess = false;
-    store.showNotification = true;
-    return Promise.reject(error);
-});
-
 function onUpload(progressEvent) {
     const store = useDatasetStore();
     store.uploadProgress = Math.round(
@@ -284,7 +274,7 @@ export const useDatasetStore = defineStore("DatasetStore", {
             this.combinedPhenotypesAndCredibleSets = mapCredibleSets();
             return data;
         },
-        async sampleTextFile(file, validationType = null) {
+        async sampleTextFile(file) {
             this.showProgressBar = false;
             this.processing = true;
             this.modalMsg = "Sampling File";
@@ -292,13 +282,8 @@ export const useDatasetStore = defineStore("DatasetStore", {
             const formData = new FormData();
             formData.append("file", new Blob([part]), file.name);
 
-            let url = "/api/preview-delimited-file";
-            if (validationType) {
-                url += `?sgc_validation=${validationType}`;
-            }
-
             const { data } = await configuredAxios.post(
-                url,
+                "/api/preview-delimited-file",
                 formData,
                 {
                     headers: { "Content-Type": "multipart/form-data" },
@@ -477,60 +462,6 @@ export const useDatasetStore = defineStore("DatasetStore", {
                 `/api/upload-hermes/${id}`,
                 JSON.stringify({ status }),
             );
-        },
-
-        // SGC file upload with validation and column mapping
-        async uploadSGCFile(file, validationType, columnMapping) {
-            this.showProgressBar = true;
-            this.processing = true;
-            this.modalMsg = "Validating SGC File";
-            
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("validation_type", validationType);
-            formData.append("column_mapping", JSON.stringify(columnMapping));
-
-            const { data } = await configuredAxios.post(
-                "/api/sgc/upload-file",
-                formData,
-                {
-                    headers: { "Content-Type": "multipart/form-data" },
-                },
-            );
-            
-            this.processing = false;
-            return data;
-        },
-
-        // SGC pre-signed URL
-        async getSGCPresignedUrl(fileName, dataset, fileType) {
-            this.showProgressBar = true;
-            this.processing = true;
-            this.modalMsg = "Uploading File to Storage";
-            
-            const { data } = await configuredAxios.get('/api/sgc/get-pre-signed-url', {
-                headers: {
-                    Dataset: dataset,
-                    Filename: fileName,
-                    FileType: fileType
-                }
-            });
-            return data;
-        },
-
-        // SGC Phenotypes API methods
-        async fetchSGCPhenotypes() {
-            const { data } = await sgcAxios.get('/api/sgc/phenotypes');
-            return data;
-        },
-
-        async createSGCPhenotype(phenotypeData) {
-            const { data } = await sgcAxios.post('/api/sgc/phenotypes', phenotypeData);
-            return data;
-        },
-
-        async deleteSGCPhenotype(phenotypeCode) {
-            await sgcAxios.delete(`/api/sgc/phenotypes/${phenotypeCode}`);
         },
     },
 });
