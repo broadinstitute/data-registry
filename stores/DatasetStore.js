@@ -532,5 +532,11 @@ export const useDatasetStore = defineStore("DatasetStore", {
         async deleteSGCPhenotype(phenotypeCode) {
             await sgcAxios.delete(`/api/sgc/phenotypes/${phenotypeCode}`);
         },
+        
+        // SGC Cohort API methods
+        async upsertSGCCohort(cohortData) {
+            const { data } = await sgcAxios.post('/api/sgc/cohorts', cohortData);
+            return data;
+        },
     },
 });
