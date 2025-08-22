@@ -480,18 +480,20 @@ export const useDatasetStore = defineStore("DatasetStore", {
         },
 
         // SGC file upload with validation and column mapping
-        async uploadSGCFile(file, validationType, columnMapping) {
+        async uploadSGCFile(file, cohortId, fileType, validationType, columnMapping) {
             this.showProgressBar = true;
             this.processing = true;
-            this.modalMsg = "Validating SGC File";
+            this.modalMsg = "Validating and Uploading SGC File";
             
             const formData = new FormData();
             formData.append("file", file);
+            formData.append("cohort_id", cohortId);
+            formData.append("file_type", fileType);
             formData.append("validation_type", validationType);
             formData.append("column_mapping", JSON.stringify(columnMapping));
 
-            const { data } = await configuredAxios.post(
-                "/api/sgc/upload-file",
+            const { data } = await sgcAxios.post(
+                "/api/sgc/cohort-files",
                 formData,
                 {
                     headers: { "Content-Type": "multipart/form-data" },
@@ -502,21 +504,6 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
-        // SGC pre-signed URL
-        async getSGCPresignedUrl(fileName, dataset, fileType) {
-            this.showProgressBar = true;
-            this.processing = true;
-            this.modalMsg = "Uploading File to Storage";
-            
-            const { data } = await configuredAxios.get('/api/sgc/get-pre-signed-url', {
-                headers: {
-                    Dataset: dataset,
-                    Filename: fileName,
-                    FileType: fileType
-                }
-            });
-            return data;
-        },
 
         // SGC Phenotypes API methods
         async fetchSGCPhenotypes() {
