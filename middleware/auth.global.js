@@ -8,26 +8,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
         return;
     }
     const nuxtApp = useNuxtApp();
-    if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login') || to.path.startsWith('/sgc/login')){
+    if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login')){
         return;
     }
     const userStore = useUserStore();
-    let isLoggedIn = false;
-
-    // Check SGC authentication for SGC routes
-    if (to.path.startsWith('/sgc')) {
-        isLoggedIn = await userStore.isSGCUserLoggedIn();
-        
-        if (!isLoggedIn) {
-            return callWithNuxt(nuxtApp, navigateTo, ['/sgc/login?redirect=' + to.path]);
-        }
-        // User is authenticated for SGC, allow access
-        return;
-    }
-
-    // For non-SGC routes, use existing authentication
-    isLoggedIn = await userStore.isUserLoggedIn();
-    
+    const isLoggedIn = await userStore.isUserLoggedIn();
     if (isLoggedIn && userStore.user && JSON.stringify(userStore.user.groups) === JSON.stringify(['hermes'])
       && !to.path.startsWith('/hermes')) {
         // eslint-disable-next-line no-undef
