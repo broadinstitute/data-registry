@@ -12,6 +12,16 @@ const configuredAxios = useAxios(config, undefined, (error) => {
     return Promise.reject(error);
 });
 
+const sgcAxios = useSGCAxios(config, undefined, (error) => {
+    const store = useDatasetStore();
+    store.processing = false;
+    store.errorMessage =
+        error.response?.data.detail || error.message || error.errorMessage;
+    store.serverSuccess = false;
+    store.showNotification = true;
+    return Promise.reject(error);
+});
+
 function onUpload(progressEvent) {
     const store = useDatasetStore();
     store.uploadProgress = Math.round(
@@ -274,7 +284,7 @@ export const useDatasetStore = defineStore("DatasetStore", {
             this.combinedPhenotypesAndCredibleSets = mapCredibleSets();
             return data;
         },
-        async sampleTextFile(file) {
+        async sampleTextFile(file, validationType = null) {
             this.showProgressBar = false;
             this.processing = true;
             this.modalMsg = "Sampling File";
@@ -282,8 +292,13 @@ export const useDatasetStore = defineStore("DatasetStore", {
             const formData = new FormData();
             formData.append("file", new Blob([part]), file.name);
 
+            let url = "/api/preview-delimited-file";
+            if (validationType) {
+                url += `?sgc_validation=${validationType}`;
+            }
+
             const { data } = await configuredAxios.post(
-                "/api/preview-delimited-file",
+                url,
                 formData,
                 {
                     headers: { "Content-Type": "multipart/form-data" },
@@ -462,6 +477,71 @@ export const useDatasetStore = defineStore("DatasetStore", {
                 `/api/upload-hermes/${id}`,
                 JSON.stringify({ status }),
             );
+        },
+
+        // SGC file upload with validation and column mapping
+        async uploadSGCFile(file, cohortId, fileType, validationType, columnMapping) {
+            this.showProgressBar = true;
+            this.processing = true;
+            this.modalMsg = "Validating and Uploading SGC File";
+            
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("cohort_id", cohortId);
+            formData.append("file_type", fileType);
+            formData.append("validation_type", validationType);
+            formData.append("column_mapping", JSON.stringify(columnMapping));
+
+            const { data } = await sgcAxios.post(
+                "/api/sgc/cohort-files",
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                },
+            );
+            
+            this.processing = false;
+            return data;
+        },
+
+
+        // SGC Phenotypes API methods
+        async fetchSGCPhenotypes() {
+            const { data } = await sgcAxios.get('/api/sgc/phenotypes');
+            return data;
+        },
+
+        async createSGCPhenotype(phenotypeData) {
+            const { data } = await sgcAxios.post('/api/sgc/phenotypes', phenotypeData);
+            return data;
+        },
+
+        async deleteSGCPhenotype(phenotypeCode) {
+            await sgcAxios.delete(`/api/sgc/phenotypes/${phenotypeCode}`);
+        },
+        
+        // SGC Cohort API methods
+        async upsertSGCCohort(cohortData) {
+            const { data } = await sgcAxios.post('/api/sgc/cohorts', cohortData);
+            return data;
+        },
+
+        async fetchSGCCohorts() {
+            const { data } = await sgcAxios.get('/api/sgc/cohorts');
+            return data;
+        },
+
+        async fetchSGCCohort(cohortId) {
+            const { data } = await sgcAxios.get(`/api/sgc/cohorts/${cohortId}`);
+            return data;
+        },
+
+        async deleteSGCCohort(cohortId) {
+            await sgcAxios.delete(`/api/sgc/cohorts/${cohortId}`);
+        },
+
+        async deleteSGCFile(fileId) {
+            await sgcAxios.delete(`/api/sgc/cohort-files/${fileId}`);
         },
     },
 });

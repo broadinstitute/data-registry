@@ -1,0 +1,1070 @@
+<template>
+    <div class="grid">
+        <div class="col mb-4">
+            <h2 class="text-center mb-4">
+                Create Cohort
+            </h2>
+        </div>
+    </div>
+
+
+    <!-- Cohort Metadata Form -->
+    <div class="grid">
+        <div class="col-12">
+            <div v-if="loading" class="text-center p-4">
+                <ProgressSpinner />
+                <p>Loading cohort information...</p>
+            </div>
+            <SGCMetadataForm 
+                v-else
+                title="Cohort Information"
+                :initial-data="cohortData"
+                :redirect-after-save="false"
+                save-button-label="Update Metadata"
+                save-button-icon="bi-pencil"
+                success-message="Metadata updated successfully"
+                @updated="handleMetadataUpdated"
+            />
+        </div>
+    </div>
+
+    <!-- File Upload Section -->
+    <div class="grid" v-if="cohortData && metadataSaved">
+        <div class="col-12">
+            <div class="card p-fluid">
+                <h5>Upload Files</h5>
+                <p class="text-sm mb-4">
+                    Upload all three required files for this cohort. All files must be tab-delimited .txt files.
+                </p>
+                
+                <!-- Progress Checklist -->
+                <div class="card mb-4" style="background-color: var(--surface-100); border: 1px solid var(--surface-300);">
+                    <h6 class="mb-3">Required Files Progress</h6>
+                    <div class="grid">
+                        <div class="col-12 md:col-4">
+                            <div class="flex align-items-center gap-2 mb-2">
+                                <i v-if="uploadStatus.casesControls" 
+                                   class="pi pi-check-circle text-green-500" 
+                                   style="font-size: 1.2rem"></i>
+                                <i v-else 
+                                   class="pi pi-times-circle text-red-500" 
+                                   style="font-size: 1.2rem"></i>
+                                <span :class="{'text-green-600 font-medium': uploadStatus.casesControls, 'text-red-600': !uploadStatus.casesControls}">
+                                    Cases/Controls Data
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <div class="flex align-items-center gap-2 mb-2">
+                                <i v-if="uploadStatus.cooccurrence" 
+                                   class="pi pi-check-circle text-green-500" 
+                                   style="font-size: 1.2rem"></i>
+                                <i v-else 
+                                   class="pi pi-times-circle text-red-500" 
+                                   style="font-size: 1.2rem"></i>
+                                <span :class="{'text-green-600 font-medium': uploadStatus.cooccurrence, 'text-red-600': !uploadStatus.cooccurrence}">
+                                    Co-occurrence Data
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <div class="flex align-items-center gap-2 mb-2">
+                                <i v-if="uploadStatus.cohortDescription" 
+                                   class="pi pi-check-circle text-green-500" 
+                                   style="font-size: 1.2rem"></i>
+                                <i v-else 
+                                   class="pi pi-times-circle text-red-500" 
+                                   style="font-size: 1.2rem"></i>
+                                <span :class="{'text-green-600 font-medium': uploadStatus.cohortDescription, 'text-red-600': !uploadStatus.cohortDescription}">
+                                    Cohort Description
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Overall Status -->
+                    <div v-if="allFilesUploaded" class="text-center mt-3 p-3" style="background-color: var(--green-100); border: 1px solid var(--green-300); border-radius: 6px;">
+                        <i class="pi pi-check-circle text-green-600 mr-2" style="font-size: 1.5rem"></i>
+                        <span class="text-green-700 font-medium text-lg">All required files uploaded! Cohort is complete.</span>
+                    </div>
+                    <div v-else class="text-center mt-3 p-2" style="background-color: var(--orange-100); border: 1px solid var(--orange-300); border-radius: 6px;">
+                        <i class="pi pi-info-circle text-orange-600 mr-2"></i>
+                        <span class="text-orange-700 font-medium">{{ remainingFilesCount }} file{{ remainingFilesCount === 1 ? '' : 's' }} remaining</span>
+                    </div>
+                </div>
+                
+                <Accordion :multiple="false" v-model:activeIndex="activeAccordionIndex">
+                    <AccordionTab>
+                        <template #header>
+                            <div class="flex items-center gap-2">
+                                <span>Cases/Controls Data *</span>
+                                <i v-if="uploadStatus.casesControls" class="pi pi-check text-green-500"></i>
+                            </div>
+                        </template>
+                        <!-- Existing File Display -->
+                        <div v-if="existingFiles.casesControls" class="mb-4 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
+                            <div class="flex align-items-center justify-content-between">
+                                <div class="flex align-items-center gap-3">
+                                    <i class="pi pi-file-check text-green-600" style="font-size: 1.5rem"></i>
+                                    <div>
+                                        <p class="font-medium text-green-800 mb-1">{{ existingFiles.casesControls.name }}</p>
+                                        <small class="text-green-600">Uploaded {{ new Date(existingFiles.casesControls.uploadedAt).toLocaleDateString() }}</small>
+                                    </div>
+                                </div>
+                                <Button
+                                    icon="pi pi-trash"
+                                    severity="danger"
+                                    text
+                                    size="small" 
+                                    @click="deleteCasesControlsFile"
+                                    title="Delete this file"
+                                />
+                            </div>
+                        </div>
+
+                        <FileUpload
+                            v-else
+                            name="casesControlsFile"
+                            id="casesControlsFile"
+                            accept=".txt"
+                            :showUploadButton="false"
+                            :previewWidth="0"
+                            @select="handleCasesControlsFile"
+                            @clear="resetCasesControlsFile"
+                            @remove="resetCasesControlsFile"
+                            customUpload
+                            :multiple="false"
+                        >
+                            <template #empty>
+                                <p>Select Cases/Controls file (.txt)</p>
+                            </template>
+                        </FileUpload>
+                    
+                    <!-- Cases/Controls Column Mapping -->
+                    <div v-if="casesControlsFileInfo.columns" class="mt-4">
+                        <h6 class="mb-3">Map Cases/Controls Columns</h6>
+                        <small class="mb-3 block">
+                            Map the columns in your file to the required fields: Cases, Controls, and Phenotype.
+                        </small>
+                        
+                        <div class="card flex flex-wrap gap-1 required-card mb-3">
+                            <h6 class="w-full">Required fields:</h6>
+                            <template v-for="field in requiredSGCFields">
+                                <Chip
+                                    v-if="Object.values(casesControlsMapping).includes(field)"
+                                    :key="field"
+                                    icon="bi-check"
+                                    :label="field"
+                                    class="selected-chip"
+                                />
+                                <Chip v-else :label="field" :key="'else-' + field" />
+                            </template>
+                        </div>
+                        
+                        <DataTable :value="casesControlsTableRows" rowHover>
+                            <Column field="column" header="Column" class="col-4">
+                            </Column>
+                            <Column header=">>" class="col-1"></Column>
+                            <Column header="Represents" class="col-7">
+                                <template #body="{ data }">
+                                    <Dropdown
+                                        class="w-full"
+                                        :options="columnMappingOptions"
+                                        option-label="name"
+                                        option-value="value"
+                                        :option-disabled="
+                                            (option) => {
+                                                return (
+                                                    Object.values(casesControlsMapping).includes(option.value) &&
+                                                    option.value !== casesControlsMapping[data.column]
+                                                );
+                                            }
+                                        "
+                                        v-model="casesControlsMapping[data.column]"
+                                        showClear
+                                        placeholder="Select mapping"
+                                    />
+                                </template>
+                            </Column>
+                        </DataTable>
+                        
+                        <div class="text-center mt-3">
+                            <Button
+                                type="button"
+                                label="Upload Cases/Controls File"
+                                class="p-button-primary"
+                                icon="bi-upload"
+                                :disabled="!columnMappingComplete"
+                                @click="uploadCasesControlsFile"
+                                raised
+                            />
+                            <div v-if="!columnMappingComplete" class="text-sm text-gray-500 mt-2">
+                                {{ casesControlsUploadTooltip }}
+                            </div>
+                        </div>
+                    </div>
+                    </AccordionTab>
+                    
+                    <AccordionTab>
+                        <template #header>
+                            <div class="flex items-center gap-2">
+                                <span>Co-occurrence Data *</span>
+                                <i v-if="uploadStatus.cooccurrence" class="pi pi-check text-green-500"></i>
+                            </div>
+                        </template>
+                        <!-- Existing File Display -->
+                        <div v-if="existingFiles.cooccurrence" class="mb-4 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
+                            <div class="flex align-items-center justify-content-between">
+                                <div class="flex align-items-center gap-3">
+                                    <i class="pi pi-file-check text-green-600" style="font-size: 1.5rem"></i>
+                                    <div>
+                                        <p class="font-medium text-green-800 mb-1">{{ existingFiles.cooccurrence.name }}</p>
+                                        <small class="text-green-600">Uploaded {{ new Date(existingFiles.cooccurrence.uploadedAt).toLocaleDateString() }}</small>
+                                    </div>
+                                </div>
+                                <Button
+                                    icon="pi pi-trash"
+                                    severity="danger"
+                                    text
+                                    size="small" 
+                                    @click="deleteCooccurrenceFile"
+                                    title="Delete this file"
+                                />
+                            </div>
+                        </div>
+
+                        <FileUpload
+                            v-else
+                            name="cooccurrenceFile"
+                            id="cooccurrenceFile"
+                            accept=".txt"
+                            :showUploadButton="false"
+                            :previewWidth="0"
+                            @select="handleCooccurrenceFile"
+                            @clear="resetCooccurrenceFile"
+                            @remove="resetCooccurrenceFile"
+                            customUpload
+                        >
+                            <template #empty>
+                                <p>Select Co-occurrence file (.txt)</p>
+                            </template>
+                        </FileUpload>
+                    
+                    <!-- Co-occurrence Column Mapping -->
+                    <div v-if="cooccurrenceFileInfo.columns" class="mt-4">
+                        <h6 class="mb-3">Map Co-occurrence Columns</h6>
+                        <small class="mb-3 block">
+                            Map the columns in your file to the required fields: Phenotype 1, Phenotype 2, and Co-occurrence Count.
+                        </small>
+                        
+                        <div class="card flex flex-wrap gap-1 required-card mb-3">
+                            <h6 class="w-full">Required fields:</h6>
+                            <template v-for="field in requiredCooccurrenceFields">
+                                <Chip
+                                    v-if="Object.values(cooccurrenceMapping).includes(field)"
+                                    :key="field"
+                                    icon="bi-check"
+                                    :label="field"
+                                    class="selected-chip"
+                                />
+                                <Chip v-else :label="field" :key="'else-' + field" />
+                            </template>
+                        </div>
+                        
+                        <DataTable :value="cooccurrenceTableRows" rowHover>
+                            <Column field="column" header="Column" class="col-4">
+                            </Column>
+                            <Column header=">>" class="col-1"></Column>
+                            <Column header="Represents" class="col-7">
+                                <template #body="{ data }">
+                                    <Dropdown
+                                        class="w-full"
+                                        :options="cooccurrenceMappingOptions"
+                                        option-label="name"
+                                        option-value="value"
+                                        :option-disabled="
+                                            (option) => {
+                                                return (
+                                                    Object.values(cooccurrenceMapping).includes(option.value) &&
+                                                    option.value !== cooccurrenceMapping[data.column]
+                                                );
+                                            }
+                                        "
+                                        v-model="cooccurrenceMapping[data.column]"
+                                        showClear
+                                        placeholder="Select mapping"
+                                    />
+                                </template>
+                            </Column>
+                        </DataTable>
+                        
+                        <div class="text-center mt-3">
+                            <Button
+                                type="button"
+                                label="Upload Co-occurrence File"
+                                class="p-button-primary"
+                                icon="bi-upload"
+                                :disabled="!cooccurrenceMappingComplete"
+                                @click="uploadCooccurrenceFile"
+                                raised
+                            />
+                            <div v-if="!cooccurrenceMappingComplete" class="text-sm text-gray-500 mt-2">
+                                {{ cooccurrenceUploadTooltip }}
+                            </div>
+                        </div>
+                    </div>
+                    </AccordionTab>
+                    
+                    <AccordionTab>
+                        <template #header>
+                            <div class="flex items-center gap-2">
+                                <span>Cohort Description *</span>
+                                <i v-if="uploadStatus.cohortDescription" class="pi pi-check text-green-500"></i>
+                            </div>
+                        </template>
+                        <!-- Existing File Display -->
+                        <div v-if="existingFiles.cohortDescription" class="mb-4 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
+                            <div class="flex align-items-center justify-content-between">
+                                <div class="flex align-items-center gap-3">
+                                    <i class="pi pi-file-check text-green-600" style="font-size: 1.5rem"></i>
+                                    <div>
+                                        <p class="font-medium text-green-800 mb-1">{{ existingFiles.cohortDescription.name }}</p>
+                                        <small class="text-green-600">Uploaded {{ new Date(existingFiles.cohortDescription.uploadedAt).toLocaleDateString() }}</small>
+                                    </div>
+                                </div>
+                                <Button
+                                    icon="pi pi-trash"
+                                    severity="danger"
+                                    text
+                                    size="small" 
+                                    @click="deleteCohortDescriptionFile"
+                                    title="Delete this file"
+                                />
+                            </div>
+                        </div>
+
+                        <FileUpload
+                            v-else
+                            name="cohortDescriptionFile"
+                            id="cohortDescriptionFile"
+                            accept=".txt"
+                            :showUploadButton="false"
+                            :previewWidth="0"
+                            @select="handleCohortDescriptionFile"
+                            @clear="resetCohortDescriptionFile"
+                            @remove="resetCohortDescriptionFile"
+                            customUpload
+                        >
+                            <template #empty>
+                                <p>Select Cohort Description file (.txt)</p>
+                            </template>
+                        </FileUpload>
+                        
+                        <div v-if="cohortDescriptionFile" class="text-center mt-3">
+                            <Button
+                                type="button"
+                                label="Upload Cohort Description File"
+                                class="p-button-primary"
+                                icon="bi-upload"
+                                @click="uploadCohortDescriptionFile"
+                                raised
+                            />
+                        </div>
+                    </AccordionTab>
+                </Accordion>
+            </div>
+        </div>
+    </div>
+
+    <Toast position="top-center" group="default"/>
+</template>
+
+<script setup>
+import { useToast } from "primevue/usetoast";
+import { useDatasetStore } from "~/stores/DatasetStore";
+
+definePageMeta({
+  layout: 'sgc'
+});
+
+const toast = useToast();
+const route = useRoute();
+const store = useDatasetStore();
+
+// Get the cohort ID from the route
+const cohortId = route.params.id;
+
+// Reactive data
+const loading = ref(true);
+const cohortData = ref(null);
+const metadataSaved = ref(false);
+
+// File upload reactive variables
+const activeAccordionIndex = ref(0);
+
+const casesControlsFile = ref(null);
+const cooccurrenceFile = ref(null);
+const cohortDescriptionFile = ref(null);
+const casesControlsFileName = ref('');
+const cooccurrenceFileName = ref('');
+const cohortDescriptionFileName = ref('');
+
+// Upload status tracking
+const uploadStatus = ref({
+    casesControls: false,
+    cooccurrence: false,
+    cohortDescription: false
+});
+
+// Store existing file information for delete functionality
+const existingFiles = ref({
+    casesControls: null,
+    cooccurrence: null,
+    cohortDescription: null
+});
+
+// Cases/Controls file sampling and mapping
+const casesControlsFileInfo = ref({});
+const casesControlsMapping = ref({});
+
+// Co-occurrence file sampling and mapping
+const cooccurrenceFileInfo = ref({});
+const cooccurrenceMapping = ref({});
+
+// Column mapping options for SGC cases/controls file
+const columnMappingOptions = ref([
+    { name: "Cases", value: "cases" },
+    { name: "Controls", value: "controls" },
+    { name: "Phenotype", value: "phenotype" }
+]);
+
+// Column mapping options for SGC co-occurrence file
+const cooccurrenceMappingOptions = ref([
+    { name: "Phenotype 1", value: "phenotype1" },
+    { name: "Phenotype 2", value: "phenotype2" },
+    { name: "Co-occurrence Count", value: "cooccurrence_count" }
+]);
+
+// Required fields for SGC cases/controls mapping
+const requiredSGCFields = ref(['cases', 'controls', 'phenotype']);
+
+// Required fields for SGC co-occurrence mapping
+const requiredCooccurrenceFields = ref(['phenotype1', 'phenotype2', 'cooccurrence_count']);
+
+// Computed properties
+const casesControlsTableRows = computed(() => {
+    return casesControlsFileInfo.value.columns
+        ? casesControlsFileInfo.value.columns.map((value) => ({
+              column: value,
+          }))
+        : [];
+});
+
+const cooccurrenceTableRows = computed(() => {
+    return cooccurrenceFileInfo.value.columns
+        ? cooccurrenceFileInfo.value.columns.map((value) => ({
+              column: value,
+          }))
+        : [];
+});
+
+const columnMappingComplete = computed(() => {
+    if (!casesControlsFileInfo.value.columns) return true; // No mapping needed if no file
+    
+    const mappedValues = Object.values(casesControlsMapping.value).filter(v => v);
+    
+    return requiredSGCFields.value.every(mapping => mappedValues.includes(mapping));
+});
+
+const cooccurrenceMappingComplete = computed(() => {
+    if (!cooccurrenceFileInfo.value.columns) return true; // No mapping needed if no file
+    
+    const mappedValues = Object.values(cooccurrenceMapping.value).filter(v => v);
+    
+    return requiredCooccurrenceFields.value.every(mapping => mappedValues.includes(mapping));
+});
+
+// Create flipped mapping for API calls (dropdownValue -> columnName)
+const flippedCasesControlsMapping = computed(() => {
+    return Object.fromEntries(
+        Object.entries(casesControlsMapping.value).map(([key, value]) => [
+            value,
+            key,
+        ])
+    );
+});
+
+const flippedCooccurrenceMapping = computed(() => {
+    return Object.fromEntries(
+        Object.entries(cooccurrenceMapping.value).map(([key, value]) => [
+            value,
+            key,
+        ])
+    );
+});
+
+// Computed properties for button tooltips
+const casesControlsUploadTooltip = computed(() => {
+    const missing = [];
+    if (!columnMappingComplete.value) missing.push('Column Mapping');
+    
+    if (missing.length === 0) return 'Upload Cases/Controls file';
+    return `Required: ${missing.join(', ')}`;
+});
+
+const cooccurrenceUploadTooltip = computed(() => {
+    const missing = [];
+    if (!cooccurrenceMappingComplete.value) missing.push('Column Mapping');
+    
+    if (missing.length === 0) return 'Upload Co-occurrence file';
+    return `Required: ${missing.join(', ')}`;
+});
+
+// Progress tracking computed properties
+const allFilesUploaded = computed(() => {
+    return uploadStatus.value.casesControls && 
+           uploadStatus.value.cooccurrence && 
+           uploadStatus.value.cohortDescription;
+});
+
+const remainingFilesCount = computed(() => {
+    let count = 0;
+    if (!uploadStatus.value.casesControls) count++;
+    if (!uploadStatus.value.cooccurrence) count++;
+    if (!uploadStatus.value.cohortDescription) count++;
+    return count;
+});
+
+onMounted(async () => {
+    try {
+        // Load cohort data by ID from the API
+        const response = await store.fetchSGCCohort(cohortId);
+        
+        // The API returns an array of cohort/file data, we need the first item for cohort info
+        if (response && response.length > 0) {
+            const cohortInfo = response[0]; // First row contains cohort information
+            cohortData.value = {
+                id: cohortInfo.cohort_id,
+                name: cohortInfo.name,
+                total_sample_size: cohortInfo.total_sample_size,
+                number_of_males: cohortInfo.number_of_males,
+                number_of_females: cohortInfo.number_of_females,
+                uploaded_by: cohortInfo.uploaded_by,
+                created_at: cohortInfo.created_at
+            };
+            
+            // Check which files have already been uploaded and update UI status
+            const uploadedFileTypes = new Set();
+            response.forEach(row => {
+                if (row.file_type && row.file_name) {
+                    uploadedFileTypes.add(row.file_type);
+                    
+                    // Store file information for delete functionality
+                    const fileInfo = {
+                        id: row.file_id,
+                        name: row.file_name,
+                        uploadedAt: row.uploaded_at
+                    };
+                    
+                    if (row.file_type === 'cases_controls') {
+                        existingFiles.value.casesControls = fileInfo;
+                    } else if (row.file_type === 'cooccurrence') {
+                        existingFiles.value.cooccurrence = fileInfo;
+                    } else if (row.file_type === 'cohort_description') {
+                        existingFiles.value.cohortDescription = fileInfo;
+                    }
+                }
+            });
+            
+            // Update upload status based on existing files
+            uploadStatus.value = {
+                casesControls: uploadedFileTypes.has('cases_controls'),
+                cooccurrence: uploadedFileTypes.has('cooccurrence'), 
+                cohortDescription: uploadedFileTypes.has('cohort_description')
+            };
+            
+            console.log('Found existing files:', Array.from(uploadedFileTypes));
+            console.log('Upload status set to:', uploadStatus.value);
+            
+            // If this is an existing cohort with data, show file upload immediately
+            metadataSaved.value = true;
+        } else {
+            throw new Error('Cohort not found');
+        }
+        
+    } catch (error) {
+        console.error('Error loading cohort:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to load cohort information. Cohort may not exist.',
+            life: 5000
+        });
+        // Redirect back to index if cohort not found
+        setTimeout(() => {
+            navigateTo('/sgc');
+        }, 2000);
+    } finally {
+        loading.value = false;
+    }
+});
+
+// Handle metadata update
+function handleMetadataUpdated(response) {
+    console.log('Metadata updated:', response);
+    // Update cohort data with all fields from the response
+    cohortData.value = {
+        ...cohortData.value,
+        id: response.cohort_id || response.id, // Handle both field names
+        name: response.name,
+        total_sample_size: response.total_sample_size,
+        number_of_males: response.number_of_males,
+        number_of_females: response.number_of_females
+    };
+    // Show the file upload accordion
+    metadataSaved.value = true;
+}
+
+// File handlers
+async function handleCasesControlsFile(e) {
+    store.showNotification = false;
+    casesControlsFile.value = e.files[0];
+    casesControlsFileName.value = e.files[0]?.name || '';
+    
+    try {
+        casesControlsFileInfo.value = await store.sampleTextFile(e.files[0]);
+        
+        if (casesControlsFileInfo.value.columns) {
+            casesControlsFileInfo.value.columns.forEach((col) => {
+                casesControlsMapping.value[col] = null;
+            });
+            
+            toast.add({
+                severity: 'success',
+                summary: 'File Loaded',
+                detail: `Found ${casesControlsFileInfo.value.columns.length} columns. Please map them below.`,
+                life: 3000
+            });
+        } else {
+            throw new Error('No columns found in API response');
+        }
+    } catch (error) {
+        toast.add({
+            severity: 'error',
+            summary: 'File Error',
+            detail: 'Error processing the Cases/Controls file. Please check the file format.',
+            life: 5000
+        });
+        casesControlsFileInfo.value = {};
+        casesControlsMapping.value = {};
+    }
+}
+
+async function handleCooccurrenceFile(e) {
+    store.showNotification = false;
+    cooccurrenceFile.value = e.files[0];
+    cooccurrenceFileName.value = e.files[0]?.name || '';
+    
+    try {
+        cooccurrenceFileInfo.value = await store.sampleTextFile(e.files[0]);
+        
+        if (cooccurrenceFileInfo.value.columns) {
+            cooccurrenceFileInfo.value.columns.forEach((col) => {
+                cooccurrenceMapping.value[col] = null;
+            });
+            
+            toast.add({
+                severity: 'success',
+                summary: 'File Loaded',
+                detail: `Found ${cooccurrenceFileInfo.value.columns.length} columns. Please map them below.`,
+                life: 3000
+            });
+        } else {
+            throw new Error('No columns found in API response');
+        }
+    } catch (error) {
+        toast.add({
+            severity: 'error',
+            summary: 'File Error',
+            detail: 'Error processing the Co-occurrence file. Please check the file format.',
+            life: 5000
+        });
+        cooccurrenceFileInfo.value = {};
+        cooccurrenceMapping.value = {};
+    }
+}
+
+function handleCohortDescriptionFile(e) {
+    cohortDescriptionFile.value = e.files[0];
+    cohortDescriptionFileName.value = e.files[0]?.name || '';
+}
+
+// Upload methods
+async function uploadCasesControlsFile() {
+    if (!columnMappingComplete.value) {
+        toast.add({
+            severity: 'error',
+            summary: 'Mapping Required',
+            detail: 'Please map all required columns before uploading',
+            life: 3000
+        });
+        return;
+    }
+    
+    try {
+        // Upload, validate and store the file in one step
+        const result = await store.uploadSGCFile(
+            casesControlsFile.value, 
+            cohortId, 
+            'cases_controls', 
+            'cases_controls', 
+            flippedCasesControlsMapping.value
+        );
+        
+        // Mark as uploaded and update UI
+        uploadStatus.value.casesControls = true;
+        
+        toast.add({
+            severity: 'success',
+            summary: 'Upload Successful',
+            detail: 'Cases/Controls file uploaded and processed successfully',
+            life: 3000
+        });
+        
+        // Close current accordion and open next
+        openNextAccordion();
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        store.processing = false;
+        
+        // Handle server validation errors (400 responses)
+        let errorMessage = 'Failed to upload Cases/Controls file';
+        let isPhenotypeError = false;
+        
+        if (error.response?.status === 400 && error.response?.data) {
+            // Server returned validation errors
+            if (typeof error.response.data === 'string') {
+                errorMessage = error.response.data;
+            } else if (error.response.data.detail) {
+                errorMessage = error.response.data.detail;
+            } else if (error.response.data.message) {
+                errorMessage = error.response.data.message;
+            }
+            
+            // Check if this is a phenotype-related error
+            isPhenotypeError = errorMessage.toLowerCase().includes('phenotype') && 
+                             (errorMessage.includes('not found') || 
+                              errorMessage.includes('invalid') || 
+                              errorMessage.includes('does not exist'));
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        
+        // Add phenotype link if it's a phenotype error
+        if (isPhenotypeError) {
+            errorMessage += '\n\nView valid phenotypes: /phenotypes';
+        }
+        
+        toast.add({
+            severity: 'error',
+            summary: 'Upload Error',
+            detail: errorMessage,
+            life: isPhenotypeError ? 10000 : 8000 // Even longer for phenotype errors
+        });
+    }
+}
+
+async function uploadCooccurrenceFile() {
+    if (!cooccurrenceMappingComplete.value) {
+        toast.add({
+            severity: 'error',
+            summary: 'Mapping Required',
+            detail: 'Please map all required columns before uploading',
+            life: 3000
+        });
+        return;
+    }
+    
+    try {
+        // Upload, validate and store the file in one step
+        const result = await store.uploadSGCFile(
+            cooccurrenceFile.value, 
+            cohortId, 
+            'cooccurrence', 
+            'cooccurrence', 
+            flippedCooccurrenceMapping.value
+        );
+        
+        // Mark as uploaded and update UI
+        uploadStatus.value.cooccurrence = true;
+        
+        toast.add({
+            severity: 'success',
+            summary: 'Upload Successful',
+            detail: 'Co-occurrence file uploaded and processed successfully',
+            life: 3000
+        });
+        
+        // Close current accordion and open next
+        openNextAccordion();
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        store.processing = false;
+        
+        // Handle server validation errors (400 responses)
+        let errorMessage = 'Failed to upload Co-occurrence file';
+        let isPhenotypeError = false;
+        
+        if (error.response?.status === 400 && error.response?.data) {
+            // Server returned validation errors
+            if (typeof error.response.data === 'string') {
+                errorMessage = error.response.data;
+            } else if (error.response.data.detail) {
+                errorMessage = error.response.data.detail;
+            } else if (error.response.data.message) {
+                errorMessage = error.response.data.message;
+            }
+            
+            // Check if this is a phenotype-related error
+            isPhenotypeError = errorMessage.toLowerCase().includes('phenotype') && 
+                             (errorMessage.includes('not found') || 
+                              errorMessage.includes('invalid') || 
+                              errorMessage.includes('does not exist'));
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        
+        // Add phenotype link if it's a phenotype error
+        if (isPhenotypeError) {
+            errorMessage += '\n\nView valid phenotypes: /phenotypes';
+        }
+        
+        toast.add({
+            severity: 'error',
+            summary: 'Upload Error', 
+            detail: errorMessage,
+            life: 10000 // Even longer display time for validation errors with links
+        });
+    }
+}
+
+async function uploadCohortDescriptionFile() {
+    if (!cohortDescriptionFile.value) {
+        toast.add({
+            severity: 'error',
+            summary: 'File Required',
+            detail: 'Please select a cohort description file',
+            life: 3000
+        });
+        return;
+    }
+    
+    try {
+        // Upload and store the cohort description file (no validation required)
+        const result = await store.uploadSGCFile(
+            cohortDescriptionFile.value, 
+            cohortId, 
+            'cohort_description', 
+            'cohort_description', // No validation but endpoint still expects it
+            {} // Empty column mapping since no validation required
+        );
+        
+        // Mark as uploaded and update UI
+        uploadStatus.value.cohortDescription = true;
+        
+        toast.add({
+            severity: 'success',
+            summary: 'Upload Successful',
+            detail: 'Cohort Description file uploaded successfully',
+            life: 3000
+        });
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        store.processing = false;
+        
+        // Handle server validation errors (400 responses)
+        let errorMessage = 'Failed to upload Cohort Description file';
+        if (error.response?.status === 400 && error.response?.data) {
+            // Server returned validation errors
+            if (typeof error.response.data === 'string') {
+                errorMessage = error.response.data;
+            } else if (error.response.data.detail) {
+                errorMessage = error.response.data.detail;
+            } else if (error.response.data.message) {
+                errorMessage = error.response.data.message;
+            }
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        
+        toast.add({
+            severity: 'error',
+            summary: 'Upload Error',
+            detail: errorMessage,
+            life: 8000 // Longer display time for validation errors
+        });
+    }
+}
+
+// Reset functions
+function resetCasesControlsFile() {
+    casesControlsFile.value = null;
+    casesControlsFileName.value = '';
+    casesControlsFileInfo.value = {};
+    casesControlsMapping.value = {};
+    uploadStatus.value.casesControls = false;
+}
+
+function resetCooccurrenceFile() {
+    cooccurrenceFile.value = null;
+    cooccurrenceFileName.value = '';
+    cooccurrenceFileInfo.value = {};
+    cooccurrenceMapping.value = {};
+    uploadStatus.value.cooccurrence = false;
+}
+
+function resetCohortDescriptionFile() {
+    cohortDescriptionFile.value = null;
+    cohortDescriptionFileName.value = '';
+    uploadStatus.value.cohortDescription = false;
+}
+
+// Delete methods
+async function deleteCasesControlsFile() {
+    if (!existingFiles.value.casesControls?.id) return;
+    
+    try {
+        await store.deleteSGCFile(existingFiles.value.casesControls.id);
+        
+        // Update UI state
+        uploadStatus.value.casesControls = false;
+        existingFiles.value.casesControls = null;
+        
+        toast.add({
+            severity: 'success',
+            summary: 'File Deleted',
+            detail: 'Cases/Controls file has been deleted successfully',
+            life: 3000
+        });
+        
+    } catch (error) {
+        console.error('Delete error:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Delete Error',
+            detail: 'Failed to delete Cases/Controls file',
+            life: 5000
+        });
+    }
+}
+
+async function deleteCooccurrenceFile() {
+    if (!existingFiles.value.cooccurrence?.id) return;
+    
+    try {
+        await store.deleteSGCFile(existingFiles.value.cooccurrence.id);
+        
+        // Update UI state
+        uploadStatus.value.cooccurrence = false;
+        existingFiles.value.cooccurrence = null;
+        
+        toast.add({
+            severity: 'success',
+            summary: 'File Deleted',
+            detail: 'Co-occurrence file has been deleted successfully',
+            life: 3000
+        });
+        
+    } catch (error) {
+        console.error('Delete error:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Delete Error',
+            detail: 'Failed to delete Co-occurrence file',
+            life: 5000
+        });
+    }
+}
+
+async function deleteCohortDescriptionFile() {
+    if (!existingFiles.value.cohortDescription?.id) return;
+    
+    try {
+        await store.deleteSGCFile(existingFiles.value.cohortDescription.id);
+        
+        // Update UI state
+        uploadStatus.value.cohortDescription = false;
+        existingFiles.value.cohortDescription = null;
+        
+        toast.add({
+            severity: 'success',
+            summary: 'File Deleted',
+            detail: 'Cohort Description file has been deleted successfully',
+            life: 3000
+        });
+        
+    } catch (error) {
+        console.error('Delete error:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Delete Error',
+            detail: 'Failed to delete Cohort Description file',
+            life: 5000
+        });
+    }
+}
+
+// Function to open next available accordion
+function openNextAccordion() {
+    // Close current accordion first
+    activeAccordionIndex.value = null;
+    
+    // After a brief delay, open the next accordion
+    setTimeout(() => {
+        // If cases/controls is uploaded but co-occurrence isn't, open co-occurrence (tab 1)
+        if (uploadStatus.value.casesControls && !uploadStatus.value.cooccurrence) {
+            activeAccordionIndex.value = 1;
+        }
+        // If both cases/controls and co-occurrence are uploaded but cohort isn't, open cohort (tab 2)
+        else if (uploadStatus.value.casesControls && uploadStatus.value.cooccurrence && !uploadStatus.value.cohortDescription) {
+            activeAccordionIndex.value = 2;
+        }
+        // If all are uploaded, keep accordions closed
+        console.log('Upload status:', uploadStatus.value);
+        console.log('Setting activeAccordionIndex to:', activeAccordionIndex.value);
+    }, 500);
+}
+</script>
+
+<style scoped>
+.field label {
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.field p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.p-chip.selected-chip {
+    background-color: #24cb67;
+    color: white;
+}
+
+.required-card {
+    border: 1px dashed #ccc;
+    padding: 0.5rem;
+    margin-top: 1rem;
+}
+
+.required-card h6 {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+</style>
