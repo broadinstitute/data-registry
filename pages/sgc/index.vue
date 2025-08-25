@@ -22,7 +22,7 @@ const store = useDatasetStore();
 const userStore = useUserStore();
 const deleteDialog = ref(false);
 const datasetToDelete = ref(null);
-const fileUploads = ref([]);
+const cohorts = ref([]);
 const tableLoading = ref(false);
 const finished = ref(false);
 const config = useRuntimeConfig();
@@ -39,24 +39,24 @@ const canDeleteDataset = computed(() => {
 
 const handleDelete = async () => {
   try {
-    await store.deleteSGCDataset(datasetToDelete.value.id);
-    fileUploads.value = fileUploads.value.filter(
-        (dataset) => dataset.id !== datasetToDelete.value.id
+    await store.deleteSGCCohort(datasetToDelete.value.id);
+    cohorts.value = cohorts.value.filter(
+        (cohort) => cohort.id !== datasetToDelete.value.id
     );
     deleteDialog.value = false;
     datasetToDelete.value = null;
   } catch (error) {
-    console.error('Error deleting dataset:', error);
+    console.error('Error deleting cohort:', error);
   }
 };
 
 onMounted(async () => {
     tableLoading.value = true;
     try {
-      fileUploads.value = await store.fetchSGCFileUploads();
+      cohorts.value = await store.fetchSGCCohorts();
     } catch (error) {
-      console.error('Error fetching SGC uploads:', error);
-      fileUploads.value = [];
+      console.error('Error fetching SGC cohorts:', error);
+      cohorts.value = [];
     }
     tableLoading.value = false;
     finished.value = true;
@@ -92,37 +92,73 @@ const getIcon = (status) => {
     }
 };
 
-const uniqueStatuses = computed(() => {
-  return [...new Set(fileUploads.value.map(f => f.status))];
-});
+// Helper function to get file names from cohort files
+const getFileName = (files, fileType) => {
+  const file = files?.find(f => f.file_type === fileType);
+  return file ? file.file_name : '-';
+};
 
 const columns = ref([
   {
-    header: "Upload Set Name",
-    field: "upload_set_name",
+    header: "Cohort Name",
+    field: "name",
     filterType: "text",
-    placeholder: "Search upload sets",
+    placeholder: "Search cohort names",
     sortable: true
   },
   {
-    header: "Cases/Controls File",
-    field: "cases_controls_file",
+    header: "Sample Size",
+    field: "total_sample_size", 
+    sortable: true,
+    format: data => data.total_sample_size?.toLocaleString() || '-'
+  },
+  {
+    header: "Males",
+    field: "number_of_males",
+    sortable: true,
+    format: data => data.number_of_males?.toLocaleString() || '-'
+  },
+  {
+    header: "Females", 
+    field: "number_of_females",
+    sortable: true,
+    format: data => data.number_of_females?.toLocaleString() || '-'
+  },
+  {
+    header: "Files Uploaded",
+    field: "files",
+    format: data => {
+      if (!data.files || data.files.length === 0) return "0/3";
+      return `${data.files.length}/3`;
+    },
+    component: (data) => {
+      if (!data.files || data.files.length === 0) {
+        return h(Tag, {
+          severity: "danger", 
+          value: "0/3",
+          rounded: true
+        });
+      } else if (data.files.length === 3) {
+        return h(Tag, {
+          severity: "success",
+          value: "3/3",
+          rounded: true,
+          icon: "bi-check"
+        });
+      } else {
+        return h(Tag, {
+          severity: "warning",
+          value: `${data.files.length}/3`,
+          rounded: true
+        });
+      }
+    },
     sortable: true
   },
   {
-    header: "Co-occurrence File", 
-    field: "cooccurrence_file",
-    sortable: true
-  },
-  {
-    header: "Cohort Description File",
-    field: "cohort_description_file", 
-    sortable: true
-  },
-  {
-    header: "Date Uploaded",
-    field: "uploaded_at",
-    format: data => new Date(data.uploaded_at).toISOString().split("T")[0],
+    header: "Date Created",
+    field: "created_at",
+    format: data => data.created_at ? new Date(data.created_at).toLocaleDateString() : '-',
     sortable: true
   },
   {
@@ -133,34 +169,20 @@ const columns = ref([
     sortable: true
   },
   {
-    header: "Status",
-    field: "status",
-    filterType: "multiSelect",
-    options: uniqueStatuses,
-    sortable: true,
-    component: (data) =>
-      h(Tag, {
-        severity: getSeverity(data.status),
-        icon: getIcon(data.status),
-        value: data.status.toUpperCase(),
-        rounded: true
-      })
-  },
-  {
     header: "",
-    field: "actions",
+    field: "actions", 
     style: { width: "8rem" },
     component: (data) =>
         h("div", { class: "flex gap-2" }, [
           h(
               NuxtLink,
-              { to: `/sgc/new?id=${data.id}` },
+              { to: `/sgc/edit/${data.id}` },
               () => h(Button, {
                 icon: "bi-pencil",
                 severity: "info",
                 outlined: true,
                 size: "small",
-                title: "Edit upload"
+                title: "Edit cohort"
               })
           ),
           canDeleteDataset.value && h(Button, {
@@ -191,11 +213,11 @@ const filters = ref(
 
 <template>
     <div class="grid">
-        <div v-if="fileUploads.length && finished" class="col">
-            <h2>SGC File Uploads</h2>
+        <div v-if="cohorts.length && finished" class="col">
+            <h2>SGC Cohorts</h2>
           <div class="flex justify-content-start mb-3">
             <Button id="upload_new"
-                label="New Upload"
+                label="New Cohort"
                 icon="bi-upload"
                 class="mr-2"
                 @click="route.push('/sgc/new')"
@@ -205,14 +227,14 @@ const filters = ref(
                 <template #content>
                     <DataTable v-model:filters="filters"
                                filterDisplay="row"
-                               :value="fileUploads"
+                               :value="cohorts"
                                class="w-full"
                                paginator
                                :rows="20"
                                :loading="tableLoading"
-                               sortField="uploaded_at"
+                               sortField="created_at"
                     >
-                      <template #empty> No uploads found. </template>
+                      <template #empty> No cohorts found. </template>
                       <template #loading> Loading data. Please wait. </template>
 
                       <Column v-for="col in columns.filter(c => !c.showIf || c.showIf())"
@@ -255,20 +277,20 @@ const filters = ref(
                 </template>
             </Card>
         </div>
-        <div v-else-if="finished && !fileUploads.length" class="col">
+        <div v-else-if="finished && !cohorts.length" class="col">
             <Card>
                 <template #content>
                     <div class="surface-section px-4 py-8 md:px-6 lg:px-8">
                         <div class="text-700 text-center">
                             <div class="text-900 font-bold text-5xl mb-3">
-                                Upload your SGC files.
+                                Create your SGC cohorts.
                             </div>
                             <div class="text-700 text-2xl mb-5">
-                                You don't have any uploads yet. Start uploading
-                                your first set of files today.
+                                You don't have any cohorts yet. Start creating
+                                your first cohort today.
                             </div>
                             <Button
-                                label="New Upload"
+                                label="New Cohort"
                                 icon="bi-upload"
                                 class="mr-2"
                                 @click="route.push('/sgc/new')"
@@ -287,7 +309,7 @@ const filters = ref(
                                 Loading...
                             </div>
                             <div class="text-700 text-2xl mb-5">
-                                Please wait while we load your uploads.
+                                Please wait while we load your cohorts.
                             </div>
                         </div>
                     </div>
@@ -304,7 +326,7 @@ const filters = ref(
   >
     <div class="confirmation-content">
       <i class="bi bi-exclamation-triangle mr-3" style="color: var(--red-500)" />
-      <span>Are you sure you want to delete this upload?</span>
+      <span>Are you sure you want to delete this cohort?</span>
     </div>
     <template #footer>
       <Button

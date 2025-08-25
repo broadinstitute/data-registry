@@ -2,7 +2,7 @@
     <div class="card p-fluid">
         <h5>{{ title }}</h5>
         <div class="field">
-            <label for="uploadSetName">Upload Set Name *</label>
+            <label for="uploadSetName">Name *</label>
             <InputText 
                 v-model="formData.name" 
                 id="uploadSetName" 
@@ -124,15 +124,26 @@ const store = useDatasetStore();
 const formData = ref({ ...props.initialData });
 const saving = ref(false);
 const metadataSaved = ref(false);
+const originalData = ref({ ...props.initialData });
 
 // Watch for prop changes
 watch(() => props.initialData, (newData) => {
     formData.value = { ...newData };
+    originalData.value = { ...newData };
 }, { deep: true });
 
 // Computed
+// Check if form data has changed from original
+const hasChanges = computed(() => {
+    return formData.value.name?.trim() !== originalData.value.name?.trim() ||
+           formData.value.total_sample_size !== originalData.value.total_sample_size ||
+           formData.value.number_of_males !== originalData.value.number_of_males ||
+           formData.value.number_of_females !== originalData.value.number_of_females;
+});
+
 const canSave = computed(() => {
-    return formData.value.name?.trim() &&
+    return hasChanges.value &&
+           formData.value.name?.trim() &&
            formData.value.total_sample_size !== null && formData.value.total_sample_size > 0 &&
            formData.value.number_of_males !== null && formData.value.number_of_males >= 0 &&
            formData.value.number_of_females !== null && formData.value.number_of_females >= 0 &&
@@ -140,6 +151,9 @@ const canSave = computed(() => {
 });
 
 const validationMessage = computed(() => {
+    if (!hasChanges.value) {
+        return 'No changes to save';
+    }
     if (!formData.value.name?.trim()) {
         return 'Upload Set Name is required';
     }
@@ -208,8 +222,18 @@ async function handleSave() {
             number_of_females: formData.value.number_of_females
         };
         
+        // Include the ID if we're updating an existing cohort
+        if (formData.value.id) {
+            cohortData.id = formData.value.id;
+        }
+        
         const response = await store.upsertSGCCohort(cohortData);
         metadataSaved.value = true;
+        
+        // Reset the success message after 2 seconds
+        setTimeout(() => {
+            metadataSaved.value = false;
+        }, 2000);
         
         // Emit events for parent components
         emit('saved', response);

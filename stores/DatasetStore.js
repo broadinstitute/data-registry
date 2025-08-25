@@ -525,5 +525,23 @@ export const useDatasetStore = defineStore("DatasetStore", {
             const { data } = await sgcAxios.post('/api/sgc/cohorts', cohortData);
             return data;
         },
+
+        async fetchSGCCohorts() {
+            const { data } = await sgcAxios.get('/api/sgc/cohorts');
+            return data;
+        },
+
+        async fetchSGCCohort(cohortId) {
+            const { data } = await sgcAxios.get(`/api/sgc/cohorts/${cohortId}`);
+            return data;
+        },
+
+        async deleteSGCCohort(cohortId) {
+            await sgcAxios.delete(`/api/sgc/cohorts/${cohortId}`);
+        },
+
+        async deleteSGCFile(fileId) {
+            await sgcAxios.delete(`/api/sgc/cohort-files/${fileId}`);
+        },
     },
 });
