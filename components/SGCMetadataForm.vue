@@ -7,7 +7,7 @@
                 v-model="formData.name" 
                 id="uploadSetName" 
                 type="text"
-                v-tooltip="'A unique name to identify this set of uploads'"
+                v-tooltip="'A unique name to identify cohort'"
                 :disabled="disabled"
             />
         </div>
@@ -253,10 +253,37 @@ async function handleSave() {
         
     } catch (error) {
         console.error('Error saving metadata:', error);
+        console.error('Error structure:', {
+            response: error.response,
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message,
+            fullError: error
+        });
+        
+        let errorDetail = 'Failed to save metadata. Please try again.';
+        
+        if (error.status === 400 || error.response?.status === 400) {
+            // Server returned validation errors - check both error.data and error.response.data
+            const errorData = error.data || error.response?.data;
+            
+            if (typeof errorData === 'string') {
+                errorDetail = errorData;
+            } else if (errorData?.detail) {
+                errorDetail = errorData.detail;
+            } else if (errorData?.message) {
+                errorDetail = errorData.message;
+            }
+        } else if (error.message) {
+            errorDetail = error.message;
+        }
+        
+        console.log('Final error message:', errorDetail);
+        
         toast.add({
             severity: 'error',
             summary: 'Save Error',
-            detail: 'Failed to save metadata. Please try again.',
+            detail: errorDetail,
             life: 5000
         });
     } finally {

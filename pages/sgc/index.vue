@@ -125,7 +125,7 @@ const columns = ref([
     format: data => data.number_of_females?.toLocaleString() || '-'
   },
   {
-    header: "Files Uploaded",
+    header: "Files",
     field: "files",
     format: data => {
       if (!data.files || data.files.length === 0) return "0/3";
@@ -138,19 +138,36 @@ const columns = ref([
           value: "0/3",
           rounded: true
         });
-      } else if (data.files.length === 3) {
-        return h(Tag, {
-          severity: "success",
-          value: "3/3",
-          rounded: true,
-          icon: "bi-check"
-        });
       } else {
-        return h(Tag, {
-          severity: "warning",
-          value: `${data.files.length}/3`,
-          rounded: true
-        });
+        const dropdownItems = data.files.map(file => ({
+          label: file.file_name || `${file.file_type} file`,
+          icon: 'bi-download',
+          command: () => {
+            // TODO: Implement actual download
+            console.log('Download file:', file.id, file.file_name);
+          }
+        }));
+
+        return h("div", { class: "flex align-items-center gap-2" }, [
+          h(Tag, {
+            severity: data.files.length === 3 ? "success" : "warning",
+            value: `${data.files.length}/3`,
+            rounded: true,
+            icon: data.files.length === 3 ? "bi-check" : undefined
+          }),
+          h(Button, {
+            icon: "bi-download",
+            severity: "secondary",
+            outlined: true,
+            size: "small",
+            onClick: (event) => {
+              // Simple click handler to show available files
+              const fileList = data.files.map(f => f.file_name || f.file_type).join('\n');
+              alert(`Available files:\n${fileList}`);
+            },
+            title: "Download files"
+          })
+        ]);
       }
     },
     sortable: true

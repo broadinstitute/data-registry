@@ -376,6 +376,47 @@
         </div>
     </div>
 
+    <!-- Error Modal -->
+    <Dialog
+        v-model:visible="store.showNotification"
+        modal
+        header="Upload Error"
+        :style="{ width: '600px' }"
+        :closable="true"
+        @hide="store.showNotification = false"
+    >
+        <div class="flex align-items-start">
+            <i class="pi pi-exclamation-triangle text-red-500 mr-3 mt-1" style="font-size: 2rem"></i>
+            <div class="flex-1">
+                <p class="text-lg mb-3">{{ store.errorMessage }}</p>
+                
+                <!-- Show phenotype link if it's a phenotype error -->
+                <div v-if="store.errorMessage && store.errorMessage.toLowerCase().includes('phenotype')" 
+                     class="bg-blue-50 p-3 border-l-4 border-blue-400">
+                    <p class="text-blue-800 font-medium mb-2">
+                        <i class="pi pi-info-circle mr-2"></i>
+                        Need help with phenotype codes?
+                    </p>
+                    <Button
+                        label="View Valid Phenotypes"
+                        icon="pi pi-external-link"
+                        class="p-button-outlined p-button-info p-button-sm"
+                        @click="navigateTo('/sgc/phenotypes')"
+                    />
+                </div>
+            </div>
+        </div>
+        
+        <template #footer>
+            <Button
+                label="OK"
+                icon="pi pi-check"
+                @click="store.showNotification = false"
+                autofocus
+            />
+        </template>
+    </Dialog>
+
     <Toast position="top-center" group="default"/>
 </template>
 
@@ -736,20 +777,29 @@ async function uploadCasesControlsFile() {
         
     } catch (error) {
         console.error('Upload error:', error);
+        console.error('Edit page error structure:', {
+            response: error.response,
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message,
+            fullError: error
+        });
         store.processing = false;
         
         // Handle server validation errors (400 responses)
         let errorMessage = 'Failed to upload Cases/Controls file';
         let isPhenotypeError = false;
         
-        if (error.response?.status === 400 && error.response?.data) {
-            // Server returned validation errors
-            if (typeof error.response.data === 'string') {
-                errorMessage = error.response.data;
-            } else if (error.response.data.detail) {
-                errorMessage = error.response.data.detail;
-            } else if (error.response.data.message) {
-                errorMessage = error.response.data.message;
+        if (error.status === 400 || error.response?.status === 400) {
+            // Server returned validation errors - check both error.data and error.response.data
+            const errorData = error.data || error.response?.data;
+            
+            if (typeof errorData === 'string') {
+                errorMessage = errorData;
+            } else if (errorData?.detail) {
+                errorMessage = errorData.detail;
+            } else if (errorData?.message) {
+                errorMessage = errorData.message;
             }
             
             // Check if this is a phenotype-related error
@@ -765,6 +815,8 @@ async function uploadCasesControlsFile() {
         if (isPhenotypeError) {
             errorMessage += '\n\nView valid phenotypes: /phenotypes';
         }
+        
+        console.log('Final error message to display:', errorMessage);
         
         toast.add({
             severity: 'error',
@@ -817,14 +869,16 @@ async function uploadCooccurrenceFile() {
         let errorMessage = 'Failed to upload Co-occurrence file';
         let isPhenotypeError = false;
         
-        if (error.response?.status === 400 && error.response?.data) {
-            // Server returned validation errors
-            if (typeof error.response.data === 'string') {
-                errorMessage = error.response.data;
-            } else if (error.response.data.detail) {
-                errorMessage = error.response.data.detail;
-            } else if (error.response.data.message) {
-                errorMessage = error.response.data.message;
+        if (error.status === 400 || error.response?.status === 400) {
+            // Server returned validation errors - check both error.data and error.response.data
+            const errorData = error.data || error.response?.data;
+            
+            if (typeof errorData === 'string') {
+                errorMessage = errorData;
+            } else if (errorData?.detail) {
+                errorMessage = errorData.detail;
+            } else if (errorData?.message) {
+                errorMessage = errorData.message;
             }
             
             // Check if this is a phenotype-related error
@@ -887,14 +941,16 @@ async function uploadCohortDescriptionFile() {
         
         // Handle server validation errors (400 responses)
         let errorMessage = 'Failed to upload Cohort Description file';
-        if (error.response?.status === 400 && error.response?.data) {
-            // Server returned validation errors
-            if (typeof error.response.data === 'string') {
-                errorMessage = error.response.data;
-            } else if (error.response.data.detail) {
-                errorMessage = error.response.data.detail;
-            } else if (error.response.data.message) {
-                errorMessage = error.response.data.message;
+        if (error.status === 400 || error.response?.status === 400) {
+            // Server returned validation errors - check both error.data and error.response.data
+            const errorData = error.data || error.response?.data;
+            
+            if (typeof errorData === 'string') {
+                errorMessage = errorData;
+            } else if (errorData?.detail) {
+                errorMessage = errorData.detail;
+            } else if (errorData?.message) {
+                errorMessage = errorData.message;
             }
         } else if (error.message) {
             errorMessage = error.message;
