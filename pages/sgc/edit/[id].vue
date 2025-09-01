@@ -763,6 +763,19 @@ async function uploadCasesControlsFile() {
         // Mark as uploaded and update UI
         uploadStatus.value.casesControls = true;
         
+        // Store file information for delete functionality
+        existingFiles.value.casesControls = {
+            id: result.file_id || result.id, // Handle both possible field names
+            name: casesControlsFile.value.name,
+            uploadedAt: new Date().toISOString()
+        };
+        
+        // Clear the file input since it's now uploaded
+        casesControlsFile.value = null;
+        casesControlsFileName.value = '';
+        casesControlsFileInfo.value = {};
+        casesControlsMapping.value = {};
+        
         toast.add({
             severity: 'success',
             summary: 'Upload Successful',
@@ -845,6 +858,19 @@ async function uploadCooccurrenceFile() {
         
         // Mark as uploaded and update UI
         uploadStatus.value.cooccurrence = true;
+        
+        // Store file information for delete functionality
+        existingFiles.value.cooccurrence = {
+            id: result.file_id || result.id, // Handle both possible field names
+            name: cooccurrenceFile.value.name,
+            uploadedAt: new Date().toISOString()
+        };
+        
+        // Clear the file input since it's now uploaded
+        cooccurrenceFile.value = null;
+        cooccurrenceFileName.value = '';
+        cooccurrenceFileInfo.value = {};
+        cooccurrenceMapping.value = {};
         
         toast.add({
             severity: 'success',
