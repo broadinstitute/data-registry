@@ -4,6 +4,7 @@ import { useUserStore } from "~/stores/UserStore";
 import { ref, onMounted, h, computed } from "vue";
 import Tag from 'primevue/tag';
 import Button from 'primevue/button';
+import Menu from 'primevue/menu';
 import { NuxtLink } from "#components";
 import MultiSelect from 'primevue/multiselect';
 import { FilterMatchMode, FilterService } from 'primevue/api';
@@ -98,6 +99,15 @@ const getFileName = (files, fileType) => {
   return file ? file.file_name : '-';
 };
 
+const downloadFile = async (fileId) => {
+  try {
+    await store.downloadSGCFile(fileId);
+  } catch (error) {
+    console.error('Error downloading file:', error);
+    alert('Error downloading file. Please try again.');
+  }
+};
+
 const columns = ref([
   {
     header: "Cohort Name",
@@ -139,12 +149,12 @@ const columns = ref([
           rounded: true
         });
       } else {
-        const dropdownItems = data.files.map(file => ({
+        const menuRef = ref();
+        const menuItems = data.files.map(file => ({
           label: file.file_name || `${file.file_type} file`,
           icon: 'bi-download',
           command: () => {
-            // TODO: Implement actual download
-            console.log('Download file:', file.id, file.file_name);
+            downloadFile(file.id);
           }
         }));
 
@@ -155,18 +165,23 @@ const columns = ref([
             rounded: true,
             icon: data.files.length === 3 ? "bi-check" : undefined
           }),
-          h(Button, {
-            icon: "bi-download",
-            severity: "secondary",
-            outlined: true,
-            size: "small",
-            onClick: (event) => {
-              // Simple click handler to show available files
-              const fileList = data.files.map(f => f.file_name || f.file_type).join('\n');
-              alert(`Available files:\n${fileList}`);
-            },
-            title: "Download files"
-          })
+          h("div", { class: "relative" }, [
+            h(Menu, {
+              ref: menuRef,
+              model: menuItems,
+              popup: true
+            }),
+            h(Button, {
+              icon: "bi-download",
+              severity: "secondary",
+              outlined: true,
+              size: "small",
+              onClick: (event) => {
+                menuRef.value?.toggle(event);
+              },
+              title: "Download files"
+            })
+          ])
         ]);
       }
     },

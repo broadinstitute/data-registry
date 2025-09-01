@@ -543,5 +543,14 @@ export const useDatasetStore = defineStore("DatasetStore", {
         async deleteSGCFile(fileId) {
             await sgcAxios.delete(`/api/sgc/cohort-files/${fileId}`);
         },
+
+        async downloadSGCFile(fileId) {
+            const { data } = await sgcAxios.get(`/api/sgc/cohort-files/${fileId}`);
+            if (data.presigned_url) {
+                window.open(data.presigned_url, '_blank');
+            } else {
+                throw new Error('No download URL found in response');
+            }
+        },
     },
 });

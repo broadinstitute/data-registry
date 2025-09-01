@@ -34,7 +34,7 @@
             <div class="card p-fluid">
                 <h5>Upload Files</h5>
                 <p class="text-sm mb-4">
-                    Upload all three required files for this cohort. All files must be tab-delimited .txt files.
+                    Upload all three required files for this cohort. Accepted formats: .txt, .csv, and .tsv files.
                 </p>
                 
                 <!-- Progress Checklist -->
@@ -126,7 +126,7 @@
                             v-else
                             name="casesControlsFile"
                             id="casesControlsFile"
-                            accept=".txt"
+                            accept=".txt,.csv,.tsv"
                             :showUploadButton="false"
                             :previewWidth="0"
                             @select="handleCasesControlsFile"
@@ -136,7 +136,7 @@
                             :multiple="false"
                         >
                             <template #empty>
-                                <p>Select Cases/Controls file (.txt)</p>
+                                <p>Select Cases/Controls file (.txt, .csv, .tsv)</p>
                             </template>
                         </FileUpload>
                     
@@ -237,7 +237,7 @@
                             v-else
                             name="cooccurrenceFile"
                             id="cooccurrenceFile"
-                            accept=".txt"
+                            accept=".txt,.csv,.tsv"
                             :showUploadButton="false"
                             :previewWidth="0"
                             @select="handleCooccurrenceFile"
@@ -246,7 +246,7 @@
                             customUpload
                         >
                             <template #empty>
-                                <p>Select Co-occurrence file (.txt)</p>
+                                <p>Select Co-occurrence file (.txt, .csv, .tsv)</p>
                             </template>
                         </FileUpload>
                     
@@ -347,7 +347,7 @@
                             v-else
                             name="cohortDescriptionFile"
                             id="cohortDescriptionFile"
-                            accept=".txt"
+                            accept=".txt,.csv,.tsv"
                             :showUploadButton="false"
                             :previewWidth="0"
                             @select="handleCohortDescriptionFile"
@@ -356,7 +356,7 @@
                             customUpload
                         >
                             <template #empty>
-                                <p>Select Cohort Description file (.txt)</p>
+                                <p>Select Cohort Description file (.txt, .csv, .tsv)</p>
                             </template>
                         </FileUpload>
                         
@@ -624,9 +624,7 @@ onMounted(async () => {
                 cohortDescription: uploadedFileTypes.has('cohort_description')
             };
             
-            console.log('Found existing files:', Array.from(uploadedFileTypes));
-            console.log('Upload status set to:', uploadStatus.value);
-            
+
             // If this is an existing cohort with data, show file upload immediately
             metadataSaved.value = true;
         } else {
@@ -776,7 +774,6 @@ async function uploadCasesControlsFile() {
         openNextAccordion();
         
     } catch (error) {
-        console.error('Upload error:', error);
         console.error('Edit page error structure:', {
             response: error.response,
             status: error.response?.status,
@@ -815,8 +812,6 @@ async function uploadCasesControlsFile() {
         if (isPhenotypeError) {
             errorMessage += '\n\nView valid phenotypes: /phenotypes';
         }
-        
-        console.log('Final error message to display:', errorMessage);
         
         toast.add({
             severity: 'error',
@@ -921,12 +916,23 @@ async function uploadCohortDescriptionFile() {
             cohortDescriptionFile.value, 
             cohortId, 
             'cohort_description', 
-            'cohort_description', // No validation but endpoint still expects it
-            {} // Empty column mapping since no validation required
+            'cohort_description',
+            {}
         );
         
         // Mark as uploaded and update UI
         uploadStatus.value.cohortDescription = true;
+        
+        // Store file information for delete functionality (similar to other file types)
+        existingFiles.value.cohortDescription = {
+            id: result.file_id || result.id, // Handle both possible field names
+            name: cohortDescriptionFile.value.name,
+            uploadedAt: new Date().toISOString()
+        };
+        
+        // Clear the file input since it's now uploaded
+        cohortDescriptionFile.value = null;
+        cohortDescriptionFileName.value = '';
         
         toast.add({
             severity: 'success',
@@ -1088,9 +1094,6 @@ function openNextAccordion() {
         else if (uploadStatus.value.casesControls && uploadStatus.value.cooccurrence && !uploadStatus.value.cohortDescription) {
             activeAccordionIndex.value = 2;
         }
-        // If all are uploaded, keep accordions closed
-        console.log('Upload status:', uploadStatus.value);
-        console.log('Setting activeAccordionIndex to:', activeAccordionIndex.value);
     }, 500);
 }
 </script>
