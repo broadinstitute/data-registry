@@ -1,19 +1,18 @@
 <template>
     <div class="card p-fluid">
         <h5>{{ title }}</h5>
-        <div class="field">
-            <label for="uploadSetName">Name *</label>
-            <InputText 
-                v-model="formData.name" 
-                id="uploadSetName" 
-                type="text"
-                v-tooltip="'A unique name to identify cohort'"
-                :disabled="disabled"
-            />
-        </div>
-        
         <div class="formgrid grid">
-            <div class="field col-4">
+            <div class="field col-12 md:col-6">
+                <label for="uploadSetName">Cohort Name *</label>
+                <InputText 
+                    v-model="formData.name" 
+                    id="uploadSetName" 
+                    type="text"
+                    v-tooltip="'A unique name to identify cohort'"
+                    :disabled="disabled"
+                />
+            </div>
+            <div class="field col-12 md:col-6">
                 <label for="totalSampleSize">Total Sample Size *</label>
                 <InputNumber 
                     v-model="formData.total_sample_size" 
@@ -23,7 +22,10 @@
                     :disabled="disabled"
                 />
             </div>
-            <div class="field col-4">
+        </div>
+        
+        <div class="formgrid grid">
+            <div class="field col-12 md:col-6">
                 <label for="numberOfMales">Number of Males *</label>
                 <InputNumber 
                     v-model="formData.number_of_males" 
@@ -33,7 +35,7 @@
                     :disabled="disabled"
                 />
             </div>
-            <div class="field col-4">
+            <div class="field col-12 md:col-6">
                 <label for="numberOfFemales">Number of Females *</label>
                 <InputNumber 
                     v-model="formData.number_of_females" 
@@ -43,6 +45,65 @@
                     :disabled="disabled"
                 />
             </div>
+        </div>
+        
+        <div class="formgrid grid">
+            <div class="field col-12 md:col-6">
+                <label for="phenotypeCodingSystem">Phenotype coding system used by cohort *</label>
+                <InputText 
+                    v-model="formData.phenotype_coding_system" 
+                    id="phenotypeCodingSystem" 
+                    type="text"
+                    v-tooltip="'The coding system used for phenotype data (e.g., ICD-10, SNOMED CT, etc.)'"
+                    :disabled="disabled"
+                />
+            </div>
+            <div class="field col-12 md:col-6">
+                <label for="industryAuthorship">Will industry partners be authors on any resulting publication *</label>
+                <Dropdown 
+                    v-model="formData.industry_authorship" 
+                    id="industryAuthorship" 
+                    :options="yesNoOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select Yes or No"
+                    :disabled="disabled"
+                />
+            </div>
+        </div>
+        
+        <div class="formgrid grid">
+            <div class="field col-12 md:col-6">
+                <label for="phenotypeMappingIssues">Were there any issues during phenotype mapping. If yes please explain *</label>
+                <Textarea 
+                    v-model="formData.phenotype_mapping_issues" 
+                    id="phenotypeMappingIssues" 
+                    rows="2"
+                    v-tooltip="'Describe any issues encountered during phenotype mapping or enter None if no issues'"
+                    :disabled="disabled"
+                />
+            </div>
+            <div class="field col-12 md:col-6">
+                <label for="industryInvolvement">Is there any industry involvement in your data generation/project. If yes, please describe *</label>
+                <Textarea 
+                    v-model="formData.industry_involvement" 
+                    id="industryInvolvement" 
+                    rows="2"
+                    v-tooltip="'Describe any industry partnerships or involvement, or enter None if no industry involvement'"
+                    :disabled="disabled"
+                />
+            </div>
+        </div>
+        
+        <div class="field">
+            <label for="dataRestrictions">Are there any restrictions on this data being made publicly available either before or after publication. If yes please describe *</label>
+            <Textarea 
+                v-model="formData.data_restrictions" 
+                id="dataRestrictions" 
+                rows="2"
+                v-tooltip="'Describe any restrictions on public data availability, or enter None if no restrictions'"
+                :disabled="disabled"
+            />
         </div>
         
         <div class="text-center mt-4" v-if="showSaveButton">
@@ -84,7 +145,12 @@ const props = defineProps({
             name: '',
             total_sample_size: null,
             number_of_males: null,
-            number_of_females: null
+            number_of_females: null,
+            phenotype_coding_system: '',
+            phenotype_mapping_issues: '',
+            industry_involvement: '',
+            industry_authorship: null,
+            data_restrictions: ''
         })
     },
     disabled: {
@@ -120,6 +186,12 @@ const toast = useToast();
 const router = useRouter();
 const store = useDatasetStore();
 
+// Yes/No options for dropdowns
+const yesNoOptions = [
+    { label: 'Yes', value: true },
+    { label: 'No', value: false }
+];
+
 // Reactive data
 const formData = ref({ ...props.initialData });
 const saving = ref(false);
@@ -138,7 +210,12 @@ const hasChanges = computed(() => {
     return formData.value.name?.trim() !== originalData.value.name?.trim() ||
            formData.value.total_sample_size !== originalData.value.total_sample_size ||
            formData.value.number_of_males !== originalData.value.number_of_males ||
-           formData.value.number_of_females !== originalData.value.number_of_females;
+           formData.value.number_of_females !== originalData.value.number_of_females ||
+           formData.value.phenotype_coding_system?.trim() !== originalData.value.phenotype_coding_system?.trim() ||
+           formData.value.phenotype_mapping_issues?.trim() !== originalData.value.phenotype_mapping_issues?.trim() ||
+           formData.value.industry_involvement?.trim() !== originalData.value.industry_involvement?.trim() ||
+           formData.value.industry_authorship !== originalData.value.industry_authorship ||
+           formData.value.data_restrictions?.trim() !== originalData.value.data_restrictions?.trim();
 });
 
 const canSave = computed(() => {
@@ -147,7 +224,12 @@ const canSave = computed(() => {
            formData.value.total_sample_size !== null && formData.value.total_sample_size > 0 &&
            formData.value.number_of_males !== null && formData.value.number_of_males >= 0 &&
            formData.value.number_of_females !== null && formData.value.number_of_females >= 0 &&
-           (formData.value.number_of_males + formData.value.number_of_females === formData.value.total_sample_size);
+           (formData.value.number_of_males + formData.value.number_of_females === formData.value.total_sample_size) &&
+           formData.value.phenotype_coding_system?.trim() &&
+           formData.value.phenotype_mapping_issues?.trim() &&
+           formData.value.industry_involvement?.trim() &&
+           formData.value.industry_authorship !== null &&
+           formData.value.data_restrictions?.trim();
 });
 
 const validationMessage = computed(() => {
@@ -170,6 +252,21 @@ const validationMessage = computed(() => {
         if (formData.value.number_of_males + formData.value.number_of_females !== formData.value.total_sample_size) {
             return `Males (${formData.value.number_of_males}) + Females (${formData.value.number_of_females}) must equal Total Sample Size (${formData.value.total_sample_size})`;
         }
+    }
+    if (!formData.value.phenotype_coding_system?.trim()) {
+        return 'Phenotype coding system is required';
+    }
+    if (!formData.value.phenotype_mapping_issues?.trim()) {
+        return 'Phenotype mapping issues field is required';
+    }
+    if (!formData.value.industry_involvement?.trim()) {
+        return 'Industry involvement field is required';
+    }
+    if (formData.value.industry_authorship === null) {
+        return 'Industry authorship selection is required';
+    }
+    if (!formData.value.data_restrictions?.trim()) {
+        return 'Data restrictions field is required';
     }
     return 'All fields are valid';
 });
@@ -219,7 +316,14 @@ async function handleSave() {
             name: formData.value.name.trim(),
             total_sample_size: formData.value.total_sample_size,
             number_of_males: formData.value.number_of_males,
-            number_of_females: formData.value.number_of_females
+            number_of_females: formData.value.number_of_females,
+            cohort_metadata: {
+                phenotype_coding_system: formData.value.phenotype_coding_system.trim(),
+                phenotype_mapping_issues: formData.value.phenotype_mapping_issues.trim(),
+                industry_involvement: formData.value.industry_involvement.trim(),
+                industry_authorship: formData.value.industry_authorship,
+                data_restrictions: formData.value.data_restrictions.trim()
+            }
         };
         
         // Include the ID if we're updating an existing cohort

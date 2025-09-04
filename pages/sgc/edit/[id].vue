@@ -8,40 +8,43 @@
     </div>
 
 
-    <!-- Cohort Metadata Form -->
-    <div class="grid">
+    <!-- Loading State -->
+    <div class="grid" v-if="loading">
         <div class="col-12">
-            <div v-if="loading" class="text-center p-4">
+            <div class="text-center p-4">
                 <ProgressSpinner />
                 <p>Loading cohort information...</p>
             </div>
-            <SGCMetadataForm 
-                v-else
-                title="Cohort Information"
-                :initial-data="cohortData"
-                :redirect-after-save="false"
-                save-button-label="Update Metadata"
-                save-button-icon="bi-pencil"
-                success-message="Metadata updated successfully"
-                @updated="handleMetadataUpdated"
-            />
         </div>
     </div>
 
-    <!-- File Upload Section -->
-    <div class="grid" v-if="cohortData && metadataSaved">
+    <!-- Main Content -->
+    <div class="grid" v-else>
         <div class="col-12">
             <div class="card p-fluid">
-                <h5>Upload Files</h5>
+                <h5>Cohort Setup</h5>
                 <p class="text-sm mb-4">
-                    Upload all three required files for this cohort. Accepted formats: .txt, .csv, and .tsv files.
+                    Complete the cohort metadata and upload all three required files. Accepted formats: .txt, .csv, and .tsv files.
                 </p>
                 
                 <!-- Progress Checklist -->
                 <div class="card mb-4" style="background-color: var(--surface-100); border: 1px solid var(--surface-300);">
-                    <h6 class="mb-3">Required Files Progress</h6>
+                    <h6 class="mb-3">Progress Overview</h6>
                     <div class="grid">
-                        <div class="col-12 md:col-4">
+                        <div class="col-12 md:col-3">
+                            <div class="flex align-items-center gap-2 mb-2">
+                                <i v-if="metadataCompleted" 
+                                   class="pi pi-check-circle text-green-500" 
+                                   style="font-size: 1.2rem"></i>
+                                <i v-else 
+                                   class="pi pi-times-circle text-red-500" 
+                                   style="font-size: 1.2rem"></i>
+                                <span :class="{'text-green-600 font-medium': metadataCompleted, 'text-red-600': !metadataCompleted}">
+                                    Cohort Metadata
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-3">
                             <div class="flex align-items-center gap-2 mb-2">
                                 <i v-if="uploadStatus.casesControls" 
                                    class="pi pi-check-circle text-green-500" 
@@ -54,7 +57,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="col-12 md:col-4">
+                        <div class="col-12 md:col-3">
                             <div class="flex align-items-center gap-2 mb-2">
                                 <i v-if="uploadStatus.cooccurrence" 
                                    class="pi pi-check-circle text-green-500" 
@@ -67,7 +70,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="col-12 md:col-4">
+                        <div class="col-12 md:col-3">
                             <div class="flex align-items-center gap-2 mb-2">
                                 <i v-if="uploadStatus.cohortDescription" 
                                    class="pi pi-check-circle text-green-500" 
@@ -83,17 +86,35 @@
                     </div>
                     
                     <!-- Overall Status -->
-                    <div v-if="allFilesUploaded" class="text-center mt-3 p-3" style="background-color: var(--green-100); border: 1px solid var(--green-300); border-radius: 6px;">
+                    <div v-if="allTasksCompleted" class="text-center mt-3 p-3" style="background-color: var(--green-100); border: 1px solid var(--green-300); border-radius: 6px;">
                         <i class="pi pi-check-circle text-green-600 mr-2" style="font-size: 1.5rem"></i>
-                        <span class="text-green-700 font-medium text-lg">All required files uploaded! Cohort is complete.</span>
+                        <span class="text-green-700 font-medium text-lg">Cohort setup complete! All metadata and files uploaded.</span>
                     </div>
                     <div v-else class="text-center mt-3 p-2" style="background-color: var(--orange-100); border: 1px solid var(--orange-300); border-radius: 6px;">
                         <i class="pi pi-info-circle text-orange-600 mr-2"></i>
-                        <span class="text-orange-700 font-medium">{{ remainingFilesCount }} file{{ remainingFilesCount === 1 ? '' : 's' }} remaining</span>
+                        <span class="text-orange-700 font-medium">{{ remainingTasksCount }} task{{ remainingTasksCount === 1 ? '' : 's' }} remaining</span>
                     </div>
                 </div>
                 
                 <Accordion :multiple="false" v-model:activeIndex="activeAccordionIndex">
+                    <AccordionTab>
+                        <template #header>
+                            <div class="flex items-center gap-2">
+                                <span>Cohort Metadata *</span>
+                                <i v-if="metadataCompleted" class="pi pi-check text-green-500"></i>
+                            </div>
+                        </template>
+                        <SGCMetadataForm 
+                            title="Cohort Information"
+                            :initial-data="cohortData"
+                            :redirect-after-save="false"
+                            save-button-label="Update Metadata"
+                            save-button-icon="bi-pencil"
+                            success-message="Metadata updated successfully"
+                            @updated="handleMetadataUpdated"
+                        />
+                    </AccordionTab>
+                    
                     <AccordionTab>
                         <template #header>
                             <div class="flex items-center gap-2">
@@ -562,14 +583,39 @@ const cooccurrenceUploadTooltip = computed(() => {
 });
 
 // Progress tracking computed properties
+const metadataCompleted = computed(() => {
+    return cohortData.value?.name?.trim() &&
+           cohortData.value?.total_sample_size > 0 &&
+           cohortData.value?.number_of_males >= 0 &&
+           cohortData.value?.number_of_females >= 0 &&
+           cohortData.value?.phenotype_coding_system?.trim() &&
+           cohortData.value?.phenotype_mapping_issues?.trim() &&
+           cohortData.value?.industry_involvement?.trim() &&
+           cohortData.value?.industry_authorship !== null &&
+           cohortData.value?.data_restrictions?.trim();
+});
+
 const allFilesUploaded = computed(() => {
     return uploadStatus.value.casesControls && 
            uploadStatus.value.cooccurrence && 
            uploadStatus.value.cohortDescription;
 });
 
+const allTasksCompleted = computed(() => {
+    return metadataCompleted.value && allFilesUploaded.value;
+});
+
 const remainingFilesCount = computed(() => {
     let count = 0;
+    if (!uploadStatus.value.casesControls) count++;
+    if (!uploadStatus.value.cooccurrence) count++;
+    if (!uploadStatus.value.cohortDescription) count++;
+    return count;
+});
+
+const remainingTasksCount = computed(() => {
+    let count = 0;
+    if (!metadataCompleted.value) count++;
     if (!uploadStatus.value.casesControls) count++;
     if (!uploadStatus.value.cooccurrence) count++;
     if (!uploadStatus.value.cohortDescription) count++;
@@ -591,7 +637,21 @@ onMounted(async () => {
                 number_of_males: cohortInfo.number_of_males,
                 number_of_females: cohortInfo.number_of_females,
                 uploaded_by: cohortInfo.uploaded_by,
-                created_at: cohortInfo.created_at
+                created_at: cohortInfo.created_at,
+                // Extract cohort metadata fields if they exist
+                ...(cohortInfo.cohort_metadata ? {
+                    phenotype_coding_system: cohortInfo.cohort_metadata.phenotype_coding_system || '',
+                    phenotype_mapping_issues: cohortInfo.cohort_metadata.phenotype_mapping_issues || '',
+                    industry_involvement: cohortInfo.cohort_metadata.industry_involvement || '',
+                    industry_authorship: cohortInfo.cohort_metadata.industry_authorship,
+                    data_restrictions: cohortInfo.cohort_metadata.data_restrictions || ''
+                } : {
+                    phenotype_coding_system: '',
+                    phenotype_mapping_issues: '',
+                    industry_involvement: '',
+                    industry_authorship: null,
+                    data_restrictions: ''
+                })
             };
             
             // Check which files have already been uploaded and update UI status
@@ -624,6 +684,20 @@ onMounted(async () => {
                 cohortDescription: uploadedFileTypes.has('cohort_description')
             };
             
+            // Set initial accordion tab based on completion status
+            // If everything is complete, leave all tabs closed (activeAccordionIndex = null)
+            // Otherwise, open the first incomplete task
+            if (allTasksCompleted.value) {
+                activeAccordionIndex.value = null;
+            } else if (!metadataCompleted.value) {
+                activeAccordionIndex.value = 0; // Metadata tab
+            } else if (!uploadStatus.value.casesControls) {
+                activeAccordionIndex.value = 1; // Cases/Controls tab
+            } else if (!uploadStatus.value.cooccurrence) {
+                activeAccordionIndex.value = 2; // Co-occurrence tab
+            } else if (!uploadStatus.value.cohortDescription) {
+                activeAccordionIndex.value = 3; // Cohort Description tab
+            }
 
             // If this is an existing cohort with data, show file upload immediately
             metadataSaved.value = true;
@@ -1112,13 +1186,17 @@ function openNextAccordion() {
     
     // After a brief delay, open the next accordion
     setTimeout(() => {
-        // If cases/controls is uploaded but co-occurrence isn't, open co-occurrence (tab 1)
+        // If cases/controls is uploaded but co-occurrence isn't, open co-occurrence (tab 2)
         if (uploadStatus.value.casesControls && !uploadStatus.value.cooccurrence) {
-            activeAccordionIndex.value = 1;
-        }
-        // If both cases/controls and co-occurrence are uploaded but cohort isn't, open cohort (tab 2)
-        else if (uploadStatus.value.casesControls && uploadStatus.value.cooccurrence && !uploadStatus.value.cohortDescription) {
             activeAccordionIndex.value = 2;
+        }
+        // If both cases/controls and co-occurrence are uploaded but cohort description isn't, open cohort description (tab 3)
+        else if (uploadStatus.value.casesControls && uploadStatus.value.cooccurrence && !uploadStatus.value.cohortDescription) {
+            activeAccordionIndex.value = 3;
+        }
+        // If all files uploaded, close all accordions
+        else if (allTasksCompleted.value) {
+            activeAccordionIndex.value = null;
         }
     }, 500);
 }
