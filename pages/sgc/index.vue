@@ -138,14 +138,14 @@ const columns = ref([
     header: "Files",
     field: "files",
     format: data => {
-      if (!data.files || data.files.length === 0) return "0/3";
-      return `${data.files.length}/3`;
+      if (!data.files || data.files.length === 0) return "0/5";
+      return `${data.files.length}/5`;
     },
     component: (data) => {
       if (!data.files || data.files.length === 0) {
         return h(Tag, {
-          severity: "danger", 
-          value: "0/3",
+          severity: "danger",
+          value: "0/5",
           rounded: true
         });
       } else {
@@ -160,10 +160,10 @@ const columns = ref([
 
         return h("div", { class: "flex align-items-center gap-2" }, [
           h(Tag, {
-            severity: data.files.length === 3 ? "success" : "warning",
-            value: `${data.files.length}/3`,
+            severity: data.files.length === 5 ? "success" : "warning",
+            value: `${data.files.length}/5`,
             rounded: true,
-            icon: data.files.length === 3 ? "bi-check" : undefined
+            icon: data.files.length === 5 ? "bi-check" : undefined
           }),
           h("div", { class: "relative" }, [
             h(Menu, {

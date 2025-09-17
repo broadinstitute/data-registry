@@ -4,6 +4,13 @@
             <h2 class="text-center mb-4">
                 Create New SGC Cohort
             </h2>
+            <Message class="no-icon">
+                This is the portal for upload of phase 0 data to the Skin Genetics Consortium. 
+                In this phase, we are collecting meta-data regarding case numbers for diseases of interest 
+                which will be used to decide which conditions are viable for GWAS. For guidance on how to 
+                generate any of these files, please refer to our analysis plan or contact us at 
+                <a href="mailto:info@skingeneticsconsortium.org">info@skingeneticsconsortium.org</a>
+            </Message>
         </div>
     </div>
 
@@ -12,7 +19,7 @@
             <SGCMetadataForm 
                 title="Upload Information"
                 :redirect-after-save="true"
-                save-button-label="Create Upload Set"
+                save-button-label="Create Cohort"
                 save-button-icon="bi-plus-circle"
                 @saved="handleMetadataSaved"
             />
@@ -61,3 +68,9 @@ function handleMetadataSaved(response) {
     // The SGCMetadataForm will handle the redirect
 }
 </script>
+
+<style scoped>
+  .no-icon svg.p-message-icon {
+    display: none !important;
+  }
+</style>
