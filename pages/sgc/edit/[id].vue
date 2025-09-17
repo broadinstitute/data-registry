@@ -151,7 +151,7 @@
                                     severity="danger"
                                     text
                                     size="small"
-                                    @click="deleteCasesControlsMaleFile"
+                                    @click="() => deleteCasesControlsFile('male')"
                                     title="Delete this file"
                                 />
                             </div>
@@ -164,9 +164,9 @@
                             accept=".txt,.csv,.tsv"
                             :showUploadButton="false"
                             :previewWidth="0"
-                            @select="handleCasesControlsMaleFile"
-                            @clear="resetCasesControlsMaleFile"
-                            @remove="resetCasesControlsMaleFile"
+                            @select="(e) => handleCasesControlsFile(e, 'male')"
+                            @clear="() => resetCasesControlsFile('male')"
+                            @remove="() => resetCasesControlsFile('male')"
                             customUpload
                             :multiple="false"
                         >
@@ -230,7 +230,7 @@
                                 class="p-button-primary"
                                 icon="bi-upload"
                                 :disabled="!casesControlsMaleMappingComplete"
-                                @click="uploadCasesControlsMaleFile"
+                                @click="() => uploadCasesControlsFile('male')"
                                 raised
                             />
                             <div v-if="!casesControlsMaleMappingComplete" class="text-sm text-gray-500 mt-2">
@@ -262,7 +262,7 @@
                                     severity="danger"
                                     text
                                     size="small"
-                                    @click="deleteCasesControlsFemaleFile"
+                                    @click="() => deleteCasesControlsFile('female')"
                                     title="Delete this file"
                                 />
                             </div>
@@ -275,9 +275,9 @@
                             accept=".txt,.csv,.tsv"
                             :showUploadButton="false"
                             :previewWidth="0"
-                            @select="handleCasesControlsFemaleFile"
-                            @clear="resetCasesControlsFemaleFile"
-                            @remove="resetCasesControlsFemaleFile"
+                            @select="(e) => handleCasesControlsFile(e, 'female')"
+                            @clear="() => resetCasesControlsFile('female')"
+                            @remove="() => resetCasesControlsFile('female')"
                             customUpload
                             :multiple="false"
                         >
@@ -341,7 +341,7 @@
                                 class="p-button-primary"
                                 icon="bi-upload"
                                 :disabled="!casesControlsFemaleMappingComplete"
-                                @click="uploadCasesControlsFemaleFile"
+                                @click="() => uploadCasesControlsFile('female')"
                                 raised
                             />
                             <div v-if="!casesControlsFemaleMappingComplete" class="text-sm text-gray-500 mt-2">
@@ -373,7 +373,7 @@
                                     severity="danger"
                                     text
                                     size="small"
-                                    @click="deleteCasesControlsBothFile"
+                                    @click="() => deleteCasesControlsFile('both')"
                                     title="Delete this file"
                                 />
                             </div>
@@ -386,9 +386,9 @@
                             accept=".txt,.csv,.tsv"
                             :showUploadButton="false"
                             :previewWidth="0"
-                            @select="handleCasesControlsBothFile"
-                            @clear="resetCasesControlsBothFile"
-                            @remove="resetCasesControlsBothFile"
+                            @select="(e) => handleCasesControlsFile(e, 'both')"
+                            @clear="() => resetCasesControlsFile('both')"
+                            @remove="() => resetCasesControlsFile('both')"
                             customUpload
                             :multiple="false"
                         >
@@ -452,7 +452,7 @@
                                 class="p-button-primary"
                                 icon="bi-upload"
                                 :disabled="!casesControlsBothMappingComplete"
-                                @click="uploadCasesControlsBothFile"
+                                @click="() => uploadCasesControlsFile('both')"
                                 raised
                             />
                             <div v-if="!casesControlsBothMappingComplete" class="text-sm text-gray-500 mt-2">
@@ -702,10 +702,12 @@ const activeAccordionIndex = ref(0);
 
 const casesControlsMaleFile = ref(null);
 const casesControlsFemaleFile = ref(null);
+const casesControlsBothFile = ref(null);
 const cooccurrenceFile = ref(null);
 const cohortDescriptionFile = ref(null);
 const casesControlsMaleFileName = ref('');
 const casesControlsFemaleFileName = ref('');
+const casesControlsBothFileName = ref('');
 const cooccurrenceFileName = ref('');
 const cohortDescriptionFileName = ref('');
 
@@ -828,33 +830,15 @@ const cooccurrenceMappingComplete = computed(() => {
     return requiredCooccurrenceFields.value.every(mapping => mappedValues.includes(mapping));
 });
 
-// Create flipped mapping for API calls (dropdownValue -> columnName)
-const flippedCasesControlsMaleMapping = computed(() => {
+// Helper function to create flipped mapping for API calls (dropdownValue -> columnName)
+function createFlippedMapping(mappingRef) {
     return Object.fromEntries(
-        Object.entries(casesControlsMaleMapping.value).map(([key, value]) => [
+        Object.entries(mappingRef.value).map(([key, value]) => [
             value,
             key,
         ])
     );
-});
-
-const flippedCasesControlsFemaleMapping = computed(() => {
-    return Object.fromEntries(
-        Object.entries(casesControlsFemaleMapping.value).map(([key, value]) => [
-            value,
-            key,
-        ])
-    );
-});
-
-const flippedCooccurrenceMapping = computed(() => {
-    return Object.fromEntries(
-        Object.entries(cooccurrenceMapping.value).map(([key, value]) => [
-            value,
-            key,
-        ])
-    );
-});
+}
 
 // Computed properties for button tooltips
 const casesControlsMaleUploadTooltip = computed(() => {
@@ -873,10 +857,18 @@ const casesControlsFemaleUploadTooltip = computed(() => {
     return `Required: ${missing.join(', ')}`;
 });
 
+const casesControlsBothUploadTooltip = computed(() => {
+    const missing = [];
+    if (!casesControlsBothMappingComplete.value) missing.push('Column Mapping');
+
+    if (missing.length === 0) return 'Upload Both Cases/Controls file';
+    return `Required: ${missing.join(', ')}`;
+});
+
 const cooccurrenceUploadTooltip = computed(() => {
     const missing = [];
     if (!cooccurrenceMappingComplete.value) missing.push('Column Mapping');
-    
+
     if (missing.length === 0) return 'Upload Co-occurrence file';
     return `Required: ${missing.join(', ')}`;
 });
@@ -976,6 +968,8 @@ onMounted(async () => {
                         existingFiles.value.casesControlsMale = fileInfo;
                     } else if (row.file_type === 'cases_controls_female') {
                         existingFiles.value.casesControlsFemale = fileInfo;
+                    } else if (row.file_type === 'cases_controls_both') {
+                        existingFiles.value.casesControlsBoth = fileInfo;
                     } else if (row.file_type === 'cooccurrence') {
                         existingFiles.value.cooccurrence = fileInfo;
                     } else if (row.file_type === 'cohort_description') {
@@ -1055,10 +1049,14 @@ function handleMetadataUpdated(response) {
 async function handleCasesControlsFile(e, gender) {
     store.showNotification = false;
 
-    const fileRef = gender === 'male' ? casesControlsMaleFile : casesControlsFemaleFile;
-    const fileNameRef = gender === 'male' ? casesControlsMaleFileName : casesControlsFemaleFileName;
-    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo : casesControlsFemaleFileInfo;
-    const mappingRef = gender === 'male' ? casesControlsMaleMapping : casesControlsFemaleMapping;
+    const fileRef = gender === 'male' ? casesControlsMaleFile :
+                   gender === 'female' ? casesControlsFemaleFile : casesControlsBothFile;
+    const fileNameRef = gender === 'male' ? casesControlsMaleFileName :
+                       gender === 'female' ? casesControlsFemaleFileName : casesControlsBothFileName;
+    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo :
+                       gender === 'female' ? casesControlsFemaleFileInfo : casesControlsBothFileInfo;
+    const mappingRef = gender === 'male' ? casesControlsMaleMapping :
+                      gender === 'female' ? casesControlsFemaleMapping : casesControlsBothMapping;
 
     fileRef.value = e.files[0];
     fileNameRef.value = e.files[0]?.name || '';
@@ -1081,10 +1079,11 @@ async function handleCasesControlsFile(e, gender) {
             throw new Error('No columns found in API response');
         }
     } catch (error) {
+        const genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Both';
         toast.add({
             severity: 'error',
             summary: 'File Error',
-            detail: `Error processing the ${gender === 'male' ? 'Male' : 'Female'} Cases/Controls file. Please check the file format.`,
+            detail: `Error processing the ${genderLabel} Cases/Controls file. Please check the file format.`,
             life: 5000
         });
         fileInfoRef.value = {};
@@ -1092,14 +1091,6 @@ async function handleCasesControlsFile(e, gender) {
     }
 }
 
-// Wrapper functions for template usage
-function handleCasesControlsMaleFile(e) {
-    return handleCasesControlsFile(e, 'male');
-}
-
-function handleCasesControlsFemaleFile(e) {
-    return handleCasesControlsFile(e, 'female');
-}
 
 async function handleCooccurrenceFile(e) {
     store.showNotification = false;
@@ -1142,15 +1133,22 @@ function handleCohortDescriptionFile(e) {
 
 // Generic upload method for cases/controls files
 async function uploadCasesControlsFile(gender) {
-    const genderLabel = gender === 'male' ? 'Male' : 'Female';
-    const mappingCompleteRef = gender === 'male' ? casesControlsMaleMappingComplete : casesControlsFemaleMappingComplete;
-    const fileRef = gender === 'male' ? casesControlsMaleFile : casesControlsFemaleFile;
-    const fileNameRef = gender === 'male' ? casesControlsMaleFileName : casesControlsFemaleFileName;
-    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo : casesControlsFemaleFileInfo;
-    const mappingRef = gender === 'male' ? casesControlsMaleMapping : casesControlsFemaleMapping;
-    const flippedMappingRef = gender === 'male' ? flippedCasesControlsMaleMapping : flippedCasesControlsFemaleMapping;
-    const statusKey = gender === 'male' ? 'casesControlsMale' : 'casesControlsFemale';
-    const existingFilesKey = gender === 'male' ? 'casesControlsMale' : 'casesControlsFemale';
+    const genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Both';
+    const mappingCompleteRef = gender === 'male' ? casesControlsMaleMappingComplete :
+                              gender === 'female' ? casesControlsFemaleMappingComplete : casesControlsBothMappingComplete;
+    const fileRef = gender === 'male' ? casesControlsMaleFile :
+                   gender === 'female' ? casesControlsFemaleFile : casesControlsBothFile;
+    const fileNameRef = gender === 'male' ? casesControlsMaleFileName :
+                       gender === 'female' ? casesControlsFemaleFileName : casesControlsBothFileName;
+    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo :
+                       gender === 'female' ? casesControlsFemaleFileInfo : casesControlsBothFileInfo;
+    const mappingRef = gender === 'male' ? casesControlsMaleMapping :
+                      gender === 'female' ? casesControlsFemaleMapping : casesControlsBothMapping;
+    const flippedMapping = createFlippedMapping(mappingRef);
+    const statusKey = gender === 'male' ? 'casesControlsMale' :
+                     gender === 'female' ? 'casesControlsFemale' : 'casesControlsBoth';
+    const existingFilesKey = gender === 'male' ? 'casesControlsMale' :
+                            gender === 'female' ? 'casesControlsFemale' : 'casesControlsBoth';
 
     if (!mappingCompleteRef.value) {
         toast.add({
@@ -1169,7 +1167,7 @@ async function uploadCasesControlsFile(gender) {
             cohortId,
             `cases_controls_${gender}`,
             `cases_controls_${gender}`,
-            flippedMappingRef.value
+            flippedMapping
         );
 
         // Mark as uploaded and update UI
@@ -1241,14 +1239,6 @@ async function uploadCasesControlsFile(gender) {
     }
 }
 
-// Wrapper functions for template usage
-function uploadCasesControlsMaleFile() {
-    return uploadCasesControlsFile('male');
-}
-
-function uploadCasesControlsFemaleFile() {
-    return uploadCasesControlsFile('female');
-}
 
 async function uploadCooccurrenceFile() {
     if (!cooccurrenceMappingComplete.value) {
@@ -1268,7 +1258,7 @@ async function uploadCooccurrenceFile() {
             cohortId, 
             'cooccurrence', 
             'cooccurrence', 
-            flippedCooccurrenceMapping.value
+            createFlippedMapping(cooccurrenceMapping)
         );
         
         // Mark as uploaded and update UI
@@ -1414,11 +1404,16 @@ async function uploadCohortDescriptionFile() {
 
 // Generic reset function for cases/controls files
 function resetCasesControlsFile(gender) {
-    const fileRef = gender === 'male' ? casesControlsMaleFile : casesControlsFemaleFile;
-    const fileNameRef = gender === 'male' ? casesControlsMaleFileName : casesControlsFemaleFileName;
-    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo : casesControlsFemaleFileInfo;
-    const mappingRef = gender === 'male' ? casesControlsMaleMapping : casesControlsFemaleMapping;
-    const statusKey = gender === 'male' ? 'casesControlsMale' : 'casesControlsFemale';
+    const fileRef = gender === 'male' ? casesControlsMaleFile :
+                   gender === 'female' ? casesControlsFemaleFile : casesControlsBothFile;
+    const fileNameRef = gender === 'male' ? casesControlsMaleFileName :
+                       gender === 'female' ? casesControlsFemaleFileName : casesControlsBothFileName;
+    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo :
+                       gender === 'female' ? casesControlsFemaleFileInfo : casesControlsBothFileInfo;
+    const mappingRef = gender === 'male' ? casesControlsMaleMapping :
+                      gender === 'female' ? casesControlsFemaleMapping : casesControlsBothMapping;
+    const statusKey = gender === 'male' ? 'casesControlsMale' :
+                     gender === 'female' ? 'casesControlsFemale' : 'casesControlsBoth';
 
     fileRef.value = null;
     fileNameRef.value = '';
@@ -1427,14 +1422,6 @@ function resetCasesControlsFile(gender) {
     uploadStatus.value[statusKey] = false;
 }
 
-// Wrapper functions for template usage
-function resetCasesControlsMaleFile() {
-    return resetCasesControlsFile('male');
-}
-
-function resetCasesControlsFemaleFile() {
-    return resetCasesControlsFile('female');
-}
 
 function resetCooccurrenceFile() {
     cooccurrenceFile.value = null;
@@ -1452,9 +1439,11 @@ function resetCohortDescriptionFile() {
 
 // Generic delete function for cases/controls files
 async function deleteCasesControlsFile(gender) {
-    const genderLabel = gender === 'male' ? 'Male' : 'Female';
-    const statusKey = gender === 'male' ? 'casesControlsMale' : 'casesControlsFemale';
-    const existingFilesKey = gender === 'male' ? 'casesControlsMale' : 'casesControlsFemale';
+    const genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Both';
+    const statusKey = gender === 'male' ? 'casesControlsMale' :
+                     gender === 'female' ? 'casesControlsFemale' : 'casesControlsBoth';
+    const existingFilesKey = gender === 'male' ? 'casesControlsMale' :
+                            gender === 'female' ? 'casesControlsFemale' : 'casesControlsBoth';
 
     if (!existingFiles.value[existingFilesKey]?.id) return;
 
@@ -1483,14 +1472,6 @@ async function deleteCasesControlsFile(gender) {
     }
 }
 
-// Wrapper functions for template usage
-function deleteCasesControlsMaleFile() {
-    return deleteCasesControlsFile('male');
-}
-
-function deleteCasesControlsFemaleFile() {
-    return deleteCasesControlsFile('female');
-}
 
 async function deleteCooccurrenceFile() {
     if (!existingFiles.value.cooccurrence?.id) return;
