@@ -19,7 +19,7 @@
             <SGCMetadataForm 
                 title="Upload Information"
                 :redirect-after-save="true"
-                save-button-label="Create Upload Set"
+                save-button-label="Create Cohort"
                 save-button-icon="bi-plus-circle"
                 @saved="handleMetadataSaved"
             />
