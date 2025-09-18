@@ -182,5 +182,53 @@ export const useUserStore = defineStore("UserStore", {
             this.user = null;
             this.loginError = null;
         },
+
+        // SGC User Management Methods - calls data-registry-api which handles user service tokens
+        async createSGCUser(userData, userType) {
+            try {
+                const config = useRuntimeConfig();
+                const sgcAxios = useSGCAxios(config);
+                
+                const response = await sgcAxios.post('/api/sgc/create-user', {
+                    user_name: userData.email,  // Email serves as both username and email
+                    password: userData.password,
+                    email: userData.email || '',
+                    first_name: userData.firstName || '',
+                    last_name: userData.lastName || '',
+                    user_type: userType  // 'reviewer' or 'uploader'
+                });
+
+                return response.data;
+            } catch (error) {
+                console.error('SGC user creation error:', error);
+                throw error;
+            }
+        },
+
+        // Get list of SGC users (if needed for management interface)
+        async getSGCUsers() {
+            try {
+                const config = useRuntimeConfig();
+                const sgcAxios = useSGCAxios(config);
+                
+                const response = await sgcAxios.get('/api/sgc/users');
+                return response.data;
+            } catch (error) {
+                console.error('Error fetching SGC users:', error);
+                throw error;
+            }
+        },
+
+        // Check if current user has permission to manage users
+        canManageUsers() {
+            if (!this.user) {
+                return false;
+            }
+            
+            // Check if user has reviewer role or manage_users permission
+            return this.user.roles?.includes('sgc-reviewer') || 
+                   this.user.permissions?.includes('manage_users') ||
+                   this.user.roles?.includes('reviewer');
+        },
     },
 });

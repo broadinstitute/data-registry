@@ -2,7 +2,7 @@
     <div class="grid">
         <div class="col mb-4">
             <h2 class="text-center mb-4">
-                Create Cohort
+                Upload Files/Edit Cohort
             </h2>
         </div>
     </div>
