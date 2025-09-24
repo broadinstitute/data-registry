@@ -210,9 +210,11 @@ export const useUserStore = defineStore("UserStore", {
             try {
                 const config = useRuntimeConfig();
                 const sgcAxios = useSGCAxios(config);
-                
+
                 const response = await sgcAxios.get('/api/sgc/users');
-                return response.data;
+                // The API returns { group: {...}, users: [...], total_count: N }
+                // We need to extract just the users array
+                return response.data.users || [];
             } catch (error) {
                 console.error('Error fetching SGC users:', error);
                 throw error;
@@ -224,11 +226,14 @@ export const useUserStore = defineStore("UserStore", {
             if (!this.user) {
                 return false;
             }
-            
+
+            // Extract role names from role objects
+            const roleNames = this.user.roles?.map(role => role.name || role) || [];
+
             // Check if user has reviewer role or manage_users permission
-            return this.user.roles?.includes('sgc-reviewer') || 
+            return roleNames.includes('sgc-reviewer') ||
                    this.user.permissions?.includes('manage_users') ||
-                   this.user.roles?.includes('reviewer');
+                   roleNames.includes('reviewer');
         },
     },
 });
