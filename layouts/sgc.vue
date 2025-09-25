@@ -8,14 +8,17 @@
           </div>
           <nav class="flex items-center space-x-4">
             <NuxtLink to="/sgc" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-              Uploads
+              Cohorts
             </NuxtLink>
             <NuxtLink to="/sgc/new" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-              New Upload
+              New Cohort
             </NuxtLink>
-            <NuxtLink 
-              v-if="userStore.canManageUsers()" 
-              to="/sgc/users" 
+            <NuxtLink to="/sgc/phenotypes" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+              View Phenotypes
+            </NuxtLink>
+            <NuxtLink
+              v-if="userStore.canManageUsers()"
+              to="/sgc/users"
               class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
             >
               User Management

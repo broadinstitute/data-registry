@@ -2,7 +2,7 @@
     <div class="card p-fluid">
         <div class="formgrid grid">
             <div class="field col-12 md:col-6">
-                <label for="uploadSetName">Cohort Name *</label>
+                <label for="uploadSetName">Cohort Name</label>
                 <InputText
                     v-model="formData.name"
                     id="uploadSetName"
@@ -12,7 +12,7 @@
                 />
             </div>
             <div class="field col-12 md:col-6">
-                <label for="totalSampleSize">Total Sample Size *</label>
+                <label for="totalSampleSize">Total Sample Size</label>
                 <InputNumber
                     v-model="formData.total_sample_size"
                     id="totalSampleSize"
@@ -25,7 +25,7 @@
         
         <div class="formgrid grid">
             <div class="field col-12 md:col-6">
-                <label for="numberOfMales">Number of Males *</label>
+                <label for="numberOfMales">Number of Males</label>
                 <InputNumber
                     v-model="formData.number_of_males"
                     id="numberOfMales"
@@ -35,7 +35,7 @@
                 />
             </div>
             <div class="field col-12 md:col-6">
-                <label for="numberOfFemales">Number of Females *</label>
+                <label for="numberOfFemales">Number of Females</label>
                 <InputNumber
                     v-model="formData.number_of_females"
                     id="numberOfFemales"
@@ -48,7 +48,7 @@
         
         <div class="formgrid grid">
             <div class="field col-12 md:col-6">
-                <label for="phenotypeCodingSystem">Phenotype coding system used by cohort *</label>
+                <label for="phenotypeCodingSystem">Phenotype coding system used by cohort</label>
                 <InputText
                     v-model="formData.phenotype_coding_system"
                     id="phenotypeCodingSystem"
@@ -58,7 +58,7 @@
                 />
             </div>
             <div class="field col-12 md:col-6">
-                <label for="industryAuthorship">Will industry partners be authors on any resulting publication *</label>
+                <label for="industryAuthorship">Will industry partners be authors on any resulting publication</label>
                 <Dropdown 
                     v-model="formData.industry_authorship" 
                     id="industryAuthorship" 
@@ -73,7 +73,7 @@
         
         <div class="formgrid grid">
             <div class="field col-12 md:col-6">
-                <label for="phenotypeMappingIssues">Were there any issues during phenotype mapping. If yes please explain *</label>
+                <label for="phenotypeMappingIssues">Were there any issues during phenotype mapping. If yes please explain</label>
                 <Textarea
                     v-model="formData.phenotype_mapping_issues"
                     id="phenotypeMappingIssues"
@@ -83,7 +83,7 @@
                 />
             </div>
             <div class="field col-12 md:col-6">
-                <label for="industryInvolvement">Is there any industry involvement in your data generation/project. If yes, please describe *</label>
+                <label for="industryInvolvement">Is there any industry involvement in your data generation/project. If yes, please describe</label>
                 <Textarea
                     v-model="formData.industry_involvement"
                     id="industryInvolvement"
@@ -95,7 +95,7 @@
         </div>
         
         <div class="field">
-            <label for="dataRestrictions">Are there any restrictions on this data being made publicly available either before or after publication. If yes please describe *</label>
+            <label for="dataRestrictions">Are there any restrictions on this data being made publicly available either before or after publication. If yes please describe</label>
             <Textarea
                 v-model="formData.data_restrictions"
                 id="dataRestrictions"
@@ -111,7 +111,6 @@
                     type="button"
                     :label="saveButtonLabel"
                     class="p-button-primary"
-                    :icon="saveButtonIcon"
                     @click="handleSave"
                     :loading="saving"
                     :disabled="!canSave"

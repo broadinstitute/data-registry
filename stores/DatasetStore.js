@@ -552,5 +552,11 @@ export const useDatasetStore = defineStore("DatasetStore", {
                 throw new Error('No download URL found in response');
             }
         },
+
+        async validateAllConsistency(cohortId) {
+            const { data } = await sgcAxios.post(`/api/sgc/cohorts/${cohortId}/validate-all-consistency`);
+            return data;
+        },
+
     },
 });

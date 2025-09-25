@@ -76,14 +76,36 @@
                             </span>
                         </div>
                         <div class="flex align-items-center gap-2">
-                            <i v-if="uploadStatus.cooccurrence"
+                            <i v-if="uploadStatus.cooccurrenceMale"
                                class="pi pi-check-circle text-green-500"
                                style="font-size: 1.2rem"></i>
                             <i v-else
                                class="pi pi-times-circle text-red-500"
                                style="font-size: 1.2rem"></i>
-                            <span :class="{'text-green-600 font-medium': uploadStatus.cooccurrence, 'text-red-600': !uploadStatus.cooccurrence}">
-                                Co-occurrence Data
+                            <span :class="{'text-green-600 font-medium': uploadStatus.cooccurrenceMale, 'text-red-600': !uploadStatus.cooccurrenceMale}">
+                                Male Co-occurrence Data
+                            </span>
+                        </div>
+                        <div class="flex align-items-center gap-2">
+                            <i v-if="uploadStatus.cooccurrenceFemale"
+                               class="pi pi-check-circle text-green-500"
+                               style="font-size: 1.2rem"></i>
+                            <i v-else
+                               class="pi pi-times-circle text-red-500"
+                               style="font-size: 1.2rem"></i>
+                            <span :class="{'text-green-600 font-medium': uploadStatus.cooccurrenceFemale, 'text-red-600': !uploadStatus.cooccurrenceFemale}">
+                                Female Co-occurrence Data
+                            </span>
+                        </div>
+                        <div class="flex align-items-center gap-2">
+                            <i v-if="uploadStatus.cooccurrenceBoth"
+                               class="pi pi-check-circle text-green-500"
+                               style="font-size: 1.2rem"></i>
+                            <i v-else
+                               class="pi pi-times-circle text-red-500"
+                               style="font-size: 1.2rem"></i>
+                            <span :class="{'text-green-600 font-medium': uploadStatus.cooccurrenceBoth, 'text-red-600': !uploadStatus.cooccurrenceBoth}">
+                                Both Co-occurrence Data
                             </span>
                         </div>
                         <div class="flex align-items-center gap-2">
@@ -103,6 +125,16 @@
                     <div v-if="allTasksCompleted" class="text-center mt-3 p-3" style="background-color: var(--green-100); border: 1px solid var(--green-300); border-radius: 6px;">
                         <i class="pi pi-check-circle text-green-600 mr-2" style="font-size: 1.5rem"></i>
                         <span class="text-green-700 font-medium text-lg">Cohort setup complete! All metadata and files uploaded.</span>
+
+                        <div class="mt-3">
+                            <Button
+                                label="Finalize Cohort Upload"
+                                icon="pi pi-check"
+                                class="p-button-success"
+                                @click="validateAllConsistency"
+                                :loading="validatingConsistency"
+                            />
+                        </div>
                     </div>
                     <div v-else class="text-center mt-3 p-2" style="background-color: var(--orange-100); border: 1px solid var(--orange-300); border-radius: 6px;">
                         <i class="pi pi-info-circle text-orange-600 mr-2"></i>
@@ -123,7 +155,6 @@
                             :initial-data="cohortData"
                             :redirect-after-save="false"
                             save-button-label="Update Metadata"
-                            save-button-icon="bi-pencil"
                             success-message="Metadata updated successfully"
                             @updated="handleMetadataUpdated"
                         />
@@ -178,9 +209,6 @@
                     <!-- Male Cases/Controls Column Mapping -->
                     <div v-if="casesControlsMaleFileInfo.columns" class="mt-4">
                         <h6 class="mb-3">Map Male Cases/Controls Columns</h6>
-                        <small class="mb-3 block">
-                            Map the columns in your file to the required fields: Cases, Controls, and Phenotype.
-                        </small>
 
                         <div class="card flex flex-wrap gap-1 required-card mb-3">
                             <h6 class="w-full">Required fields:</h6>
@@ -289,9 +317,6 @@
                     <!-- Female Cases/Controls Column Mapping -->
                     <div v-if="casesControlsFemaleFileInfo.columns" class="mt-4">
                         <h6 class="mb-3">Map Female Cases/Controls Columns</h6>
-                        <small class="mb-3 block">
-                            Map the columns in your file to the required fields: Cases, Controls, and Phenotype.
-                        </small>
 
                         <div class="card flex flex-wrap gap-1 required-card mb-3">
                             <h6 class="w-full">Required fields:</h6>
@@ -400,9 +425,6 @@
                     <!-- Both Cases/Controls Column Mapping -->
                     <div v-if="casesControlsBothFileInfo.columns" class="mt-4">
                         <h6 class="mb-3">Map Both Cases/Controls Columns</h6>
-                        <small class="mb-3 block">
-                            Map the columns in your file to the required fields: Cases, Controls, and Phenotype.
-                        </small>
 
                         <div class="card flex flex-wrap gap-1 required-card mb-3">
                             <h6 class="w-full">Required fields:</h6>
@@ -465,26 +487,26 @@
                     <AccordionTab>
                         <template #header>
                             <div class="flex items-center gap-2">
-                                <span>Co-occurrence Data *</span>
-                                <i v-if="uploadStatus.cooccurrence" class="pi pi-check text-green-500"></i>
+                                <span>Male Co-occurrence Data *</span>
+                                <i v-if="uploadStatus.cooccurrenceMale" class="pi pi-check text-green-500"></i>
                             </div>
                         </template>
                         <!-- Existing File Display -->
-                        <div v-if="existingFiles.cooccurrence" class="mb-4 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
+                        <div v-if="existingFiles.cooccurrenceMale" class="mb-4 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
                             <div class="flex align-items-center justify-content-between">
                                 <div class="flex align-items-center gap-3">
                                     <i class="pi pi-file-check text-green-600" style="font-size: 1.5rem"></i>
                                     <div>
-                                        <p class="font-medium text-green-800 mb-1">{{ existingFiles.cooccurrence.name }}</p>
-                                        <small class="text-green-600">Uploaded {{ new Date(existingFiles.cooccurrence.uploadedAt).toLocaleDateString() }}</small>
+                                        <p class="font-medium text-green-800 mb-1">{{ existingFiles.cooccurrenceMale.name }}</p>
+                                        <small class="text-green-600">Uploaded {{ new Date(existingFiles.cooccurrenceMale.uploadedAt).toLocaleDateString() }}</small>
                                     </div>
                                 </div>
                                 <Button
                                     icon="pi pi-trash"
                                     severity="danger"
                                     text
-                                    size="small" 
-                                    @click="deleteCooccurrenceFile"
+                                    size="small"
+                                    @click="() => deleteCooccurrenceFile('male')"
                                     title="Delete this file"
                                 />
                             </div>
@@ -497,28 +519,25 @@
                             accept=".txt,.csv,.tsv"
                             :showUploadButton="false"
                             :previewWidth="0"
-                            @select="handleCooccurrenceFile"
-                            @clear="resetCooccurrenceFile"
-                            @remove="resetCooccurrenceFile"
+                            @select="(e) => handleCooccurrenceFile(e, 'male')"
+                            @clear="() => resetCooccurrenceFile('male')"
+                            @remove="() => resetCooccurrenceFile('male')"
                             customUpload
                         >
                             <template #empty>
-                                <p>Select Co-occurrence file (.txt, .csv, .tsv)</p>
+                                <p>Select Male Co-occurrence file (.txt, .csv, .tsv)</p>
                             </template>
                         </FileUpload>
                     
-                    <!-- Co-occurrence Column Mapping -->
-                    <div v-if="cooccurrenceFileInfo.columns" class="mt-4">
-                        <h6 class="mb-3">Map Co-occurrence Columns</h6>
-                        <small class="mb-3 block">
-                            Map the columns in your file to the required fields: Phenotype 1, Phenotype 2, and Co-occurrence Count.
-                        </small>
+                    <!-- Male Co-occurrence Column Mapping -->
+                    <div v-if="cooccurrenceMaleFileInfo.columns" class="mt-4">
+                        <h6 class="mb-3">Map Male Co-occurrence Columns</h6>
                         
                         <div class="card flex flex-wrap gap-1 required-card mb-3">
                             <h6 class="w-full">Required fields:</h6>
                             <template v-for="field in requiredCooccurrenceFields">
                                 <Chip
-                                    v-if="Object.values(cooccurrenceMapping).includes(field)"
+                                    v-if="Object.values(cooccurrenceMaleMapping).includes(field)"
                                     :key="field"
                                     icon="bi-check"
                                     :label="field"
@@ -528,7 +547,7 @@
                             </template>
                         </div>
                         
-                        <DataTable :value="cooccurrenceTableRows" rowHover>
+                        <DataTable :value="cooccurrenceMaleTableRows" rowHover>
                             <Column field="column" header="Column" class="col-4">
                             </Column>
                             <Column header=">>" class="col-1"></Column>
@@ -542,12 +561,12 @@
                                         :option-disabled="
                                             (option) => {
                                                 return (
-                                                    Object.values(cooccurrenceMapping).includes(option.value) &&
-                                                    option.value !== cooccurrenceMapping[data.column]
+                                                    Object.values(cooccurrenceMaleMapping).includes(option.value) &&
+                                                    option.value !== cooccurrenceMaleMapping[data.column]
                                                 );
                                             }
                                         "
-                                        v-model="cooccurrenceMapping[data.column]"
+                                        v-model="cooccurrenceMaleMapping[data.column]"
                                         showClear
                                         placeholder="Select mapping"
                                     />
@@ -558,20 +577,236 @@
                         <div class="text-center mt-3">
                             <Button
                                 type="button"
-                                label="Upload Co-occurrence File"
+                                label="Upload Male Co-occurrence File"
                                 class="p-button-primary"
                                 icon="bi-upload"
-                                :disabled="!cooccurrenceMappingComplete"
-                                @click="uploadCooccurrenceFile"
+                                :disabled="!cooccurrenceMaleMappingComplete"
+                                @click="() => uploadCooccurrenceFile('male')"
                                 raised
                             />
-                            <div v-if="!cooccurrenceMappingComplete" class="text-sm text-gray-500 mt-2">
-                                {{ cooccurrenceUploadTooltip }}
+                            <div v-if="!cooccurrenceMaleMappingComplete" class="text-sm text-gray-500 mt-2">
+                                {{ cooccurrenceMaleUploadTooltip }}
                             </div>
                         </div>
                     </div>
                     </AccordionTab>
-                    
+
+                    <AccordionTab>
+                        <template #header>
+                            <div class="flex items-center gap-2">
+                                <span>Female Co-occurrence Data *</span>
+                                <i v-if="uploadStatus.cooccurrenceFemale" class="pi pi-check text-green-500"></i>
+                            </div>
+                        </template>
+                        <!-- Existing File Display -->
+                        <div v-if="existingFiles.cooccurrenceFemale" class="mb-4 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
+                            <div class="flex align-items-center justify-content-between">
+                                <div class="flex align-items-center gap-3">
+                                    <i class="pi pi-file-check text-green-600" style="font-size: 1.5rem"></i>
+                                    <div>
+                                        <p class="font-medium text-green-800 mb-1">{{ existingFiles.cooccurrenceFemale.name }}</p>
+                                        <small class="text-green-600">Uploaded {{ new Date(existingFiles.cooccurrenceFemale.uploadedAt).toLocaleDateString() }}</small>
+                                    </div>
+                                </div>
+                                <Button
+                                    icon="pi pi-trash"
+                                    severity="danger"
+                                    text
+                                    size="small"
+                                    @click="() => deleteCooccurrenceFile('female')"
+                                    title="Delete this file"
+                                />
+                            </div>
+                        </div>
+
+                        <FileUpload
+                            v-else
+                            name="cooccurrenceFemaleFile"
+                            id="cooccurrenceFemaleFile"
+                            accept=".txt,.csv,.tsv"
+                            :showUploadButton="false"
+                            :previewWidth="0"
+                            @select="(e) => handleCooccurrenceFile(e, 'female')"
+                            @clear="() => resetCooccurrenceFile('female')"
+                            @remove="() => resetCooccurrenceFile('female')"
+                            customUpload
+                            :multiple="false"
+                        >
+                            <template #empty>
+                                <p>Select Female Co-occurrence file (.txt, .csv, .tsv)</p>
+                            </template>
+                        </FileUpload>
+
+                    <!-- Female Co-occurrence Column Mapping -->
+                    <div v-if="cooccurrenceFemaleFileInfo.columns" class="mt-4">
+                        <h6 class="mb-3">Map Female Co-occurrence Columns</h6>
+
+                        <div class="card flex flex-wrap gap-1 required-card mb-3">
+                            <h6 class="w-full">Required fields:</h6>
+                            <template v-for="field in requiredCooccurrenceFields">
+                                <Chip
+                                    v-if="Object.values(cooccurrenceFemaleMapping).includes(field)"
+                                    :key="field"
+                                    icon="bi-check"
+                                    :label="field"
+                                    class="selected-chip"
+                                />
+                                <Chip v-else :label="field" :key="'else-' + field" />
+                            </template>
+                        </div>
+
+                        <DataTable :value="cooccurrenceFemaleTableRows" rowHover>
+                            <Column field="column" header="Column" class="col-4">
+                            </Column>
+                            <Column header=">>" class="col-1"></Column>
+                            <Column header="Represents" class="col-7">
+                                <template #body="{ data }">
+                                    <Dropdown
+                                        class="w-full"
+                                        :options="cooccurrenceMappingOptions"
+                                        option-label="name"
+                                        option-value="value"
+                                        :option-disabled="
+                                            (option) => {
+                                                return (
+                                                    Object.values(cooccurrenceFemaleMapping).includes(option.value) &&
+                                                    option.value !== cooccurrenceFemaleMapping[data.column]
+                                                );
+                                            }
+                                        "
+                                        v-model="cooccurrenceFemaleMapping[data.column]"
+                                        showClear
+                                        placeholder="Select mapping"
+                                    />
+                                </template>
+                            </Column>
+                        </DataTable>
+
+                        <div class="text-center mt-3">
+                            <Button
+                                type="button"
+                                label="Upload Female Co-occurrence File"
+                                class="p-button-primary"
+                                icon="bi-upload"
+                                :disabled="!cooccurrenceFemaleMappingComplete"
+                                @click="() => uploadCooccurrenceFile('female')"
+                                raised
+                            />
+                            <div v-if="!cooccurrenceFemaleMappingComplete" class="text-sm text-gray-500 mt-2">
+                                {{ cooccurrenceFemaleUploadTooltip }}
+                            </div>
+                        </div>
+                    </div>
+                    </AccordionTab>
+
+                    <AccordionTab>
+                        <template #header>
+                            <div class="flex items-center gap-2">
+                                <span>Both Co-occurrence Data *</span>
+                                <i v-if="uploadStatus.cooccurrenceBoth" class="pi pi-check text-green-500"></i>
+                            </div>
+                        </template>
+                        <!-- Existing File Display -->
+                        <div v-if="existingFiles.cooccurrenceBoth" class="mb-4 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
+                            <div class="flex align-items-center justify-content-between">
+                                <div class="flex align-items-center gap-3">
+                                    <i class="pi pi-file-check text-green-600" style="font-size: 1.5rem"></i>
+                                    <div>
+                                        <p class="font-medium text-green-800 mb-1">{{ existingFiles.cooccurrenceBoth.name }}</p>
+                                        <small class="text-green-600">Uploaded {{ new Date(existingFiles.cooccurrenceBoth.uploadedAt).toLocaleDateString() }}</small>
+                                    </div>
+                                </div>
+                                <Button
+                                    icon="pi pi-trash"
+                                    severity="danger"
+                                    text
+                                    size="small"
+                                    @click="() => deleteCooccurrenceFile('both')"
+                                    title="Delete this file"
+                                />
+                            </div>
+                        </div>
+
+                        <FileUpload
+                            v-else
+                            name="cooccurrenceBothFile"
+                            id="cooccurrenceBothFile"
+                            accept=".txt,.csv,.tsv"
+                            :showUploadButton="false"
+                            :previewWidth="0"
+                            @select="(e) => handleCooccurrenceFile(e, 'both')"
+                            @clear="() => resetCooccurrenceFile('both')"
+                            @remove="() => resetCooccurrenceFile('both')"
+                            customUpload
+                            :multiple="false"
+                        >
+                            <template #empty>
+                                <p>Select Both Co-occurrence file (.txt, .csv, .tsv)</p>
+                            </template>
+                        </FileUpload>
+
+                    <!-- Both Co-occurrence Column Mapping -->
+                    <div v-if="cooccurrenceBothFileInfo.columns" class="mt-4">
+                        <h6 class="mb-3">Map Both Co-occurrence Columns</h6>
+
+                        <div class="card flex flex-wrap gap-1 required-card mb-3">
+                            <h6 class="w-full">Required fields:</h6>
+                            <template v-for="field in requiredCooccurrenceFields">
+                                <Chip
+                                    v-if="Object.values(cooccurrenceBothMapping).includes(field)"
+                                    :key="field"
+                                    icon="bi-check"
+                                    :label="field"
+                                    class="selected-chip"
+                                />
+                                <Chip v-else :label="field" :key="'else-' + field" />
+                            </template>
+                        </div>
+
+                        <DataTable :value="cooccurrenceBothTableRows" rowHover>
+                            <Column field="column" header="Column" class="col-4">
+                            </Column>
+                            <Column header=">>" class="col-1"></Column>
+                            <Column header="Represents" class="col-7">
+                                <template #body="{ data }">
+                                    <Dropdown
+                                        class="w-full"
+                                        :options="cooccurrenceMappingOptions"
+                                        option-label="name"
+                                        option-value="value"
+                                        :option-disabled="
+                                            (option) => {
+                                                return (
+                                                    Object.values(cooccurrenceBothMapping).includes(option.value) &&
+                                                    option.value !== cooccurrenceBothMapping[data.column]
+                                                );
+                                            }
+                                        "
+                                        v-model="cooccurrenceBothMapping[data.column]"
+                                        showClear
+                                        placeholder="Select mapping"
+                                    />
+                                </template>
+                            </Column>
+                        </DataTable>
+
+                        <div class="text-center mt-3">
+                            <Button
+                                type="button"
+                                label="Upload Both Co-occurrence File"
+                                class="p-button-primary"
+                                icon="bi-upload"
+                                :disabled="!cooccurrenceBothMappingComplete"
+                                @click="() => uploadCooccurrenceFile('both')"
+                                raised
+                            />
+                            <div v-if="!cooccurrenceBothMappingComplete" class="text-sm text-gray-500 mt-2">
+                                {{ cooccurrenceBothUploadTooltip }}
+                            </div>
+                        </div>
+                    </div>
+                    </AccordionTab>
+
                     <AccordionTab>
                         <template #header>
                             <div class="flex items-center gap-2">
@@ -696,6 +931,7 @@ const cohortId = route.params.id;
 const loading = ref(true);
 const cohortData = ref(null);
 const metadataSaved = ref(false);
+const validatingConsistency = ref(false);
 
 // File upload reactive variables
 const activeAccordionIndex = ref(0);
@@ -703,12 +939,16 @@ const activeAccordionIndex = ref(0);
 const casesControlsMaleFile = ref(null);
 const casesControlsFemaleFile = ref(null);
 const casesControlsBothFile = ref(null);
-const cooccurrenceFile = ref(null);
+const cooccurrenceMaleFile = ref(null);
+const cooccurrenceFemaleFile = ref(null);
+const cooccurrenceBothFile = ref(null);
 const cohortDescriptionFile = ref(null);
 const casesControlsMaleFileName = ref('');
 const casesControlsFemaleFileName = ref('');
 const casesControlsBothFileName = ref('');
-const cooccurrenceFileName = ref('');
+const cooccurrenceMaleFileName = ref('');
+const cooccurrenceFemaleFileName = ref('');
+const cooccurrenceBothFileName = ref('');
 const cohortDescriptionFileName = ref('');
 
 // Upload status tracking
@@ -716,7 +956,9 @@ const uploadStatus = ref({
     casesControlsMale: false,
     casesControlsFemale: false,
     casesControlsBoth: false,
-    cooccurrence: false,
+    cooccurrenceMale: false,
+    cooccurrenceFemale: false,
+    cooccurrenceBoth: false,
     cohortDescription: false
 });
 
@@ -725,7 +967,9 @@ const existingFiles = ref({
     casesControlsMale: null,
     casesControlsFemale: null,
     casesControlsBoth: null,
-    cooccurrence: null,
+    cooccurrenceMale: null,
+    cooccurrenceFemale: null,
+    cooccurrenceBoth: null,
     cohortDescription: null
 });
 
@@ -744,6 +988,18 @@ const casesControlsBothMapping = ref({});
 // Co-occurrence file sampling and mapping
 const cooccurrenceFileInfo = ref({});
 const cooccurrenceMapping = ref({});
+
+// Male Co-occurrence file sampling and mapping
+const cooccurrenceMaleFileInfo = ref({});
+const cooccurrenceMaleMapping = ref({});
+
+// Female Co-occurrence file sampling and mapping
+const cooccurrenceFemaleFileInfo = ref({});
+const cooccurrenceFemaleMapping = ref({});
+
+// Both Co-occurrence file sampling and mapping
+const cooccurrenceBothFileInfo = ref({});
+const cooccurrenceBothMapping = ref({});
 
 // Column mapping options for SGC cases/controls file
 const columnMappingOptions = ref([
@@ -793,6 +1049,30 @@ const casesControlsBothTableRows = computed(() => {
 const cooccurrenceTableRows = computed(() => {
     return cooccurrenceFileInfo.value.columns
         ? cooccurrenceFileInfo.value.columns.map((value) => ({
+              column: value,
+          }))
+        : [];
+});
+
+const cooccurrenceMaleTableRows = computed(() => {
+    return cooccurrenceMaleFileInfo.value.columns
+        ? cooccurrenceMaleFileInfo.value.columns.map((value) => ({
+              column: value,
+          }))
+        : [];
+});
+
+const cooccurrenceFemaleTableRows = computed(() => {
+    return cooccurrenceFemaleFileInfo.value.columns
+        ? cooccurrenceFemaleFileInfo.value.columns.map((value) => ({
+              column: value,
+          }))
+        : [];
+});
+
+const cooccurrenceBothTableRows = computed(() => {
+    return cooccurrenceBothFileInfo.value.columns
+        ? cooccurrenceBothFileInfo.value.columns.map((value) => ({
               column: value,
           }))
         : [];
@@ -873,6 +1153,54 @@ const cooccurrenceUploadTooltip = computed(() => {
     return `Required: ${missing.join(', ')}`;
 });
 
+const cooccurrenceMaleMappingComplete = computed(() => {
+    if (!cooccurrenceMaleFileInfo.value.columns) return true; // No mapping needed if no file
+
+    const mappedValues = Object.values(cooccurrenceMaleMapping.value).filter(v => v);
+
+    return requiredCooccurrenceFields.value.every(mapping => mappedValues.includes(mapping));
+});
+
+const cooccurrenceFemaleMappingComplete = computed(() => {
+    if (!cooccurrenceFemaleFileInfo.value.columns) return true; // No mapping needed if no file
+
+    const mappedValues = Object.values(cooccurrenceFemaleMapping.value).filter(v => v);
+
+    return requiredCooccurrenceFields.value.every(mapping => mappedValues.includes(mapping));
+});
+
+const cooccurrenceBothMappingComplete = computed(() => {
+    if (!cooccurrenceBothFileInfo.value.columns) return true; // No mapping needed if no file
+
+    const mappedValues = Object.values(cooccurrenceBothMapping.value).filter(v => v);
+
+    return requiredCooccurrenceFields.value.every(mapping => mappedValues.includes(mapping));
+});
+
+const cooccurrenceMaleUploadTooltip = computed(() => {
+    const missing = [];
+    if (!cooccurrenceMaleMappingComplete.value) missing.push('Column Mapping');
+
+    if (missing.length === 0) return 'Upload Male Co-occurrence file';
+    return `Required: ${missing.join(', ')}`;
+});
+
+const cooccurrenceFemaleUploadTooltip = computed(() => {
+    const missing = [];
+    if (!cooccurrenceFemaleMappingComplete.value) missing.push('Column Mapping');
+
+    if (missing.length === 0) return 'Upload Female Co-occurrence file';
+    return `Required: ${missing.join(', ')}`;
+});
+
+const cooccurrenceBothUploadTooltip = computed(() => {
+    const missing = [];
+    if (!cooccurrenceBothMappingComplete.value) missing.push('Column Mapping');
+
+    if (missing.length === 0) return 'Upload Both Co-occurrence file';
+    return `Required: ${missing.join(', ')}`;
+});
+
 // Progress tracking computed properties
 const metadataCompleted = computed(() => {
     return cohortData.value?.name?.trim() &&
@@ -890,7 +1218,9 @@ const allFilesUploaded = computed(() => {
     return uploadStatus.value.casesControlsMale &&
            uploadStatus.value.casesControlsFemale &&
            uploadStatus.value.casesControlsBoth &&
-           uploadStatus.value.cooccurrence &&
+           uploadStatus.value.cooccurrenceMale &&
+           uploadStatus.value.cooccurrenceFemale &&
+           uploadStatus.value.cooccurrenceBoth &&
            uploadStatus.value.cohortDescription;
 });
 
@@ -903,7 +1233,9 @@ const remainingFilesCount = computed(() => {
     if (!uploadStatus.value.casesControlsMale) count++;
     if (!uploadStatus.value.casesControlsFemale) count++;
     if (!uploadStatus.value.casesControlsBoth) count++;
-    if (!uploadStatus.value.cooccurrence) count++;
+    if (!uploadStatus.value.cooccurrenceMale) count++;
+    if (!uploadStatus.value.cooccurrenceFemale) count++;
+    if (!uploadStatus.value.cooccurrenceBoth) count++;
     if (!uploadStatus.value.cohortDescription) count++;
     return count;
 });
@@ -914,7 +1246,9 @@ const remainingTasksCount = computed(() => {
     if (!uploadStatus.value.casesControlsMale) count++;
     if (!uploadStatus.value.casesControlsFemale) count++;
     if (!uploadStatus.value.casesControlsBoth) count++;
-    if (!uploadStatus.value.cooccurrence) count++;
+    if (!uploadStatus.value.cooccurrenceMale) count++;
+    if (!uploadStatus.value.cooccurrenceFemale) count++;
+    if (!uploadStatus.value.cooccurrenceBoth) count++;
     if (!uploadStatus.value.cohortDescription) count++;
     return count;
 });
@@ -970,8 +1304,12 @@ onMounted(async () => {
                         existingFiles.value.casesControlsFemale = fileInfo;
                     } else if (row.file_type === 'cases_controls_both') {
                         existingFiles.value.casesControlsBoth = fileInfo;
-                    } else if (row.file_type === 'cooccurrence') {
-                        existingFiles.value.cooccurrence = fileInfo;
+                    } else if (row.file_type === 'cooccurrenceMale') {
+                        existingFiles.value.cooccurrenceMale = fileInfo;
+                    } else if (row.file_type === 'cooccurrenceFemale') {
+                        existingFiles.value.cooccurrenceFemale = fileInfo;
+                    } else if (row.file_type === 'cooccurrenceBoth') {
+                        existingFiles.value.cooccurrenceBoth = fileInfo;
                     } else if (row.file_type === 'cohort_description') {
                         existingFiles.value.cohortDescription = fileInfo;
                     }
@@ -983,7 +1321,9 @@ onMounted(async () => {
                 casesControlsMale: uploadedFileTypes.has('cases_controls_male'),
                 casesControlsFemale: uploadedFileTypes.has('cases_controls_female'),
                 casesControlsBoth: uploadedFileTypes.has('cases_controls_both'),
-                cooccurrence: uploadedFileTypes.has('cooccurrence'),
+                cooccurrenceMale: uploadedFileTypes.has('cooccurrenceMale'),
+                cooccurrenceFemale: uploadedFileTypes.has('cooccurrenceFemale'),
+                cooccurrenceBoth: uploadedFileTypes.has('cooccurrenceBoth'),
                 cohortDescription: uploadedFileTypes.has('cohort_description')
             };
 
@@ -1000,10 +1340,14 @@ onMounted(async () => {
                 activeAccordionIndex.value = 2; // Female Cases/Controls tab
             } else if (!uploadStatus.value.casesControlsBoth) {
                 activeAccordionIndex.value = 3; // Both Cases/Controls tab
-            } else if (!uploadStatus.value.cooccurrence) {
-                activeAccordionIndex.value = 4; // Co-occurrence tab
+            } else if (!uploadStatus.value.cooccurrenceMale) {
+                activeAccordionIndex.value = 4; // Male Co-occurrence tab
+            } else if (!uploadStatus.value.cooccurrenceFemale) {
+                activeAccordionIndex.value = 5; // Female Co-occurrence tab
+            } else if (!uploadStatus.value.cooccurrenceBoth) {
+                activeAccordionIndex.value = 6; // Both Co-occurrence tab
             } else if (!uploadStatus.value.cohortDescription) {
-                activeAccordionIndex.value = 5; // Cohort Description tab
+                activeAccordionIndex.value = 7; // Cohort Description tab
             }
 
             // If this is an existing cohort with data, show file upload immediately
@@ -1092,23 +1436,33 @@ async function handleCasesControlsFile(e, gender) {
 }
 
 
-async function handleCooccurrenceFile(e) {
+async function handleCooccurrenceFile(e, gender = 'male') {
+    const genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Both';
+    const fileRef = gender === 'male' ? cooccurrenceMaleFile :
+                   gender === 'female' ? cooccurrenceFemaleFile : cooccurrenceBothFile;
+    const fileNameRef = gender === 'male' ? cooccurrenceMaleFileName :
+                       gender === 'female' ? cooccurrenceFemaleFileName : cooccurrenceBothFileName;
+    const fileInfoRef = gender === 'male' ? cooccurrenceMaleFileInfo :
+                       gender === 'female' ? cooccurrenceFemaleFileInfo : cooccurrenceBothFileInfo;
+    const mappingRef = gender === 'male' ? cooccurrenceMaleMapping :
+                      gender === 'female' ? cooccurrenceFemaleMapping : cooccurrenceBothMapping;
+
     store.showNotification = false;
-    cooccurrenceFile.value = e.files[0];
-    cooccurrenceFileName.value = e.files[0]?.name || '';
-    
+    fileRef.value = e.files[0];
+    fileNameRef.value = e.files[0]?.name || '';
+
     try {
-        cooccurrenceFileInfo.value = await store.sampleTextFile(e.files[0]);
-        
-        if (cooccurrenceFileInfo.value.columns) {
-            cooccurrenceFileInfo.value.columns.forEach((col) => {
-                cooccurrenceMapping.value[col] = null;
+        fileInfoRef.value = await store.sampleTextFile(e.files[0]);
+
+        if (fileInfoRef.value.columns) {
+            fileInfoRef.value.columns.forEach((col) => {
+                mappingRef.value[col] = null;
             });
-            
+
             toast.add({
                 severity: 'success',
                 summary: 'File Loaded',
-                detail: `Found ${cooccurrenceFileInfo.value.columns.length} columns. Please map them below.`,
+                detail: `Found ${fileInfoRef.value.columns.length} columns. Please map them below.`,
                 life: 3000
             });
         } else {
@@ -1118,11 +1472,11 @@ async function handleCooccurrenceFile(e) {
         toast.add({
             severity: 'error',
             summary: 'File Error',
-            detail: 'Error processing the Co-occurrence file. Please check the file format.',
+            detail: `Error processing the ${genderLabel} Co-occurrence file. Please check the file format.`,
             life: 5000
         });
-        cooccurrenceFileInfo.value = {};
-        cooccurrenceMapping.value = {};
+        fileInfoRef.value = {};
+        mappingRef.value = {};
     }
 }
 
@@ -1240,8 +1594,24 @@ async function uploadCasesControlsFile(gender) {
 }
 
 
-async function uploadCooccurrenceFile() {
-    if (!cooccurrenceMappingComplete.value) {
+async function uploadCooccurrenceFile(gender = 'male') {
+    const genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Both';
+    const mappingCompleteRef = gender === 'male' ? cooccurrenceMaleMappingComplete :
+                              gender === 'female' ? cooccurrenceFemaleMappingComplete : cooccurrenceBothMappingComplete;
+    const fileRef = gender === 'male' ? cooccurrenceMaleFile :
+                   gender === 'female' ? cooccurrenceFemaleFile : cooccurrenceBothFile;
+    const fileNameRef = gender === 'male' ? cooccurrenceMaleFileName :
+                       gender === 'female' ? cooccurrenceFemaleFileName : cooccurrenceBothFileName;
+    const fileInfoRef = gender === 'male' ? cooccurrenceMaleFileInfo :
+                       gender === 'female' ? cooccurrenceFemaleFileInfo : cooccurrenceBothFileInfo;
+    const mappingRef = gender === 'male' ? cooccurrenceMaleMapping :
+                      gender === 'female' ? cooccurrenceFemaleMapping : cooccurrenceBothMapping;
+    const statusKey = gender === 'male' ? 'cooccurrenceMale' :
+                     gender === 'female' ? 'cooccurrenceFemale' : 'cooccurrenceBoth';
+    const existingFilesKey = gender === 'male' ? 'cooccurrenceMale' :
+                            gender === 'female' ? 'cooccurrenceFemale' : 'cooccurrenceBoth';
+
+    if (!mappingCompleteRef.value) {
         toast.add({
             severity: 'error',
             summary: 'Mapping Required',
@@ -1250,40 +1620,40 @@ async function uploadCooccurrenceFile() {
         });
         return;
     }
-    
+
     try {
         // Upload, validate and store the file in one step
         const result = await store.uploadSGCFile(
-            cooccurrenceFile.value, 
-            cohortId, 
-            'cooccurrence', 
-            'cooccurrence', 
-            createFlippedMapping(cooccurrenceMapping)
+            fileRef.value,
+            cohortId,
+            'cooccurrence',
+            statusKey,
+            createFlippedMapping(mappingRef)
         );
-        
+
         // Mark as uploaded and update UI
-        uploadStatus.value.cooccurrence = true;
-        
+        uploadStatus.value[statusKey] = true;
+
         // Store file information for delete functionality
-        existingFiles.value.cooccurrence = {
+        existingFiles.value[existingFilesKey] = {
             id: result.file_id || result.id, // Handle both possible field names
-            name: cooccurrenceFile.value.name,
+            name: fileRef.value.name,
             uploadedAt: new Date().toISOString()
         };
-        
+
         // Clear the file input since it's now uploaded
-        cooccurrenceFile.value = null;
-        cooccurrenceFileName.value = '';
-        cooccurrenceFileInfo.value = {};
-        cooccurrenceMapping.value = {};
-        
+        fileRef.value = null;
+        fileNameRef.value = '';
+        fileInfoRef.value = {};
+        mappingRef.value = {};
+
         toast.add({
             severity: 'success',
             summary: 'Upload Successful',
-            detail: 'Co-occurrence file uploaded and processed successfully',
+            detail: `${genderLabel} Co-occurrence file uploaded and processed successfully`,
             life: 3000
         });
-        
+
         // Close current accordion and open next
         openNextAccordion();
         
@@ -1423,12 +1793,23 @@ function resetCasesControlsFile(gender) {
 }
 
 
-function resetCooccurrenceFile() {
-    cooccurrenceFile.value = null;
-    cooccurrenceFileName.value = '';
-    cooccurrenceFileInfo.value = {};
-    cooccurrenceMapping.value = {};
-    uploadStatus.value.cooccurrence = false;
+function resetCooccurrenceFile(gender = 'male') {
+    const fileRef = gender === 'male' ? cooccurrenceMaleFile :
+                   gender === 'female' ? cooccurrenceFemaleFile : cooccurrenceBothFile;
+    const fileNameRef = gender === 'male' ? cooccurrenceMaleFileName :
+                       gender === 'female' ? cooccurrenceFemaleFileName : cooccurrenceBothFileName;
+    const fileInfoRef = gender === 'male' ? cooccurrenceMaleFileInfo :
+                       gender === 'female' ? cooccurrenceFemaleFileInfo : cooccurrenceBothFileInfo;
+    const mappingRef = gender === 'male' ? cooccurrenceMaleMapping :
+                      gender === 'female' ? cooccurrenceFemaleMapping : cooccurrenceBothMapping;
+    const statusKey = gender === 'male' ? 'cooccurrenceMale' :
+                     gender === 'female' ? 'cooccurrenceFemale' : 'cooccurrenceBoth';
+
+    fileRef.value = null;
+    fileNameRef.value = '';
+    fileInfoRef.value = {};
+    mappingRef.value = {};
+    uploadStatus.value[statusKey] = false;
 }
 
 function resetCohortDescriptionFile() {
@@ -1473,29 +1854,35 @@ async function deleteCasesControlsFile(gender) {
 }
 
 
-async function deleteCooccurrenceFile() {
-    if (!existingFiles.value.cooccurrence?.id) return;
-    
+async function deleteCooccurrenceFile(gender = 'male') {
+    const genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Both';
+    const statusKey = gender === 'male' ? 'cooccurrenceMale' :
+                     gender === 'female' ? 'cooccurrenceFemale' : 'cooccurrenceBoth';
+    const existingFilesKey = gender === 'male' ? 'cooccurrenceMale' :
+                            gender === 'female' ? 'cooccurrenceFemale' : 'cooccurrenceBoth';
+
+    if (!existingFiles.value[existingFilesKey]?.id) return;
+
     try {
-        await store.deleteSGCFile(existingFiles.value.cooccurrence.id);
-        
+        await store.deleteSGCFile(existingFiles.value[existingFilesKey].id);
+
         // Update UI state
-        uploadStatus.value.cooccurrence = false;
-        existingFiles.value.cooccurrence = null;
-        
+        uploadStatus.value[statusKey] = false;
+        existingFiles.value[existingFilesKey] = null;
+
         toast.add({
             severity: 'success',
             summary: 'File Deleted',
-            detail: 'Co-occurrence file has been deleted successfully',
+            detail: `${genderLabel} Co-occurrence file has been deleted successfully`,
             life: 3000
         });
-        
+
     } catch (error) {
         console.error('Delete error:', error);
         toast.add({
             severity: 'error',
             summary: 'Delete Error',
-            detail: 'Failed to delete Co-occurrence file',
+            detail: `Failed to delete ${genderLabel} Co-occurrence file`,
             life: 5000
         });
     }
@@ -1545,10 +1932,14 @@ function openNextAccordion() {
             activeAccordionIndex.value = 2; // Female Cases/Controls tab
         } else if (!uploadStatus.value.casesControlsBoth) {
             activeAccordionIndex.value = 3; // Both Cases/Controls tab
-        } else if (!uploadStatus.value.cooccurrence) {
-            activeAccordionIndex.value = 4; // Co-occurrence tab
+        } else if (!uploadStatus.value.cooccurrenceMale) {
+            activeAccordionIndex.value = 4; // Male Co-occurrence tab
+        } else if (!uploadStatus.value.cooccurrenceFemale) {
+            activeAccordionIndex.value = 5; // Female Co-occurrence tab
+        } else if (!uploadStatus.value.cooccurrenceBoth) {
+            activeAccordionIndex.value = 6; // Both Co-occurrence tab
         } else if (!uploadStatus.value.cohortDescription) {
-            activeAccordionIndex.value = 5; // Cohort Description tab
+            activeAccordionIndex.value = 7; // Cohort Description tab
         }
         // If all tasks completed, leave all accordions closed
         else if (allTasksCompleted.value) {
