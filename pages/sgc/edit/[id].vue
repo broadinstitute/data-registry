@@ -122,21 +122,33 @@
                     </div>
                     
                     <!-- Overall Status -->
-                    <div v-if="allTasksCompleted" class="text-center mt-3 p-3" style="background-color: var(--green-100); border: 1px solid var(--green-300); border-radius: 6px;">
-                        <i class="pi pi-check-circle text-green-600 mr-2" style="font-size: 1.5rem"></i>
-                        <span class="text-green-700 font-medium text-lg">Cohort setup complete! All metadata and files uploaded.</span>
+                    <div v-if="allTasksCompleted && !validationPassed" class="text-center mt-3 p-3" style="background-color: var(--blue-50); border: 1px solid var(--blue-200); border-radius: 6px;">
+                        <i class="pi pi-info-circle text-blue-600 mr-2" style="font-size: 1.5rem"></i>
+                        <div class="mb-3">
+                            <span class="text-blue-800 font-medium text-lg">All files uploaded successfully!</span>
+                            <p class="text-blue-700 text-sm mt-2 mb-0">Ready to run inter-file validations to finalize your cohort upload.</p>
+                        </div>
 
-                        <div class="mt-3">
+                        <div>
                             <Button
-                                label="Finalize Cohort Upload"
-                                icon="pi pi-check"
-                                class="p-button-success"
+                                label="Run Inter-File Validations"
+                                icon="pi pi-cog"
+                                class="p-button-info"
                                 @click="validateAllConsistency"
                                 :loading="validatingConsistency"
                             />
                         </div>
                     </div>
-                    <div v-else class="text-center mt-3 p-2" style="background-color: var(--orange-100); border: 1px solid var(--orange-300); border-radius: 6px;">
+                    
+                    <!-- Validation Complete Status -->
+                    <div v-if="validationPassed" class="text-center mt-3 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
+                        <i class="pi pi-check-circle text-green-600 mr-2" style="font-size: 1.5rem"></i>
+                        <div>
+                            <span class="text-green-800 font-medium text-lg">Cohort upload complete!</span>
+                            <p class="text-green-700 text-sm mt-2 mb-0">All files uploaded and validated successfully. Your cohort is now finalized.</p>
+                        </div>
+                    </div>
+                    <div v-else-if="!validationPassed && remainingTasksCount > 0" class="text-center mt-3 p-2" style="background-color: var(--orange-100); border: 1px solid var(--orange-300); border-radius: 6px;">
                         <i class="pi pi-info-circle text-orange-600 mr-2"></i>
                         <span class="text-orange-700 font-medium">{{ remainingTasksCount }} task{{ remainingTasksCount === 1 ? '' : 's' }} remaining</span>
                     </div>
@@ -872,7 +884,7 @@
     <Dialog
         v-model:visible="store.showNotification"
         modal
-        header="Upload Error"
+        header="Error"
         :style="{ width: '600px' }"
         :closable="true"
         @hide="store.showNotification = false"
@@ -932,6 +944,7 @@ const loading = ref(true);
 const cohortData = ref(null);
 const metadataSaved = ref(false);
 const validatingConsistency = ref(false);
+const validationPassed = ref(false);
 
 // File upload reactive variables
 const activeAccordionIndex = ref(0);
@@ -1304,11 +1317,11 @@ onMounted(async () => {
                         existingFiles.value.casesControlsFemale = fileInfo;
                     } else if (row.file_type === 'cases_controls_both') {
                         existingFiles.value.casesControlsBoth = fileInfo;
-                    } else if (row.file_type === 'cooccurrenceMale') {
+                    } else if (row.file_type === 'cooccurrence_male') {
                         existingFiles.value.cooccurrenceMale = fileInfo;
-                    } else if (row.file_type === 'cooccurrenceFemale') {
+                    } else if (row.file_type === 'cooccurrence_female') {
                         existingFiles.value.cooccurrenceFemale = fileInfo;
-                    } else if (row.file_type === 'cooccurrenceBoth') {
+                    } else if (row.file_type === 'cooccurrence_both') {
                         existingFiles.value.cooccurrenceBoth = fileInfo;
                     } else if (row.file_type === 'cohort_description') {
                         existingFiles.value.cohortDescription = fileInfo;
@@ -1321,11 +1334,17 @@ onMounted(async () => {
                 casesControlsMale: uploadedFileTypes.has('cases_controls_male'),
                 casesControlsFemale: uploadedFileTypes.has('cases_controls_female'),
                 casesControlsBoth: uploadedFileTypes.has('cases_controls_both'),
-                cooccurrenceMale: uploadedFileTypes.has('cooccurrenceMale'),
-                cooccurrenceFemale: uploadedFileTypes.has('cooccurrenceFemale'),
-                cooccurrenceBoth: uploadedFileTypes.has('cooccurrenceBoth'),
+                cooccurrenceMale: uploadedFileTypes.has('cooccurrence_male'),
+                cooccurrenceFemale: uploadedFileTypes.has('cooccurrence_female'),
+                cooccurrenceBoth: uploadedFileTypes.has('cooccurrence_both'),
                 cohortDescription: uploadedFileTypes.has('cohort_description')
             };
+            
+            // Initialize validation status from cohort data
+            console.log('cohortInfo.validation_status:', cohortInfo.validation_status);
+            console.log('Type of validation_status:', typeof cohortInfo.validation_status);
+            validationPassed.value = !!cohortInfo.validation_status;
+            console.log('Set validationPassed to:', validationPassed.value);
 
             // Set initial accordion tab based on completion status
             // If everything is complete, leave all tabs closed (activeAccordionIndex = null)
@@ -1376,15 +1395,46 @@ onMounted(async () => {
 // Handle metadata update
 function handleMetadataUpdated(response) {
     console.log('Metadata updated:', response);
-    // Update cohort data with all fields from the response
-    cohortData.value = {
+    console.log('Current cohortData before update:', cohortData.value);
+    
+    // Handle the response - it could be an array (like fetch) or an object
+    const cohortInfo = Array.isArray(response) ? response[0] : response;
+    
+    // Create the updated data object
+    const updatedData = {
         ...cohortData.value,
-        id: response.cohort_id || response.id, // Handle both field names
-        name: response.name,
-        total_sample_size: response.total_sample_size,
-        number_of_males: response.number_of_males,
-        number_of_females: response.number_of_females
+        id: cohortInfo.cohort_id || cohortInfo.id, // Handle both field names
+        name: cohortInfo.name,
+        total_sample_size: cohortInfo.total_sample_size,
+        number_of_males: cohortInfo.number_of_males,
+        number_of_females: cohortInfo.number_of_females,
+        uploaded_by: cohortInfo.uploaded_by,
+        created_at: cohortInfo.created_at,
+        updated_at: cohortInfo.updated_at,
+        // Extract cohort metadata fields if they exist
+        ...(cohortInfo.cohort_metadata ? {
+            phenotype_coding_system: cohortInfo.cohort_metadata.phenotype_coding_system || '',
+            phenotype_mapping_issues: cohortInfo.cohort_metadata.phenotype_mapping_issues || '',
+            industry_involvement: cohortInfo.cohort_metadata.industry_involvement || '',
+            industry_authorship: cohortInfo.cohort_metadata.industry_authorship,
+            data_restrictions: cohortInfo.cohort_metadata.data_restrictions || ''
+        } : {
+            phenotype_coding_system: cohortData.value.phenotype_coding_system || '',
+            phenotype_mapping_issues: cohortData.value.phenotype_mapping_issues || '',
+            industry_involvement: cohortData.value.industry_involvement || '',
+            industry_authorship: cohortData.value.industry_authorship,
+            data_restrictions: cohortData.value.data_restrictions || ''
+        })
     };
+    
+    console.log('Updated cohortData after processing:', updatedData);
+    
+    // Update cohort data
+    cohortData.value = updatedData;
+    
+    // Reset validation status since metadata has changed
+    validationPassed.value = false;
+    
     // Show the file upload accordion
     metadataSaved.value = true;
 }
@@ -1626,7 +1676,7 @@ async function uploadCooccurrenceFile(gender = 'male') {
         const result = await store.uploadSGCFile(
             fileRef.value,
             cohortId,
-            'cooccurrence',
+            `cooccurrence_${gender}`,
             statusKey,
             createFlippedMapping(mappingRef)
         );
@@ -1946,6 +1996,77 @@ function openNextAccordion() {
             activeAccordionIndex.value = null;
         }
     }, 500);
+}
+
+// Function to validate all file consistency
+async function validateAllConsistency() {
+    validatingConsistency.value = true;
+    
+    // Clear any previous error state to prevent interceptor interference
+    store.errorMessage = '';
+    store.showNotification = false;
+    
+    try {
+        const result = await store.validateAllConsistency(cohortId);
+        
+        // Check if validation passed based on the API response
+        if (result && result.validation_status) {
+            // Update validation status to hide UI elements
+            validationPassed.value = true;
+            
+            // Show success message using toast for positive feedback
+            toast.add({
+                severity: 'success',
+                summary: 'Validation Complete',
+                detail: 'All inter-file validations passed successfully! Your cohort is now finalized.',
+                life: 5000
+            });
+            
+            // Optionally redirect to the cohort list after showing success
+            setTimeout(() => {
+                navigateTo('/sgc');
+            }, 3000);
+        } else {
+            // Handle case where API returns 200 but validation_status is false
+            toast.add({
+                severity: 'error',
+                summary: 'Validation Failed',
+                detail: result?.message || 'Inter-file validation failed. Please check your files and try again.',
+                life: 8000
+            });
+        }
+        
+    } catch (error) {
+        console.error('Validation error:', error);
+        store.processing = false;
+        
+        // Handle server validation errors (400 responses) - exact same pattern as cohort description upload
+        let errorMessage = 'Inter-file validation failed. Please check your files and try again.';
+        if (error.status === 400 || error.response?.status === 400) {
+            // Server returned validation errors - check both error.data and error.response.data
+            const errorData = error.data || error.response?.data;
+            
+            if (typeof errorData === 'string') {
+                errorMessage = errorData;
+            } else if (errorData?.detail) {
+                errorMessage = errorData.detail;
+            } else if (errorData?.message) {
+                errorMessage = errorData.message;
+            }
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        
+        toast.add({
+            severity: 'error',
+            summary: 'Validation Error',
+            detail: errorMessage,
+            life: 8000 // Longer display time for validation errors
+        });
+        
+    } finally {
+        validatingConsistency.value = false;
+    }
 }
 </script>
 

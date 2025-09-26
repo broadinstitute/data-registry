@@ -7,7 +7,7 @@
                     v-model="formData.name"
                     id="uploadSetName"
                     type="text"
-                    v-tooltip.top="'A unique name to identify cohort'"
+                    v-tooltip="{value: 'A unique name to identify cohort', position: 'top'}"
                     :disabled="disabled"
                 />
             </div>
@@ -17,7 +17,7 @@
                     v-model="formData.total_sample_size"
                     id="totalSampleSize"
                     :min="0"
-                    v-tooltip.top="'Total number of individuals in the study'"
+                    v-tooltip="{value: 'Total number of individuals in the study', position: 'top'}"
                     :disabled="disabled"
                 />
             </div>
@@ -30,7 +30,7 @@
                     v-model="formData.number_of_males"
                     id="numberOfMales"
                     :min="0"
-                    v-tooltip.top="'Total number of male participants'"
+                    v-tooltip="{value: 'Total number of male participants', position: 'top'}"
                     :disabled="disabled"
                 />
             </div>
@@ -40,7 +40,7 @@
                     v-model="formData.number_of_females"
                     id="numberOfFemales"
                     :min="0"
-                    v-tooltip.top="'Total number of female participants'"
+                    v-tooltip="{value: 'Total number of female participants', position: 'top'}"
                     :disabled="disabled"
                 />
             </div>
@@ -53,7 +53,7 @@
                     v-model="formData.phenotype_coding_system"
                     id="phenotypeCodingSystem"
                     type="text"
-                    v-tooltip.top="'The coding system used for phenotype data (e.g., ICD-10, SNOMED CT, etc.)'"
+                    v-tooltip="{value: 'The coding system used for phenotype data (e.g., ICD-10, SNOMED CT, etc.)', position: 'top'}"
                     :disabled="disabled"
                 />
             </div>
@@ -78,7 +78,7 @@
                     v-model="formData.phenotype_mapping_issues"
                     id="phenotypeMappingIssues"
                     rows="2"
-                    v-tooltip.top="'Describe any issues encountered during phenotype mapping or enter None if no issues'"
+                    v-tooltip="{value: 'Describe any issues encountered during phenotype mapping or enter None if no issues', position: 'top'}"
                     :disabled="disabled"
                 />
             </div>
@@ -88,7 +88,7 @@
                     v-model="formData.industry_involvement"
                     id="industryInvolvement"
                     rows="2"
-                    v-tooltip.top="'Describe any industry partnerships or involvement, or enter None if no industry involvement'"
+                    v-tooltip="{value: 'Describe any industry partnerships or involvement, or enter None if no industry involvement', position: 'top'}"
                     :disabled="disabled"
                 />
             </div>
@@ -100,7 +100,7 @@
                 v-model="formData.data_restrictions"
                 id="dataRestrictions"
                 rows="2"
-                v-tooltip.top="'Describe any restrictions on public data availability, or enter None if no restrictions'"
+                v-tooltip="{value: 'Describe any restrictions on public data availability, or enter None if no restrictions', position: 'top'}"
                 :disabled="disabled"
             />
         </div>
@@ -132,6 +132,7 @@
 <script setup>
 import { useToast } from "primevue/usetoast";
 import { useDatasetStore } from "~/stores/DatasetStore";
+import { nextTick } from 'vue';
 
 // Props
 const props = defineProps({
@@ -199,9 +200,26 @@ const metadataSaved = ref(false);
 const originalData = ref({ ...props.initialData });
 
 // Watch for prop changes
-watch(() => props.initialData, (newData) => {
-    formData.value = { ...newData };
-    originalData.value = { ...newData };
+watch(() => props.initialData, (newData, oldData) => {
+    console.log('SGCMetadataForm: Props changed, updating form data:', newData);
+    console.log('SGCMetadataForm: Old data was:', oldData);
+    
+    // Only update if the data has actually changed
+    if (JSON.stringify(newData) !== JSON.stringify(oldData)) {
+        // Use nextTick to ensure DOM updates properly
+        nextTick(() => {
+            // Update each property individually to avoid losing component state
+            Object.keys(newData).forEach(key => {
+                if (formData.value[key] !== newData[key]) {
+                    console.log(`Updating ${key}: ${formData.value[key]} -> ${newData[key]}`);
+                    formData.value[key] = newData[key];
+                }
+            });
+            
+            // Update original data
+            originalData.value = { ...newData };
+        });
+    }
 }, { deep: true });
 
 // Computed

@@ -138,14 +138,14 @@ const columns = ref([
     header: "Files",
     field: "files",
     format: data => {
-      if (!data.files || data.files.length === 0) return "0/5";
-      return `${data.files.length}/5`;
+      if (!data.files || data.files.length === 0) return "0/7";
+      return `${data.files.length}/7`;
     },
     component: (data) => {
       if (!data.files || data.files.length === 0) {
         return h(Tag, {
           severity: "danger",
-          value: "0/5",
+          value: "0/7",
           rounded: true
         });
       } else {
@@ -160,10 +160,10 @@ const columns = ref([
 
         return h("div", { class: "flex align-items-center gap-2" }, [
           h(Tag, {
-            severity: data.files.length === 5 ? "success" : "warning",
-            value: `${data.files.length}/5`,
+            severity: data.files.length === 7 ? "success" : "warning",
+            value: `${data.files.length}/7`,
             rounded: true,
-            icon: data.files.length === 5 ? "bi-check" : undefined
+            icon: data.files.length === 7 ? "bi-check" : undefined
           }),
           h("div", { class: "relative" }, [
             h(Menu, {
@@ -199,6 +199,27 @@ const columns = ref([
     filterType: "text",
     placeholder: "Search uploader",
     sortable: true
+  },
+  {
+    header: "Validation",
+    field: "validation_status",
+    sortable: true,
+    style: { width: "6rem", textAlign: "center" },
+    component: (data) => {
+      const isValidated = !!data.validation_status;
+      const iconClass = isValidated ? "bi-check-circle text-green-600" : "bi-x-circle text-red-600";
+      const tooltipText = isValidated ? "Validation passed" : "Validation pending or failed";
+      
+      return h("div", { 
+        class: "flex justify-content-center align-items-center",
+        title: tooltipText
+      }, [
+        h("i", {
+          class: `${iconClass}`,
+          style: { fontSize: "1.2rem" }
+        })
+      ]);
+    }
   },
   {
     header: "",
