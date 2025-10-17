@@ -58,14 +58,12 @@
                 />
             </div>
             <div class="field col-12 md:col-6">
-                <label for="industryAuthorship">Will industry partners be authors on any resulting publication</label>
-                <Dropdown 
-                    v-model="formData.industry_authorship" 
-                    id="industryAuthorship" 
-                    :options="yesNoOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select Yes or No"
+                <label for="industryInvolvement">Is there any industry involvement in your data generation/project. If yes, please describe</label>
+                <Textarea
+                    v-model="formData.industry_involvement"
+                    id="industryInvolvement"
+                    rows="2"
+                    v-tooltip="{value: 'Describe any industry partnerships or involvement, or enter None if no industry involvement', position: 'top'}"
                     :disabled="disabled"
                 />
             </div>
@@ -83,12 +81,29 @@
                 />
             </div>
             <div class="field col-12 md:col-6">
-                <label for="industryInvolvement">Is there any industry involvement in your data generation/project. If yes, please describe</label>
-                <Textarea
-                    v-model="formData.industry_involvement"
-                    id="industryInvolvement"
-                    rows="2"
-                    v-tooltip="{value: 'Describe any industry partnerships or involvement, or enter None if no industry involvement', position: 'top'}"
+                <label for="industryAuthorship">Will industry partners be authors on any resulting publication</label>
+                <Dropdown 
+                    v-model="formData.industry_authorship" 
+                    id="industryAuthorship" 
+                    :options="yesNoOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select Yes or No"
+                    :disabled="disabled"
+                />
+            </div>
+        </div>
+        
+        <div class="formgrid grid">
+            <div class="field col-12 md:col-6">
+                <label for="consortiumDataSharing">Can we make this data available to other consortium members before publication</label>
+                <Dropdown 
+                    v-model="formData.consortium_data_sharing" 
+                    id="consortiumDataSharing" 
+                    :options="yesNoOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select Yes or No"
                     :disabled="disabled"
                 />
             </div>
@@ -151,6 +166,7 @@ const props = defineProps({
             phenotype_mapping_issues: '',
             industry_involvement: '',
             industry_authorship: null,
+            consortium_data_sharing: null,
             data_restrictions: ''
         })
     },
@@ -233,6 +249,7 @@ const hasChanges = computed(() => {
            formData.value.phenotype_mapping_issues?.trim() !== originalData.value.phenotype_mapping_issues?.trim() ||
            formData.value.industry_involvement?.trim() !== originalData.value.industry_involvement?.trim() ||
            formData.value.industry_authorship !== originalData.value.industry_authorship ||
+           formData.value.consortium_data_sharing !== originalData.value.consortium_data_sharing ||
            formData.value.data_restrictions?.trim() !== originalData.value.data_restrictions?.trim();
 });
 
@@ -247,6 +264,7 @@ const canSave = computed(() => {
            formData.value.phenotype_mapping_issues?.trim() &&
            formData.value.industry_involvement?.trim() &&
            formData.value.industry_authorship !== null &&
+           formData.value.consortium_data_sharing !== null &&
            formData.value.data_restrictions?.trim();
 });
 
@@ -282,6 +300,9 @@ const validationMessage = computed(() => {
     }
     if (formData.value.industry_authorship === null) {
         return 'Industry authorship selection is required';
+    }
+    if (formData.value.consortium_data_sharing === null) {
+        return 'Consortium data sharing selection is required';
     }
     if (!formData.value.data_restrictions?.trim()) {
         return 'Data restrictions field is required';
@@ -340,6 +361,7 @@ async function handleSave() {
                 phenotype_mapping_issues: formData.value.phenotype_mapping_issues.trim(),
                 industry_involvement: formData.value.industry_involvement.trim(),
                 industry_authorship: formData.value.industry_authorship,
+                consortium_data_sharing: formData.value.consortium_data_sharing,
                 data_restrictions: formData.value.data_restrictions.trim()
             }
         };
