@@ -24,7 +24,7 @@
             <div class="card p-fluid">
                 <h5>Cohort Setup</h5>
                 <p class="text-sm mb-4">
-                    Complete the cohort metadata and upload all three required files. Accepted formats: .txt, .csv, and .tsv files.
+                    Complete the cohort metadata and upload the required files for male and female data. <strong>All files must be comma-delimited (.csv) or tab-delimited (.tsv, .txt)</strong>. Note: .txt files are accepted but must contain comma or tab-separated values internally.
                 </p>
                 
                 <!-- Progress Checklist -->
@@ -65,17 +65,6 @@
                             </span>
                         </div>
                         <div class="flex align-items-center gap-2">
-                            <i v-if="uploadStatus.casesControlsBoth"
-                               class="pi pi-check-circle text-green-500"
-                               style="font-size: 1.2rem"></i>
-                            <i v-else
-                               class="pi pi-times-circle text-red-500"
-                               style="font-size: 1.2rem"></i>
-                            <span :class="{'text-green-600 font-medium': uploadStatus.casesControlsBoth, 'text-red-600': !uploadStatus.casesControlsBoth}">
-                                Both Cases/Controls Data
-                            </span>
-                        </div>
-                        <div class="flex align-items-center gap-2">
                             <i v-if="uploadStatus.cooccurrenceMale"
                                class="pi pi-check-circle text-green-500"
                                style="font-size: 1.2rem"></i>
@@ -95,17 +84,6 @@
                                style="font-size: 1.2rem"></i>
                             <span :class="{'text-green-600 font-medium': uploadStatus.cooccurrenceFemale, 'text-red-600': !uploadStatus.cooccurrenceFemale}">
                                 Female Co-occurrence Data
-                            </span>
-                        </div>
-                        <div class="flex align-items-center gap-2">
-                            <i v-if="uploadStatus.cooccurrenceBoth"
-                               class="pi pi-check-circle text-green-500"
-                               style="font-size: 1.2rem"></i>
-                            <i v-else
-                               class="pi pi-times-circle text-red-500"
-                               style="font-size: 1.2rem"></i>
-                            <span :class="{'text-green-600 font-medium': uploadStatus.cooccurrenceBoth, 'text-red-600': !uploadStatus.cooccurrenceBoth}">
-                                Both Co-occurrence Data
                             </span>
                         </div>
                         <div class="flex align-items-center gap-2">
@@ -388,113 +366,6 @@
                     </div>
                     </AccordionTab>
 
-                    <AccordionTab>
-                        <template #header>
-                            <div class="flex items-center gap-2">
-                                <span>Both Cases/Controls Data *</span>
-                                <i v-if="uploadStatus.casesControlsBoth" class="pi pi-check text-green-500"></i>
-                            </div>
-                        </template>
-                        <!-- Existing File Display -->
-                        <div v-if="existingFiles.casesControlsBoth" class="mb-4 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
-                            <div class="flex align-items-center justify-content-between">
-                                <div class="flex align-items-center gap-3">
-                                    <i class="pi pi-file-check text-green-600" style="font-size: 1.5rem"></i>
-                                    <div>
-                                        <p class="font-medium text-green-800 mb-1">{{ existingFiles.casesControlsBoth.name }}</p>
-                                        <small class="text-green-600">Uploaded {{ new Date(existingFiles.casesControlsBoth.uploadedAt).toLocaleDateString() }}</small>
-                                    </div>
-                                </div>
-                                <Button
-                                    icon="pi pi-trash"
-                                    severity="danger"
-                                    text
-                                    size="small"
-                                    @click="() => deleteCasesControlsFile('both')"
-                                    title="Delete this file"
-                                />
-                            </div>
-                        </div>
-
-                        <FileUpload
-                            v-else
-                            name="casesControlsBothFile"
-                            id="casesControlsBothFile"
-                            accept=".txt,.csv,.tsv"
-                            :showUploadButton="false"
-                            :previewWidth="0"
-                            @select="(e) => handleCasesControlsFile(e, 'both')"
-                            @clear="() => resetCasesControlsFile('both')"
-                            @remove="() => resetCasesControlsFile('both')"
-                            customUpload
-                            :multiple="false"
-                        >
-                            <template #empty>
-                                <p>Select Both Cases/Controls file (.txt, .csv, .tsv)</p>
-                            </template>
-                        </FileUpload>
-
-                    <!-- Both Cases/Controls Column Mapping -->
-                    <div v-if="casesControlsBothFileInfo.columns" class="mt-4">
-                        <h6 class="mb-3">Map Both Cases/Controls Columns</h6>
-
-                        <div class="card flex flex-wrap gap-1 required-card mb-3">
-                            <h6 class="w-full">Required fields:</h6>
-                            <template v-for="field in requiredSGCFields">
-                                <Chip
-                                    v-if="Object.values(casesControlsBothMapping).includes(field)"
-                                    :key="field"
-                                    icon="bi-check"
-                                    :label="field"
-                                    class="selected-chip"
-                                />
-                                <Chip v-else :label="field" :key="'else-' + field" />
-                            </template>
-                        </div>
-
-                        <DataTable :value="casesControlsBothTableRows" rowHover>
-                            <Column field="column" header="Column" class="col-4">
-                            </Column>
-                            <Column header=">>" class="col-1"></Column>
-                            <Column header="Represents" class="col-7">
-                                <template #body="{ data }">
-                                    <Dropdown
-                                        class="w-full"
-                                        :options="columnMappingOptions"
-                                        option-label="name"
-                                        option-value="value"
-                                        :option-disabled="
-                                            (option) => {
-                                                return (
-                                                    Object.values(casesControlsBothMapping).includes(option.value) &&
-                                                    option.value !== casesControlsBothMapping[data.column]
-                                                );
-                                            }
-                                        "
-                                        v-model="casesControlsBothMapping[data.column]"
-                                        showClear
-                                        placeholder="Select mapping"
-                                    />
-                                </template>
-                            </Column>
-                        </DataTable>
-
-                        <div class="text-center mt-3">
-                            <Button
-                                type="button"
-                                label="Upload Both Cases/Controls File"
-                                class="p-button-primary"
-                                icon="bi-upload"
-                                :disabled="!casesControlsBothMappingComplete"
-                                @click="() => uploadCasesControlsFile('both')"
-                                raised
-                            />
-                            <div v-if="!casesControlsBothMappingComplete" class="text-sm text-gray-500 mt-2">
-                                {{ casesControlsBothUploadTooltip }}
-                            </div>
-                        </div>
-                    </div>
-                    </AccordionTab>
 
                     <AccordionTab>
                         <template #header>
@@ -711,113 +582,6 @@
                     </div>
                     </AccordionTab>
 
-                    <AccordionTab>
-                        <template #header>
-                            <div class="flex items-center gap-2">
-                                <span>Both Co-occurrence Data *</span>
-                                <i v-if="uploadStatus.cooccurrenceBoth" class="pi pi-check text-green-500"></i>
-                            </div>
-                        </template>
-                        <!-- Existing File Display -->
-                        <div v-if="existingFiles.cooccurrenceBoth" class="mb-4 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
-                            <div class="flex align-items-center justify-content-between">
-                                <div class="flex align-items-center gap-3">
-                                    <i class="pi pi-file-check text-green-600" style="font-size: 1.5rem"></i>
-                                    <div>
-                                        <p class="font-medium text-green-800 mb-1">{{ existingFiles.cooccurrenceBoth.name }}</p>
-                                        <small class="text-green-600">Uploaded {{ new Date(existingFiles.cooccurrenceBoth.uploadedAt).toLocaleDateString() }}</small>
-                                    </div>
-                                </div>
-                                <Button
-                                    icon="pi pi-trash"
-                                    severity="danger"
-                                    text
-                                    size="small"
-                                    @click="() => deleteCooccurrenceFile('both')"
-                                    title="Delete this file"
-                                />
-                            </div>
-                        </div>
-
-                        <FileUpload
-                            v-else
-                            name="cooccurrenceBothFile"
-                            id="cooccurrenceBothFile"
-                            accept=".txt,.csv,.tsv"
-                            :showUploadButton="false"
-                            :previewWidth="0"
-                            @select="(e) => handleCooccurrenceFile(e, 'both')"
-                            @clear="() => resetCooccurrenceFile('both')"
-                            @remove="() => resetCooccurrenceFile('both')"
-                            customUpload
-                            :multiple="false"
-                        >
-                            <template #empty>
-                                <p>Select Both Co-occurrence file (.txt, .csv, .tsv)</p>
-                            </template>
-                        </FileUpload>
-
-                    <!-- Both Co-occurrence Column Mapping -->
-                    <div v-if="cooccurrenceBothFileInfo.columns" class="mt-4">
-                        <h6 class="mb-3">Map Both Co-occurrence Columns</h6>
-
-                        <div class="card flex flex-wrap gap-1 required-card mb-3">
-                            <h6 class="w-full">Required fields:</h6>
-                            <template v-for="field in requiredCooccurrenceFields">
-                                <Chip
-                                    v-if="Object.values(cooccurrenceBothMapping).includes(field)"
-                                    :key="field"
-                                    icon="bi-check"
-                                    :label="field"
-                                    class="selected-chip"
-                                />
-                                <Chip v-else :label="field" :key="'else-' + field" />
-                            </template>
-                        </div>
-
-                        <DataTable :value="cooccurrenceBothTableRows" rowHover>
-                            <Column field="column" header="Column" class="col-4">
-                            </Column>
-                            <Column header=">>" class="col-1"></Column>
-                            <Column header="Represents" class="col-7">
-                                <template #body="{ data }">
-                                    <Dropdown
-                                        class="w-full"
-                                        :options="cooccurrenceMappingOptions"
-                                        option-label="name"
-                                        option-value="value"
-                                        :option-disabled="
-                                            (option) => {
-                                                return (
-                                                    Object.values(cooccurrenceBothMapping).includes(option.value) &&
-                                                    option.value !== cooccurrenceBothMapping[data.column]
-                                                );
-                                            }
-                                        "
-                                        v-model="cooccurrenceBothMapping[data.column]"
-                                        showClear
-                                        placeholder="Select mapping"
-                                    />
-                                </template>
-                            </Column>
-                        </DataTable>
-
-                        <div class="text-center mt-3">
-                            <Button
-                                type="button"
-                                label="Upload Both Co-occurrence File"
-                                class="p-button-primary"
-                                icon="bi-upload"
-                                :disabled="!cooccurrenceBothMappingComplete"
-                                @click="() => uploadCooccurrenceFile('both')"
-                                raised
-                            />
-                            <div v-if="!cooccurrenceBothMappingComplete" class="text-sm text-gray-500 mt-2">
-                                {{ cooccurrenceBothUploadTooltip }}
-                            </div>
-                        </div>
-                    </div>
-                    </AccordionTab>
 
                     <AccordionTab>
                         <template #header>
@@ -951,27 +715,21 @@ const activeAccordionIndex = ref(0);
 
 const casesControlsMaleFile = ref(null);
 const casesControlsFemaleFile = ref(null);
-const casesControlsBothFile = ref(null);
 const cooccurrenceMaleFile = ref(null);
 const cooccurrenceFemaleFile = ref(null);
-const cooccurrenceBothFile = ref(null);
 const cohortDescriptionFile = ref(null);
 const casesControlsMaleFileName = ref('');
 const casesControlsFemaleFileName = ref('');
-const casesControlsBothFileName = ref('');
 const cooccurrenceMaleFileName = ref('');
 const cooccurrenceFemaleFileName = ref('');
-const cooccurrenceBothFileName = ref('');
 const cohortDescriptionFileName = ref('');
 
 // Upload status tracking
 const uploadStatus = ref({
     casesControlsMale: false,
     casesControlsFemale: false,
-    casesControlsBoth: false,
     cooccurrenceMale: false,
     cooccurrenceFemale: false,
-    cooccurrenceBoth: false,
     cohortDescription: false
 });
 
@@ -979,10 +737,8 @@ const uploadStatus = ref({
 const existingFiles = ref({
     casesControlsMale: null,
     casesControlsFemale: null,
-    casesControlsBoth: null,
     cooccurrenceMale: null,
     cooccurrenceFemale: null,
-    cooccurrenceBoth: null,
     cohortDescription: null
 });
 
@@ -994,9 +750,6 @@ const casesControlsMaleMapping = ref({});
 const casesControlsFemaleFileInfo = ref({});
 const casesControlsFemaleMapping = ref({});
 
-// Both Cases/Controls file sampling and mapping
-const casesControlsBothFileInfo = ref({});
-const casesControlsBothMapping = ref({});
 
 // Co-occurrence file sampling and mapping
 const cooccurrenceFileInfo = ref({});
@@ -1010,9 +763,6 @@ const cooccurrenceMaleMapping = ref({});
 const cooccurrenceFemaleFileInfo = ref({});
 const cooccurrenceFemaleMapping = ref({});
 
-// Both Co-occurrence file sampling and mapping
-const cooccurrenceBothFileInfo = ref({});
-const cooccurrenceBothMapping = ref({});
 
 // Column mapping options for SGC cases/controls file
 const columnMappingOptions = ref([
@@ -1051,13 +801,6 @@ const casesControlsFemaleTableRows = computed(() => {
         : [];
 });
 
-const casesControlsBothTableRows = computed(() => {
-    return casesControlsBothFileInfo.value.columns
-        ? casesControlsBothFileInfo.value.columns.map((value) => ({
-              column: value,
-          }))
-        : [];
-});
 
 const cooccurrenceTableRows = computed(() => {
     return cooccurrenceFileInfo.value.columns
@@ -1083,13 +826,6 @@ const cooccurrenceFemaleTableRows = computed(() => {
         : [];
 });
 
-const cooccurrenceBothTableRows = computed(() => {
-    return cooccurrenceBothFileInfo.value.columns
-        ? cooccurrenceBothFileInfo.value.columns.map((value) => ({
-              column: value,
-          }))
-        : [];
-});
 
 const casesControlsMaleMappingComplete = computed(() => {
     if (!casesControlsMaleFileInfo.value.columns) return true; // No mapping needed if no file
@@ -1107,13 +843,6 @@ const casesControlsFemaleMappingComplete = computed(() => {
     return requiredSGCFields.value.every(mapping => mappedValues.includes(mapping));
 });
 
-const casesControlsBothMappingComplete = computed(() => {
-    if (!casesControlsBothFileInfo.value.columns) return true; // No mapping needed if no file
-
-    const mappedValues = Object.values(casesControlsBothMapping.value).filter(v => v);
-
-    return requiredSGCFields.value.every(mapping => mappedValues.includes(mapping));
-});
 
 const cooccurrenceMappingComplete = computed(() => {
     if (!cooccurrenceFileInfo.value.columns) return true; // No mapping needed if no file
@@ -1150,13 +879,6 @@ const casesControlsFemaleUploadTooltip = computed(() => {
     return `Required: ${missing.join(', ')}`;
 });
 
-const casesControlsBothUploadTooltip = computed(() => {
-    const missing = [];
-    if (!casesControlsBothMappingComplete.value) missing.push('Column Mapping');
-
-    if (missing.length === 0) return 'Upload Both Cases/Controls file';
-    return `Required: ${missing.join(', ')}`;
-});
 
 const cooccurrenceUploadTooltip = computed(() => {
     const missing = [];
@@ -1182,13 +904,6 @@ const cooccurrenceFemaleMappingComplete = computed(() => {
     return requiredCooccurrenceFields.value.every(mapping => mappedValues.includes(mapping));
 });
 
-const cooccurrenceBothMappingComplete = computed(() => {
-    if (!cooccurrenceBothFileInfo.value.columns) return true; // No mapping needed if no file
-
-    const mappedValues = Object.values(cooccurrenceBothMapping.value).filter(v => v);
-
-    return requiredCooccurrenceFields.value.every(mapping => mappedValues.includes(mapping));
-});
 
 const cooccurrenceMaleUploadTooltip = computed(() => {
     const missing = [];
@@ -1206,13 +921,6 @@ const cooccurrenceFemaleUploadTooltip = computed(() => {
     return `Required: ${missing.join(', ')}`;
 });
 
-const cooccurrenceBothUploadTooltip = computed(() => {
-    const missing = [];
-    if (!cooccurrenceBothMappingComplete.value) missing.push('Column Mapping');
-
-    if (missing.length === 0) return 'Upload Both Co-occurrence file';
-    return `Required: ${missing.join(', ')}`;
-});
 
 // Progress tracking computed properties
 const metadataCompleted = computed(() => {
@@ -1230,10 +938,8 @@ const metadataCompleted = computed(() => {
 const allFilesUploaded = computed(() => {
     return uploadStatus.value.casesControlsMale &&
            uploadStatus.value.casesControlsFemale &&
-           uploadStatus.value.casesControlsBoth &&
            uploadStatus.value.cooccurrenceMale &&
            uploadStatus.value.cooccurrenceFemale &&
-           uploadStatus.value.cooccurrenceBoth &&
            uploadStatus.value.cohortDescription;
 });
 
@@ -1245,10 +951,8 @@ const remainingFilesCount = computed(() => {
     let count = 0;
     if (!uploadStatus.value.casesControlsMale) count++;
     if (!uploadStatus.value.casesControlsFemale) count++;
-    if (!uploadStatus.value.casesControlsBoth) count++;
     if (!uploadStatus.value.cooccurrenceMale) count++;
     if (!uploadStatus.value.cooccurrenceFemale) count++;
-    if (!uploadStatus.value.cooccurrenceBoth) count++;
     if (!uploadStatus.value.cohortDescription) count++;
     return count;
 });
@@ -1258,10 +962,8 @@ const remainingTasksCount = computed(() => {
     if (!metadataCompleted.value) count++;
     if (!uploadStatus.value.casesControlsMale) count++;
     if (!uploadStatus.value.casesControlsFemale) count++;
-    if (!uploadStatus.value.casesControlsBoth) count++;
     if (!uploadStatus.value.cooccurrenceMale) count++;
     if (!uploadStatus.value.cooccurrenceFemale) count++;
-    if (!uploadStatus.value.cooccurrenceBoth) count++;
     if (!uploadStatus.value.cohortDescription) count++;
     return count;
 });
@@ -1315,14 +1017,10 @@ onMounted(async () => {
                         existingFiles.value.casesControlsMale = fileInfo;
                     } else if (row.file_type === 'cases_controls_female') {
                         existingFiles.value.casesControlsFemale = fileInfo;
-                    } else if (row.file_type === 'cases_controls_both') {
-                        existingFiles.value.casesControlsBoth = fileInfo;
                     } else if (row.file_type === 'cooccurrence_male') {
                         existingFiles.value.cooccurrenceMale = fileInfo;
                     } else if (row.file_type === 'cooccurrence_female') {
                         existingFiles.value.cooccurrenceFemale = fileInfo;
-                    } else if (row.file_type === 'cooccurrence_both') {
-                        existingFiles.value.cooccurrenceBoth = fileInfo;
                     } else if (row.file_type === 'cohort_description') {
                         existingFiles.value.cohortDescription = fileInfo;
                     }
@@ -1333,10 +1031,8 @@ onMounted(async () => {
             uploadStatus.value = {
                 casesControlsMale: uploadedFileTypes.has('cases_controls_male'),
                 casesControlsFemale: uploadedFileTypes.has('cases_controls_female'),
-                casesControlsBoth: uploadedFileTypes.has('cases_controls_both'),
                 cooccurrenceMale: uploadedFileTypes.has('cooccurrence_male'),
                 cooccurrenceFemale: uploadedFileTypes.has('cooccurrence_female'),
-                cooccurrenceBoth: uploadedFileTypes.has('cooccurrence_both'),
                 cohortDescription: uploadedFileTypes.has('cohort_description')
             };
             
@@ -1357,16 +1053,12 @@ onMounted(async () => {
                 activeAccordionIndex.value = 1; // Male Cases/Controls tab
             } else if (!uploadStatus.value.casesControlsFemale) {
                 activeAccordionIndex.value = 2; // Female Cases/Controls tab
-            } else if (!uploadStatus.value.casesControlsBoth) {
-                activeAccordionIndex.value = 3; // Both Cases/Controls tab
             } else if (!uploadStatus.value.cooccurrenceMale) {
-                activeAccordionIndex.value = 4; // Male Co-occurrence tab
+                activeAccordionIndex.value = 3; // Male Co-occurrence tab
             } else if (!uploadStatus.value.cooccurrenceFemale) {
-                activeAccordionIndex.value = 5; // Female Co-occurrence tab
-            } else if (!uploadStatus.value.cooccurrenceBoth) {
-                activeAccordionIndex.value = 6; // Both Co-occurrence tab
+                activeAccordionIndex.value = 4; // Female Co-occurrence tab
             } else if (!uploadStatus.value.cohortDescription) {
-                activeAccordionIndex.value = 7; // Cohort Description tab
+                activeAccordionIndex.value = 5; // Cohort Description tab
             }
 
             // If this is an existing cohort with data, show file upload immediately
@@ -1443,14 +1135,10 @@ function handleMetadataUpdated(response) {
 async function handleCasesControlsFile(e, gender) {
     store.showNotification = false;
 
-    const fileRef = gender === 'male' ? casesControlsMaleFile :
-                   gender === 'female' ? casesControlsFemaleFile : casesControlsBothFile;
-    const fileNameRef = gender === 'male' ? casesControlsMaleFileName :
-                       gender === 'female' ? casesControlsFemaleFileName : casesControlsBothFileName;
-    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo :
-                       gender === 'female' ? casesControlsFemaleFileInfo : casesControlsBothFileInfo;
-    const mappingRef = gender === 'male' ? casesControlsMaleMapping :
-                      gender === 'female' ? casesControlsFemaleMapping : casesControlsBothMapping;
+    const fileRef = gender === 'male' ? casesControlsMaleFile : casesControlsFemaleFile;
+    const fileNameRef = gender === 'male' ? casesControlsMaleFileName : casesControlsFemaleFileName;
+    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo : casesControlsFemaleFileInfo;
+    const mappingRef = gender === 'male' ? casesControlsMaleMapping : casesControlsFemaleMapping;
 
     fileRef.value = e.files[0];
     fileNameRef.value = e.files[0]?.name || '';
@@ -1487,15 +1175,11 @@ async function handleCasesControlsFile(e, gender) {
 
 
 async function handleCooccurrenceFile(e, gender = 'male') {
-    const genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Both';
-    const fileRef = gender === 'male' ? cooccurrenceMaleFile :
-                   gender === 'female' ? cooccurrenceFemaleFile : cooccurrenceBothFile;
-    const fileNameRef = gender === 'male' ? cooccurrenceMaleFileName :
-                       gender === 'female' ? cooccurrenceFemaleFileName : cooccurrenceBothFileName;
-    const fileInfoRef = gender === 'male' ? cooccurrenceMaleFileInfo :
-                       gender === 'female' ? cooccurrenceFemaleFileInfo : cooccurrenceBothFileInfo;
-    const mappingRef = gender === 'male' ? cooccurrenceMaleMapping :
-                      gender === 'female' ? cooccurrenceFemaleMapping : cooccurrenceBothMapping;
+    const genderLabel = gender === 'male' ? 'Male' : 'Female';
+    const fileRef = gender === 'male' ? cooccurrenceMaleFile : cooccurrenceFemaleFile;
+    const fileNameRef = gender === 'male' ? cooccurrenceMaleFileName : cooccurrenceFemaleFileName;
+    const fileInfoRef = gender === 'male' ? cooccurrenceMaleFileInfo : cooccurrenceFemaleFileInfo;
+    const mappingRef = gender === 'male' ? cooccurrenceMaleMapping : cooccurrenceFemaleMapping;
 
     store.showNotification = false;
     fileRef.value = e.files[0];
@@ -1537,22 +1221,15 @@ function handleCohortDescriptionFile(e) {
 
 // Generic upload method for cases/controls files
 async function uploadCasesControlsFile(gender) {
-    const genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Both';
-    const mappingCompleteRef = gender === 'male' ? casesControlsMaleMappingComplete :
-                              gender === 'female' ? casesControlsFemaleMappingComplete : casesControlsBothMappingComplete;
-    const fileRef = gender === 'male' ? casesControlsMaleFile :
-                   gender === 'female' ? casesControlsFemaleFile : casesControlsBothFile;
-    const fileNameRef = gender === 'male' ? casesControlsMaleFileName :
-                       gender === 'female' ? casesControlsFemaleFileName : casesControlsBothFileName;
-    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo :
-                       gender === 'female' ? casesControlsFemaleFileInfo : casesControlsBothFileInfo;
-    const mappingRef = gender === 'male' ? casesControlsMaleMapping :
-                      gender === 'female' ? casesControlsFemaleMapping : casesControlsBothMapping;
+    const genderLabel = gender === 'male' ? 'Male' : 'Female';
+    const mappingCompleteRef = gender === 'male' ? casesControlsMaleMappingComplete : casesControlsFemaleMappingComplete;
+    const fileRef = gender === 'male' ? casesControlsMaleFile : casesControlsFemaleFile;
+    const fileNameRef = gender === 'male' ? casesControlsMaleFileName : casesControlsFemaleFileName;
+    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo : casesControlsFemaleFileInfo;
+    const mappingRef = gender === 'male' ? casesControlsMaleMapping : casesControlsFemaleMapping;
     const flippedMapping = createFlippedMapping(mappingRef);
-    const statusKey = gender === 'male' ? 'casesControlsMale' :
-                     gender === 'female' ? 'casesControlsFemale' : 'casesControlsBoth';
-    const existingFilesKey = gender === 'male' ? 'casesControlsMale' :
-                            gender === 'female' ? 'casesControlsFemale' : 'casesControlsBoth';
+    const statusKey = gender === 'male' ? 'casesControlsMale' : 'casesControlsFemale';
+    const existingFilesKey = gender === 'male' ? 'casesControlsMale' : 'casesControlsFemale';
 
     if (!mappingCompleteRef.value) {
         toast.add({
@@ -1576,6 +1253,9 @@ async function uploadCasesControlsFile(gender) {
 
         // Mark as uploaded and update UI
         uploadStatus.value[statusKey] = true;
+        
+        // Reset validation status since derived 'both' files need to be regenerated
+        validationPassed.value = false;
 
         // Store file information for delete functionality
         existingFiles.value[existingFilesKey] = {
@@ -1590,12 +1270,26 @@ async function uploadCasesControlsFile(gender) {
         fileInfoRef.value = {};
         mappingRef.value = {};
 
-        toast.add({
-            severity: 'success',
-            summary: 'Upload Successful',
-            detail: `${genderLabel} Cases/Controls file uploaded and processed successfully`,
-            life: 3000
-        });
+        // Check for warnings and display them
+        if (result.warnings && result.warnings.length > 0) {
+            // Display warning toast message
+            const warningText = result.warnings.join(', ');
+            toast.add({
+                severity: 'warn',
+                summary: 'Upload Complete with Warnings',
+                detail: `${genderLabel} Cases/Controls file uploaded successfully, but with warnings: ${warningText}`,
+                life: 30000,
+                group: 'default'
+            });
+        } else {
+            // Display standard success message
+            toast.add({
+                severity: 'success',
+                summary: 'Upload Successful',
+                detail: `${genderLabel} Cases/Controls file uploaded and processed successfully`,
+                life: 3000
+            });
+        }
 
         // Close current accordion and open next
         openNextAccordion();
@@ -1645,21 +1339,14 @@ async function uploadCasesControlsFile(gender) {
 
 
 async function uploadCooccurrenceFile(gender = 'male') {
-    const genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Both';
-    const mappingCompleteRef = gender === 'male' ? cooccurrenceMaleMappingComplete :
-                              gender === 'female' ? cooccurrenceFemaleMappingComplete : cooccurrenceBothMappingComplete;
-    const fileRef = gender === 'male' ? cooccurrenceMaleFile :
-                   gender === 'female' ? cooccurrenceFemaleFile : cooccurrenceBothFile;
-    const fileNameRef = gender === 'male' ? cooccurrenceMaleFileName :
-                       gender === 'female' ? cooccurrenceFemaleFileName : cooccurrenceBothFileName;
-    const fileInfoRef = gender === 'male' ? cooccurrenceMaleFileInfo :
-                       gender === 'female' ? cooccurrenceFemaleFileInfo : cooccurrenceBothFileInfo;
-    const mappingRef = gender === 'male' ? cooccurrenceMaleMapping :
-                      gender === 'female' ? cooccurrenceFemaleMapping : cooccurrenceBothMapping;
-    const statusKey = gender === 'male' ? 'cooccurrenceMale' :
-                     gender === 'female' ? 'cooccurrenceFemale' : 'cooccurrenceBoth';
-    const existingFilesKey = gender === 'male' ? 'cooccurrenceMale' :
-                            gender === 'female' ? 'cooccurrenceFemale' : 'cooccurrenceBoth';
+    const genderLabel = gender === 'male' ? 'Male' : 'Female';
+    const mappingCompleteRef = gender === 'male' ? cooccurrenceMaleMappingComplete : cooccurrenceFemaleMappingComplete;
+    const fileRef = gender === 'male' ? cooccurrenceMaleFile : cooccurrenceFemaleFile;
+    const fileNameRef = gender === 'male' ? cooccurrenceMaleFileName : cooccurrenceFemaleFileName;
+    const fileInfoRef = gender === 'male' ? cooccurrenceMaleFileInfo : cooccurrenceFemaleFileInfo;
+    const mappingRef = gender === 'male' ? cooccurrenceMaleMapping : cooccurrenceFemaleMapping;
+    const statusKey = gender === 'male' ? 'cooccurrenceMale' : 'cooccurrenceFemale';
+    const existingFilesKey = gender === 'male' ? 'cooccurrenceMale' : 'cooccurrenceFemale';
 
     if (!mappingCompleteRef.value) {
         toast.add({
@@ -1683,6 +1370,9 @@ async function uploadCooccurrenceFile(gender = 'male') {
 
         // Mark as uploaded and update UI
         uploadStatus.value[statusKey] = true;
+        
+        // Reset validation status since derived 'both' files need to be regenerated
+        validationPassed.value = false;
 
         // Store file information for delete functionality
         existingFiles.value[existingFilesKey] = {
@@ -1697,12 +1387,26 @@ async function uploadCooccurrenceFile(gender = 'male') {
         fileInfoRef.value = {};
         mappingRef.value = {};
 
-        toast.add({
-            severity: 'success',
-            summary: 'Upload Successful',
-            detail: `${genderLabel} Co-occurrence file uploaded and processed successfully`,
-            life: 3000
-        });
+        // Check for warnings and display them
+        if (result.warnings && result.warnings.length > 0) {
+            // Display warning toast message
+            const warningText = result.warnings.join(', ');
+            toast.add({
+                severity: 'warn',
+                summary: 'Upload Complete with Warnings',
+                detail: `${genderLabel} Co-occurrence file uploaded successfully, but with warnings: ${warningText}`,
+                life: 30000,
+                group: 'default'
+            });
+        } else {
+            // Display standard success message
+            toast.add({
+                severity: 'success',
+                summary: 'Upload Successful',
+                detail: `${genderLabel} Co-occurrence file uploaded and processed successfully`,
+                life: 3000
+            });
+        }
 
         // Close current accordion and open next
         openNextAccordion();
@@ -1824,16 +1528,11 @@ async function uploadCohortDescriptionFile() {
 
 // Generic reset function for cases/controls files
 function resetCasesControlsFile(gender) {
-    const fileRef = gender === 'male' ? casesControlsMaleFile :
-                   gender === 'female' ? casesControlsFemaleFile : casesControlsBothFile;
-    const fileNameRef = gender === 'male' ? casesControlsMaleFileName :
-                       gender === 'female' ? casesControlsFemaleFileName : casesControlsBothFileName;
-    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo :
-                       gender === 'female' ? casesControlsFemaleFileInfo : casesControlsBothFileInfo;
-    const mappingRef = gender === 'male' ? casesControlsMaleMapping :
-                      gender === 'female' ? casesControlsFemaleMapping : casesControlsBothMapping;
-    const statusKey = gender === 'male' ? 'casesControlsMale' :
-                     gender === 'female' ? 'casesControlsFemale' : 'casesControlsBoth';
+    const fileRef = gender === 'male' ? casesControlsMaleFile : casesControlsFemaleFile;
+    const fileNameRef = gender === 'male' ? casesControlsMaleFileName : casesControlsFemaleFileName;
+    const fileInfoRef = gender === 'male' ? casesControlsMaleFileInfo : casesControlsFemaleFileInfo;
+    const mappingRef = gender === 'male' ? casesControlsMaleMapping : casesControlsFemaleMapping;
+    const statusKey = gender === 'male' ? 'casesControlsMale' : 'casesControlsFemale';
 
     fileRef.value = null;
     fileNameRef.value = '';
@@ -1844,16 +1543,11 @@ function resetCasesControlsFile(gender) {
 
 
 function resetCooccurrenceFile(gender = 'male') {
-    const fileRef = gender === 'male' ? cooccurrenceMaleFile :
-                   gender === 'female' ? cooccurrenceFemaleFile : cooccurrenceBothFile;
-    const fileNameRef = gender === 'male' ? cooccurrenceMaleFileName :
-                       gender === 'female' ? cooccurrenceFemaleFileName : cooccurrenceBothFileName;
-    const fileInfoRef = gender === 'male' ? cooccurrenceMaleFileInfo :
-                       gender === 'female' ? cooccurrenceFemaleFileInfo : cooccurrenceBothFileInfo;
-    const mappingRef = gender === 'male' ? cooccurrenceMaleMapping :
-                      gender === 'female' ? cooccurrenceFemaleMapping : cooccurrenceBothMapping;
-    const statusKey = gender === 'male' ? 'cooccurrenceMale' :
-                     gender === 'female' ? 'cooccurrenceFemale' : 'cooccurrenceBoth';
+    const fileRef = gender === 'male' ? cooccurrenceMaleFile : cooccurrenceFemaleFile;
+    const fileNameRef = gender === 'male' ? cooccurrenceMaleFileName : cooccurrenceFemaleFileName;
+    const fileInfoRef = gender === 'male' ? cooccurrenceMaleFileInfo : cooccurrenceFemaleFileInfo;
+    const mappingRef = gender === 'male' ? cooccurrenceMaleMapping : cooccurrenceFemaleMapping;
+    const statusKey = gender === 'male' ? 'cooccurrenceMale' : 'cooccurrenceFemale';
 
     fileRef.value = null;
     fileNameRef.value = '';
@@ -1870,11 +1564,9 @@ function resetCohortDescriptionFile() {
 
 // Generic delete function for cases/controls files
 async function deleteCasesControlsFile(gender) {
-    const genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Both';
-    const statusKey = gender === 'male' ? 'casesControlsMale' :
-                     gender === 'female' ? 'casesControlsFemale' : 'casesControlsBoth';
-    const existingFilesKey = gender === 'male' ? 'casesControlsMale' :
-                            gender === 'female' ? 'casesControlsFemale' : 'casesControlsBoth';
+    const genderLabel = gender === 'male' ? 'Male' : 'Female';
+    const statusKey = gender === 'male' ? 'casesControlsMale' : 'casesControlsFemale';
+    const existingFilesKey = gender === 'male' ? 'casesControlsMale' : 'casesControlsFemale';
 
     if (!existingFiles.value[existingFilesKey]?.id) return;
 
@@ -1884,6 +1576,9 @@ async function deleteCasesControlsFile(gender) {
         // Update UI state
         uploadStatus.value[statusKey] = false;
         existingFiles.value[existingFilesKey] = null;
+        
+        // Reset validation status since derived 'both' files need to be regenerated
+        validationPassed.value = false;
 
         toast.add({
             severity: 'success',
@@ -1905,11 +1600,9 @@ async function deleteCasesControlsFile(gender) {
 
 
 async function deleteCooccurrenceFile(gender = 'male') {
-    const genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Both';
-    const statusKey = gender === 'male' ? 'cooccurrenceMale' :
-                     gender === 'female' ? 'cooccurrenceFemale' : 'cooccurrenceBoth';
-    const existingFilesKey = gender === 'male' ? 'cooccurrenceMale' :
-                            gender === 'female' ? 'cooccurrenceFemale' : 'cooccurrenceBoth';
+    const genderLabel = gender === 'male' ? 'Male' : 'Female';
+    const statusKey = gender === 'male' ? 'cooccurrenceMale' : 'cooccurrenceFemale';
+    const existingFilesKey = gender === 'male' ? 'cooccurrenceMale' : 'cooccurrenceFemale';
 
     if (!existingFiles.value[existingFilesKey]?.id) return;
 
@@ -1919,6 +1612,9 @@ async function deleteCooccurrenceFile(gender = 'male') {
         // Update UI state
         uploadStatus.value[statusKey] = false;
         existingFiles.value[existingFilesKey] = null;
+        
+        // Reset validation status since derived 'both' files need to be regenerated
+        validationPassed.value = false;
 
         toast.add({
             severity: 'success',
@@ -1980,16 +1676,12 @@ function openNextAccordion() {
             activeAccordionIndex.value = 1; // Male Cases/Controls tab
         } else if (!uploadStatus.value.casesControlsFemale) {
             activeAccordionIndex.value = 2; // Female Cases/Controls tab
-        } else if (!uploadStatus.value.casesControlsBoth) {
-            activeAccordionIndex.value = 3; // Both Cases/Controls tab
         } else if (!uploadStatus.value.cooccurrenceMale) {
-            activeAccordionIndex.value = 4; // Male Co-occurrence tab
+            activeAccordionIndex.value = 3; // Male Co-occurrence tab
         } else if (!uploadStatus.value.cooccurrenceFemale) {
-            activeAccordionIndex.value = 5; // Female Co-occurrence tab
-        } else if (!uploadStatus.value.cooccurrenceBoth) {
-            activeAccordionIndex.value = 6; // Both Co-occurrence tab
+            activeAccordionIndex.value = 4; // Female Co-occurrence tab
         } else if (!uploadStatus.value.cohortDescription) {
-            activeAccordionIndex.value = 7; // Cohort Description tab
+            activeAccordionIndex.value = 5; // Cohort Description tab
         }
         // If all tasks completed, leave all accordions closed
         else if (allTasksCompleted.value) {

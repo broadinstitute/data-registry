@@ -107,17 +107,16 @@
                     :disabled="disabled"
                 />
             </div>
-        </div>
-        
-        <div class="field">
-            <label for="dataRestrictions">Are there any restrictions on this data being made publicly available either before or after publication. If yes please describe</label>
-            <Textarea
-                v-model="formData.data_restrictions"
-                id="dataRestrictions"
-                rows="2"
-                v-tooltip="{value: 'Describe any restrictions on public data availability, or enter None if no restrictions', position: 'top'}"
-                :disabled="disabled"
-            />
+            <div class="field col-12 md:col-6">
+                <label for="dataRestrictions">Are there any restrictions on this data being made publicly available either before or after publication. If yes please describe</label>
+                <Textarea
+                    v-model="formData.data_restrictions"
+                    id="dataRestrictions"
+                    rows="2"
+                    v-tooltip="{value: 'Describe any restrictions on public data availability, or enter None if no restrictions', position: 'top'}"
+                    :disabled="disabled"
+                />
+            </div>
         </div>
         
         <div class="flex flex-column align-items-center mt-4" v-if="showSaveButton">

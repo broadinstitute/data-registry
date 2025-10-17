@@ -519,6 +519,11 @@ export const useDatasetStore = defineStore("DatasetStore", {
         async deleteSGCPhenotype(phenotypeCode) {
             await sgcAxios.delete(`/api/sgc/phenotypes/${phenotypeCode}`);
         },
+
+        async fetchSGCPhenotypeCaseTotals() {
+            const { data } = await sgcAxios.get('/api/sgc/phenotype-case-totals');
+            return data;
+        },
         
         // SGC Cohort API methods
         async upsertSGCCohort(cohortData) {

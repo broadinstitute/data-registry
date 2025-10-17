@@ -120,32 +120,36 @@ const columns = ref([
     header: "Sample Size",
     field: "total_sample_size", 
     sortable: true,
+    style: { width: "8rem" },
     format: data => data.total_sample_size?.toLocaleString() || '-'
   },
   {
-    header: "Males",
-    field: "number_of_males",
-    sortable: true,
-    format: data => data.number_of_males?.toLocaleString() || '-'
-  },
-  {
-    header: "Females", 
-    field: "number_of_females",
-    sortable: true,
-    format: data => data.number_of_females?.toLocaleString() || '-'
+    header: "M/F",
+    field: "demographics",
+    sortable: false,
+    style: { width: "7rem" },
+    format: data => {
+      const males = data.number_of_males?.toLocaleString() || '0';
+      const females = data.number_of_females?.toLocaleString() || '0';
+      return `${males}/${females}`;
+    }
   },
   {
     header: "Files",
     field: "files",
     format: data => {
-      if (!data.files || data.files.length === 0) return "0/7";
-      return `${data.files.length}/7`;
+      if (!data.files || data.files.length === 0) return "0/5";
+      // Count only user-uploaded files (exclude derived 'both' files)
+      const userUploadedFiles = data.files.filter(f => 
+        f.file_type !== 'cases_controls_both' && f.file_type !== 'cooccurrence_both'
+      );
+      return `${userUploadedFiles.length}/5`;
     },
     component: (data) => {
       if (!data.files || data.files.length === 0) {
         return h(Tag, {
           severity: "danger",
-          value: "0/7",
+          value: "0/5",
           rounded: true
         });
       } else {
@@ -158,12 +162,17 @@ const columns = ref([
           }
         }));
 
+        // Count only user-uploaded files (exclude derived 'both' files)
+        const userUploadedFiles = data.files.filter(f => 
+          f.file_type !== 'cases_controls_both' && f.file_type !== 'cooccurrence_both'
+        );
+        
         return h("div", { class: "flex align-items-center gap-2" }, [
           h(Tag, {
-            severity: data.files.length === 7 ? "success" : "warning",
-            value: `${data.files.length}/7`,
+            severity: userUploadedFiles.length === 5 ? "success" : "warning",
+            value: `${userUploadedFiles.length}/5`,
             rounded: true,
-            icon: data.files.length === 7 ? "bi-check" : undefined
+            icon: userUploadedFiles.length === 5 ? "bi-check" : undefined
           }),
           h("div", { class: "relative" }, [
             h(Menu, {
@@ -188,9 +197,10 @@ const columns = ref([
     sortable: true
   },
   {
-    header: "Date Created",
+    header: "Created",
     field: "created_at",
-    format: data => data.created_at ? new Date(data.created_at).toLocaleDateString() : '-',
+    style: { width: "7rem" },
+    format: data => data.created_at ? new Date(data.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-',
     sortable: true
   },
   {
@@ -198,6 +208,7 @@ const columns = ref([
     field: "uploaded_by",
     filterType: "text",
     placeholder: "Search uploader",
+    style: { width: "8rem" },
     sortable: true
   },
   {
@@ -222,11 +233,11 @@ const columns = ref([
     }
   },
   {
-    header: "",
+    header: "Actions",
     field: "actions", 
-    style: { width: "8rem" },
+    style: { width: "6rem", textAlign: "center" },
     component: (data) =>
-        h("div", { class: "flex gap-2" }, [
+        h("div", { class: "flex gap-1 justify-content-center" }, [
           h(
               NuxtLink,
               { to: `/sgc/edit/${data.id}` },
@@ -243,6 +254,7 @@ const columns = ref([
             severity: "danger",
             outlined: true,
             size: "small",
+            title: "Delete cohort",
             onClick: () => confirmDelete(data)
           })
         ])
@@ -296,8 +308,7 @@ const filters = ref(
                               :field="col.field"
                               :showFilterMenu="false"
                               :sortable="col.sortable"
-                              :style="col.style"
-                              style="min-width: 12rem">
+                              :style="col.style">
 
                         <template #body="{ data }">
                           <template v-if="col.component">
