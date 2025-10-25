@@ -930,9 +930,11 @@ const metadataCompleted = computed(() => {
            cohortData.value?.number_of_females >= 0 &&
            cohortData.value?.phenotype_coding_system?.trim() &&
            cohortData.value?.phenotype_mapping_issues?.trim() &&
-           cohortData.value?.industry_involvement?.trim() &&
-           cohortData.value?.industry_authorship !== null &&
-           cohortData.value?.data_restrictions?.trim();
+           cohortData.value?.cohort_approval_requirements?.trim() &&
+           cohortData.value?.summary_stats_restrictions?.trim() &&
+           cohortData.value?.summary_stats_publication_availability !== null &&
+           cohortData.value?.summary_stats_consortium_availability !== null &&
+           cohortData.value?.other_notes?.trim();
 });
 
 const allFilesUploaded = computed(() => {
@@ -988,15 +990,19 @@ onMounted(async () => {
                 ...(cohortInfo.cohort_metadata ? {
                     phenotype_coding_system: cohortInfo.cohort_metadata.phenotype_coding_system || '',
                     phenotype_mapping_issues: cohortInfo.cohort_metadata.phenotype_mapping_issues || '',
-                    industry_involvement: cohortInfo.cohort_metadata.industry_involvement || '',
-                    industry_authorship: cohortInfo.cohort_metadata.industry_authorship,
-                    data_restrictions: cohortInfo.cohort_metadata.data_restrictions || ''
+                    cohort_approval_requirements: cohortInfo.cohort_metadata.cohort_approval_requirements || '',
+                    summary_stats_restrictions: cohortInfo.cohort_metadata.summary_stats_restrictions || '',
+                    summary_stats_publication_availability: cohortInfo.cohort_metadata.summary_stats_publication_availability || null,
+                    summary_stats_consortium_availability: cohortInfo.cohort_metadata.summary_stats_consortium_availability || null,
+                    other_notes: cohortInfo.cohort_metadata.other_notes || ''
                 } : {
                     phenotype_coding_system: '',
                     phenotype_mapping_issues: '',
-                    industry_involvement: '',
-                    industry_authorship: null,
-                    data_restrictions: ''
+                    cohort_approval_requirements: '',
+                    summary_stats_restrictions: '',
+                    summary_stats_publication_availability: null,
+                    summary_stats_consortium_availability: null,
+                    other_notes: ''
                 })
             };
             
@@ -1107,15 +1113,19 @@ function handleMetadataUpdated(response) {
         ...(cohortInfo.cohort_metadata ? {
             phenotype_coding_system: cohortInfo.cohort_metadata.phenotype_coding_system || '',
             phenotype_mapping_issues: cohortInfo.cohort_metadata.phenotype_mapping_issues || '',
-            industry_involvement: cohortInfo.cohort_metadata.industry_involvement || '',
-            industry_authorship: cohortInfo.cohort_metadata.industry_authorship,
-            data_restrictions: cohortInfo.cohort_metadata.data_restrictions || ''
+            cohort_approval_requirements: cohortInfo.cohort_metadata.cohort_approval_requirements || '',
+            summary_stats_restrictions: cohortInfo.cohort_metadata.summary_stats_restrictions || '',
+            summary_stats_publication_availability: cohortInfo.cohort_metadata.summary_stats_publication_availability || null,
+            summary_stats_consortium_availability: cohortInfo.cohort_metadata.summary_stats_consortium_availability || null,
+            other_notes: cohortInfo.cohort_metadata.other_notes || ''
         } : {
             phenotype_coding_system: cohortData.value.phenotype_coding_system || '',
             phenotype_mapping_issues: cohortData.value.phenotype_mapping_issues || '',
-            industry_involvement: cohortData.value.industry_involvement || '',
-            industry_authorship: cohortData.value.industry_authorship,
-            data_restrictions: cohortData.value.data_restrictions || ''
+            cohort_approval_requirements: cohortData.value.cohort_approval_requirements || '',
+            summary_stats_restrictions: cohortData.value.summary_stats_restrictions || '',
+            summary_stats_publication_availability: cohortData.value.summary_stats_publication_availability || null,
+            summary_stats_consortium_availability: cohortData.value.summary_stats_consortium_availability || null,
+            other_notes: cohortData.value.other_notes || ''
         })
     };
     
@@ -1316,24 +1326,25 @@ async function uploadCasesControlsFile(gender) {
 
             // Check if this is a phenotype-related error
             isPhenotypeError = errorMessage.toLowerCase().includes('phenotype') &&
-                             (errorMessage.includes('not found') ||
-                              errorMessage.includes('invalid') ||
+                             (errorMessage.includes('invalid') ||
+                              errorMessage.includes('not found') ||
                               errorMessage.includes('does not exist'));
         } else if (error.message) {
             errorMessage = error.message;
         }
 
-        // Add phenotype link if it's a phenotype error
+        // Show error in dialog for phenotype errors, otherwise use toast
         if (isPhenotypeError) {
-            errorMessage += '\n\nView valid phenotypes: /phenotypes';
+            store.errorMessage = errorMessage;
+            store.showNotification = true;
+        } else {
+            toast.add({
+                severity: 'error',
+                summary: 'Upload Error',
+                detail: errorMessage,
+                life: 8000
+            });
         }
-
-        toast.add({
-            severity: 'error',
-            summary: 'Upload Error',
-            detail: errorMessage,
-            life: isPhenotypeError ? 10000 : 8000 // Even longer for phenotype errors
-        });
     }
 }
 
@@ -1433,24 +1444,25 @@ async function uploadCooccurrenceFile(gender = 'male') {
             
             // Check if this is a phenotype-related error
             isPhenotypeError = errorMessage.toLowerCase().includes('phenotype') && 
-                             (errorMessage.includes('not found') || 
-                              errorMessage.includes('invalid') || 
+                             (errorMessage.includes('invalid') || 
+                              errorMessage.includes('not found') || 
                               errorMessage.includes('does not exist'));
         } else if (error.message) {
             errorMessage = error.message;
         }
         
-        // Add phenotype link if it's a phenotype error
+        // Show error in dialog for phenotype errors, otherwise use toast
         if (isPhenotypeError) {
-            errorMessage += '\n\nView valid phenotypes: /phenotypes';
+            store.errorMessage = errorMessage;
+            store.showNotification = true;
+        } else {
+            toast.add({
+                severity: 'error',
+                summary: 'Upload Error',
+                detail: errorMessage,
+                life: 8000
+            });
         }
-        
-        toast.add({
-            severity: 'error',
-            summary: 'Upload Error', 
-            detail: errorMessage,
-            life: 10000 // Even longer display time for validation errors with links
-        });
     }
 }
 

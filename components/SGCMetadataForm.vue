@@ -47,8 +47,8 @@
         </div>
         
         <div class="formgrid grid">
-            <div class="field col-12 md:col-6">
-                <label for="phenotypeCodingSystem">Phenotype coding system used by cohort</label>
+            <div class="field col-12">
+                <label for="phenotypeCodingSystem">Phenotype coding system(s) used to generate uploaded data</label>
                 <InputText
                     v-model="formData.phenotype_coding_system"
                     id="phenotypeCodingSystem"
@@ -57,20 +57,10 @@
                     :disabled="disabled"
                 />
             </div>
-            <div class="field col-12 md:col-6">
-                <label for="industryInvolvement">Is there any industry involvement in your data generation/project. If yes, please describe</label>
-                <Textarea
-                    v-model="formData.industry_involvement"
-                    id="industryInvolvement"
-                    rows="2"
-                    v-tooltip="{value: 'Describe any industry partnerships or involvement, or enter None if no industry involvement', position: 'top'}"
-                    :disabled="disabled"
-                />
-            </div>
         </div>
         
         <div class="formgrid grid">
-            <div class="field col-12 md:col-6">
+            <div class="field col-12">
                 <label for="phenotypeMappingIssues">Were there any issues during phenotype mapping. If yes please explain</label>
                 <Textarea
                     v-model="formData.phenotype_mapping_issues"
@@ -80,44 +70,110 @@
                     :disabled="disabled"
                 />
             </div>
-            <div class="field col-12 md:col-6">
-                <label for="industryAuthorship">Will industry partners be authors on any resulting publication</label>
-                <Dropdown 
-                    v-model="formData.industry_authorship" 
-                    id="industryAuthorship" 
-                    :options="yesNoOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select Yes or No"
+        </div>
+        
+        <Divider />
+        <h6 class="mb-3">Data Sharing and Publication</h6>
+        
+        <div class="formgrid grid">
+            <div class="field col-12">
+                <label for="cohortApprovalRequirements">Case numbers for each cohort will be shared with consortium members prior to publication and included in publication. Please detail any cohort approval requirements for this data to be included in publication</label>
+                <Textarea
+                    v-model="formData.cohort_approval_requirements"
+                    id="cohortApprovalRequirements"
+                    rows="3"
                     :disabled="disabled"
                 />
             </div>
         </div>
         
         <div class="formgrid grid">
-            <div class="field col-12 md:col-6">
-                <label for="consortiumDataSharing">Can we make this data available to other consortium members before publication</label>
-                <Dropdown 
-                    v-model="formData.consortium_data_sharing" 
-                    id="consortiumDataSharing" 
-                    :options="yesNoOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select Yes or No"
-                    :disabled="disabled"
-                />
-            </div>
-            <div class="field col-12 md:col-6">
-                <label for="dataRestrictions">Are there any restrictions on this data being made publicly available either before or after publication. If yes please describe</label>
+            <div class="field col-12">
+                <label for="summaryStatsRestrictions">Thinking ahead to the GWAS phase, please describe any restrictions on sharing of cohort-level summary statistics that you foresee. Aggregated meta-analysis summary statistics will necessarily be made available on publication. This question refers to your cohort-level summary statistics, which we have the possibility to also make available through the portal</label>
                 <Textarea
-                    v-model="formData.data_restrictions"
-                    id="dataRestrictions"
-                    rows="2"
-                    v-tooltip="{value: 'Describe any restrictions on public data availability, or enter None if no restrictions', position: 'top'}"
+                    v-model="formData.summary_stats_restrictions"
+                    id="summaryStatsRestrictions"
+                    rows="3"
                     :disabled="disabled"
                 />
             </div>
         </div>
+        
+        <div class="formgrid grid">
+            <div class="field col-12">
+                <label for="summaryStatsPublicationAvailability">Cohort-level summary stats can be made available on publication</label>
+                <Dropdown 
+                    v-model="formData.summary_stats_publication_availability" 
+                    id="summaryStatsPublicationAvailability" 
+                    :options="yesNoMaybeOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select"
+                    :disabled="disabled"
+                />
+            </div>
+        </div>
+        
+        <div class="formgrid grid">
+            <div class="field col-12">
+                <label for="summaryStatsConsortiumAvailability">Cohort-level summary stats can be made available to consortium members (other than the central analysis team) prior to publication</label>
+                <Dropdown 
+                    v-model="formData.summary_stats_consortium_availability" 
+                    id="summaryStatsConsortiumAvailability" 
+                    :options="yesNoMaybeOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select"
+                    :disabled="disabled"
+                />
+            </div>
+        </div>
+        
+        <div class="formgrid grid">
+            <div class="field col-12">
+                <label for="otherNotes">Other issues or notes</label>
+                <Textarea
+                    v-model="formData.other_notes"
+                    id="otherNotes"
+                    rows="3"
+                    placeholder="Any additional information or concerns"
+                    :disabled="disabled"
+                />
+            </div>
+        </div>
+        
+        <!-- Warning Dialog for Demographic Mismatch -->
+        <Dialog
+            v-model:visible="showWarningDialog"
+            modal
+            header="Warning"
+            :style="{ width: '600px' }"
+            :closable="true"
+            @hide="showWarningDialog = false"
+        >
+            <div class="flex align-items-start">
+                <i class="pi pi-exclamation-triangle text-yellow-500 mr-3 mt-1" style="font-size: 2rem"></i>
+                <div class="flex-1">
+                    <p class="text-lg mb-3">{{ warningMessage }}</p>
+                </div>
+            </div>
+            
+            <template #footer>
+                <Button 
+                    label="Cancel" 
+                    icon="pi pi-times" 
+                    class="p-button-text" 
+                    @click="showWarningDialog = false"
+                />
+                <Button 
+                    label="Proceed Anyway" 
+                    icon="pi pi-check"
+                    severity="warning"
+                    @click="proceedWithSave"
+                    :loading="saving"
+                />
+            </template>
+        </Dialog>
         
         <div class="flex flex-column align-items-center mt-4" v-if="showSaveButton">
             <div v-if="!metadataSaved">
@@ -163,10 +219,11 @@ const props = defineProps({
             number_of_females: null,
             phenotype_coding_system: '',
             phenotype_mapping_issues: '',
-            industry_involvement: '',
-            industry_authorship: null,
-            consortium_data_sharing: null,
-            data_restrictions: ''
+            cohort_approval_requirements: '',
+            summary_stats_restrictions: '',
+            summary_stats_publication_availability: null,
+            summary_stats_consortium_availability: null,
+            other_notes: ''
         })
     },
     disabled: {
@@ -208,11 +265,20 @@ const yesNoOptions = [
     { label: 'No', value: false }
 ];
 
+// Yes/No/Maybe options for dropdowns
+const yesNoMaybeOptions = [
+    { label: 'Yes', value: 'yes' },
+    { label: 'No', value: 'no' },
+    { label: 'Maybe', value: 'maybe' }
+];
+
 // Reactive data
 const formData = ref({ ...props.initialData });
 const saving = ref(false);
 const metadataSaved = ref(false);
 const originalData = ref({ ...props.initialData });
+const showWarningDialog = ref(false);
+const warningMessage = ref('');
 
 // Watch for prop changes
 watch(() => props.initialData, (newData, oldData) => {
@@ -246,10 +312,11 @@ const hasChanges = computed(() => {
            formData.value.number_of_females !== originalData.value.number_of_females ||
            formData.value.phenotype_coding_system?.trim() !== originalData.value.phenotype_coding_system?.trim() ||
            formData.value.phenotype_mapping_issues?.trim() !== originalData.value.phenotype_mapping_issues?.trim() ||
-           formData.value.industry_involvement?.trim() !== originalData.value.industry_involvement?.trim() ||
-           formData.value.industry_authorship !== originalData.value.industry_authorship ||
-           formData.value.consortium_data_sharing !== originalData.value.consortium_data_sharing ||
-           formData.value.data_restrictions?.trim() !== originalData.value.data_restrictions?.trim();
+           formData.value.cohort_approval_requirements?.trim() !== originalData.value.cohort_approval_requirements?.trim() ||
+           formData.value.summary_stats_restrictions?.trim() !== originalData.value.summary_stats_restrictions?.trim() ||
+           formData.value.summary_stats_publication_availability !== originalData.value.summary_stats_publication_availability ||
+           formData.value.summary_stats_consortium_availability !== originalData.value.summary_stats_consortium_availability ||
+           formData.value.other_notes?.trim() !== originalData.value.other_notes?.trim();
 });
 
 const canSave = computed(() => {
@@ -258,13 +325,14 @@ const canSave = computed(() => {
            formData.value.total_sample_size !== null && formData.value.total_sample_size > 0 &&
            formData.value.number_of_males !== null && formData.value.number_of_males >= 0 &&
            formData.value.number_of_females !== null && formData.value.number_of_females >= 0 &&
-           (formData.value.number_of_males + formData.value.number_of_females === formData.value.total_sample_size) &&
+           (formData.value.number_of_males + formData.value.number_of_females <= formData.value.total_sample_size) &&
            formData.value.phenotype_coding_system?.trim() &&
            formData.value.phenotype_mapping_issues?.trim() &&
-           formData.value.industry_involvement?.trim() &&
-           formData.value.industry_authorship !== null &&
-           formData.value.consortium_data_sharing !== null &&
-           formData.value.data_restrictions?.trim();
+           formData.value.cohort_approval_requirements?.trim() &&
+           formData.value.summary_stats_restrictions?.trim() &&
+           formData.value.summary_stats_publication_availability !== null &&
+           formData.value.summary_stats_consortium_availability !== null &&
+           formData.value.other_notes?.trim();
 });
 
 const validationMessage = computed(() => {
@@ -284,8 +352,8 @@ const validationMessage = computed(() => {
         return 'Number of Females is required and must be 0 or greater';
     }
     if (formData.value.number_of_males !== null && formData.value.number_of_females !== null && formData.value.total_sample_size !== null) {
-        if (formData.value.number_of_males + formData.value.number_of_females !== formData.value.total_sample_size) {
-            return `Males (${formData.value.number_of_males}) + Females (${formData.value.number_of_females}) must equal Total Sample Size (${formData.value.total_sample_size})`;
+        if (formData.value.number_of_males + formData.value.number_of_females > formData.value.total_sample_size) {
+            return `Males (${formData.value.number_of_males}) + Females (${formData.value.number_of_females}) cannot exceed Total Sample Size (${formData.value.total_sample_size})`;
         }
     }
     if (!formData.value.phenotype_coding_system?.trim()) {
@@ -294,17 +362,20 @@ const validationMessage = computed(() => {
     if (!formData.value.phenotype_mapping_issues?.trim()) {
         return 'Phenotype mapping issues field is required';
     }
-    if (!formData.value.industry_involvement?.trim()) {
-        return 'Industry involvement field is required';
+    if (!formData.value.cohort_approval_requirements?.trim()) {
+        return 'Cohort approval requirements field is required';
     }
-    if (formData.value.industry_authorship === null) {
-        return 'Industry authorship selection is required';
+    if (!formData.value.summary_stats_restrictions?.trim()) {
+        return 'Summary statistics restrictions field is required';
     }
-    if (formData.value.consortium_data_sharing === null) {
-        return 'Consortium data sharing selection is required';
+    if (formData.value.summary_stats_publication_availability === null) {
+        return 'Summary stats publication availability is required';
     }
-    if (!formData.value.data_restrictions?.trim()) {
-        return 'Data restrictions field is required';
+    if (formData.value.summary_stats_consortium_availability === null) {
+        return 'Summary stats consortium availability is required';
+    }
+    if (!formData.value.other_notes?.trim()) {
+        return 'Other notes field is required';
     }
     return 'All fields are valid';
 });
@@ -312,6 +383,7 @@ const validationMessage = computed(() => {
 // Methods
 function validateDemographicFields() {
     const errors = [];
+    const warnings = [];
     
     if (formData.value.total_sample_size === null || formData.value.total_sample_size <= 0) {
         errors.push('Total sample size is required and must be greater than 0');
@@ -326,8 +398,12 @@ function validateDemographicFields() {
     }
     
     if (formData.value.number_of_males !== null && formData.value.number_of_females !== null && formData.value.total_sample_size !== null) {
-        if (formData.value.number_of_males + formData.value.number_of_females !== formData.value.total_sample_size) {
-            errors.push('Number of males plus females must equal total sample size');
+        const sum = formData.value.number_of_males + formData.value.number_of_females;
+        if (sum > formData.value.total_sample_size) {
+            errors.push('Number of males plus females cannot exceed total sample size');
+        } else if (sum < formData.value.total_sample_size) {
+            const diff = formData.value.total_sample_size - sum;
+            warnings.push(`Males + Females (${sum}) is ${diff} less than Total Sample Size (${formData.value.total_sample_size}). This may indicate missing gender data. Do you want to proceed?`);
         }
     }
     
@@ -338,15 +414,30 @@ function validateDemographicFields() {
             detail: errors.join('; '),
             life: 5000
         });
-        return false;
+        return { valid: false, hasWarnings: false };
     }
     
-    return true;
+    return { valid: true, hasWarnings: warnings.length > 0, warnings };
 }
 
 async function handleSave() {
-    if (!validateDemographicFields()) return;
+    const validation = validateDemographicFields();
     
+    if (!validation.valid) return;
+    
+    // If there are warnings, show confirmation dialog
+    if (validation.hasWarnings) {
+        warningMessage.value = validation.warnings.join(' ');
+        showWarningDialog.value = true;
+        return;
+    }
+    
+    // No warnings, proceed with save
+    await proceedWithSave();
+}
+
+async function proceedWithSave() {
+    showWarningDialog.value = false;
     saving.value = true;
     
     try {
@@ -358,10 +449,11 @@ async function handleSave() {
             cohort_metadata: {
                 phenotype_coding_system: formData.value.phenotype_coding_system.trim(),
                 phenotype_mapping_issues: formData.value.phenotype_mapping_issues.trim(),
-                industry_involvement: formData.value.industry_involvement.trim(),
-                industry_authorship: formData.value.industry_authorship,
-                consortium_data_sharing: formData.value.consortium_data_sharing,
-                data_restrictions: formData.value.data_restrictions.trim()
+                cohort_approval_requirements: formData.value.cohort_approval_requirements.trim(),
+                summary_stats_restrictions: formData.value.summary_stats_restrictions.trim(),
+                summary_stats_publication_availability: formData.value.summary_stats_publication_availability,
+                summary_stats_consortium_availability: formData.value.summary_stats_consortium_availability,
+                other_notes: formData.value.other_notes.trim()
             }
         };
         

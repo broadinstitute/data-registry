@@ -235,29 +235,59 @@ const columns = ref([
   {
     header: "Actions",
     field: "actions", 
-    style: { width: "6rem", textAlign: "center" },
-    component: (data) =>
-        h("div", { class: "flex gap-1 justify-content-center" }, [
-          h(
+    style: { width: "8rem", textAlign: "center" },
+    component: (data) => {
+        // Check if cohort has all 5 files uploaded (excluding derived 'both' files)
+        const userUploadedFiles = data.files?.filter(f => 
+          f.file_type !== 'cases_controls_both' && f.file_type !== 'cooccurrence_both'
+        ) || [];
+        const hasAllFiles = userUploadedFiles.length === 5;
+        const isValidated = !!data.validation_status;
+        
+        const buttons = [];
+        
+        // Show View button for completed cohorts
+        if (hasAllFiles && isValidated) {
+          buttons.push(h(
               NuxtLink,
-              { to: `/sgc/edit/${data.id}` },
+              { to: `/sgc/view/${data.id}` },
               () => h(Button, {
-                icon: "bi-pencil",
+                icon: "bi-eye",
                 severity: "info",
                 outlined: true,
                 size: "small",
-                title: "Edit cohort"
+                title: "View cohort"
               })
-          ),
-          canDeleteDataset.value && h(Button, {
+          ));
+        }
+        
+        // Always show Edit button
+        buttons.push(h(
+            NuxtLink,
+            { to: `/sgc/edit/${data.id}` },
+            () => h(Button, {
+              icon: "bi-pencil",
+              severity: "info",
+              outlined: true,
+              size: "small",
+              title: "Edit cohort"
+            })
+        ));
+        
+        // Show Delete button if user has permission
+        if (canDeleteDataset.value) {
+          buttons.push(h(Button, {
             icon: "bi-trash",
             severity: "danger",
             outlined: true,
             size: "small",
             title: "Delete cohort",
             onClick: () => confirmDelete(data)
-          })
-        ])
+          }));
+        }
+        
+        return h("div", { class: "flex gap-1 justify-content-center" }, buttons);
+    }
   },
 ]);
 

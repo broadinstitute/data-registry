@@ -15,13 +15,22 @@
             <div class="card">
                 <div class="flex justify-content-between align-items-center mb-4">
                     <h5>Manage Phenotypes</h5>
-                    <Button
-                        v-can="'sgc-review-data'"
-                        label="Add New Phenotype"
-                        icon="pi pi-plus"
-                        class="p-button-primary"
-                        @click="showAddDialog = true"
-                    />
+                    <div class="flex gap-2">
+                        <Button
+                            label="Download Table"
+                            icon="pi pi-download"
+                            class="p-button-secondary"
+                            outlined
+                            @click="downloadPhenotypes"
+                        />
+                        <Button
+                            v-can="'sgc-review-data'"
+                            label="Add New Phenotype"
+                            icon="pi pi-plus"
+                            class="p-button-primary"
+                            @click="showAddDialog = true"
+                        />
+                    </div>
                 </div>
 
                 <DataTable 
@@ -176,6 +185,7 @@ definePageMeta({
 
 const toast = useToast();
 const store = useDatasetStore();
+const config = useRuntimeConfig();
 
 // Reactive data
 const loading = ref(false);
@@ -362,6 +372,12 @@ function closeDialog() {
         description: ''
     };
     clearFormErrors();
+}
+
+function downloadPhenotypes() {
+    const apiBaseUrl = config.public.apiBaseUrl;
+    const downloadUrl = `${apiBaseUrl}/api/sgc/phenotypes/download`;
+    window.open(downloadUrl, '_blank');
 }
 
 // Load phenotypes when component mounts
