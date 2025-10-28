@@ -17,6 +17,13 @@
               View Phenotypes
             </NuxtLink>
             <NuxtLink
+              v-if="isReviewer"
+              to="/sgc/phenotype-case-totals"
+              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+            >
+              Phenotype Case Totals
+            </NuxtLink>
+            <NuxtLink
               v-if="userStore.canManageUsers()"
               to="/sgc/users"
               class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
@@ -39,9 +46,19 @@
 
 <script setup>
 import { useUserStore } from "~/stores/UserStore";
+import { computed } from "vue";
 
 const userStore = useUserStore();
 const router = useRouter();
+
+// Check if user is a reviewer
+const isReviewer = computed(() => {
+  const user = userStore.user;
+  if (!user) return false;
+  
+  const roleNames = user.roles?.map(role => role.name || role) || [];
+  return roleNames.includes('sgc-reviewer') || roleNames.includes('admin');
+});
 
 // Handle logout
 async function handleLogout() {

@@ -35,7 +35,13 @@ const confirmDelete = (dataset) => {
 
 const canDeleteDataset = computed(() => {
   const user = useUserStore().user;
-  return user.roles.includes('admin') || user.permissions.includes('deleteDataset');
+  if (!user) return false;
+  
+  // Extract role names from role objects (they might be strings or objects)
+  const roleNames = user.roles?.map(role => role.name || role) || [];
+  
+  // Allow deletion for admin or sgc-reviewer roles
+  return roleNames.includes('admin') || roleNames.includes('sgc-reviewer');
 });
 
 const handleDelete = async () => {
