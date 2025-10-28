@@ -41,6 +41,7 @@ jobs:
                 elif [[ $GITHUB_REF == refs/tags/V* ]]; then
                   echo "NUXT_PUBLIC_GOOGLE_AUTH_REDIRECT_URI=https://kpndataregistry.org/login/callback" >> .env
                   echo "NUXT_PUBLIC_API_BASE_URL=https://api.kpndataregistry.org" >> .env
+                  echo "NUXT_PUBLIC_SGC_USER_GROUP=sgc-prod" >> .env
                 fi
 
             - name: Build
