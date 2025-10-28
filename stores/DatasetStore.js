@@ -520,8 +520,8 @@ export const useDatasetStore = defineStore("DatasetStore", {
             await sgcAxios.delete(`/api/sgc/phenotypes/${phenotypeCode}`);
         },
 
-        async fetchSGCPhenotypeCaseTotals() {
-            const { data } = await sgcAxios.get('/api/sgc/phenotype-case-totals');
+        async fetchSGCPhenotypeCaseCountsBySex() {
+            const { data } = await sgcAxios.get('/api/sgc/phenotype-case-counts-by-sex');
             return data;
         },
         

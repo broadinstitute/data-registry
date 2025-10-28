@@ -42,9 +42,31 @@
                             />
                         </template>
                     </Column>
-                    <Column field="total_cases_across_cohorts" header="Total Cases" sortable :showFilterMenu="false">
+                    <Column header="Male" sortable :showFilterMenu="false">
                         <template #body="{ data }">
-                            <span class="font-medium">{{ formatNumber(data.total_cases_across_cohorts) }}</span>
+                            <div class="text-sm">
+                                <div>Cases: {{ formatNumber(data.male_cases) }}</div>
+                                <div class="text-gray-600">Controls: {{ formatNumber(data.male_controls) }}</div>
+                                <div class="text-gray-500 text-xs">Cohorts: {{ data.male_num_cohorts }}</div>
+                            </div>
+                        </template>
+                    </Column>
+                    <Column header="Female" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <div class="text-sm">
+                                <div>Cases: {{ formatNumber(data.female_cases) }}</div>
+                                <div class="text-gray-600">Controls: {{ formatNumber(data.female_controls) }}</div>
+                                <div class="text-gray-500 text-xs">Cohorts: {{ data.female_num_cohorts }}</div>
+                            </div>
+                        </template>
+                    </Column>
+                    <Column header="Both" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <div class="text-sm">
+                                <div>Cases: {{ formatNumber(data.both_cases) }}</div>
+                                <div class="text-gray-600">Controls: {{ formatNumber(data.both_controls) }}</div>
+                                <div class="text-gray-500 text-xs">Cohorts: {{ data.both_num_cohorts }}</div>
+                            </div>
                         </template>
                     </Column>
                 </DataTable>
@@ -87,7 +109,7 @@ async function loadPhenotypeCaseTotals() {
     loading.value = true;
     
     try {
-        const data = await store.fetchSGCPhenotypeCaseTotals();
+        const data = await store.fetchSGCPhenotypeCaseCountsBySex();
         phenotypeCaseTotals.value = data;
     } catch (error) {
         console.error('Error loading phenotype case totals:', error);
