@@ -768,7 +768,8 @@ const cooccurrenceFemaleMapping = ref({});
 const columnMappingOptions = ref([
     { name: "Cases", value: "cases" },
     { name: "Controls", value: "controls" },
-    { name: "Phenotype", value: "phenotype" }
+    { name: "Phenotype", value: "phenotype" },
+    { name: "Breakdown", value: "breakdown" }
 ]);
 
 // Column mapping options for SGC co-occurrence file
@@ -779,7 +780,7 @@ const cooccurrenceMappingOptions = ref([
 ]);
 
 // Required fields for SGC cases/controls mapping
-const requiredSGCFields = ref(['cases', 'controls', 'phenotype']);
+const requiredSGCFields = ref(['cases', 'controls', 'phenotype', 'breakdown']);
 
 // Required fields for SGC co-occurrence mapping
 const requiredCooccurrenceFields = ref(['phenotype1', 'phenotype2', 'cooccurrence_count']);
