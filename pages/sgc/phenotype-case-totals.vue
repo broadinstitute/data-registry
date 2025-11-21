@@ -28,7 +28,7 @@
                     v-model:filters="filters"
                     filterDisplay="row"
                 >
-                    <Column field="phenotype_code" header="Phenotype Code" sortable :showFilterMenu="false">
+                    <Column field="phenotype_code" header="Phenotype Code" sortable :showFilterMenu="false" frozen>
                         <template #body="{ data }">
                             <span class="font-medium">{{ data.phenotype_code }}</span>
                         </template>
@@ -42,31 +42,55 @@
                             />
                         </template>
                     </Column>
-                    <Column header="Male" sortable :showFilterMenu="false">
+                    
+                    <!-- Male columns -->
+                    <Column field="male_cases" header="Male Cases" sortable :showFilterMenu="false">
                         <template #body="{ data }">
-                            <div class="text-sm">
-                                <div>Cases: {{ formatNumber(data.male_cases) }}</div>
-                                <div class="text-gray-600">Controls: {{ formatNumber(data.male_controls) }}</div>
-                                <div class="text-gray-500 text-xs">Cohorts: {{ data.male_num_cohorts }}</div>
-                            </div>
+                            {{ formatNumber(data.male_cases) }}
                         </template>
                     </Column>
-                    <Column header="Female" sortable :showFilterMenu="false">
+                    <Column field="male_controls" header="Male Controls" sortable :showFilterMenu="false">
                         <template #body="{ data }">
-                            <div class="text-sm">
-                                <div>Cases: {{ formatNumber(data.female_cases) }}</div>
-                                <div class="text-gray-600">Controls: {{ formatNumber(data.female_controls) }}</div>
-                                <div class="text-gray-500 text-xs">Cohorts: {{ data.female_num_cohorts }}</div>
-                            </div>
+                            {{ formatNumber(data.male_controls) }}
                         </template>
                     </Column>
-                    <Column header="Both" sortable :showFilterMenu="false">
+                    <Column field="male_num_cohorts" header="Male Cohorts" sortable :showFilterMenu="false">
                         <template #body="{ data }">
-                            <div class="text-sm">
-                                <div>Cases: {{ formatNumber(data.both_cases) }}</div>
-                                <div class="text-gray-600">Controls: {{ formatNumber(data.both_controls) }}</div>
-                                <div class="text-gray-500 text-xs">Cohorts: {{ data.both_num_cohorts }}</div>
-                            </div>
+                            {{ data.male_num_cohorts }}
+                        </template>
+                    </Column>
+                    
+                    <!-- Female columns -->
+                    <Column field="female_cases" header="Female Cases" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            {{ formatNumber(data.female_cases) }}
+                        </template>
+                    </Column>
+                    <Column field="female_controls" header="Female Controls" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            {{ formatNumber(data.female_controls) }}
+                        </template>
+                    </Column>
+                    <Column field="female_num_cohorts" header="Female Cohorts" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            {{ data.female_num_cohorts }}
+                        </template>
+                    </Column>
+                    
+                    <!-- Both columns -->
+                    <Column field="both_cases" header="Both Cases" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            {{ formatNumber(data.both_cases) }}
+                        </template>
+                    </Column>
+                    <Column field="both_controls" header="Both Controls" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            {{ formatNumber(data.both_controls) }}
+                        </template>
+                    </Column>
+                    <Column field="both_num_cohorts" header="Both Cohorts" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            {{ data.both_num_cohorts }}
                         </template>
                     </Column>
                 </DataTable>
