@@ -780,7 +780,7 @@ const cooccurrenceMappingOptions = ref([
 ]);
 
 // Required fields for SGC cases/controls mapping
-const requiredSGCFields = ref(['cases', 'controls', 'phenotype', 'breakdown']);
+const requiredSGCFields = ref(['cases', 'controls', 'phenotype']);
 
 // Required fields for SGC co-occurrence mapping
 const requiredCooccurrenceFields = ref(['phenotype1', 'phenotype2', 'cooccurrence_count']);
