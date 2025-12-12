@@ -11,6 +11,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login') || to.path.startsWith('/sgc/login')){
         return;
     }
+    
+    // Skip authentication for PEG routes
+    if (to.path.startsWith('/peg')) {
+        return;
+    }
+    
     const userStore = useUserStore();
     let isLoggedIn = false;
 

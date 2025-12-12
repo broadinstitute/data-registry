@@ -29,7 +29,7 @@ export default defineNuxtConfig({
       "primevue/resources/primevue.min.css",
       "@/assets/styles.scss",
       // "assets/css/base.css",
-      "primevue/resources/themes/aura-light-indigo/theme.css",
+      "primevue/resources/themes/aura-light-indigo/theme.css", // Default theme for hermes/datasets
   ],
 
   runtimeConfig: {

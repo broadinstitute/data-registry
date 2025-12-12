@@ -51,11 +51,21 @@ import { computed } from "vue";
 const userStore = useUserStore();
 const router = useRouter();
 
+// Apply SGC-specific theme (same as default for now)
+useHead({
+  link: [
+    {
+      rel: 'stylesheet',
+      href: '/themes/primevue/aura-light-indigo/theme.css'
+    }
+  ]
+});
+
 // Check if user is a reviewer
 const isReviewer = computed(() => {
   const user = userStore.user;
   if (!user) return false;
-  
+
   const roleNames = user.roles?.map(role => role.name || role) || [];
   return roleNames.includes('sgc-reviewer') || roleNames.includes('admin');
 });
