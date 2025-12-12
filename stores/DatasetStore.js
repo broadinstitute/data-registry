@@ -22,6 +22,16 @@ const sgcAxios = useSGCAxios(config, undefined, (error) => {
     return Promise.reject(error);
 });
 
+const pegAxios = usePEGAxios(config, undefined, (error) => {
+    const store = useDatasetStore();
+    store.processing = false;
+    store.errorMessage =
+        error.response?.data.detail || error.message || error.errorMessage;
+    store.serverSuccess = false;
+    store.showNotification = true;
+    return Promise.reject(error);
+});
+
 function onUpload(progressEvent) {
     const store = useDatasetStore();
     store.uploadProgress = Math.round(
@@ -561,6 +571,86 @@ export const useDatasetStore = defineStore("DatasetStore", {
         async validateAllConsistency(cohortId) {
             const { data } = await sgcAxios.post(`/api/sgc/cohorts/${cohortId}/validate-all-consistency`);
             return data;
+        },
+
+        // PEG Study Management
+        async createPEGStudy(metadata) {
+            const { data } = await pegAxios.post('/api/peg/studies', metadata);
+            return data;
+        },
+
+        async updatePEGStudy(studyId, metadata) {
+            const { data } = await pegAxios.patch(`/api/peg/studies/${studyId}`, metadata);
+            return data;
+        },
+
+        async fetchPEGStudies() {
+            const { data } = await pegAxios.get('/api/peg/studies');
+            return data;
+        },
+
+        async fetchPEGStudy(studyId) {
+            const { data } = await pegAxios.get(`/api/peg/studies/${studyId}`);
+            return data;
+        },
+
+        async deletePEGStudy(studyId) {
+            await pegAxios.delete(`/api/peg/studies/${studyId}`);
+        },
+
+        // PEG File Uploads
+        async uploadPEGList(studyId, file) {
+            this.showProgressBar = true;
+            this.processing = true;
+            this.modalMsg = "Uploading PEG List";
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const { data } = await pegAxios.post(
+                `/api/peg/studies/${studyId}/peg-list`,
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            );
+            
+            this.processing = false;
+            return data;
+        },
+
+        async uploadPEGMatrix(studyId, file) {
+            this.showProgressBar = true;
+            this.processing = true;
+            this.modalMsg = "Uploading PEG Matrix";
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const { data } = await pegAxios.post(
+                `/api/peg/studies/${studyId}/peg-matrix`,
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            );
+            
+            this.processing = false;
+            return data;
+        },
+
+        async fetchPEGFiles(studyId) {
+            const { data } = await pegAxios.get(`/api/peg/studies/${studyId}/files`);
+            return data;
+        },
+
+        async deletePEGFile(fileId) {
+            await pegAxios.delete(`/api/peg/files/${fileId}`);
+        },
+
+        async downloadPEGFile(fileId) {
+            const { data } = await pegAxios.get(`/api/peg/files/${fileId}`);
+            if (data.presigned_url) {
+                window.open(data.presigned_url, '_blank');
+            } else {
+                throw new Error('No download URL found in response');
+            }
         },
 
     },

@@ -1,3 +1,15 @@
+<script setup>
+// Apply SGC-specific theme (same as default for now)
+useHead({
+  link: [
+    {
+      rel: 'stylesheet',
+      href: '/themes/primevue/aura-light-indigo/theme.css'
+    }
+  ]
+});
+</script>
+
 <template>
   <div class="min-h-screen bg-gray-50">
     <header class="bg-white shadow-sm border-b">
