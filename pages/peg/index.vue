@@ -33,6 +33,16 @@ const createStudy = () => {
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString();
 };
+
+const formatGuid = (guid) => {
+  if (!guid) return '-';
+  // Convert plain hex string to UUID format with dashes
+  const cleaned = guid.replace(/-/g, '');
+  if (cleaned.length === 32) {
+    return `${cleaned.slice(0, 8)}-${cleaned.slice(8, 12)}-${cleaned.slice(12, 16)}-${cleaned.slice(16, 20)}-${cleaned.slice(20)}`;
+  }
+  return guid;
+};
 </script>
 
 <template>
@@ -89,15 +99,15 @@ const formatDate = (dateString) => {
             </template>
           </Column>
 
-          <Column field="metadata.trait_description" header="Trait" sortable>
+          <Column field="id" header="Accession ID" sortable>
             <template #body="{ data }">
-              {{ data.metadata?.trait_description || '-' }}
+              <span class="font-mono text-sm">PEG-{{ formatGuid(data.id) }}</span>
             </template>
           </Column>
 
-          <Column field="metadata.genome_build" header="Genome Build" sortable>
+          <Column field="metadata.study_author" header="Author" sortable>
             <template #body="{ data }">
-              <Tag :value="data.metadata?.genome_build || 'N/A'" severity="info" />
+              {{ data.metadata?.study_author || '-' }}
             </template>
           </Column>
 

@@ -635,6 +635,24 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
+        async uploadPEGMetadata(studyId, file) {
+            this.showProgressBar = true;
+            this.processing = true;
+            this.modalMsg = "Uploading PEG Metadata";
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const { data } = await pegAxios.post(
+                `/api/peg/studies/${studyId}/peg-metadata`,
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            );
+            
+            this.processing = false;
+            return data;
+        },
+
         async fetchPEGFiles(studyId) {
             const { data } = await pegAxios.get(`/api/peg/studies/${studyId}/files`);
             return data;

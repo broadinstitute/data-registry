@@ -43,81 +43,22 @@
 
           <div class="col-12 md:col-6">
             <div class="field">
+              <label>Accession ID</label>
+              <p class="font-semibold">PEG-{{ formatGuid(studyData.id) }}</p>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6">
+            <div class="field">
+              <label>Study Author</label>
+              <p>{{ studyData.metadata?.study_author || '-' }}</p>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6">
+            <div class="field">
               <label>Created</label>
               <p>{{ formatDate(studyData.created_at) }}</p>
-            </div>
-          </div>
-        </div>
-
-        <Divider />
-        <h6>Dataset Description</h6>
-
-        <div class="grid">
-          <div class="col-12 md:col-6">
-            <div class="field">
-              <label>PEG Source</label>
-              <p>{{ studyData.metadata?.peg_source || '-' }}</p>
-            </div>
-          </div>
-
-          <div class="col-12 md:col-6">
-            <div class="field">
-              <label>GWAS Source</label>
-              <p>{{ studyData.metadata?.gwas_source || '-' }}</p>
-            </div>
-          </div>
-
-          <div class="col-12 md:col-6">
-            <div class="field">
-              <label>Trait Description</label>
-              <p>{{ studyData.metadata?.trait_description || '-' }}</p>
-            </div>
-          </div>
-
-          <div class="col-12 md:col-6">
-            <div class="field">
-              <label>Trait Ontology ID</label>
-              <p>{{ studyData.metadata?.trait_ontology_id || '-' }}</p>
-            </div>
-          </div>
-        </div>
-
-        <Divider />
-        <h6>Genomic Information</h6>
-
-        <div class="grid">
-          <div class="col-12 md:col-6">
-            <div class="field">
-              <label>Variant Type</label>
-              <p>
-                <Tag
-                  :value="studyData.metadata?.variant_type || 'N/A'"
-                  :severity="studyData.metadata?.variant_type === 'significant' ? 'warning' : 'info'"
-                />
-              </p>
-            </div>
-          </div>
-
-          <div class="col-12 md:col-6">
-            <div class="field">
-              <label>Genome Build</label>
-              <p>
-                <Tag :value="studyData.metadata?.genome_build || 'N/A'" severity="info" />
-              </p>
-            </div>
-          </div>
-
-          <div class="col-12">
-            <div class="field">
-              <label>Variant Information</label>
-              <p>{{ studyData.metadata?.variant_information || '-' }}</p>
-            </div>
-          </div>
-
-          <div class="col-12">
-            <div class="field">
-              <label>Gene Information</label>
-              <p>{{ studyData.metadata?.gene_information || '-' }}</p>
             </div>
           </div>
         </div>
@@ -155,12 +96,6 @@
                 {{ formatFileSize(data.fileSize) }}
               </span>
               <span v-else class="text-gray-400">-</span>
-            </template>
-          </Column>
-          <Column field="status" header="Status" style="width: 8rem">
-            <template #body="{ data }">
-              <Tag v-if="data.uploaded" severity="success" value="Uploaded" icon="pi pi-check" />
-              <Tag v-else severity="warning" value="Missing" icon="pi pi-minus" />
             </template>
           </Column>
           <Column header="Actions" style="width: 8rem">
@@ -233,6 +168,7 @@ onMounted(async () => {
 const filesList = computed(() => {
   const pegListFile = filesData.value.find(f => f.file_type === 'peg_list');
   const pegMatrixFile = filesData.value.find(f => f.file_type === 'peg_matrix');
+  const pegMetadataFile = filesData.value.find(f => f.file_type === 'peg_metadata');
 
   return [
     {
@@ -250,6 +186,14 @@ const filesList = computed(() => {
       fileSize: pegMatrixFile?.file_size || null,
       uploaded: !!pegMatrixFile,
       fileId: pegMatrixFile?.id || null
+    },
+    {
+      label: 'PEG Metadata',
+      fileName: pegMetadataFile?.file_name || null,
+      uploadedAt: pegMetadataFile?.uploaded_at || null,
+      fileSize: pegMetadataFile?.file_size || null,
+      uploaded: !!pegMetadataFile,
+      fileId: pegMetadataFile?.id || null
     }
   ];
 });
@@ -279,6 +223,17 @@ const formatFileSize = (bytes) => {
   if (bytes < 1024) return bytes + ' B';
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
   return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+};
+
+const formatGuid = (guid) => {
+  if (!guid) return '-';
+  // Convert plain hex string to UUID format with dashes
+  // e.g., 0f7af7f752434a2b90d6ffe1683c4241 -> 0f7af7f7-5243-4a2b-90d6-ffe1683c4241
+  const cleaned = guid.replace(/-/g, '');
+  if (cleaned.length === 32) {
+    return `${cleaned.slice(0, 8)}-${cleaned.slice(8, 12)}-${cleaned.slice(12, 16)}-${cleaned.slice(16, 20)}-${cleaned.slice(20)}`;
+  }
+  return guid; // Return as-is if already formatted or invalid length
 };
 
 const downloadFile = async (fileId) => {

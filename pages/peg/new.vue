@@ -14,14 +14,7 @@ const store = useDatasetStore();
 // Form validation schema
 const formSchema = yup.object({
   name: yup.string().required().label('Study Name'),
-  peg_source: yup.string().required().label('PEG Source'),
-  gwas_source: yup.string().required().label('GWAS Source'),
-  trait_description: yup.string().required().label('Trait Description'),
-  trait_ontology_id: yup.string().label('Trait Ontology ID'),
-  variant_type: yup.string().required().label('Variant Type'),
-  genome_build: yup.string().required().label('Genome Build'),
-  variant_information: yup.string().label('Variant Information'),
-  gene_information: yup.string().label('Gene Information'),
+  study_author: yup.string().required().label('Study Author'),
 });
 
 const { defineField, errors, values, validate, resetForm } = useForm({
@@ -30,31 +23,15 @@ const { defineField, errors, values, validate, resetForm } = useForm({
 
 // Form fields
 const [name] = defineField('name');
-const [peg_source] = defineField('peg_source');
-const [gwas_source] = defineField('gwas_source');
-const [trait_description] = defineField('trait_description');
-const [trait_ontology_id] = defineField('trait_ontology_id');
-const [variant_type] = defineField('variant_type');
-const [genome_build] = defineField('genome_build');
-const [variant_information] = defineField('variant_information');
-const [gene_information] = defineField('gene_information');
-
-// Dropdown options
-const genomeBuildOptions = ref([
-  { label: 'GRCh37', value: 'GRCh37' },
-  { label: 'GRCh38', value: 'GRCh38' },
-]);
-
-const variantTypeOptions = ref([
-  { label: 'Significant', value: 'significant' },
-  { label: 'All', value: 'all' },
-]);
+const [study_author] = defineField('study_author');
 
 // File upload state
 const pegListFile = ref(null);
 const pegMatrixFile = ref(null);
+const pegMetadataFile = ref(null);
 const pegListInput = ref(null);
 const pegMatrixInput = ref(null);
+const pegMetadataInput = ref(null);
 
 const submitting = ref(false);
 
@@ -62,18 +39,11 @@ const submitting = ref(false);
 const activeAccordionIndex = ref(0);
 
 const isMetadataValid = computed(() => {
-  return !!(
-    values.name &&
-    values.peg_source &&
-    values.gwas_source &&
-    values.trait_description &&
-    values.variant_type &&
-    values.genome_build
-  );
+  return !!(values.name && values.study_author);
 });
 
 const canSubmit = computed(() => {
-  return isMetadataValid.value && pegListFile.value && pegMatrixFile.value;
+  return isMetadataValid.value && pegListFile.value && pegMatrixFile.value && pegMetadataFile.value;
 });
 
 const handlePEGListFileSelect = (event) => {
@@ -104,6 +74,20 @@ const removePEGMatrixFile = () => {
   }
 };
 
+const handlePEGMetadataFileSelect = (event) => {
+  const file = event.target.files?.[0];
+  if (file) {
+    pegMetadataFile.value = file;
+  }
+};
+
+const removePEGMetadataFile = () => {
+  pegMetadataFile.value = null;
+  if (pegMetadataInput.value) {
+    pegMetadataInput.value.value = '';
+  }
+};
+
 const handleContinueToFiles = async () => {
   const isValid = await validate();
 
@@ -123,9 +107,9 @@ const handleSubmitStudy = async () => {
     return;
   }
 
-  // Ensure both files are selected
-  if (!pegListFile.value || !pegMatrixFile.value) {
-    store.errorMessage = 'Both PEG List and PEG Matrix files are required';
+  // Ensure all files are selected
+  if (!pegListFile.value || !pegMatrixFile.value || !pegMetadataFile.value) {
+    store.errorMessage = 'All three files (PEG List, PEG Matrix, and PEG Metadata) are required';
     store.showNotification = true;
     return;
   }
@@ -138,16 +122,7 @@ const handleSubmitStudy = async () => {
     const metadata = {
       name: values.name,
       metadata: {
-        peg_source: values.peg_source,
-        gwas_source: values.gwas_source,
-        trait_description: values.trait_description,
-        trait_ontology_id: values.trait_ontology_id || null,
-        variant_type: values.variant_type,
-        genome_build: values.genome_build,
-        variant_information: values.variant_information || null,
-        gene_information: values.gene_information || null,
-        evidence_streams: [],
-        integration_analyses: [],
+        study_author: values.study_author,
       }
     };
 
@@ -171,6 +146,17 @@ const handleSubmitStudy = async () => {
     } catch (error) {
       console.error('Error uploading PEG Matrix:', error);
       handleUploadError(error, 'PEG Matrix');
+      // Rollback: delete the created study
+      await rollbackStudy(createdStudyId);
+      return;
+    }
+
+    // Step 4: Upload PEG Metadata
+    try {
+      await store.uploadPEGMetadata(createdStudyId, pegMetadataFile.value);
+    } catch (error) {
+      console.error('Error uploading PEG Metadata:', error);
+      handleUploadError(error, 'PEG Metadata');
       // Rollback: delete the created study
       await rollbackStudy(createdStudyId);
       return;
@@ -316,103 +302,15 @@ const handleCancel = () => {
                 <small class="p-error">{{ errors.name }}</small>
               </div>
 
-              <Divider />
-              <h5>Dataset Description</h5>
-
               <div class="field">
-                <label for="peg_source">PEG Source <span class="text-red-500">*</span></label>
+                <label for="study_author">Study Author <span class="text-red-500">*</span></label>
                 <InputText
-                  id="peg_source"
-                  v-model="peg_source"
-                  :class="{ 'p-invalid': errors.peg_source }"
-                  placeholder="e.g., PMID: 36474045"
-                  v-tooltip="'Publication identifier (e.g., PMID, DOI)'"
+                  id="study_author"
+                  v-model="study_author"
+                  :class="{ 'p-invalid': errors.study_author }"
+                  placeholder="e.g., John Doe"
                 />
-                <small class="p-error">{{ errors.peg_source }}</small>
-              </div>
-
-              <div class="field">
-                <label for="gwas_source">GWAS Source <span class="text-red-500">*</span></label>
-                <InputText
-                  id="gwas_source"
-                  v-model="gwas_source"
-                  :class="{ 'p-invalid': errors.gwas_source }"
-                  placeholder="e.g., GCST90132315"
-                  v-tooltip="'GWAS catalog or study identifier'"
-                />
-                <small class="p-error">{{ errors.gwas_source }}</small>
-              </div>
-
-              <div class="field">
-                <label for="trait_description">Trait Description <span class="text-red-500">*</span></label>
-                <InputText
-                  id="trait_description"
-                  v-model="trait_description"
-                  :class="{ 'p-invalid': errors.trait_description }"
-                  placeholder="e.g., coronary artery disease"
-                />
-                <small class="p-error">{{ errors.trait_description }}</small>
-              </div>
-
-              <div class="field">
-                <label for="trait_ontology_id">Trait Ontology ID</label>
-                <InputText
-                  id="trait_ontology_id"
-                  v-model="trait_ontology_id"
-                  placeholder="e.g., EFO_0001645"
-                  v-tooltip="'Optional: EFO, HPO, or other ontology ID'"
-                />
-              </div>
-
-              <Divider />
-              <h5>Genomic Information</h5>
-
-              <div class="field">
-                <label for="variant_type">Variant Type <span class="text-red-500">*</span></label>
-                <Dropdown
-                  id="variant_type"
-                  v-model="variant_type"
-                  :options="variantTypeOptions"
-                  optionLabel="label"
-                  optionValue="value"
-                  placeholder="Select variant type"
-                  :class="{ 'p-invalid': errors.variant_type }"
-                />
-                <small class="p-error">{{ errors.variant_type }}</small>
-              </div>
-
-              <div class="field">
-                <label for="genome_build">Genome Build <span class="text-red-500">*</span></label>
-                <Dropdown
-                  id="genome_build"
-                  v-model="genome_build"
-                  :options="genomeBuildOptions"
-                  optionLabel="label"
-                  optionValue="value"
-                  placeholder="Select genome build"
-                  :class="{ 'p-invalid': errors.genome_build }"
-                />
-                <small class="p-error">{{ errors.genome_build }}</small>
-              </div>
-
-              <div class="field">
-                <label for="variant_information">Variant Information</label>
-                <Textarea
-                  id="variant_information"
-                  v-model="variant_information"
-                  rows="3"
-                  placeholder="e.g., 279 significant associations from GWAS meta-analysis"
-                />
-              </div>
-
-              <div class="field">
-                <label for="gene_information">Gene Information</label>
-                <Textarea
-                  id="gene_information"
-                  v-model="gene_information"
-                  rows="3"
-                  placeholder="e.g., All protein-coding genes within 500 kb of all 279 genome-wide associations"
-                />
+                <small class="p-error">{{ errors.study_author }}</small>
               </div>
 
               <div class="flex justify-content-end gap-2 mt-4">
@@ -439,7 +337,7 @@ const handleCancel = () => {
             </Message>
 
             <p class="mb-4 text-gray-600">
-              Upload PEG List and PEG Matrix TSV files. Both files are required and will be validated.
+              Upload PEG List and PEG Matrix (TSV files), and PEG Metadata (XLSX file with multiple sheets).
             </p>
 
             <!-- PEG List Upload -->
@@ -462,7 +360,7 @@ const handleCancel = () => {
                     @click="$refs.pegListInput.click()"
                   />
                   <small class="block mt-2 text-gray-600">
-                    Expected columns: rsID, Gene, GWAS, FM, PROX, FUNC, QTL, PHEWAS, GENEBASE, PERTUB, DB, Author_conclusion
+                    <i class="bi-info-circle mr-1"></i>Typical columns include: rsID, Gene, GWAS, FM, PROX, FUNC, QTL, PHEWAS, GENEBASE, PERTUB, DB, Author_conclusion
                   </small>
                   <div v-if="pegListFile" class="mt-2 p-3 surface-100 border-round">
                     <div class="flex justify-content-between align-items-center">
@@ -474,6 +372,45 @@ const handleCancel = () => {
                       />
                     </div>
                     <small class="text-gray-600">{{ (pegListFile.size / 1024).toFixed(2) }} KB</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Divider />
+
+            <!-- PEG Metadata Upload -->
+            <div class="field">
+              <label for="peg-metadata">PEG Metadata (XLSX)</label>
+              <div class="flex gap-2 align-items-start">
+                <div class="flex-grow-1">
+                  <input
+                    ref="pegMetadataInput"
+                    type="file"
+                    id="peg-metadata"
+                    accept=".xlsx"
+                    @change="handlePEGMetadataFileSelect"
+                    class="hidden"
+                  />
+                  <Button
+                    label="Choose PEG Metadata File"
+                    icon="bi-upload"
+                    class="p-button-outlined w-full"
+                    @click="$refs.pegMetadataInput.click()"
+                  />
+                  <small class="block mt-2 text-gray-600">
+                    <i class="bi-info-circle mr-1"></i>Excel file with multiple sheets (Dataset_description, Genomic_identifier, Evidence, Integration, source, method)
+                  </small>
+                  <div v-if="pegMetadataFile" class="mt-2 p-3 surface-100 border-round">
+                    <div class="flex justify-content-between align-items-center">
+                      <span class="font-semibold">{{ pegMetadataFile.name }}</span>
+                      <Button
+                        icon="bi-x"
+                        class="p-button-rounded p-button-text p-button-danger"
+                        @click="removePEGMetadataFile"
+                      />
+                    </div>
+                    <small class="text-gray-600">{{ (pegMetadataFile.size / 1024).toFixed(2) }} KB</small>
                   </div>
                 </div>
               </div>
@@ -501,7 +438,7 @@ const handleCancel = () => {
                     @click="$refs.pegMatrixInput.click()"
                   />
                   <small class="block mt-2 text-gray-600">
-                    Expected columns: rsID, Locus_name, Locus_number, Gene_symbol, GWAS_pvalue, GWAS_beta, FM_PPA, FM_FGWAS_Most_enriched_tissue, PROX, FUNC_VEP_consequence, QTL_eQTL_gtex_pvalue, QTL_eQTL_gtex_slope, QTL_eQTL_gtex_tissue, PHEWAS_ukbb_diseases, GENEBASE_rare5_SKATO, PERTURB_mouse_phenotype, PERTURB_mouse_model, DB_ClinVar, INT_PoPS_score, INT_PoPS_feature1, INT_author_conclusion
+                    <i class="bi-info-circle mr-1"></i>Typical columns include: rsID, Locus_name, Locus_number, Gene_symbol, GWAS_pvalue, GWAS_beta, FM_PPA, FM_FGWAS_Most_enriched_tissue, PROX, FUNC_VEP_consequence, QTL_eQTL_gtex_pvalue, QTL_eQTL_gtex_slope, QTL_eQTL_gtex_tissue, PHEWAS_ukbb_diseases, GENEBASE_rare5_SKATO, PERTURB_mouse_phenotype, PERTURB_mouse_model, DB_ClinVar, INT_PoPS_score, INT_PoPS_feature1, INT_author_conclusion
                   </small>
                   <div v-if="pegMatrixFile" class="mt-2 p-3 surface-100 border-round">
                     <div class="flex justify-content-between align-items-center">
@@ -518,34 +455,25 @@ const handleCancel = () => {
               </div>
             </div>
 
-            <div class="flex justify-content-between align-items-center mt-4">
+            <div class="flex justify-content-end gap-2 mt-4">
               <Button
-                label="Back to Metadata"
-                icon="bi-arrow-left"
-                @click="activeAccordionIndex = 0"
-                class="p-button-secondary p-button-text"
+                label="Cancel"
+                icon="bi-x-circle"
+                @click="handleCancel"
+                class="p-button-secondary p-button-outlined"
                 :disabled="submitting"
               />
-              <div class="flex gap-2">
-                <Button
-                  label="Cancel"
-                  icon="bi-x-circle"
-                  @click="handleCancel"
-                  class="p-button-secondary p-button-outlined"
-                  :disabled="submitting"
-                />
-                <Button
-                  label="Submit Study"
-                  icon="bi-check-circle"
-                  @click="handleSubmitStudy"
-                  :loading="submitting"
-                  :disabled="!canSubmit"
-                  class="p-button-primary"
-                />
-              </div>
+              <Button
+                label="Submit Study"
+                icon="bi-check-circle"
+                @click="handleSubmitStudy"
+                :loading="submitting"
+                :disabled="!canSubmit"
+                class="p-button-primary"
+              />
             </div>
             <div v-if="!canSubmit && isMetadataValid" class="text-sm text-gray-500 mt-2 text-right">
-              Both PEG List and PEG Matrix files are required
+              All three files (PEG List, PEG Matrix, and PEG Metadata) are required
             </div>
           </div>
         </AccordionTab>
