@@ -17,6 +17,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
         return;
     }
     
+    // Skip authentication for MSKKP routes
+    if (to.path.startsWith('/mskkp')) {
+        return;
+    }
+    
     const userStore = useUserStore();
     let isLoggedIn = false;
 

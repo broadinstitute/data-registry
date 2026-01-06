@@ -598,6 +598,102 @@ export const useDatasetStore = defineStore("DatasetStore", {
             await pegAxios.delete(`/api/peg/studies/${studyId}`);
         },
 
+        // MSKKP Dataset Upload
+        async createMSKKPDataset(metadata) {
+            const { data } = await configuredAxios.post(
+                '/api/mskkp/datasets',
+                JSON.stringify(metadata)
+            );
+            return data;
+        },
+
+        async uploadMSKKPFile(datasetId, file, fileName) {
+            this.uploadProgress = 0;
+
+            // Step 1: Get presigned URL from backend
+            const { data: presignedData } = await configuredAxios.get(
+                `/api/mskkp/datasets/${datasetId}/presigned-url`,
+                {
+                    params: { filename: fileName }
+                }
+            );
+
+            // Step 2: Upload directly to S3 with progress tracking
+            const strippedFile = new Blob([file], { type: '' });
+
+            // Use XMLHttpRequest for progress tracking
+            await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        this.uploadProgress = Math.round((e.loaded * 100) / e.total);
+                    }
+                });
+
+                xhr.addEventListener('load', () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve();
+                    } else {
+                        reject(new Error(`Upload failed with status ${xhr.status}`));
+                    }
+                });
+
+                xhr.addEventListener('error', () => {
+                    reject(new Error('Upload failed'));
+                });
+
+                xhr.open('PUT', presignedData.presigned_url);
+                xhr.send(strippedFile);
+            });
+
+            // Step 3: Finalize the upload
+            const { data } = await configuredAxios.post(
+                `/api/mskkp/datasets/${datasetId}/finalize`,
+                JSON.stringify(fileName)
+            );
+
+            return data;
+        },
+
+        async uploadMSKKPDataset(file, fileName, datasetName, metadata) {
+            this.processing = true;
+            this.showProgressBar = false;
+            this.modalMsg = "Creating MSKKP Dataset";
+            this.uploadProgress = 0;
+
+            try {
+                // Step 1: Create dataset metadata (checks for duplicates)
+                this.showProgressBar = false;
+                this.modalMsg = "Creating dataset metadata...";
+                const createResult = await this.createMSKKPDataset(metadata);
+                const datasetId = createResult.dataset_id;
+
+                // Step 2: Upload file (will show progress bar during upload)
+                this.showProgressBar = true;
+                this.modalMsg = "Uploading file...";
+                const uploadResult = await this.uploadMSKKPFile(datasetId, file, fileName);
+                
+                // Step 3: Server processing (progress bar hidden by this point)
+                this.showProgressBar = false;
+                this.modalMsg = "Processing...";
+
+                this.processing = false;
+                this.showNotification = true;
+                this.isServerSuccess = true;
+                this.successMessage = "Dataset uploaded successfully!";
+
+                return uploadResult;
+            } catch (error) {
+                this.processing = false;
+                this.showProgressBar = false;
+                this.showNotification = true;
+                this.isServerSuccess = false;
+                this.errorMessage = error.response?.data?.detail || error.message || "Upload failed";
+                throw error;
+            }
+        },
+
         // PEG File Uploads
         async uploadPEGList(studyId, file) {
             this.showProgressBar = true;
