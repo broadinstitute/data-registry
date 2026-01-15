@@ -122,6 +122,70 @@
                     </div>
                 </div>
             </div>
+
+            <!-- GWAS Files Section -->
+            <div class="card mt-4">
+                <div class="flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">GWAS Files</h5>
+                    <Tag :value="gwasFiles.length + ' file' + (gwasFiles.length !== 1 ? 's' : '')" severity="info" />
+                </div>
+                
+                <div v-if="loadingGwasFiles" class="text-center p-4">
+                    <ProgressSpinner style="width: 40px; height: 40px" />
+                    <p class="mt-2 text-gray-600">Loading GWAS files...</p>
+                </div>
+
+                <div v-else-if="gwasFiles.length === 0" class="text-center p-4">
+                    <i class="pi pi-inbox text-gray-400" style="font-size: 3rem"></i>
+                    <p class="mt-3 text-gray-600">No GWAS files have been uploaded for this cohort yet.</p>
+                </div>
+
+                <DataTable v-else :value="gwasFiles" class="mt-3" :paginator="gwasFiles.length > 10" :rows="10">
+                    <Column field="dataset" header="Dataset" :sortable="true">
+                        <template #body="{ data }">
+                            <span class="font-medium">{{ data.dataset }}</span>
+                        </template>
+                    </Column>
+                    <Column field="phenotype" header="Phenotype" :sortable="true">
+                        <template #body="{ data }">
+                            <span>{{ data.phenotype }}</span>
+                        </template>
+                    </Column>
+                    <Column field="ancestry" header="Ancestry" :sortable="true">
+                        <template #body="{ data }">
+                            <Tag :value="data.ancestry" severity="secondary" />
+                        </template>
+                    </Column>
+                    <Column field="file_name" header="File Name">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.file_name }}</span>
+                        </template>
+                    </Column>
+                    <Column field="file_size" header="Size" :sortable="true">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ formatFileSize(data.file_size) }}</span>
+                        </template>
+                    </Column>
+                    <Column field="uploaded_at" header="Uploaded" :sortable="true">
+                        <template #body="{ data }">
+                            <span class="text-sm">
+                                {{ new Date(data.uploaded_at).toLocaleDateString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'short', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) }}
+                            </span>
+                        </template>
+                    </Column>
+                    <Column field="uploaded_by" header="Uploaded By">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.uploaded_by }}</span>
+                        </template>
+                    </Column>
+                </DataTable>
+            </div>
         </div>
     </div>
 
@@ -148,6 +212,8 @@ const loading = ref(true);
 const cohortData = ref(null);
 const validationPassed = ref(false);
 const uploadedFiles = ref([]);
+const gwasFiles = ref([]);
+const loadingGwasFiles = ref(true);
 
 // File types mapping for display
 const fileTypeLabels = {
@@ -247,6 +313,23 @@ onMounted(async () => {
     } finally {
         loading.value = false;
     }
+
+    // Load GWAS files for this cohort
+    try {
+        loadingGwasFiles.value = true;
+        gwasFiles.value = await store.fetchSGCGWASFiles(cohortId);
+    } catch (error) {
+        console.error('Error loading GWAS files:', error);
+        toast.add({
+            severity: 'warn',
+            summary: 'Warning',
+            detail: 'Failed to load GWAS files for this cohort.',
+            life: 3000
+        });
+        gwasFiles.value = [];
+    } finally {
+        loadingGwasFiles.value = false;
+    }
 });
 
 // Download file
@@ -262,6 +345,15 @@ async function downloadFile(fileId) {
             life: 5000
         });
     }
+}
+
+// Format file size helper
+function formatFileSize(bytes) {
+    if (!bytes || bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 </script>
 

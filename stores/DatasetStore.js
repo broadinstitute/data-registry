@@ -573,6 +573,11 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
+        async fetchSGCGWASFiles(cohortId) {
+            const { data } = await sgcAxios.get(`/api/sgc/gwas-files/${cohortId}`);
+            return data;
+        },
+
         // PEG Study Management
         async createPEGStudy(metadata) {
             const { data } = await pegAxios.post('/api/peg/studies', metadata);
