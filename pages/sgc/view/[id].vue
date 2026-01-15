@@ -179,11 +179,6 @@
                             </span>
                         </template>
                     </Column>
-                    <Column field="uploaded_by" header="Uploaded By">
-                        <template #body="{ data }">
-                            <span class="text-sm">{{ data.uploaded_by }}</span>
-                        </template>
-                    </Column>
                 </DataTable>
             </div>
         </div>

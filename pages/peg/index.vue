@@ -33,16 +33,6 @@ const createStudy = () => {
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString();
 };
-
-const formatGuid = (guid) => {
-  if (!guid) return '-';
-  // Convert plain hex string to UUID format with dashes
-  const cleaned = guid.replace(/-/g, '');
-  if (cleaned.length === 32) {
-    return `${cleaned.slice(0, 8)}-${cleaned.slice(8, 12)}-${cleaned.slice(12, 16)}-${cleaned.slice(16, 20)}-${cleaned.slice(20)}`;
-  }
-  return guid;
-};
 </script>
 
 <template>
@@ -99,9 +89,9 @@ const formatGuid = (guid) => {
             </template>
           </Column>
 
-          <Column field="id" header="Accession ID" sortable>
+          <Column field="accession_id" header="Accession ID" sortable>
             <template #body="{ data }">
-              <span class="font-mono text-sm">PEG-{{ formatGuid(data.id) }}</span>
+              <span class="font-mono text-sm">{{ data.accession_id || '-' }}</span>
             </template>
           </Column>
 

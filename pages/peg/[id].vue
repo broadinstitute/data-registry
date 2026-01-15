@@ -44,7 +44,7 @@
           <div class="col-12 md:col-6">
             <div class="field">
               <label>Accession ID</label>
-              <p class="font-semibold">PEG-{{ formatGuid(studyData.id) }}</p>
+              <p class="font-semibold">{{ studyData.accession_id || '-' }}</p>
             </div>
           </div>
 
@@ -223,17 +223,6 @@ const formatFileSize = (bytes) => {
   if (bytes < 1024) return bytes + ' B';
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
   return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-};
-
-const formatGuid = (guid) => {
-  if (!guid) return '-';
-  // Convert plain hex string to UUID format with dashes
-  // e.g., 0f7af7f752434a2b90d6ffe1683c4241 -> 0f7af7f7-5243-4a2b-90d6-ffe1683c4241
-  const cleaned = guid.replace(/-/g, '');
-  if (cleaned.length === 32) {
-    return `${cleaned.slice(0, 8)}-${cleaned.slice(8, 12)}-${cleaned.slice(12, 16)}-${cleaned.slice(16, 20)}-${cleaned.slice(20)}`;
-  }
-  return guid; // Return as-is if already formatted or invalid length
 };
 
 const downloadFile = async (fileId) => {
