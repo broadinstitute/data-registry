@@ -1,7 +1,11 @@
 <script setup>
 import { usePrimeVue } from "primevue/config";
+import { useUserStore } from "~/stores/UserStore";
 
 const $primevue = usePrimeVue();
+const route = useRoute();
+const router = useRouter();
+const userStore = useUserStore();
 
 // Apply PEG-specific theme
 useHead({
@@ -12,17 +16,36 @@ useHead({
     }
   ]
 });
+
+// Hide navbar on login page
+const showNavbar = computed(() => route.path !== '/peg/login');
+
+// Handle logout
+async function handleLogout() {
+  userStore.logoutPEG();
+  await router.push('/peg/login');
+}
 </script>
 
 <template>
   <div class="layout-wrapper">
-    <div class="layout-topbar">
+    <div v-if="showNavbar" class="layout-topbar">
       <nuxt-link to="/peg" class="layout-topbar-logo">
         <span class="text-2xl font-bold">PEG Data Registry</span>
       </nuxt-link>
+      
+      <div class="layout-topbar-menu">
+        <Button 
+          label="Sign Out" 
+          icon="bi-box-arrow-right" 
+          text
+          @click="handleLogout"
+          class="p-button-text"
+        />
+      </div>
     </div>
 
-    <div class="layout-main-container">
+    <div class="layout-main-container" :class="{ 'no-topbar': !showNavbar }">
       <div class="layout-main">
         <NuxtPage />
       </div>
@@ -68,8 +91,9 @@ useHead({
 }
 
 .layout-topbar-menu {
-  margin-left: 2rem;
-  flex-grow: 1;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
 }
 
 .layout-main-container {
@@ -79,6 +103,10 @@ useHead({
   justify-content: space-between;
   padding: 7rem 2rem 2rem 2rem;
   transition: margin-left 0.2s;
+
+  &.no-topbar {
+    padding-top: 2rem;
+  }
 }
 
 .layout-main {

@@ -8,6 +8,8 @@ export const useUserStore = defineStore("UserStore", {
             loginError: null,
             // SGC axios instance for user service
             sgcAxios: null,
+            // PEG axios instance for user service
+            pegAxios: null,
         };
     },
     actions: {
@@ -234,6 +236,110 @@ export const useUserStore = defineStore("UserStore", {
             return roleNames.includes('sgc-reviewer') ||
                    this.user.permissions?.includes('manage_users') ||
                    roleNames.includes('reviewer');
+        },
+
+        // PEG User Service Authentication Methods
+        initPEG() {
+            const config = useRuntimeConfig();
+            if (!config.public.userServiceUrl) {
+                throw new Error('User service URL not configured');
+            }
+            // Create axios instance for user service
+            this.pegAxios = $fetch.create({
+                baseURL: config.public.userServiceUrl,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+        },
+
+        async loginPEG(username, password) {
+            try {
+                if (!this.pegAxios) {
+                    this.initPEG();
+                }
+
+                const config = useRuntimeConfig();
+                
+                // Login to user service
+                const response = await this.pegAxios('/api/auth/login/', {
+                    method: 'POST',
+                    body: {
+                        username,
+                        password,
+                        group: config.public.pegUserGroup || 'peg'
+                    }
+                });
+
+                if (response.access) {
+                    // Store JWT token
+                    localStorage.setItem('pegAuthToken', response.access);
+                    
+                    // Store user info directly from login response
+                    if (response.user) {
+                        this.user = response.user;
+                        this.loginError = null;
+                        return true;
+                    }
+                }
+                
+                this.loginError = 'Invalid credentials';
+                return false;
+            } catch (error) {
+                console.error('PEG login error:', error);
+                this.loginError = error.data?.detail || 'Login failed. Please check your credentials.';
+                return false;
+            }
+        },
+
+        async verifyPEGToken() {
+            try {
+                if (!this.pegAxios) {
+                    this.initPEG();
+                }
+
+                const config = useRuntimeConfig();
+                const token = localStorage.getItem('pegAuthToken');
+                
+                if (!token) {
+                    return false;
+                }
+
+                const pegUserGroup = config.public.pegUserGroup || 'peg';
+                
+                // Verify token with user service
+                const response = await this.pegAxios(`/api/auth/verify/?group=${pegUserGroup}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.user) {
+                    this.user = response.user;
+                    return true;
+                }
+                
+                return false;
+            } catch (error) {
+                console.error('PEG token verification error:', error);
+                localStorage.removeItem('pegAuthToken');
+                return false;
+            }
+        },
+
+        async isPEGUserLoggedIn() {
+            const token = localStorage.getItem('pegAuthToken');
+            if (!token) {
+                return false;
+            }
+            return await this.verifyPEGToken();
+        },
+
+        logoutPEG() {
+            localStorage.removeItem('pegAuthToken');
+            this.user = null;
+            this.loginError = null;
         },
     },
 });

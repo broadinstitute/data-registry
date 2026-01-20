@@ -8,12 +8,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
         return;
     }
     const nuxtApp = useNuxtApp();
-    if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login') || to.path.startsWith('/sgc/login')){
-        return;
-    }
-    
-    // Skip authentication for PEG routes
-    if (to.path.startsWith('/peg')) {
+    if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login') || to.path.startsWith('/sgc/login') || to.path.startsWith('/peg/login')){
         return;
     }
     
@@ -33,6 +28,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
             return callWithNuxt(nuxtApp, navigateTo, ['/sgc/login?redirect=' + to.path]);
         }
         // User is authenticated for SGC, allow access
+        return;
+    }
+
+    // Check PEG authentication for PEG routes
+    if (to.path.startsWith('/peg')) {
+        isLoggedIn = await userStore.isPEGUserLoggedIn();
+        
+        if (!isLoggedIn) {
+            return callWithNuxt(nuxtApp, navigateTo, ['/peg/login?redirect=' + to.path]);
+        }
+        // User is authenticated for PEG, allow access
         return;
     }
 
