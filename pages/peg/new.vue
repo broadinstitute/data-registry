@@ -1,6 +1,6 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 
@@ -15,6 +15,8 @@ const store = useDatasetStore();
 const formSchema = yup.object({
   name: yup.string().required().label('Study Name'),
   study_author: yup.string().required().label('Study Author'),
+  phenotype: yup.string().required().label('Phenotype'),
+  citation: yup.string().label('Citation'),
 });
 
 const { defineField, errors, values, validate, resetForm } = useForm({
@@ -24,6 +26,13 @@ const { defineField, errors, values, validate, resetForm } = useForm({
 // Form fields
 const [name] = defineField('name');
 const [study_author] = defineField('study_author');
+const [phenotype] = defineField('phenotype');
+const [citation] = defineField('citation');
+
+// Phenotype autocomplete
+const phenotypeObj = ref({});
+const filteredPhenotypes = ref([]);
+const allPhenotypes = ref([]);
 
 // File upload state
 const pegListFile = ref(null);
@@ -35,11 +44,42 @@ const pegMetadataInput = ref(null);
 
 const submitting = ref(false);
 
+// Load phenotypes on mount
+onMounted(async () => {
+  try {
+    const response = await fetch('https://bioindex.hugeamp.org/api/portal/phenotypes?q=md');
+    const data = await response.json();
+    allPhenotypes.value = data.data;
+  } catch (error) {
+    console.error('Error fetching phenotypes:', error);
+    store.errorMessage = 'Failed to load phenotypes';
+    store.showNotification = true;
+  }
+});
+
 // Active accordion sections
 const activeAccordionIndex = ref(0);
 
 const isMetadataValid = computed(() => {
-  return !!(values.name && values.study_author);
+  return !!(values.name && values.study_author && values.phenotype);
+});
+
+// Phenotype autocomplete filter function
+function filterPhenotypes(event) {
+  filteredPhenotypes.value = allPhenotypes.value.filter((p) => {
+    if (event.query.length < 2) { return false; }
+    const words = event.query.split(" ");
+    let matches = 0;
+    words.forEach((word) => {
+      if (p.description.toLowerCase().includes(word.toLowerCase())) { matches++; }
+    });
+    return matches === words.length;
+  });
+}
+
+// Watch for phenotype object changes to update the form value
+watch(phenotypeObj, (newValue) => {
+  phenotype.value = newValue?.name || '';
 });
 
 const canSubmit = computed(() => {
@@ -123,6 +163,8 @@ const handleSubmitStudy = async () => {
       name: values.name,
       metadata: {
         study_author: values.study_author,
+        phenotype: values.phenotype,
+        citation: values.citation || '',
       }
     };
 
@@ -311,6 +353,31 @@ const handleCancel = () => {
                   placeholder="e.g., John Doe"
                 />
                 <small class="p-error">{{ errors.study_author }}</small>
+              </div>
+
+              <div class="field">
+                <label for="phenotype">Phenotype <span class="text-red-500">*</span></label>
+                <AutoComplete
+                  id="phenotype"
+                  v-model="phenotypeObj"
+                  :suggestions="filteredPhenotypes"
+                  optionLabel="description"
+                  placeholder="Type to search phenotypes"
+                  @complete="filterPhenotypes"
+                  :class="{ 'p-invalid': errors.phenotype }"
+                />
+                <small class="p-error">{{ errors.phenotype }}</small>
+              </div>
+
+              <div class="field">
+                <label for="citation">Citation</label>
+                <InputText
+                  id="citation"
+                  v-model="citation"
+                  :class="{ 'p-invalid': errors.citation }"
+                  placeholder="e.g., Aragam et al., Nature Genetics, 2021"
+                />
+                <small class="p-error">{{ errors.citation }}</small>
               </div>
 
               <div class="flex justify-content-end gap-2 mt-4">

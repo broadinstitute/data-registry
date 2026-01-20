@@ -578,6 +578,15 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
+        async downloadSGCGWASFile(fileId) {
+            const { data } = await sgcAxios.get(`/api/sgc/gwas-file/${fileId}/download`);
+            if (data.presigned_url) {
+                window.open(data.presigned_url, '_blank');
+            } else {
+                throw new Error('No download URL found in response');
+            }
+        },
+
         // PEG Study Management
         async createPEGStudy(metadata) {
             const { data } = await pegAxios.post('/api/peg/studies', metadata);

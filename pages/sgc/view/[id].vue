@@ -179,6 +179,18 @@
                             </span>
                         </template>
                     </Column>
+                    <Column header="Actions" style="width: 8rem">
+                        <template #body="{ data }">
+                            <Button
+                                icon="pi pi-download"
+                                severity="secondary"
+                                outlined
+                                size="small"
+                                @click="downloadGWASFile(data.id)"
+                                title="Download GWAS file"
+                            />
+                        </template>
+                    </Column>
                 </DataTable>
             </div>
         </div>
@@ -337,6 +349,21 @@ async function downloadFile(fileId) {
             severity: 'error',
             summary: 'Download Error',
             detail: 'Failed to download file. Please try again.',
+            life: 5000
+        });
+    }
+}
+
+// Download GWAS file
+async function downloadGWASFile(fileId) {
+    try {
+        await store.downloadSGCGWASFile(fileId);
+    } catch (error) {
+        console.error('Error downloading GWAS file:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Download Error',
+            detail: 'Failed to download GWAS file. Please try again.',
             life: 5000
         });
     }

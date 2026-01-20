@@ -101,6 +101,12 @@ const formatDate = (dateString) => {
             </template>
           </Column>
 
+          <Column field="metadata.phenotype" header="Phenotype" sortable>
+            <template #body="{ data }">
+              {{ data.metadata?.phenotype || '-' }}
+            </template>
+          </Column>
+
           <Column field="created_at" header="Created" sortable>
             <template #body="{ data }">
               {{ formatDate(data.created_at) }}
