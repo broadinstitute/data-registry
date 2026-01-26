@@ -32,16 +32,6 @@ const pegAxios = usePEGAxios(config, undefined, (error) => {
     return Promise.reject(error);
 });
 
-const calrAxios = useCalrAxios(config, undefined, (error) => {
-    const store = useDatasetStore();
-    store.processing = false;
-    store.errorMessage =
-        error.response?.data.detail || error.message || error.errorMessage;
-    store.serverSuccess = false;
-    store.showNotification = true;
-    return Promise.reject(error);
-});
-
 function onUpload(progressEvent) {
     const store = useDatasetStore();
     store.uploadProgress = Math.round(
@@ -789,34 +779,6 @@ export const useDatasetStore = defineStore("DatasetStore", {
             } else {
                 throw new Error('No download URL found in response');
             }
-        },
-
-        // CalR API methods
-        async uploadCalrFile(file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            const { data } = await calrAxios.post('/api/calr/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            return data;
-        },
-
-        async processCalrData(sessionId, subjects, variable, aggregateBy, darkHour, lightHour) {
-            const { data } = await calrAxios.post('/api/calr/process', {
-                session_id: sessionId,
-                subjects: subjects,
-                variable: variable,
-                aggregate_by: aggregateBy,
-                dark_hour: darkHour,
-                light_hour: lightHour,
-            });
-            return data;
-        },
-
-        async deleteCalrSession(sessionId) {
-            await calrAxios.delete(`/api/calr/session/${sessionId}`);
         },
 
     },

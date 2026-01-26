@@ -16,11 +16,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if (to.path.startsWith('/mskkp')) {
         return;
     }
-
-    // Skip authentication for CalR routes
-    if (to.path.startsWith('/calr')) {
-        return;
-    }
     
     const userStore = useUserStore();
     let isLoggedIn = false;
