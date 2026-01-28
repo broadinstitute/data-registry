@@ -10,6 +10,8 @@ export const useUserStore = defineStore("UserStore", {
             sgcAxios: null,
             // PEG axios instance for user service
             pegAxios: null,
+            // CALR axios instance for user service
+            calrAxios: null,
         };
     },
     actions: {
@@ -338,6 +340,110 @@ export const useUserStore = defineStore("UserStore", {
 
         logoutPEG() {
             localStorage.removeItem('pegAuthToken');
+            this.user = null;
+            this.loginError = null;
+        },
+
+        // CALR User Service Authentication Methods
+        initCALR() {
+            const config = useRuntimeConfig();
+            if (!config.public.userServiceUrl) {
+                throw new Error('User service URL not configured');
+            }
+            // Create axios instance for user service
+            this.calrAxios = $fetch.create({
+                baseURL: config.public.userServiceUrl,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+        },
+
+        async loginCALR(username, password) {
+            try {
+                if (!this.calrAxios) {
+                    this.initCALR();
+                }
+
+                const config = useRuntimeConfig();
+
+                // Login to user service
+                const response = await this.calrAxios('/api/auth/login/', {
+                    method: 'POST',
+                    body: {
+                        username,
+                        password,
+                        group: config.public.calrUserGroup || 'calr'
+                    }
+                });
+
+                if (response.access) {
+                    // Store JWT token
+                    localStorage.setItem('calrAuthToken', response.access);
+
+                    // Store user info directly from login response
+                    if (response.user) {
+                        this.user = response.user;
+                        this.loginError = null;
+                        return true;
+                    }
+                }
+
+                this.loginError = 'Invalid credentials';
+                return false;
+            } catch (error) {
+                console.error('CALR login error:', error);
+                this.loginError = error.data?.detail || 'Login failed. Please check your credentials.';
+                return false;
+            }
+        },
+
+        async verifyCALRToken() {
+            try {
+                if (!this.calrAxios) {
+                    this.initCALR();
+                }
+
+                const config = useRuntimeConfig();
+                const token = localStorage.getItem('calrAuthToken');
+
+                if (!token) {
+                    return false;
+                }
+
+                const calrUserGroup = config.public.calrUserGroup || 'calr';
+
+                // Verify token with user service
+                const response = await this.calrAxios(`/api/auth/verify/?group=${calrUserGroup}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.user) {
+                    this.user = response.user;
+                    return true;
+                }
+
+                return false;
+            } catch (error) {
+                console.error('CALR token verification error:', error);
+                localStorage.removeItem('calrAuthToken');
+                return false;
+            }
+        },
+
+        async isCALRUserLoggedIn() {
+            const token = localStorage.getItem('calrAuthToken');
+            if (!token) {
+                return false;
+            }
+            return await this.verifyCALRToken();
+        },
+
+        logoutCALR() {
+            localStorage.removeItem('calrAuthToken');
             this.user = null;
             this.loginError = null;
         },

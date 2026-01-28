@@ -32,6 +32,16 @@ const pegAxios = usePEGAxios(config, undefined, (error) => {
     return Promise.reject(error);
 });
 
+const calrAxios = useCALRAxios(config, undefined, (error) => {
+    const store = useDatasetStore();
+    store.processing = false;
+    store.errorMessage =
+        error.response?.data.detail || error.message || error.errorMessage;
+    store.serverSuccess = false;
+    store.showNotification = true;
+    return Promise.reject(error);
+});
+
 function onUpload(progressEvent) {
     const store = useDatasetStore();
     store.uploadProgress = Math.round(
@@ -779,6 +789,59 @@ export const useDatasetStore = defineStore("DatasetStore", {
             } else {
                 throw new Error('No download URL found in response');
             }
+        },
+
+        // CALR File Operations
+        async fetchCALRFiles() {
+            const { data } = await calrAxios.get('/api/calr/files');
+            return data;
+        },
+
+        async uploadCALRFile(file, name) {
+            this.processing = true;
+            this.modalMsg = "Uploading CALR File";
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('name', name);
+
+            const { data } = await calrAxios.post(
+                '/api/calr/files',
+                formData,
+                {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    onUploadProgress: onUpload
+                }
+            );
+
+            this.processing = false;
+            return data;
+        },
+
+        async downloadCALRFile(fileId, fileName) {
+            // The backend returns a streaming response, so we need to handle it as a blob
+            const response = await calrAxios.get(`/api/calr/files/${fileId}`, {
+                responseType: 'blob'
+            });
+
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        },
+
+        async getCALRFileInfo(fileId) {
+            const { data } = await calrAxios.get(`/api/calr/files/${fileId}/info`);
+            return data;
+        },
+
+        async deleteCALRFile(fileId) {
+            await calrAxios.delete(`/api/calr/files/${fileId}`);
         },
 
     },

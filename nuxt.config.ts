@@ -39,9 +39,11 @@ export default defineNuxtConfig({
           phenotypesUrl: "",
           googleAuthClientId: "",
           googleAuthRedirectUri: "",
-          // User service configuration for SGC
+          // User service configuration for SGC/PEG/CALR
           userServiceUrl: "https://users.kpndataregistry.org",
-          sgcUserGroup: "sgc"
+          sgcUserGroup: "sgc",
+          pegUserGroup: "peg",
+          calrUserGroup: "calr"
       },
   },
 

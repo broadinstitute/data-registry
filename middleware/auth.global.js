@@ -8,7 +8,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
         return;
     }
     const nuxtApp = useNuxtApp();
-    if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login') || to.path.startsWith('/sgc/login') || to.path.startsWith('/peg/login')){
+    if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login') || to.path.startsWith('/sgc/login') || to.path.startsWith('/peg/login') || to.path.startsWith('/calr/login')){
         return;
     }
     
@@ -34,11 +34,22 @@ export default defineNuxtRouteMiddleware(async (to) => {
     // Check PEG authentication for PEG routes
     if (to.path.startsWith('/peg')) {
         isLoggedIn = await userStore.isPEGUserLoggedIn();
-        
+
         if (!isLoggedIn) {
             return callWithNuxt(nuxtApp, navigateTo, ['/peg/login?redirect=' + to.path]);
         }
         // User is authenticated for PEG, allow access
+        return;
+    }
+
+    // Check CALR authentication for CALR routes
+    if (to.path.startsWith('/calr')) {
+        isLoggedIn = await userStore.isCALRUserLoggedIn();
+
+        if (!isLoggedIn) {
+            return callWithNuxt(nuxtApp, navigateTo, ['/calr/login?redirect=' + to.path]);
+        }
+        // User is authenticated for CALR, allow access
         return;
     }
 
