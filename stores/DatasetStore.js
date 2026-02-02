@@ -597,6 +597,11 @@ export const useDatasetStore = defineStore("DatasetStore", {
             }
         },
 
+        async fetchGWASSummary() {
+            const { data } = await sgcAxios.get('/api/sgc/gwas-summary');
+            return data;
+        },
+
         // PEG Study Management
         async createPEGStudy(metadata) {
             const { data } = await pegAxios.post('/api/peg/studies', metadata);

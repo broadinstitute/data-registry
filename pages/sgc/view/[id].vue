@@ -156,6 +156,16 @@
                             <Tag :value="data.ancestry" severity="secondary" />
                         </template>
                     </Column>
+                    <Column field="cases" header="Cases" :sortable="true">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.cases !== null ? data.cases : '-' }}</span>
+                        </template>
+                    </Column>
+                    <Column field="controls" header="Controls" :sortable="true">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.controls !== null ? data.controls : '-' }}</span>
+                        </template>
+                    </Column>
                     <Column field="file_name" header="File Name">
                         <template #body="{ data }">
                             <span class="text-sm">{{ data.file_name }}</span>
