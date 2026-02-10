@@ -597,6 +597,15 @@ export const useDatasetStore = defineStore("DatasetStore", {
             }
         },
 
+        async downloadAllSGCFiles() {
+            const { data } = await sgcAxios.get('/api/sgc/download-all-files');
+            if (data.presigned_url) {
+                window.open(data.presigned_url, '_blank');
+            } else {
+                throw new Error('No download URL found in response');
+            }
+        },
+
         async fetchGWASSummary() {
             const { data } = await sgcAxios.get('/api/sgc/gwas-summary');
             return data;

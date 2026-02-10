@@ -114,6 +114,19 @@ const downloadFile = async (fileId) => {
   }
 };
 
+const downloadAllFiles = async () => {
+  try {
+    await store.downloadAllSGCFiles();
+  } catch (error) {
+    if (error.response?.status === 404) {
+      alert('The file archive has not been built yet. Please try again later.');
+    } else {
+      console.error('Error downloading all files:', error);
+      alert('Error downloading files. Please try again.');
+    }
+  }
+};
+
 const columns = ref([
   {
     header: "Cohort Name",
@@ -322,6 +335,13 @@ const filters = ref(
                 icon="bi-upload"
                 class="mr-2"
                 @click="route.push('/sgc/new')"
+            ></Button>
+            <Button v-can="'sgc-review-data'"
+                label="Download All Files"
+                icon="bi-download"
+                severity="secondary"
+                outlined
+                @click="downloadAllFiles"
             ></Button>
           </div>
             <Card class="mt-4">
