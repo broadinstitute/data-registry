@@ -569,6 +569,10 @@ export const useDatasetStore = defineStore("DatasetStore", {
             await sgcAxios.delete(`/api/sgc/cohort-files/${fileId}`);
         },
 
+        async deleteSGCGWASFile(fileId) {
+            await sgcAxios.delete(`/api/sgc/gwas-file/${fileId}`);
+        },
+
         async downloadSGCFile(fileId) {
             const { data } = await sgcAxios.get(`/api/sgc/cohort-files/${fileId}`);
             if (data.presigned_url) {

@@ -189,22 +189,59 @@
                             </span>
                         </template>
                     </Column>
-                    <Column header="Actions" style="width: 8rem">
+                    <Column header="Actions" style="width: 10rem">
                         <template #body="{ data }">
-                            <Button
-                                icon="pi pi-download"
-                                severity="secondary"
-                                outlined
-                                size="small"
-                                @click="downloadGWASFile(data.id)"
-                                title="Download GWAS file"
-                            />
+                            <div class="flex gap-1">
+                                <Button
+                                    icon="pi pi-download"
+                                    severity="secondary"
+                                    outlined
+                                    size="small"
+                                    @click="downloadGWASFile(data.id)"
+                                    title="Download GWAS file"
+                                />
+                                <Button
+                                    icon="pi pi-trash"
+                                    severity="danger"
+                                    outlined
+                                    size="small"
+                                    @click="confirmDeleteGWAS(data)"
+                                    title="Delete GWAS file"
+                                />
+                            </div>
                         </template>
                     </Column>
                 </DataTable>
             </div>
         </div>
     </div>
+
+    <Dialog
+        v-model:visible="deleteGWASDialog"
+        modal
+        header="Confirm Delete"
+        :style="{ width: '450px' }"
+    >
+        <div class="flex align-items-center justify-content-center">
+            <i class="pi pi-exclamation-triangle mr-3" style="color: var(--red-500); font-size: 1.5rem" />
+            <span>Are you sure you want to delete this GWAS file?</span>
+        </div>
+        <template #footer>
+            <Button
+                label="No"
+                icon="pi pi-times"
+                outlined
+                @click="deleteGWASDialog = false"
+                class="mr-2"
+            />
+            <Button
+                label="Yes"
+                icon="pi pi-check"
+                severity="danger"
+                @click="handleDeleteGWAS"
+            />
+        </template>
+    </Dialog>
 
     <Toast position="top-center" />
 </template>
@@ -231,6 +268,8 @@ const validationPassed = ref(false);
 const uploadedFiles = ref([]);
 const gwasFiles = ref([]);
 const loadingGwasFiles = ref(true);
+const deleteGWASDialog = ref(false);
+const gwasFileToDelete = ref(null);
 
 // File types mapping for display
 const fileTypeLabels = {
@@ -374,6 +413,35 @@ async function downloadGWASFile(fileId) {
             severity: 'error',
             summary: 'Download Error',
             detail: 'Failed to download GWAS file. Please try again.',
+            life: 5000
+        });
+    }
+}
+
+// Delete GWAS file
+function confirmDeleteGWAS(file) {
+    gwasFileToDelete.value = file;
+    deleteGWASDialog.value = true;
+}
+
+async function handleDeleteGWAS() {
+    try {
+        await store.deleteSGCGWASFile(gwasFileToDelete.value.id);
+        gwasFiles.value = gwasFiles.value.filter(f => f.id !== gwasFileToDelete.value.id);
+        deleteGWASDialog.value = false;
+        gwasFileToDelete.value = null;
+        toast.add({
+            severity: 'success',
+            summary: 'Deleted',
+            detail: 'GWAS file deleted successfully.',
+            life: 3000
+        });
+    } catch (error) {
+        console.error('Error deleting GWAS file:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to delete GWAS file. Please try again.',
             life: 5000
         });
     }
