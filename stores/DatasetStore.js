@@ -622,6 +622,31 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
+        // SGC GWAS Cohort (Phase 1)
+        async submitSGCGWASCohort(cohortData) {
+            const { data } = await sgcAxios.post('/api/sgc/gwas-cohorts', cohortData);
+            return data;
+        },
+
+        async fetchSGCGWASCohorts() {
+            const { data } = await sgcAxios.get('/api/sgc/gwas-cohorts');
+            return data;
+        },
+
+        async fetchSGCGWASCohort(cohortId) {
+            const { data } = await sgcAxios.get(`/api/sgc/gwas-cohorts/${cohortId}`);
+            return data;
+        },
+
+        async updateSGCGWASCohort(cohortId, cohortData) {
+            const { data } = await sgcAxios.put(`/api/sgc/gwas-cohorts/${cohortId}`, cohortData);
+            return data;
+        },
+
+        async deleteSGCGWASCohort(cohortId) {
+            await sgcAxios.delete(`/api/sgc/gwas-cohorts/${cohortId}`);
+        },
+
         // PEG Study Management
         async createPEGStudy(metadata) {
             const { data } = await pegAxios.post('/api/peg/studies', metadata);

@@ -13,6 +13,9 @@
             <NuxtLink to="/sgc/new" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
               New Cohort
             </NuxtLink>
+            <NuxtLink to="/sgc/gwas-cohort/new" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+              New GWAS Cohort
+            </NuxtLink>
             <NuxtLink to="/sgc/phenotypes" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
               View Phenotypes
             </NuxtLink>
