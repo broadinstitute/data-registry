@@ -111,6 +111,18 @@ async function sampleFile(e) {
         fileInfo.value.columns.forEach((col) => {
             selectedFields.value[col] = null;
         });
+
+        // Auto-suggest column mappings
+        const targetFields = colOptions.map((opt) => opt.value);
+        const suggestions = await store.suggestColumnMap(
+            fileInfo.value.columns,
+            targetFields,
+        );
+        Object.entries(suggestions).forEach(([col, target]) => {
+            if (col in selectedFields.value) {
+                selectedFields.value[col] = target;
+            }
+        });
     } catch (error) {
         console.log(error);
         toast.add({

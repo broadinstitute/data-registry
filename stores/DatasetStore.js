@@ -327,6 +327,13 @@ export const useDatasetStore = defineStore("DatasetStore", {
             this.processing = false;
             return data;
         },
+        async suggestColumnMap(columns, targetFields) {
+            const { data } = await configuredAxios.post(
+                "/api/mskkp/suggest-column-map",
+                JSON.stringify({ columns, target_fields: targetFields }),
+            );
+            return data.suggested_map;
+        },
         async trackBioindex(request) {
             const { data } = await configuredAxios.post(
                 "/api/trackbioindex",
