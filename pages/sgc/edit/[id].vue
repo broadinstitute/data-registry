@@ -21,6 +21,10 @@
     <!-- Main Content -->
     <div class="grid" v-else>
         <div class="col-12">
+            <TabView v-model:activeIndex="activeTabIndex">
+
+                <!-- Tab 1: Phase 0 Upload -->
+                <TabPanel header="Phase 0 Upload">
             <div class="card p-fluid">
                 <h5>Cohort Setup</h5>
                 <p class="text-sm mb-4">
@@ -641,6 +645,24 @@
                     </AccordionTab>
                 </Accordion>
             </div>
+                </TabPanel>
+
+                <!-- Tab 2: GWAS Metadata -->
+                <TabPanel header="GWAS Metadata">
+                    <div class="card p-fluid">
+                        <h5>GWAS Cohort Metadata</h5>
+                        <p class="text-sm mb-4">
+                            Provide cohort-level information required for GWAS submission. This metadata applies to all datasets submitted for this cohort.
+                        </p>
+                        <SGCGWASCohortForm
+                            :initial-data="gwasMetadata"
+                            save-button-label="Save GWAS Metadata"
+                            @save="handleGWASMetadataSave"
+                        />
+                    </div>
+                </TabPanel>
+
+            </TabView>
         </div>
     </div>
 
@@ -710,8 +732,13 @@ const metadataSaved = ref(false);
 const validatingConsistency = ref(false);
 const validationPassed = ref(false);
 
-// File upload reactive variables
+// Tab and accordion state
+const activeTabIndex = ref(0);
 const activeAccordionIndex = ref(0);
+
+// GWAS metadata state
+const gwasMetadata = ref({});
+const gwasMetadataId = ref(null);
 
 const casesControlsMaleFile = ref(null);
 const casesControlsFemaleFile = ref(null);
@@ -1073,7 +1100,18 @@ onMounted(async () => {
         } else {
             throw new Error('Cohort not found');
         }
-        
+
+        // Load GWAS metadata if it exists for this cohort
+        try {
+            const gwas = await store.fetchSGCGWASCohort(cohortId);
+            if (gwas) {
+                gwasMetadataId.value = gwas.id;
+                gwasMetadata.value = gwas.metadata || {};
+            }
+        } catch {
+            // No GWAS metadata yet — that's fine
+        }
+
     } catch (error) {
         console.error('Error loading cohort:', error);
         toast.add({
@@ -1090,6 +1128,24 @@ onMounted(async () => {
         loading.value = false;
     }
 });
+
+// Handle GWAS metadata save
+async function handleGWASMetadataSave(formData) {
+    try {
+        const payload = { metadata: formData };
+        if (gwasMetadataId.value) {
+            await store.updateSGCGWASCohort(cohortId, payload);
+        } else {
+            const result = await store.submitSGCGWASCohort(cohortId, payload);
+            gwasMetadataId.value = result.id;
+        }
+        gwasMetadata.value = formData;
+        toast.add({ severity: 'success', summary: 'Saved', detail: 'GWAS metadata saved successfully.', life: 3000 });
+    } catch (error) {
+        const detail = error.response?.data?.detail || 'Failed to save GWAS metadata.';
+        toast.add({ severity: 'error', summary: 'Error', detail, life: 5000 });
+    }
+}
 
 // Handle metadata update
 function handleMetadataUpdated(response) {

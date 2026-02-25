@@ -622,29 +622,20 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
-        // SGC GWAS Cohort (Phase 1)
-        async submitSGCGWASCohort(cohortData) {
-            const { data } = await sgcAxios.post('/api/sgc/gwas-cohorts', cohortData);
-            return data;
-        },
-
-        async fetchSGCGWASCohorts() {
-            const { data } = await sgcAxios.get('/api/sgc/gwas-cohorts');
-            return data;
-        },
-
+        // SGC GWAS Metadata (Phase 1) — nested under parent cohort
         async fetchSGCGWASCohort(cohortId) {
-            const { data } = await sgcAxios.get(`/api/sgc/gwas-cohorts/${cohortId}`);
+            const { data } = await sgcAxios.get(`/api/sgc/cohorts/${cohortId}/gwas-metadata`);
+            return data;
+        },
+
+        async submitSGCGWASCohort(cohortId, cohortData) {
+            const { data } = await sgcAxios.post(`/api/sgc/cohorts/${cohortId}/gwas-metadata`, cohortData);
             return data;
         },
 
         async updateSGCGWASCohort(cohortId, cohortData) {
-            const { data } = await sgcAxios.put(`/api/sgc/gwas-cohorts/${cohortId}`, cohortData);
+            const { data } = await sgcAxios.put(`/api/sgc/cohorts/${cohortId}/gwas-metadata`, cohortData);
             return data;
-        },
-
-        async deleteSGCGWASCohort(cohortId) {
-            await sgcAxios.delete(`/api/sgc/gwas-cohorts/${cohortId}`);
         },
 
         // PEG Study Management
