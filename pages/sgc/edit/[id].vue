@@ -739,6 +739,22 @@ const activeAccordionIndex = ref(0);
 // GWAS metadata state
 const gwasMetadata = ref({});
 const gwasMetadataId = ref(null);
+const gwasMetadataLoaded = ref(false);
+
+watch(activeTabIndex, async (newIndex) => {
+    if (newIndex === 1 && !gwasMetadataLoaded.value) {
+        gwasMetadataLoaded.value = true;
+        try {
+            const gwas = await store.fetchSGCGWASCohort(cohortId);
+            if (gwas) {
+                gwasMetadataId.value = gwas.id;
+                gwasMetadata.value = gwas.metadata || {};
+            }
+        } catch {
+            // No GWAS metadata yet — that's fine
+        }
+    }
+});
 
 const casesControlsMaleFile = ref(null);
 const casesControlsFemaleFile = ref(null);
@@ -1101,17 +1117,6 @@ onMounted(async () => {
             throw new Error('Cohort not found');
         }
 
-        // Load GWAS metadata if it exists for this cohort
-        try {
-            const gwas = await store.fetchSGCGWASCohort(cohortId);
-            if (gwas) {
-                gwasMetadataId.value = gwas.id;
-                gwasMetadata.value = gwas.metadata || {};
-            }
-        } catch {
-            // No GWAS metadata yet — that's fine
-        }
-
     } catch (error) {
         console.error('Error loading cohort:', error);
         toast.add({
@@ -1140,10 +1145,10 @@ async function handleGWASMetadataSave(formData) {
             gwasMetadataId.value = result.id;
         }
         gwasMetadata.value = formData;
-        toast.add({ severity: 'success', summary: 'Saved', detail: 'GWAS metadata saved successfully.', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Saved', detail: 'GWAS metadata saved successfully.', life: 3000, group: 'default' });
     } catch (error) {
         const detail = error.response?.data?.detail || 'Failed to save GWAS metadata.';
-        toast.add({ severity: 'error', summary: 'Error', detail, life: 5000 });
+        toast.add({ severity: 'error', summary: 'Error', detail, life: 5000, group: 'default' });
     }
 }
 
