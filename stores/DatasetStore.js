@@ -833,18 +833,21 @@ export const useDatasetStore = defineStore("DatasetStore", {
         },
 
         // CALR File Operations
-        async fetchCALRFiles() {
+        async fetchCALRSubmissions() {
             const { data } = await calrAxios.get('/api/calr/files');
             return data;
         },
 
-        async uploadCALRFile(file, name) {
+        async uploadCALRSubmission(standardFile, sessionFile, name, description, isPublic) {
             this.processing = true;
-            this.modalMsg = "Uploading CALR File";
+            this.modalMsg = "Uploading CALR Files";
 
             const formData = new FormData();
-            formData.append('file', file);
+            formData.append('standard_file', standardFile);
+            formData.append('session_file', sessionFile);
             formData.append('name', name);
+            formData.append('description', description || '');
+            formData.append('public', isPublic);
 
             const { data } = await calrAxios.post(
                 '/api/calr/files',
@@ -876,13 +879,8 @@ export const useDatasetStore = defineStore("DatasetStore", {
             window.URL.revokeObjectURL(url);
         },
 
-        async getCALRFileInfo(fileId) {
-            const { data } = await calrAxios.get(`/api/calr/files/${fileId}/info`);
-            return data;
-        },
-
-        async deleteCALRFile(fileId) {
-            await calrAxios.delete(`/api/calr/files/${fileId}`);
+        async deleteCALRSubmission(submissionId) {
+            await calrAxios.delete(`/api/calr/files/${submissionId}`);
         },
 
     },
