@@ -437,7 +437,8 @@ onMounted(async () => {
         })(),
         (async () => {
             try {
-                gwasMetadata.value = await store.fetchSGCGWASCohort(cohortId);
+                const gwas = await store.fetchSGCGWASCohort(cohortId);
+                gwasMetadata.value = gwas ? (gwas.metadata || {}) : null;
             } catch (error) {
                 console.error('Error loading GWAS metadata:', error);
                 gwasMetadata.value = null;
