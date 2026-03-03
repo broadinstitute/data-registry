@@ -256,29 +256,20 @@ const columns = ref([
     field: "actions", 
     style: { width: "8rem", textAlign: "center" },
     component: (data) => {
-        // Check if cohort has all 5 files uploaded (excluding derived 'both' files)
-        const userUploadedFiles = data.files?.filter(f => 
-          f.file_type !== 'cases_controls_both' && f.file_type !== 'cooccurrence_both'
-        ) || [];
-        const hasAllFiles = userUploadedFiles.length === 5;
-        const isValidated = !!data.validation_status;
-        
         const buttons = [];
-        
-        // Show View button for completed cohorts
-        if (hasAllFiles && isValidated) {
-          buttons.push(h(
-              NuxtLink,
-              { to: `/sgc/view/${data.id}` },
-              () => h(Button, {
-                icon: "bi-eye",
-                severity: "info",
-                outlined: true,
-                size: "small",
-                title: "View cohort"
-              })
-          ));
-        }
+
+        // Always show View button
+        buttons.push(h(
+            NuxtLink,
+            { to: `/sgc/view/${data.id}` },
+            () => h(Button, {
+              icon: "bi-eye",
+              severity: "info",
+              outlined: true,
+              size: "small",
+              title: "View cohort"
+            })
+        ));
         
         // Always show Edit button
         buttons.push(h(

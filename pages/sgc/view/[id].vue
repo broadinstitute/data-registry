@@ -28,191 +28,236 @@
     <!-- Main Content -->
     <div class="grid" v-else>
         <div class="col-12">
-            <!-- Cohort Metadata -->
-            <div class="card p-fluid mb-4">
-                <h5>Cohort Information</h5>
-                <SGCMetadataForm 
-                    :initial-data="cohortData"
-                    :disabled="true"
-                    :show-save-button="false"
-                />
-            </div>
+            <TabView>
 
-            <!-- Files Section -->
-            <div class="card">
-                <h5>Uploaded Files</h5>
-                
-                <!-- Validation Status Banner -->
-                <div v-if="validationPassed" class="mb-4 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
-                    <div class="flex align-items-center gap-2">
-                        <i class="pi pi-check-circle text-green-600" style="font-size: 1.5rem"></i>
-                        <div>
-                            <span class="text-green-800 font-medium text-lg">Cohort Validated</span>
-                            <p class="text-green-700 text-sm mt-1 mb-0">All files have been uploaded and validated successfully.</p>
-                        </div>
+                <!-- Tab 1: Phase 0 -->
+                <TabPanel header="Phase 0">
+                    <!-- Cohort Metadata -->
+                    <div class="card p-fluid mb-4">
+                        <h5>Cohort Information</h5>
+                        <SGCMetadataForm
+                            :initial-data="cohortData"
+                            :disabled="true"
+                            :show-save-button="false"
+                        />
                     </div>
-                </div>
 
-                <div v-else class="mb-4 p-3" style="background-color: var(--orange-50); border: 1px solid var(--orange-200); border-radius: 6px;">
-                    <div class="flex align-items-center gap-2">
-                        <i class="pi pi-exclamation-triangle text-orange-600" style="font-size: 1.5rem"></i>
-                        <div>
-                            <span class="text-orange-800 font-medium text-lg">Validation Pending</span>
-                            <p class="text-orange-700 text-sm mt-1 mb-0">This cohort has not completed validation. Please edit the cohort to complete the upload process.</p>
-                        </div>
-                    </div>
-                </div>
+                    <!-- Files Section -->
+                    <div class="card">
+                        <h5>Uploaded Files</h5>
 
-                <!-- Files List -->
-                <DataTable :value="filesList" class="mt-3">
-                    <Column field="label" header="File Type" class="font-semibold"></Column>
-                    <Column field="fileName" header="File Name">
-                        <template #body="{ data }">
-                            <span v-if="data.fileName">{{ data.fileName }}</span>
-                            <span v-else class="text-gray-400">Not uploaded</span>
-                        </template>
-                    </Column>
-                    <Column field="uploadedAt" header="Uploaded">
-                        <template #body="{ data }">
-                            <span v-if="data.uploadedAt">
-                                {{ new Date(data.uploadedAt).toLocaleDateString('en-US', { 
-                                    year: 'numeric', 
-                                    month: 'short', 
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                }) }}
-                            </span>
-                            <span v-else class="text-gray-400">-</span>
-                        </template>
-                    </Column>
-                    <Column field="status" header="Status" style="width: 8rem">
-                        <template #body="{ data }">
-                            <Tag v-if="data.uploaded" severity="success" value="Uploaded" icon="pi pi-check" />
-                            <Tag v-else severity="danger" value="Missing" icon="pi pi-times" />
-                        </template>
-                    </Column>
-                    <Column header="Actions" style="width: 8rem">
-                        <template #body="{ data }">
-                            <Button
-                                v-if="data.fileId"
-                                icon="pi pi-download"
-                                severity="secondary"
-                                outlined
-                                size="small"
-                                @click="downloadFile(data.fileId)"
-                                title="Download file"
-                            />
-                        </template>
-                    </Column>
-                </DataTable>
-
-                <!-- Cohort Metadata -->
-                <div class="mt-4 pt-4" style="border-top: 1px solid var(--surface-300);">
-                    <h6 class="mb-3">Additional Information</h6>
-                    <div class="grid">
-                        <div class="col-12 md:col-6">
-                            <p class="text-sm text-gray-600 mb-1">Created</p>
-                            <p class="font-medium">{{ cohortData?.created_at ? new Date(cohortData.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '-' }}</p>
-                        </div>
-                        <div class="col-12 md:col-6">
-                            <p class="text-sm text-gray-600 mb-1">Uploaded By</p>
-                            <p class="font-medium">{{ cohortData?.uploaded_by || '-' }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GWAS Files Section -->
-            <div class="card mt-4">
-                <div class="flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">GWAS Files</h5>
-                    <Tag :value="gwasFiles.length + ' file' + (gwasFiles.length !== 1 ? 's' : '')" severity="info" />
-                </div>
-                
-                <div v-if="loadingGwasFiles" class="text-center p-4">
-                    <ProgressSpinner style="width: 40px; height: 40px" />
-                    <p class="mt-2 text-gray-600">Loading GWAS files...</p>
-                </div>
-
-                <div v-else-if="gwasFiles.length === 0" class="text-center p-4">
-                    <i class="pi pi-inbox text-gray-400" style="font-size: 3rem"></i>
-                    <p class="mt-3 text-gray-600">No GWAS files have been uploaded for this cohort yet.</p>
-                </div>
-
-                <DataTable v-else :value="gwasFiles" class="mt-3" :paginator="gwasFiles.length > 10" :rows="10">
-                    <Column field="dataset" header="Dataset" :sortable="true">
-                        <template #body="{ data }">
-                            <span class="font-medium">{{ data.dataset }}</span>
-                        </template>
-                    </Column>
-                    <Column field="phenotype" header="Phenotype" :sortable="true">
-                        <template #body="{ data }">
-                            <span>{{ data.phenotype }}</span>
-                        </template>
-                    </Column>
-                    <Column field="ancestry" header="Ancestry" :sortable="true">
-                        <template #body="{ data }">
-                            <Tag :value="data.ancestry" severity="secondary" />
-                        </template>
-                    </Column>
-                    <Column field="cases" header="Cases" :sortable="true">
-                        <template #body="{ data }">
-                            <span class="text-sm">{{ data.cases !== null ? data.cases : '-' }}</span>
-                        </template>
-                    </Column>
-                    <Column field="controls" header="Controls" :sortable="true">
-                        <template #body="{ data }">
-                            <span class="text-sm">{{ data.controls !== null ? data.controls : '-' }}</span>
-                        </template>
-                    </Column>
-                    <Column field="file_name" header="File Name">
-                        <template #body="{ data }">
-                            <span class="text-sm">{{ data.file_name }}</span>
-                        </template>
-                    </Column>
-                    <Column field="file_size" header="Size" :sortable="true">
-                        <template #body="{ data }">
-                            <span class="text-sm">{{ formatFileSize(data.file_size) }}</span>
-                        </template>
-                    </Column>
-                    <Column field="uploaded_at" header="Uploaded" :sortable="true">
-                        <template #body="{ data }">
-                            <span class="text-sm">
-                                {{ new Date(data.uploaded_at).toLocaleDateString('en-US', { 
-                                    year: 'numeric', 
-                                    month: 'short', 
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                }) }}
-                            </span>
-                        </template>
-                    </Column>
-                    <Column header="Actions" style="width: 10rem">
-                        <template #body="{ data }">
-                            <div class="flex gap-1">
-                                <Button
-                                    icon="pi pi-download"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    @click="downloadGWASFile(data.id)"
-                                    title="Download GWAS file"
-                                />
-                                <Button
-                                    icon="pi pi-trash"
-                                    severity="danger"
-                                    outlined
-                                    size="small"
-                                    @click="confirmDeleteGWAS(data)"
-                                    title="Delete GWAS file"
-                                />
+                        <!-- Validation Status Banner -->
+                        <div v-if="validationPassed" class="mb-4 p-3" style="background-color: var(--green-50); border: 1px solid var(--green-200); border-radius: 6px;">
+                            <div class="flex align-items-center gap-2">
+                                <i class="pi pi-check-circle text-green-600" style="font-size: 1.5rem"></i>
+                                <div>
+                                    <span class="text-green-800 font-medium text-lg">Cohort Validated</span>
+                                    <p class="text-green-700 text-sm mt-1 mb-0">All files have been uploaded and validated successfully.</p>
+                                </div>
                             </div>
-                        </template>
-                    </Column>
-                </DataTable>
-            </div>
+                        </div>
+
+                        <div v-else class="mb-4 p-3" style="background-color: var(--orange-50); border: 1px solid var(--orange-200); border-radius: 6px;">
+                            <div class="flex align-items-center gap-2">
+                                <i class="pi pi-exclamation-triangle text-orange-600" style="font-size: 1.5rem"></i>
+                                <div>
+                                    <span class="text-orange-800 font-medium text-lg">Validation Pending</span>
+                                    <p class="text-orange-700 text-sm mt-1 mb-0">This cohort has not completed validation. Please edit the cohort to complete the upload process.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Files List -->
+                        <DataTable :value="filesList" class="mt-3">
+                            <Column field="label" header="File Type" class="font-semibold"></Column>
+                            <Column field="fileName" header="File Name">
+                                <template #body="{ data }">
+                                    <span v-if="data.fileName">{{ data.fileName }}</span>
+                                    <span v-else class="text-gray-400">Not uploaded</span>
+                                </template>
+                            </Column>
+                            <Column field="uploadedAt" header="Uploaded">
+                                <template #body="{ data }">
+                                    <span v-if="data.uploadedAt">
+                                        {{ new Date(data.uploadedAt).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        }) }}
+                                    </span>
+                                    <span v-else class="text-gray-400">-</span>
+                                </template>
+                            </Column>
+                            <Column field="status" header="Status" style="width: 8rem">
+                                <template #body="{ data }">
+                                    <Tag v-if="data.uploaded" severity="success" value="Uploaded" icon="pi pi-check" />
+                                    <Tag v-else severity="danger" value="Missing" icon="pi pi-times" />
+                                </template>
+                            </Column>
+                            <Column header="Actions" style="width: 8rem">
+                                <template #body="{ data }">
+                                    <Button
+                                        v-if="data.fileId"
+                                        icon="pi pi-download"
+                                        severity="secondary"
+                                        outlined
+                                        size="small"
+                                        @click="downloadFile(data.fileId)"
+                                        title="Download file"
+                                    />
+                                </template>
+                            </Column>
+                        </DataTable>
+
+                        <!-- Cohort Metadata -->
+                        <div class="mt-4 pt-4" style="border-top: 1px solid var(--surface-300);">
+                            <h6 class="mb-3">Additional Information</h6>
+                            <div class="grid">
+                                <div class="col-12 md:col-6">
+                                    <p class="text-sm text-gray-600 mb-1">Created</p>
+                                    <p class="font-medium">{{ cohortData?.created_at ? new Date(cohortData.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '-' }}</p>
+                                </div>
+                                <div class="col-12 md:col-6">
+                                    <p class="text-sm text-gray-600 mb-1">Uploaded By</p>
+                                    <p class="font-medium">{{ cohortData?.uploaded_by || '-' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </TabPanel>
+
+                <!-- Tab 2: GWAS -->
+                <TabPanel header="GWAS">
+                    <!-- GWAS Cohort Metadata -->
+                    <div class="card p-fluid mb-4">
+                        <h5>GWAS Cohort Metadata</h5>
+                        <div v-if="loadingGwasMetadata" class="text-center p-4">
+                            <ProgressSpinner style="width: 40px; height: 40px" />
+                            <p class="mt-2 text-gray-600">Loading GWAS metadata...</p>
+                        </div>
+                        <div v-else-if="!gwasMetadata" class="text-center p-4">
+                            <i class="pi pi-info-circle text-gray-400" style="font-size: 3rem"></i>
+                            <p class="mt-3 text-gray-600">No GWAS metadata has been entered for this cohort yet.</p>
+                        </div>
+                        <SGCGWASCohortForm
+                            v-else
+                            :initial-data="gwasMetadata"
+                            :disabled="true"
+                            :show-save-button="false"
+                        />
+                    </div>
+
+                    <!-- GWAS Files Section -->
+                    <div class="card">
+                        <div class="flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">GWAS Files</h5>
+                            <Tag :value="gwasFiles.length + ' file' + (gwasFiles.length !== 1 ? 's' : '')" severity="info" />
+                        </div>
+
+                        <div v-if="loadingGwasFiles" class="text-center p-4">
+                            <ProgressSpinner style="width: 40px; height: 40px" />
+                            <p class="mt-2 text-gray-600">Loading GWAS files...</p>
+                        </div>
+
+                        <div v-else-if="gwasFiles.length === 0" class="text-center p-4">
+                            <i class="pi pi-inbox text-gray-400" style="font-size: 3rem"></i>
+                            <p class="mt-3 text-gray-600">No GWAS files have been uploaded for this cohort yet.</p>
+                        </div>
+
+                        <DataTable v-else :value="gwasFiles" class="mt-3" :paginator="gwasFiles.length > 10" :rows="10">
+                            <Column field="dataset" header="Dataset" :sortable="true">
+                                <template #body="{ data }">
+                                    <span class="font-medium">{{ data.dataset }}</span>
+                                </template>
+                            </Column>
+                            <Column field="phenotype" header="Phenotype" :sortable="true">
+                                <template #body="{ data }">
+                                    <span>{{ data.phenotype }}</span>
+                                </template>
+                            </Column>
+                            <Column field="ancestry" header="Ancestry" :sortable="true">
+                                <template #body="{ data }">
+                                    <Tag :value="data.ancestry" severity="secondary" />
+                                </template>
+                            </Column>
+                            <Column field="metadata.sex" header="Sex" :sortable="false">
+                                <template #body="{ data }">
+                                    <span class="text-sm">{{ data.metadata?.sex || '-' }}</span>
+                                </template>
+                            </Column>
+                            <Column field="cases" header="Cases" :sortable="true">
+                                <template #body="{ data }">
+                                    <span class="text-sm">{{ data.cases !== null ? data.cases : '-' }}</span>
+                                </template>
+                            </Column>
+                            <Column field="controls" header="Controls" :sortable="true">
+                                <template #body="{ data }">
+                                    <span class="text-sm">{{ data.controls !== null ? data.controls : '-' }}</span>
+                                </template>
+                            </Column>
+                            <Column field="file_name" header="File Name">
+                                <template #body="{ data }">
+                                    <span class="text-sm">{{ data.file_name }}</span>
+                                </template>
+                            </Column>
+                            <Column field="file_size" header="Size" :sortable="true">
+                                <template #body="{ data }">
+                                    <span class="text-sm">{{ formatFileSize(data.file_size) }}</span>
+                                </template>
+                            </Column>
+                            <Column field="uploaded_at" header="Uploaded" :sortable="true">
+                                <template #body="{ data }">
+                                    <span class="text-sm">
+                                        {{ new Date(data.uploaded_at).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        }) }}
+                                    </span>
+                                </template>
+                            </Column>
+                            <Column header="Metadata" style="width: 5rem; text-align: center">
+                                <template #body="{ data }">
+                                    <i
+                                        v-if="data.metadata && Object.keys(data.metadata).length"
+                                        class="pi pi-info-circle text-blue-500"
+                                        style="font-size: 1.2rem; cursor: default"
+                                        v-tooltip="{ value: formatMetadataTooltip(data.metadata), position: 'left' }"
+                                    />
+                                    <span v-else class="text-gray-400">-</span>
+                                </template>
+                            </Column>
+                            <Column header="Actions" style="width: 10rem">
+                                <template #body="{ data }">
+                                    <div class="flex gap-1">
+                                        <Button
+                                            icon="pi pi-download"
+                                            severity="secondary"
+                                            outlined
+                                            size="small"
+                                            @click="downloadGWASFile(data.id)"
+                                            title="Download GWAS file"
+                                        />
+                                        <Button
+                                            icon="pi pi-trash"
+                                            severity="danger"
+                                            outlined
+                                            size="small"
+                                            @click="confirmDeleteGWAS(data)"
+                                            title="Delete GWAS file"
+                                        />
+                                    </div>
+                                </template>
+                            </Column>
+                        </DataTable>
+                    </div>
+                </TabPanel>
+
+            </TabView>
         </div>
     </div>
 
@@ -268,6 +313,8 @@ const validationPassed = ref(false);
 const uploadedFiles = ref([]);
 const gwasFiles = ref([]);
 const loadingGwasFiles = ref(true);
+const gwasMetadata = ref(null);
+const loadingGwasMetadata = ref(true);
 const deleteGWASDialog = ref(false);
 const gwasFileToDelete = ref(null);
 
@@ -370,22 +417,35 @@ onMounted(async () => {
         loading.value = false;
     }
 
-    // Load GWAS files for this cohort
-    try {
-        loadingGwasFiles.value = true;
-        gwasFiles.value = await store.fetchSGCGWASFiles(cohortId);
-    } catch (error) {
-        console.error('Error loading GWAS files:', error);
-        toast.add({
-            severity: 'warn',
-            summary: 'Warning',
-            detail: 'Failed to load GWAS files for this cohort.',
-            life: 3000
-        });
-        gwasFiles.value = [];
-    } finally {
-        loadingGwasFiles.value = false;
-    }
+    // Load GWAS files and metadata in parallel
+    await Promise.allSettled([
+        (async () => {
+            try {
+                gwasFiles.value = await store.fetchSGCGWASFiles(cohortId);
+            } catch (error) {
+                console.error('Error loading GWAS files:', error);
+                toast.add({
+                    severity: 'warn',
+                    summary: 'Warning',
+                    detail: 'Failed to load GWAS files for this cohort.',
+                    life: 3000
+                });
+                gwasFiles.value = [];
+            } finally {
+                loadingGwasFiles.value = false;
+            }
+        })(),
+        (async () => {
+            try {
+                gwasMetadata.value = await store.fetchSGCGWASCohort(cohortId);
+            } catch (error) {
+                console.error('Error loading GWAS metadata:', error);
+                gwasMetadata.value = null;
+            } finally {
+                loadingGwasMetadata.value = false;
+            }
+        })()
+    ]);
 });
 
 // Download file
@@ -445,6 +505,14 @@ async function handleDeleteGWAS() {
             life: 5000
         });
     }
+}
+
+// Format metadata blob as readable key: value lines for tooltip
+function formatMetadataTooltip(metadata) {
+    if (!metadata) return '';
+    return Object.entries(metadata)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join('\n');
 }
 
 // Format file size helper

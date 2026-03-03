@@ -6,10 +6,6 @@
 
         <div class="formgrid grid">
             <div class="field col-12 md:col-4">
-                <label for="cohortName">Cohort Name <span class="text-red-500">*</span></label>
-                <InputText v-model="formData.cohort_name" id="cohortName" type="text" :disabled="disabled" />
-            </div>
-            <div class="field col-12 md:col-4">
                 <label for="countryOfAscertainment">Country/Countries of Ascertainment <span class="text-red-500">*</span></label>
                 <InputText v-model="formData.country_of_ascertainment" id="countryOfAscertainment" type="text" :disabled="disabled" />
             </div>
@@ -352,7 +348,6 @@ const yesNoOptions = [
 ];
 
 const defaultFormData = {
-    cohort_name: '',
     country_of_ascertainment: '',
     data_freeze_date: null,
     contact_person: '',
@@ -406,7 +401,7 @@ watch(() => props.initialData, (newData) => {
 }, { deep: true });
 
 const requiredFields = [
-    'cohort_name', 'country_of_ascertainment', 'data_freeze_date',
+    'country_of_ascertainment', 'data_freeze_date',
     'contact_person', 'lead_collaborator', 'acknowledgements',
     'summary_stats_public_availability', 'relevant_references',
     'ethics_approval', 'study_ascertainment', 'coding_system',
@@ -421,7 +416,6 @@ const requiredFields = [
 ];
 
 const fieldLabels = {
-    cohort_name: 'Cohort Name',
     country_of_ascertainment: 'Country or Countries of Ascertainment',
     data_freeze_date: 'Data Freeze Date',
     contact_person: 'Contact Person and Email',
