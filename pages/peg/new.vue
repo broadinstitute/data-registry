@@ -17,6 +17,21 @@ const formSchema = yup.object({
   study_author: yup.string().required().label('Study Author'),
   phenotype: yup.string().required().label('Phenotype'),
   citation: yup.string().label('Citation'),
+  gwas_source: yup.string().required().label('GWAS Source'),
+  published: yup.string().required().oneOf(['published', 'pre-published', 'unpublished']).label('Published'),
+  publication_ref: yup.string().when('published', (publishedVal, schema) => {
+    const val = Array.isArray(publishedVal) ? publishedVal[0] : publishedVal;
+    if (val === 'published') {
+      return schema.required('PMID is required').matches(/^\d+$/, 'PMID must contain only numbers');
+    }
+    if (val === 'pre-published') {
+      return schema.required('DOI is required').matches(/^10\.\d{4,}\/\S+/, 'Must be a valid DOI (e.g. 10.1234/example)');
+    }
+    if (val === 'unpublished') {
+      return schema.required('Pre-print info is required');
+    }
+    return schema;
+  }),
 });
 
 const { defineField, errors, values, validate, resetForm } = useForm({
@@ -28,11 +43,33 @@ const [name] = defineField('name');
 const [study_author] = defineField('study_author');
 const [phenotype] = defineField('phenotype');
 const [citation] = defineField('citation');
+const [gwas_source] = defineField('gwas_source');
+const [published] = defineField('published');
+const [publication_ref] = defineField('publication_ref');
+
+const publishedOptions = [
+  { label: 'Published', value: 'published' },
+  { label: 'Pre-published', value: 'pre-published' },
+  { label: 'Unpublished', value: 'unpublished' },
+];
+
+const publicationRefLabel = computed(() => {
+  if (values.published === 'published') return 'PMID';
+  if (values.published === 'pre-published') return 'DOI';
+  return 'Pre-print Info';
+});
+
+const publicationRefPlaceholder = computed(() => {
+  if (values.published === 'published') return 'e.g., 12345678';
+  if (values.published === 'pre-published') return 'e.g., 10.1038/s41586-021-03819-2';
+  return 'Enter pre-print information';
+});
 
 // Phenotype autocomplete
 const phenotypeObj = ref({});
 const filteredPhenotypes = ref([]);
 const allPhenotypes = ref([]);
+const phenotypeIsCustom = ref(false);
 
 // File upload state
 const pegListFile = ref(null);
@@ -61,7 +98,7 @@ onMounted(async () => {
 const activeAccordionIndex = ref(0);
 
 const isMetadataValid = computed(() => {
-  return !!(values.name && values.study_author && values.phenotype);
+  return !!(values.name && values.study_author && values.phenotype && values.gwas_source && values.published && values.publication_ref);
 });
 
 // Phenotype autocomplete filter function
@@ -79,7 +116,13 @@ function filterPhenotypes(event) {
 
 // Watch for phenotype object changes to update the form value
 watch(phenotypeObj, (newValue) => {
-  phenotype.value = newValue?.name || '';
+  if (typeof newValue === 'string') {
+    phenotype.value = newValue;
+    phenotypeIsCustom.value = true;
+  } else {
+    phenotype.value = newValue?.name || '';
+    phenotypeIsCustom.value = false;
+  }
 });
 
 const canSubmit = computed(() => {
@@ -165,6 +208,10 @@ const handleSubmitStudy = async () => {
         study_author: values.study_author,
         phenotype: values.phenotype,
         citation: values.citation || '',
+        gwas_source: values.gwas_source,
+        published: values.published,
+        publication_ref: values.publication_ref,
+        phenotype_is_custom: phenotypeIsCustom.value,
       }
     };
 
@@ -370,6 +417,32 @@ const handleCancel = () => {
               </div>
 
               <div class="field">
+                <label for="published">Published <span class="text-red-500">*</span></label>
+                <Dropdown
+                  id="published"
+                  v-model="published"
+                  :options="publishedOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Select..."
+                  :class="{ 'p-invalid': errors.published }"
+                  class="w-full"
+                />
+                <small class="p-error">{{ errors.published }}</small>
+              </div>
+
+              <div v-if="values.published" class="field">
+                <label for="publication_ref">{{ publicationRefLabel }} <span class="text-red-500">*</span></label>
+                <InputText
+                  id="publication_ref"
+                  v-model="publication_ref"
+                  :class="{ 'p-invalid': errors.publication_ref }"
+                  :placeholder="publicationRefPlaceholder"
+                />
+                <small class="p-error">{{ errors.publication_ref }}</small>
+              </div>
+
+              <div class="field">
                 <label for="citation">Citation</label>
                 <InputText
                   id="citation"
@@ -378,6 +451,17 @@ const handleCancel = () => {
                   placeholder="e.g., Aragam et al., Nature Genetics, 2021"
                 />
                 <small class="p-error">{{ errors.citation }}</small>
+              </div>
+
+              <div class="field">
+                <label for="gwas_source">GWAS Source <span class="text-red-500">*</span></label>
+                <InputText
+                  id="gwas_source"
+                  v-model="gwas_source"
+                  :class="{ 'p-invalid': errors.gwas_source }"
+                  placeholder="e.g., UK Biobank, FINNGEN"
+                />
+                <small class="p-error">{{ errors.gwas_source }}</small>
               </div>
 
               <div class="flex justify-content-end gap-2 mt-4">
