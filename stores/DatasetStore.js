@@ -42,6 +42,16 @@ const calrAxios = useCALRAxios(config, undefined, (error) => {
     return Promise.reject(error);
 });
 
+const hcmAxios = useHCMAxios(config, undefined, (error) => {
+    const store = useDatasetStore();
+    store.processing = false;
+    store.errorMessage =
+        error.response?.data.detail || error.message || error.errorMessage;
+    store.serverSuccess = false;
+    store.showNotification = true;
+    return Promise.reject(error);
+});
+
 function onUpload(progressEvent) {
     const store = useDatasetStore();
     store.uploadProgress = Math.round(
@@ -881,6 +891,125 @@ export const useDatasetStore = defineStore("DatasetStore", {
 
         async deleteCALRSubmission(submissionId) {
             await calrAxios.delete(`/api/calr/files/${submissionId}`);
+        },
+
+        // HCM GWAS Operations
+        async suggestHCMColumnMap(columns) {
+            const { data } = await hcmAxios.post(
+                '/api/hcm/suggest-column-map',
+                JSON.stringify({ columns })
+            );
+            return data;
+        },
+
+        async getHCMUploadUrl(metadata) {
+            const { data } = await hcmAxios.post(
+                '/api/hcm/gwas-upload-url',
+                JSON.stringify(metadata)
+            );
+            return data;
+        },
+
+        async confirmHCMUpload(confirmData) {
+            const { data } = await hcmAxios.post(
+                '/api/hcm/confirm-gwas-upload',
+                JSON.stringify(confirmData)
+            );
+            return data;
+        },
+
+        async uploadHCMGWAS(file, fileName, metadata) {
+            this.processing = true;
+            this.showProgressBar = false;
+            this.modalMsg = "Preparing HCM GWAS Upload";
+            this.uploadProgress = 0;
+
+            try {
+                // Step 1: Get presigned URL
+                this.modalMsg = "Getting upload URL...";
+                const presignedData = await this.getHCMUploadUrl(metadata);
+
+                // Step 2: Upload to S3 with progress tracking
+                this.showProgressBar = true;
+                this.modalMsg = "Uploading file...";
+                const strippedFile = new Blob([file], { type: '' });
+
+                await new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+
+                    xhr.upload.addEventListener('progress', (e) => {
+                        if (e.lengthComputable) {
+                            this.uploadProgress = Math.round((e.loaded * 100) / e.total);
+                        }
+                    });
+
+                    xhr.addEventListener('load', () => {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            resolve();
+                        } else {
+                            reject(new Error(`Upload failed with status ${xhr.status}`));
+                        }
+                    });
+
+                    xhr.addEventListener('error', () => {
+                        reject(new Error('Upload failed'));
+                    });
+
+                    xhr.open('PUT', presignedData.presigned_url);
+                    xhr.send(strippedFile);
+                });
+
+                // Step 3: Confirm the upload
+                this.showProgressBar = false;
+                this.modalMsg = "Confirming upload...";
+                const confirmResult = await this.confirmHCMUpload({
+                    ...metadata,
+                    file_size: file.size,
+                    s3_key: presignedData.s3_key,
+                });
+
+                this.processing = false;
+                this.showNotification = true;
+                this.isServerSuccess = true;
+                this.successMessage = "GWAS file uploaded successfully!";
+
+                return confirmResult;
+            } catch (error) {
+                this.processing = false;
+                this.showProgressBar = false;
+                this.showNotification = true;
+                this.isServerSuccess = false;
+                this.errorMessage = error.response?.data?.detail || error.message || "Upload failed";
+                throw error;
+            }
+        },
+
+        async fetchHCMGWASFiles() {
+            const { data } = await hcmAxios.get('/api/hcm/gwas-files');
+            return data;
+        },
+
+        async fetchHCMGWASFilesByCohort(cohortName) {
+            const { data } = await hcmAxios.get(`/api/hcm/gwas-files/${cohortName}`);
+            return data;
+        },
+
+        async downloadHCMGWASFile(fileId) {
+            const { data } = await hcmAxios.get(`/api/hcm/gwas-file/${fileId}/download`);
+            if (data.presigned_url) {
+                window.open(data.presigned_url, '_blank');
+            } else {
+                throw new Error('No download URL found in response');
+            }
+        },
+
+        async deleteHCMGWASFile(fileId) {
+            await hcmAxios.delete(`/api/hcm/gwas-file/${fileId}`);
+        },
+
+        async fetchHCMGWASSummary() {
+            const { data } = await hcmAxios.get('/api/hcm/gwas-summary');
+            return data;
         },
 
     },

@@ -43,7 +43,8 @@ export default defineNuxtConfig({
           userServiceUrl: "https://users.kpndataregistry.org",
           sgcUserGroup: "sgc",
           pegUserGroup: "peg",
-          calrUserGroup: "calr"
+          calrUserGroup: "calr",
+          hcmUserGroup: "hcm"
       },
   },
 

@@ -8,7 +8,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
         return;
     }
     const nuxtApp = useNuxtApp();
-    if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login') || to.path.startsWith('/sgc/login') || to.path.startsWith('/peg/login') || to.path.startsWith('/calr/login')){
+    if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login') || to.path.startsWith('/sgc/login') || to.path.startsWith('/peg/login') || to.path.startsWith('/calr/login') || to.path.startsWith('/hcm/login')){
         return;
     }
     
@@ -50,6 +50,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
             return callWithNuxt(nuxtApp, navigateTo, ['/calr/login?redirect=' + to.path]);
         }
         // User is authenticated for CALR, allow access
+        return;
+    }
+
+    // Check HCM authentication for HCM routes
+    if (to.path.startsWith('/hcm')) {
+        isLoggedIn = await userStore.isHCMUserLoggedIn();
+
+        if (!isLoggedIn) {
+            return callWithNuxt(nuxtApp, navigateTo, ['/hcm/login?redirect=' + to.path]);
+        }
+        // User is authenticated for HCM, allow access
         return;
     }
 

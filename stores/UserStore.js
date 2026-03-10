@@ -12,6 +12,8 @@ export const useUserStore = defineStore("UserStore", {
             pegAxios: null,
             // CALR axios instance for user service
             calrAxios: null,
+            // HCM axios instance for user service
+            hcmAxios: null,
         };
     },
     actions: {
@@ -446,6 +448,150 @@ export const useUserStore = defineStore("UserStore", {
             localStorage.removeItem('calrAuthToken');
             this.user = null;
             this.loginError = null;
+        },
+
+        // HCM User Service Authentication Methods
+        initHCM() {
+            const config = useRuntimeConfig();
+            if (!config.public.userServiceUrl) {
+                throw new Error('User service URL not configured');
+            }
+            this.hcmAxios = $fetch.create({
+                baseURL: config.public.userServiceUrl,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+        },
+
+        async loginHCM(username, password) {
+            try {
+                if (!this.hcmAxios) {
+                    this.initHCM();
+                }
+
+                const config = useRuntimeConfig();
+
+                const response = await this.hcmAxios('/api/auth/login/', {
+                    method: 'POST',
+                    body: {
+                        username,
+                        password,
+                        group: config.public.hcmUserGroup || 'hcm'
+                    }
+                });
+
+                if (response.access) {
+                    localStorage.setItem('hcmAuthToken', response.access);
+
+                    if (response.user) {
+                        this.user = response.user;
+                        this.loginError = null;
+                        return true;
+                    }
+                }
+
+                this.loginError = 'Invalid credentials';
+                return false;
+            } catch (error) {
+                console.error('HCM login error:', error);
+                this.loginError = error.data?.detail || 'Login failed. Please check your credentials.';
+                return false;
+            }
+        },
+
+        async verifyHCMToken() {
+            try {
+                if (!this.hcmAxios) {
+                    this.initHCM();
+                }
+
+                const config = useRuntimeConfig();
+                const token = localStorage.getItem('hcmAuthToken');
+
+                if (!token) {
+                    return false;
+                }
+
+                const hcmUserGroup = config.public.hcmUserGroup || 'hcm';
+
+                const response = await this.hcmAxios(`/api/auth/verify/?group=${hcmUserGroup}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.user) {
+                    this.user = response.user;
+                    return true;
+                }
+
+                return false;
+            } catch (error) {
+                console.error('HCM token verification error:', error);
+                localStorage.removeItem('hcmAuthToken');
+                return false;
+            }
+        },
+
+        async isHCMUserLoggedIn() {
+            const token = localStorage.getItem('hcmAuthToken');
+            if (!token) {
+                return false;
+            }
+            return await this.verifyHCMToken();
+        },
+
+        logoutHCM() {
+            localStorage.removeItem('hcmAuthToken');
+            this.user = null;
+            this.loginError = null;
+        },
+
+        // HCM User Management Methods
+        async createHCMUser(userData, userType) {
+            try {
+                const config = useRuntimeConfig();
+                const hcmAxios = useHCMAxios(config);
+
+                const response = await hcmAxios.post('/api/hcm/create-user', {
+                    user_name: userData.email,
+                    password: userData.password,
+                    email: userData.email || '',
+                    first_name: userData.firstName || '',
+                    last_name: userData.lastName || '',
+                    user_type: userType
+                });
+
+                return response.data;
+            } catch (error) {
+                console.error('HCM user creation error:', error);
+                throw error;
+            }
+        },
+
+        async getHCMUsers() {
+            try {
+                const config = useRuntimeConfig();
+                const hcmAxios = useHCMAxios(config);
+
+                const response = await hcmAxios.get('/api/hcm/users');
+                return response.data.users || [];
+            } catch (error) {
+                console.error('Error fetching HCM users:', error);
+                throw error;
+            }
+        },
+
+        canManageHCMUsers() {
+            if (!this.user) {
+                return false;
+            }
+            const roleNames = this.user.roles?.map(role => role.name || role) || [];
+            return roleNames.includes('hcm-reviewer') ||
+                   this.user.permissions?.includes('hcm-add-user') ||
+                   roleNames.includes('admin');
         },
     },
 });
