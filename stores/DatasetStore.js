@@ -1012,5 +1012,20 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
+        async startHCMGWASValidation(fileId) {
+            const { data } = await hcmAxios.post(`/api/hcm/gwas-validate/${fileId}`);
+            return data;
+        },
+
+        async getHCMGWASValidationProgress(fileId) {
+            const { data } = await hcmAxios.get(`/api/hcm/gwas-validate/${fileId}/progress`);
+            return data;
+        },
+
+        async getHCMGWASValidationErrors(fileId) {
+            const { data } = await hcmAxios.get(`/api/hcm/gwas-validate/${fileId}/errors`);
+            return data;
+        },
+
     },
 });
