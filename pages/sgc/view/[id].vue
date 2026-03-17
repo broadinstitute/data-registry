@@ -276,7 +276,7 @@
                                             outlined
                                             size="small"
                                             title="Run QC"
-                                            :disabled="qcStatus[data.id] === 'SUBMITTED' || qcStatus[data.id] === 'RUNNING'"
+                                            :disabled="['SUBMITTED', 'RUNNING', 'COMPLETED', 'FAILED'].includes(qcStatus[data.id])"
                                             @click="handleRunQC(data.id)"
                                         />
                                         <Button
