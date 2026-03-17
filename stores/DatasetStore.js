@@ -648,6 +648,21 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
+        async startSGCGWASValidation(fileId) {
+            const { data } = await sgcAxios.post(`/api/sgc/gwas-validate/${fileId}`);
+            return data;
+        },
+
+        async getSGCGWASValidationProgress(fileId) {
+            const { data } = await sgcAxios.get(`/api/sgc/gwas-validate/${fileId}/progress`);
+            return data;
+        },
+
+        async getSGCGWASValidationErrors(fileId) {
+            const { data } = await sgcAxios.get(`/api/sgc/gwas-validate/${fileId}/errors`);
+            return data;
+        },
+
         // PEG Study Management
         async createPEGStudy(metadata) {
             const { data } = await pegAxios.post('/api/peg/studies', metadata);

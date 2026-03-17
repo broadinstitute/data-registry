@@ -231,7 +231,35 @@
                                     <span v-else class="text-gray-400">-</span>
                                 </template>
                             </Column>
-                            <Column header="Actions" style="width: 10rem">
+                            <Column header="QC Status" style="width: 10rem;">
+                                <template #body="{ data }">
+                                    <div class="flex align-items-center gap-1">
+                                        <template v-if="!qcStatus[data.id]">
+                                            <Tag value="Not run" severity="secondary" />
+                                        </template>
+                                        <template v-else-if="qcStatus[data.id] === 'SUBMITTED'">
+                                            <i class="bi bi-hourglass-split text-yellow-500 mr-1" />
+                                            <span class="text-sm text-yellow-600">Queued</span>
+                                        </template>
+                                        <template v-else-if="qcStatus[data.id] === 'RUNNING'">
+                                            <i class="pi pi-spin pi-spinner mr-1" style="color: var(--blue-500)" />
+                                            <span class="text-sm" style="color: var(--blue-600)">
+                                                Running{{ qcProgress[data.id] != null ? ` ${qcProgress[data.id]}%` : '' }}
+                                            </span>
+                                        </template>
+                                        <template v-else-if="qcStatus[data.id] === 'COMPLETED'">
+                                            <Tag
+                                                :value="qcErrors[data.id] === 0 ? 'Passed' : `${qcErrors[data.id]} errors`"
+                                                :severity="qcErrors[data.id] === 0 ? 'success' : 'warning'"
+                                            />
+                                        </template>
+                                        <template v-else-if="qcStatus[data.id] === 'FAILED'">
+                                            <Tag value="Failed" severity="danger" />
+                                        </template>
+                                    </div>
+                                </template>
+                            </Column>
+                            <Column header="Actions" style="width: 12rem">
                                 <template #body="{ data }">
                                     <div class="flex gap-1">
                                         <Button
@@ -241,6 +269,24 @@
                                             size="small"
                                             @click="downloadGWASFile(data.id)"
                                             title="Download GWAS file"
+                                        />
+                                        <Button
+                                            icon="bi-shield-check"
+                                            severity="secondary"
+                                            outlined
+                                            size="small"
+                                            title="Run QC"
+                                            :disabled="qcStatus[data.id] === 'SUBMITTED' || qcStatus[data.id] === 'RUNNING'"
+                                            @click="handleRunQC(data.id)"
+                                        />
+                                        <Button
+                                            v-if="qcStatus[data.id] === 'COMPLETED' && qcErrors[data.id] > 0"
+                                            icon="bi-file-earmark-text"
+                                            severity="warning"
+                                            outlined
+                                            size="small"
+                                            title="View QC errors"
+                                            @click="handleViewErrors(data.id)"
                                         />
                                         <Button
                                             icon="pi pi-trash"
@@ -260,6 +306,39 @@
             </TabView>
         </div>
     </div>
+
+    <!-- QC Errors Dialog -->
+    <Dialog
+        v-model:visible="errorsDialog"
+        modal
+        header="QC Validation Errors"
+        :style="{ width: '500px' }"
+    >
+        <p class="mb-3 text-sm text-600">
+            The full error log is available as a TSV download. A sample of the first errors is shown below.
+        </p>
+        <div v-if="errorsFileUrl" class="mb-3">
+            <Button
+                label="Download Full Error Log"
+                icon="bi-download"
+                severity="warning"
+                size="small"
+                @click="openUrl(errorsFileUrl)"
+            />
+        </div>
+        <div v-if="errorSamples.length" class="mt-3">
+            <p class="font-semibold text-sm mb-2">Sample errors (first {{ errorSamples.length }}):</p>
+            <div v-for="(err, i) in errorSamples" :key="i"
+                 class="text-sm p-2 mb-1 border-round surface-100">
+                <span class="font-medium">Row {{ err.row }}</span> —
+                <span class="text-primary">{{ err.column }}</span>:
+                <span class="text-600">"{{ err.value }}"</span> — {{ err.error }}
+            </div>
+        </div>
+        <template #footer>
+            <Button label="Close" @click="errorsDialog = false" />
+        </template>
+    </Dialog>
 
     <Dialog
         v-model:visible="deleteGWASDialog"
@@ -317,6 +396,19 @@ const gwasMetadata = ref(null);
 const loadingGwasMetadata = ref(true);
 const deleteGWASDialog = ref(false);
 const gwasFileToDelete = ref(null);
+
+// QC state — keyed by file ID
+const qcStatus = ref({});   // fileId -> 'SUBMITTED' | 'RUNNING' | 'COMPLETED' | 'FAILED'
+const qcProgress = ref({}); // fileId -> percent complete (number, when RUNNING)
+const qcErrors = ref({});   // fileId -> errors_found count (when COMPLETED)
+
+// Errors dialog
+const errorsDialog = ref(false);
+const errorsFileUrl = ref(null);
+const errorSamples = ref([]);
+
+// Polling interval handle
+let pollInterval = null;
 
 // File types mapping for display
 const fileTypeLabels = {
@@ -422,6 +514,8 @@ onMounted(async () => {
         (async () => {
             try {
                 gwasFiles.value = await store.fetchSGCGWASFiles(cohortId);
+                await Promise.all(gwasFiles.value.map(f => fetchQCStatus(f.id)));
+                startPolling();
             } catch (error) {
                 console.error('Error loading GWAS files:', error);
                 toast.add({
@@ -448,6 +542,82 @@ onMounted(async () => {
         })()
     ]);
 });
+
+onUnmounted(() => {
+    if (pollInterval) clearInterval(pollInterval);
+});
+
+// QC helpers
+async function fetchQCStatus(fileId) {
+    try {
+        const result = await store.getSGCGWASValidationProgress(fileId);
+        const latest = result.validation_jobs?.[0];
+        if (!latest) return;
+
+        qcStatus.value[fileId] = latest.status;
+        qcErrors.value[fileId] = latest.errors_found ?? 0;
+
+        if (latest.status === 'RUNNING' && latest.live_progress) {
+            qcProgress.value[fileId] = latest.live_progress.percent_complete;
+        }
+    } catch (e) {
+        if (e.response?.status !== 404) {
+            console.error(`Error fetching QC status for ${fileId}:`, e);
+        }
+    }
+}
+
+function startPolling() {
+    if (pollInterval) return;
+    pollInterval = setInterval(async () => {
+        const inFlight = gwasFiles.value
+            .filter(f => ['SUBMITTED', 'RUNNING'].includes(qcStatus.value[f.id]));
+        if (inFlight.length === 0) return;
+        await Promise.all(inFlight.map(f => fetchQCStatus(f.id)));
+    }, 10000);
+}
+
+async function handleRunQC(fileId) {
+    try {
+        qcStatus.value[fileId] = 'SUBMITTED';
+        await store.startSGCGWASValidation(fileId);
+        toast.add({
+            severity: 'info',
+            summary: 'QC Started',
+            detail: 'Validation job submitted. Status will update automatically.',
+            life: 4000
+        });
+    } catch (error) {
+        qcStatus.value[fileId] = null;
+        console.error('Error starting QC:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.response?.data?.detail || 'Failed to start QC job.',
+            life: 5000
+        });
+    }
+}
+
+async function handleViewErrors(fileId) {
+    errorsFileUrl.value = null;
+    errorSamples.value = [];
+    try {
+        const result = await store.getSGCGWASValidationErrors(fileId);
+        errorsFileUrl.value = result.errors_url;
+
+        const progress = await store.getSGCGWASValidationProgress(fileId);
+        const latest = progress.validation_jobs?.[0];
+        errorSamples.value = latest?.error_summary ?? [];
+    } catch (error) {
+        console.error('Error fetching QC errors:', error);
+    }
+    errorsDialog.value = true;
+}
+
+function openUrl(url) {
+    window.open(url, '_blank');
+}
 
 // Download file
 async function downloadFile(fileId) {
