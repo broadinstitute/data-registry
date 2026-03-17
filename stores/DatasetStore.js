@@ -968,6 +968,10 @@ export const useDatasetStore = defineStore("DatasetStore", {
                     s3_key: presignedData.s3_key,
                 });
 
+                // Step 4: Kick off QC validation batch job
+                this.modalMsg = "Submitting QC validation job...";
+                await hcmAxios.post(`/api/hcm/gwas-validate/${confirmResult.file_id}`);
+
                 this.processing = false;
                 this.showNotification = true;
                 this.isServerSuccess = true;
