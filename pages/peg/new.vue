@@ -11,58 +11,66 @@ definePageMeta({
 const route = useRouter();
 const store = useDatasetStore();
 
-// Form validation schema
+// Form validation schema (name/author/phenotype only — sources handled via refs)
 const formSchema = yup.object({
   name: yup.string().required().label('Study Name'),
   study_author: yup.string().required().label('Study Author'),
   phenotype: yup.string().required().label('Phenotype'),
-  citation: yup.string().label('Citation'),
-  gwas_source: yup.string().required().label('GWAS Source'),
-  published: yup.string().required().oneOf(['published', 'pre-published', 'unpublished']).label('Published'),
-  publication_ref: yup.string().when('published', (publishedVal, schema) => {
-    const val = Array.isArray(publishedVal) ? publishedVal[0] : publishedVal;
-    if (val === 'published') {
-      return schema.required('PMID is required').matches(/^\d+$/, 'PMID must contain only numbers');
-    }
-    if (val === 'pre-published') {
-      return schema.required('DOI is required').matches(/^10\.\d{4,}\/\S+/, 'Must be a valid DOI (e.g. 10.1234/example)');
-    }
-    if (val === 'unpublished') {
-      return schema.required('Pre-print info is required');
-    }
-    return schema;
-  }),
 });
 
-const { defineField, errors, values, validate, resetForm } = useForm({
+const { defineField, errors, values, validate } = useForm({
   validationSchema: formSchema,
 });
 
-// Form fields
 const [name] = defineField('name');
 const [study_author] = defineField('study_author');
 const [phenotype] = defineField('phenotype');
-const [citation] = defineField('citation');
-const [gwas_source] = defineField('gwas_source');
-const [published] = defineField('published');
-const [publication_ref] = defineField('publication_ref');
 
-const publishedOptions = [
+// --- PEG Source ---
+const pegSourceType = ref(''); // 'published' | 'pre-published' | 'unpublished'
+const pegSourceValue = ref('');
+const pegSourceOptions = [
   { label: 'Published', value: 'published' },
   { label: 'Pre-published', value: 'pre-published' },
   { label: 'Unpublished', value: 'unpublished' },
 ];
+const pegSourcePlaceholder = computed(() => {
+  if (pegSourceType.value === 'published') return 'e.g., 12345678';
+  if (pegSourceType.value === 'pre-published') return 'e.g., 10.1038/s41586-021-03819-2';
+  return 'Enter pre-print or manuscript info';
+});
+const pegSourceLabel = computed(() => {
+  if (pegSourceType.value === 'published') return 'PMID';
+  if (pegSourceType.value === 'pre-published') return 'DOI';
+  return 'Description';
+});
+watch(pegSourceType, () => { pegSourceValue.value = ''; });
 
-const publicationRefLabel = computed(() => {
-  if (values.published === 'published') return 'PMID';
-  if (values.published === 'pre-published') return 'DOI';
-  return 'Pre-print Info';
+// --- GWAS Source ---
+// 'catalog' | 'portal' | 'same' | 'pre-published' | 'unpublished'
+const gwasSourceType = ref('');
+const gwasSourceValue = ref('');
+watch(gwasSourceType, () => { gwasSourceValue.value = ''; });
+
+const gwasSourcePlaceholder = computed(() => {
+  if (gwasSourceType.value === 'catalog') return 'e.g., GCST90002409';
+  if (gwasSourceType.value === 'portal') return 'e.g., https://biobank.ndph.ox.ac.uk/';
+  if (gwasSourceType.value === 'published') return 'e.g., 12345678';
+  if (gwasSourceType.value === 'pre-published') return 'e.g., 10.1038/s41586-021-03819-2';
+  return 'Enter manuscript or pre-print info';
 });
 
-const publicationRefPlaceholder = computed(() => {
-  if (values.published === 'published') return 'e.g., 12345678';
-  if (values.published === 'pre-published') return 'e.g., 10.1038/s41586-021-03819-2';
-  return 'Enter pre-print information';
+const effectiveGwasValue = computed(() => {
+  if (gwasSourceType.value === 'same') return pegSourceValue.value;
+  return gwasSourceValue.value;
+});
+
+// --- Validation ---
+const isPegSourceValid = computed(() => !!(pegSourceType.value && pegSourceValue.value));
+const isGwasSourceValid = computed(() => {
+  if (!gwasSourceType.value) return false;
+  if (gwasSourceType.value === 'same') return !!pegSourceValue.value;
+  return !!gwasSourceValue.value;
 });
 
 // Phenotype autocomplete
@@ -80,8 +88,8 @@ const pegMatrixInput = ref(null);
 const pegMetadataInput = ref(null);
 
 const submitting = ref(false);
+const activeAccordionIndex = ref(0);
 
-// Load phenotypes on mount
 onMounted(async () => {
   try {
     const response = await fetch('https://bioindex.hugeamp.org/api/portal/phenotypes?q=md');
@@ -94,14 +102,10 @@ onMounted(async () => {
   }
 });
 
-// Active accordion sections
-const activeAccordionIndex = ref(0);
-
 const isMetadataValid = computed(() => {
-  return !!(values.name && values.study_author && values.phenotype && values.gwas_source && values.published && values.publication_ref);
+  return !!(values.name && values.study_author && values.phenotype && isPegSourceValid.value && isGwasSourceValid.value);
 });
 
-// Phenotype autocomplete filter function
 function filterPhenotypes(event) {
   filteredPhenotypes.value = allPhenotypes.value.filter((p) => {
     if (event.query.length < 2) { return false; }
@@ -114,7 +118,6 @@ function filterPhenotypes(event) {
   });
 }
 
-// Watch for phenotype object changes to update the form value
 watch(phenotypeObj, (newValue) => {
   if (typeof newValue === 'string') {
     phenotype.value = newValue;
@@ -131,66 +134,43 @@ const canSubmit = computed(() => {
 
 const handlePEGListFileSelect = (event) => {
   const file = event.target.files?.[0];
-  if (file) {
-    pegListFile.value = file;
-  }
+  if (file) pegListFile.value = file;
 };
-
 const handlePEGMatrixFileSelect = (event) => {
   const file = event.target.files?.[0];
-  if (file) {
-    pegMatrixFile.value = file;
-  }
+  if (file) pegMatrixFile.value = file;
+};
+const handlePEGMetadataFileSelect = (event) => {
+  const file = event.target.files?.[0];
+  if (file) pegMetadataFile.value = file;
 };
 
 const removePEGListFile = () => {
   pegListFile.value = null;
-  if (pegListInput.value) {
-    pegListInput.value.value = '';
-  }
+  if (pegListInput.value) pegListInput.value.value = '';
 };
-
 const removePEGMatrixFile = () => {
   pegMatrixFile.value = null;
-  if (pegMatrixInput.value) {
-    pegMatrixInput.value.value = '';
-  }
+  if (pegMatrixInput.value) pegMatrixInput.value.value = '';
 };
-
-const handlePEGMetadataFileSelect = (event) => {
-  const file = event.target.files?.[0];
-  if (file) {
-    pegMetadataFile.value = file;
-  }
-};
-
 const removePEGMetadataFile = () => {
   pegMetadataFile.value = null;
-  if (pegMetadataInput.value) {
-    pegMetadataInput.value.value = '';
-  }
+  if (pegMetadataInput.value) pegMetadataInput.value.value = '';
 };
 
 const handleContinueToFiles = async () => {
   const isValid = await validate();
-
-  if (!isValid.valid) {
-    return;
-  }
-
-  // Move to files accordion
+  if (!isValid.valid || !isPegSourceValid.value || !isGwasSourceValid.value) return;
   activeAccordionIndex.value = 1;
 };
 
 const handleSubmitStudy = async () => {
-  // Validate metadata first
   const isValid = await validate();
-  if (!isValid.valid) {
+  if (!isValid.valid || !isPegSourceValid.value || !isGwasSourceValid.value) {
     activeAccordionIndex.value = 0;
     return;
   }
 
-  // Ensure all files are selected
   if (!pegListFile.value || !pegMatrixFile.value || !pegMetadataFile.value) {
     store.errorMessage = 'All three files (PEG List, PEG Matrix, and PEG Metadata) are required';
     store.showNotification = true;
@@ -201,16 +181,16 @@ const handleSubmitStudy = async () => {
   let createdStudyId = null;
 
   try {
-    // Step 1: Create the study with metadata
     const metadata = {
       name: values.name,
       metadata: {
         study_author: values.study_author,
         phenotype: values.phenotype,
-        citation: values.citation || '',
-        gwas_source: values.gwas_source,
-        published: values.published,
-        publication_ref: values.publication_ref,
+        citation: pegSourceValue.value,
+        published: pegSourceType.value,
+        publication_ref: pegSourceValue.value,
+        gwas_source: effectiveGwasValue.value,
+        gwas_source_type: gwasSourceType.value === 'same' ? 'same_as_pgs' : gwasSourceType.value,
         phenotype_is_custom: phenotypeIsCustom.value,
       }
     };
@@ -218,62 +198,43 @@ const handleSubmitStudy = async () => {
     const response = await store.createPEGStudy(metadata);
     createdStudyId = response.id;
 
-    // Step 2: Upload PEG List
     try {
       await store.uploadPEGList(createdStudyId, pegListFile.value);
     } catch (error) {
-      console.error('Error uploading PEG List:', error);
       handleUploadError(error, 'PEG List');
-      // Rollback: delete the created study
       await rollbackStudy(createdStudyId);
       return;
     }
 
-    // Step 3: Upload PEG Matrix
     try {
       await store.uploadPEGMatrix(createdStudyId, pegMatrixFile.value);
     } catch (error) {
-      console.error('Error uploading PEG Matrix:', error);
       handleUploadError(error, 'PEG Matrix');
-      // Rollback: delete the created study
       await rollbackStudy(createdStudyId);
       return;
     }
 
-    // Step 4: Upload PEG Metadata
     try {
       await store.uploadPEGMetadata(createdStudyId, pegMetadataFile.value);
     } catch (error) {
-      console.error('Error uploading PEG Metadata:', error);
       handleUploadError(error, 'PEG Metadata');
-      // Rollback: delete the created study
       await rollbackStudy(createdStudyId);
       return;
     }
 
-    // Success! Redirect to the study detail page
     route.push(`/peg/${createdStudyId}`);
 
   } catch (error) {
     console.error('Error creating PEG study:', error);
-
-    // Handle error using same pattern as file uploads
     let errorMessage = 'Failed to create PEG study';
-
     if (error.status === 400 || error.response?.status === 400) {
       const errorData = error.data || error.response?.data;
-
-      if (typeof errorData === 'string') {
-        errorMessage = errorData;
-      } else if (errorData?.detail) {
-        errorMessage = errorData.detail;
-      } else if (errorData?.message) {
-        errorMessage = errorData.message;
-      }
+      if (typeof errorData === 'string') errorMessage = errorData;
+      else if (errorData?.detail) errorMessage = errorData.detail;
+      else if (errorData?.message) errorMessage = errorData.message;
     } else if (error.message) {
       errorMessage = error.message;
     }
-
     store.errorMessage = errorMessage;
     store.showNotification = true;
   } finally {
@@ -284,35 +245,22 @@ const handleSubmitStudy = async () => {
 const rollbackStudy = async (studyId) => {
   try {
     await store.deletePEGStudy(studyId);
-    console.log('Study rolled back successfully');
   } catch (rollbackError) {
     console.error('Error rolling back study:', rollbackError);
-    // Don't show error to user - the main error is more important
   }
 };
 
 const handleUploadError = (error, fileType) => {
   store.processing = false;
-
-  // Handle server validation errors - same pattern as SGC
   let errorMessage = `Failed to upload ${fileType} file`;
-
   if (error.status === 400 || error.response?.status === 400) {
-    // Server returned validation errors - check both error.data and error.response.data
     const errorData = error.data || error.response?.data;
-
-    if (typeof errorData === 'string') {
-      errorMessage = errorData;
-    } else if (errorData?.detail) {
-      errorMessage = errorData.detail;
-    } else if (errorData?.message) {
-      errorMessage = errorData.message;
-    }
+    if (typeof errorData === 'string') errorMessage = errorData;
+    else if (errorData?.detail) errorMessage = errorData.detail;
+    else if (errorData?.message) errorMessage = errorData.message;
   } else if (error.message) {
     errorMessage = error.message;
   }
-
-  // Show error in store notification dialog (consistent with SGC pattern)
   store.errorMessage = errorMessage;
   store.showNotification = true;
 };
@@ -351,14 +299,8 @@ const handleCancel = () => {
         <p class="text-lg mb-3">{{ store.errorMessage }}</p>
       </div>
     </div>
-
     <template #footer>
-      <Button
-        label="OK"
-        icon="pi pi-check"
-        @click="store.showNotification = false"
-        autofocus
-      />
+      <Button label="OK" icon="pi pi-check" @click="store.showNotification = false" autofocus />
     </template>
   </Dialog>
 
@@ -377,7 +319,9 @@ const handleCancel = () => {
         <!-- Metadata Accordion Section -->
         <AccordionTab header="Study Metadata">
           <div class="p-fluid">
-            <div class="card">
+
+            <!-- Study Info Card -->
+            <div class="card mb-4">
               <h5>Study Information</h5>
 
               <div class="field">
@@ -415,67 +359,164 @@ const handleCancel = () => {
                 />
                 <small class="p-error">{{ errors.phenotype }}</small>
               </div>
+            </div>
 
+            <!-- Sources Card -->
+            <div class="card mb-4">
+              <h5>Sources</h5>
+
+              <!-- PEG Source -->
               <div class="field">
-                <label for="published">Published <span class="text-red-500">*</span></label>
-                <Dropdown
-                  id="published"
-                  v-model="published"
-                  :options="publishedOptions"
+                <div class="flex align-items-center gap-2 mb-2">
+                  <span class="source-badge source-badge--pgs">PGS SOURCE</span>
+                  <label class="mb-0">Publication <span class="text-red-500">*</span></label>
+                </div>
+                <SelectButton
+                  v-model="pegSourceType"
+                  :options="pegSourceOptions"
                   optionLabel="label"
                   optionValue="value"
-                  placeholder="Select..."
-                  :class="{ 'p-invalid': errors.published }"
-                  class="w-full"
+                  class="mb-3"
                 />
-                <small class="p-error">{{ errors.published }}</small>
+                <div v-if="pegSourceType" class="mt-1">
+                  <InputText
+                    v-model="pegSourceValue"
+                    :placeholder="pegSourcePlaceholder"
+                    class="w-full"
+                    :class="{ 'p-invalid': pegSourceType && !pegSourceValue }"
+                  />
+                  <small v-if="pegSourceType === 'published'" class="text-gray-400 block">PubMed ID of the paper.</small>
+                  <small v-else-if="pegSourceType === 'pre-published'" class="text-gray-400 block">DOI of the pre-print.</small>
+                  <small class="text-gray-400 block">The paper describing this predicted effector gene.</small>
+                </div>
               </div>
 
-              <div v-if="values.published" class="field">
-                <label for="publication_ref">{{ publicationRefLabel }} <span class="text-red-500">*</span></label>
-                <InputText
-                  id="publication_ref"
-                  v-model="publication_ref"
-                  :class="{ 'p-invalid': errors.publication_ref }"
-                  :placeholder="publicationRefPlaceholder"
-                />
-                <small class="p-error">{{ errors.publication_ref }}</small>
-              </div>
+              <Divider />
 
+              <!-- GWAS Source -->
               <div class="field">
-                <label for="citation">Citation</label>
-                <InputText
-                  id="citation"
-                  v-model="citation"
-                  :class="{ 'p-invalid': errors.citation }"
-                  placeholder="e.g., Aragam et al., Nature Genetics, 2021"
-                />
-                <small class="p-error">{{ errors.citation }}</small>
-              </div>
+                <div class="flex align-items-center gap-2 mb-2">
+                  <span class="source-badge source-badge--gwas">GWAS SOURCE</span>
+                  <label class="mb-0">GWAS Data Source <span class="text-red-500">*</span></label>
+                </div>
 
-              <div class="field">
-                <label for="gwas_source">GWAS Source <span class="text-red-500">*</span></label>
-                <InputText
-                  id="gwas_source"
-                  v-model="gwas_source"
-                  :class="{ 'p-invalid': errors.gwas_source }"
-                  placeholder="e.g., UK Biobank, FINNGEN"
-                />
-                <small class="p-error">{{ errors.gwas_source }}</small>
-              </div>
+                <div class="mb-1">
+                  <span class="source-group-label">Preferred</span>
+                  <div class="flex gap-2 flex-wrap mt-1">
+                    <button
+                      v-for="opt in [
+                        { value: 'catalog', label: 'GWAS Catalog ID' },
+                        { value: 'portal', label: 'Knowledge Portal' },
+                        { value: 'same', label: 'Same as PGS source' },
+                      ]"
+                      :key="opt.value"
+                      type="button"
+                      class="source-chip"
+                      :class="{ 'source-chip--active': gwasSourceType === opt.value }"
+                      @click="gwasSourceType = opt.value"
+                    >
+                      {{ opt.label }}
+                    </button>
+                  </div>
+                </div>
 
-              <div class="flex justify-content-end gap-2 mt-4">
-                <Button
-                  label="Continue to Files"
-                  icon="bi-arrow-right"
-                  @click="handleContinueToFiles"
-                  class="p-button-primary"
-                  :disabled="!isMetadataValid"
-                />
+                <div class="mt-3 mb-1">
+                  <span class="source-group-label source-group-label--fallback">If unavailable above</span>
+                  <div class="flex gap-2 flex-wrap mt-1">
+                    <button
+                      v-for="opt in [
+                        { value: 'published', label: 'Published (PMID)' },
+                        { value: 'pre-published', label: 'Pre-published (DOI)' },
+                        { value: 'unpublished', label: 'Unpublished' },
+                      ]"
+                      :key="opt.value"
+                      type="button"
+                      class="source-chip source-chip--fallback"
+                      :class="{ 'source-chip--active': gwasSourceType === opt.value }"
+                      @click="gwasSourceType = opt.value"
+                    >
+                      {{ opt.label }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Conditional GWAS inputs -->
+                <div v-if="gwasSourceType === 'catalog'" class="mt-3">
+                  <InputText
+                    v-model="gwasSourceValue"
+                    placeholder="e.g., GCST90002409"
+                    class="w-full"
+                    :class="{ 'p-invalid': !gwasSourceValue }"
+                  />
+                  <small class="text-gray-400">Preferred — find it at ebi.ac.uk/gwas</small>
+                </div>
+
+                <div v-else-if="gwasSourceType === 'portal'" class="mt-3">
+                  <Message severity="warn" :closable="false" class="mb-2 text-sm">
+                    Use only when a GWAS Catalog ID is not available
+                  </Message>
+                  <InputText
+                    v-model="gwasSourceValue"
+                    :placeholder="gwasSourcePlaceholder"
+                    class="w-full"
+                    :class="{ 'p-invalid': !gwasSourceValue }"
+                  />
+                  <small class="text-gray-400">Knowledge portal URL</small>
+                </div>
+
+                <div v-else-if="gwasSourceType === 'same'" class="mt-3">
+                  <Message severity="warn" :closable="false" class="mb-2 text-sm">
+                    Last resort — use only when no catalog ID or portal is available
+                  </Message>
+                  <div class="p-3 surface-100 border-round">
+                    <small class="text-gray-500 block mb-1">Will inherit from PGS source:</small>
+                    <span v-if="pegSourceValue" class="font-semibold">{{ pegSourceValue }}</span>
+                    <span v-else class="text-gray-400 italic">Fill in PGS source above first</span>
+                  </div>
+                </div>
+
+                <div v-else-if="gwasSourceType === 'published'" class="mt-3">
+                  <InputText
+                    v-model="gwasSourceValue"
+                    :placeholder="gwasSourcePlaceholder"
+                    class="w-full"
+                    :class="{ 'p-invalid': !gwasSourceValue }"
+                  />
+                  <small class="text-gray-400">PubMed ID of the paper.</small>
+                </div>
+
+                <div v-else-if="gwasSourceType === 'pre-published'" class="mt-3">
+                  <InputText
+                    v-model="gwasSourceValue"
+                    :placeholder="gwasSourcePlaceholder"
+                    class="w-full"
+                    :class="{ 'p-invalid': !gwasSourceValue }"
+                  />
+                  <small class="text-gray-400">DOI</small>
+                </div>
+
+                <div v-else-if="gwasSourceType === 'unpublished'" class="mt-3">
+                  <InputText
+                    v-model="gwasSourceValue"
+                    :placeholder="gwasSourcePlaceholder"
+                    class="w-full"
+                    :class="{ 'p-invalid': !gwasSourceValue }"
+                  />
+                </div>
               </div>
-              <div v-if="!isMetadataValid" class="text-sm text-gray-500 mt-2 text-right">
-                Please fill in all required fields to continue
-              </div>
+            </div>
+
+            <div class="flex justify-content-end gap-2 mt-4">
+              <Button
+                label="Continue to Files"
+                icon="bi-arrow-right"
+                @click="handleContinueToFiles"
+                class="p-button-primary"
+                :disabled="!isMetadataValid"
+              />
+            </div>
+            <div v-if="!isMetadataValid" class="text-sm text-gray-500 mt-2 text-right">
+              Please fill in all required fields to continue
             </div>
           </div>
         </AccordionTab>
@@ -516,11 +557,7 @@ const handleCancel = () => {
                   <div v-if="pegListFile" class="mt-2 p-3 surface-100 border-round">
                     <div class="flex justify-content-between align-items-center">
                       <span class="font-semibold">{{ pegListFile.name }}</span>
-                      <Button
-                        icon="bi-x"
-                        class="p-button-rounded p-button-text p-button-danger"
-                        @click="removePEGListFile"
-                      />
+                      <Button icon="bi-x" class="p-button-rounded p-button-text p-button-danger" @click="removePEGListFile" />
                     </div>
                     <small class="text-gray-600">{{ (pegListFile.size / 1024).toFixed(2) }} KB</small>
                   </div>
@@ -555,11 +592,7 @@ const handleCancel = () => {
                   <div v-if="pegMetadataFile" class="mt-2 p-3 surface-100 border-round">
                     <div class="flex justify-content-between align-items-center">
                       <span class="font-semibold">{{ pegMetadataFile.name }}</span>
-                      <Button
-                        icon="bi-x"
-                        class="p-button-rounded p-button-text p-button-danger"
-                        @click="removePEGMetadataFile"
-                      />
+                      <Button icon="bi-x" class="p-button-rounded p-button-text p-button-danger" @click="removePEGMetadataFile" />
                     </div>
                     <small class="text-gray-600">{{ (pegMetadataFile.size / 1024).toFixed(2) }} KB</small>
                   </div>
@@ -594,11 +627,7 @@ const handleCancel = () => {
                   <div v-if="pegMatrixFile" class="mt-2 p-3 surface-100 border-round">
                     <div class="flex justify-content-between align-items-center">
                       <span class="font-semibold">{{ pegMatrixFile.name }}</span>
-                      <Button
-                        icon="bi-x"
-                        class="p-button-rounded p-button-text p-button-danger"
-                        @click="removePEGMatrixFile"
-                      />
+                      <Button icon="bi-x" class="p-button-rounded p-button-text p-button-danger" @click="removePEGMatrixFile" />
                     </div>
                     <small class="text-gray-600">{{ (pegMatrixFile.size / 1024).toFixed(2) }} KB</small>
                   </div>
@@ -640,5 +669,75 @@ const handleCancel = () => {
 
 .hidden {
   display: none;
+}
+
+.source-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.source-badge--pgs {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+.source-badge--gwas {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.source-group-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6366f1;
+}
+
+.source-group-label--fallback {
+  color: #d97706;
+}
+
+.source-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  border: 1.5px solid #d1d5db;
+  background: transparent;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: #374151;
+}
+
+.source-chip:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+.source-chip--active {
+  border-color: #6366f1;
+  background: #6366f1;
+  color: #ffffff;
+}
+
+.source-chip--fallback {
+  border-color: #d1d5db;
+}
+
+.source-chip--fallback:hover {
+  border-color: #d97706;
+  color: #d97706;
+}
+
+.source-chip--fallback.source-chip--active {
+  border-color: #d97706;
+  background: #d97706;
+  color: #ffffff;
 }
 </style>
