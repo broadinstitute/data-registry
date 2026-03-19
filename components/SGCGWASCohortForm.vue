@@ -288,6 +288,10 @@
                 <label for="colVariantId">Variant ID</label>
                 <InputText v-model="formData.col_variant_id" id="colVariantId" type="text" placeholder="e.g. rsID" :disabled="disabled" />
             </div>
+            <div class="field col-6 md:col-2">
+                <label for="colVariantN">Variant N</label>
+                <InputText v-model="formData.col_variant_n" id="colVariantN" type="text" placeholder="e.g. N" :disabled="disabled" />
+            </div>
         </div>
 
         <!-- Save button -->
@@ -390,7 +394,8 @@ const defaultFormData = {
     col_pvalue: '',
     col_effect_allele_freq: '',
     col_imputation_quality: '',
-    col_variant_id: ''
+    col_variant_id: '',
+    col_variant_n: ''
 };
 
 const formData = ref({ ...defaultFormData, ...props.initialData });
@@ -448,7 +453,8 @@ const fieldLabels = {
     col_se: 'SE column heading',
     col_pvalue: 'P-value column heading',
     col_effect_allele_freq: 'Effect Allele Frequency column heading',
-    col_imputation_quality: 'Imputation Quality Score column heading'
+    col_imputation_quality: 'Imputation Quality Score column heading',
+    col_variant_n: 'Variant N column heading'
 };
 
 const firstMissingField = computed(() => {
