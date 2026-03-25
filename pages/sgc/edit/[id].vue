@@ -662,6 +662,11 @@
                     </div>
                 </TabPanel>
 
+                <!-- Tab 3: GWAS Files -->
+                <TabPanel header="GWAS Files">
+                    <SGCGWASFileList :cohort-id="cohortId" toast-group="default" />
+                </TabPanel>
+
             </TabView>
         </div>
     </div>
