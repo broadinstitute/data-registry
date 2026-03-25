@@ -24,7 +24,7 @@
             <TabView v-model:activeIndex="activeTabIndex">
 
                 <!-- Tab 1: Phase 0 Upload -->
-                <TabPanel header="Phase 0 Upload">
+                <TabPanel header="Phase 0">
             <div class="card p-fluid">
                 <h5>Cohort Setup</h5>
                 <p class="text-sm mb-4">
@@ -647,9 +647,9 @@
             </div>
                 </TabPanel>
 
-                <!-- Tab 2: GWAS Metadata -->
-                <TabPanel header="GWAS Metadata">
-                    <div class="card p-fluid">
+                <!-- Tab 2: GWAS -->
+                <TabPanel header="GWAS">
+                    <div class="card p-fluid mb-4">
                         <h5>GWAS Cohort Metadata</h5>
                         <p class="text-sm mb-4">
                             Provide cohort-level information required for GWAS submission. This metadata applies to all datasets submitted for this cohort.
@@ -660,10 +660,6 @@
                             @save="handleGWASMetadataSave"
                         />
                     </div>
-                </TabPanel>
-
-                <!-- Tab 3: GWAS Files -->
-                <TabPanel header="GWAS Files">
                     <SGCGWASFileList :cohort-id="cohortId" toast-group="default" />
                 </TabPanel>
 
