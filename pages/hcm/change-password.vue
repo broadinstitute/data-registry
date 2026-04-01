@@ -53,6 +53,10 @@
 import { useUserStore } from "~/stores/UserStore";
 import { useToast } from "primevue/usetoast";
 
+definePageMeta({
+    layout: 'hcm'
+});
+
 const userStore = useUserStore();
 const toast = useToast();
 
