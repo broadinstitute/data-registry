@@ -584,6 +584,18 @@ export const useUserStore = defineStore("UserStore", {
             }
         },
 
+        async changeHCMPassword(newPassword) {
+            if (!this.hcmAxios) {
+                this.initHCM();
+            }
+            const token = localStorage.getItem('hcmAuthToken');
+            return await this.hcmAxios('/api/auth/change-password/', {
+                method: 'POST',
+                body: { password: newPassword },
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+        },
+
         canManageHCMUsers() {
             if (!this.user) {
                 return false;
