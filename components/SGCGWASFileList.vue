@@ -2,7 +2,23 @@
     <div class="card">
         <div class="flex justify-content-between align-items-center mb-3">
             <h5 class="mb-0">GWAS Files</h5>
-            <Tag :value="gwasFiles.length + ' file' + (gwasFiles.length !== 1 ? 's' : '')" severity="info" />
+            <div class="flex align-items-center gap-2">
+                <Tag :value="gwasFiles.length + ' file' + (gwasFiles.length !== 1 ? 's' : '')" severity="info" />
+                <Tag
+                    v-if="gwasFiles.length > 0"
+                    :value="validatedCount + ' / ' + gwasFiles.length + ' validated'"
+                    :severity="validatedCount === gwasFiles.length ? 'success' : 'warning'"
+                />
+                <Button
+                    v-if="gwasFiles.length > 0"
+                    :label="showUnvalidatedOnly ? 'Show all' : 'Unvalidated only'"
+                    :icon="showUnvalidatedOnly ? 'pi pi-filter-slash' : 'pi pi-filter'"
+                    size="small"
+                    :severity="showUnvalidatedOnly ? 'secondary' : 'warning'"
+                    outlined
+                    @click="showUnvalidatedOnly = !showUnvalidatedOnly"
+                />
+            </div>
         </div>
 
         <div v-if="loading" class="text-center p-4">
@@ -15,7 +31,12 @@
             <p class="mt-3 text-gray-600">No GWAS files have been uploaded for this cohort yet.</p>
         </div>
 
-        <DataTable v-else :value="gwasFiles" class="mt-3" :paginator="gwasFiles.length > 10" :rows="10">
+        <div v-else-if="showUnvalidatedOnly && displayedFiles.length === 0" class="text-center p-4">
+            <i class="pi pi-check-circle text-green-500" style="font-size: 3rem"></i>
+            <p class="mt-3 text-green-700 font-medium">All files have been validated.</p>
+        </div>
+
+        <DataTable v-else :value="displayedFiles" class="mt-3" :paginator="displayedFiles.length > 10" :rows="10">
             <Column field="dataset" header="Dataset" :sortable="true">
                 <template #body="{ data }">
                     <span class="font-medium">{{ data.dataset }}</span>
@@ -211,10 +232,20 @@ const gwasFiles = ref([]);
 const loading = ref(true);
 const deleteGWASDialog = ref(false);
 const gwasFileToDelete = ref(null);
+const showUnvalidatedOnly = ref(false);
 
 const qcStatus = ref({});
 const qcProgress = ref({});
 const qcErrors = ref({});
+
+const validatedCount = computed(() =>
+    gwasFiles.value.filter(f => qcStatus.value[f.id] === 'COMPLETED' && qcErrors.value[f.id] === 0).length
+);
+
+const displayedFiles = computed(() => {
+    if (!showUnvalidatedOnly.value) return gwasFiles.value;
+    return gwasFiles.value.filter(f => !(qcStatus.value[f.id] === 'COMPLETED' && qcErrors.value[f.id] === 0));
+});
 
 const errorsDialog = ref(false);
 const errorsFileUrl = ref(null);
