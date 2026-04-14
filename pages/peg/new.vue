@@ -675,6 +675,15 @@ const handleCancel = () => {
 </template>
 
 <style scoped>
+/* Fix: SelectButton uses a ::before pseudo-element for the selected-state highlight.
+   Bootstrap / global resets can strip position:relative from .p-button-label, causing
+   the white ::before box to paint over the label text. Re-assert it here, scoped to
+   the SelectButton within this page only. */
+:deep(.p-selectbutton .p-button .p-button-label),
+:deep(.p-selectbutton .p-button .pi) {
+  position: relative;
+}
+
 .text-red-500 {
   color: #ef4444;
 }
