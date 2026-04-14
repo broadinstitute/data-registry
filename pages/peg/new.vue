@@ -675,13 +675,20 @@ const handleCancel = () => {
 </template>
 
 <style scoped>
-/* Fix: SelectButton uses a ::before pseudo-element for the selected-state highlight.
-   Bootstrap / global resets can strip position:relative from .p-button-label, causing
-   the white ::before box to paint over the label text. Re-assert it here, scoped to
-   the SelectButton within this page only. */
+/* Fix: The aura theme adds a white ::before inset box on the highlighted SelectButton,
+   while the lara-light-blue theme (loaded later) overrides the label color to white.
+   White text on a white ::before box = invisible. Fix both issues:
+   - z-index: 1 ensures the label stacks above the ::before pseudo-element
+   - explicit dark color on the highlighted state overrides the lara white-text rule */
 :deep(.p-selectbutton .p-button .p-button-label),
 :deep(.p-selectbutton .p-button .pi) {
   position: relative;
+  z-index: 1;
+}
+
+:deep(.p-selectbutton .p-button.p-highlight .p-button-label),
+:deep(.p-selectbutton .p-button.p-highlight .pi) {
+  color: #1e293b;
 }
 
 .text-red-500 {
