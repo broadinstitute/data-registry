@@ -1,6 +1,6 @@
 <script setup>
 import { useDatasetStore } from "~/stores/DatasetStore";
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onUnmounted, watch } from "vue";
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 
@@ -76,8 +76,9 @@ const isGwasSourceValid = computed(() => {
 // Phenotype autocomplete
 const phenotypeObj = ref({});
 const filteredPhenotypes = ref([]);
-const allPhenotypes = ref([]);
 const phenotypeIsCustom = ref(false);
+let _phenotypeTimer = null;
+let _phenotypeAbort = null;
 
 // File upload state
 const pegListFile = ref(null);
@@ -90,33 +91,44 @@ const pegMetadataInput = ref(null);
 const submitting = ref(false);
 const activeAccordionIndex = ref(0);
 
-onMounted(async () => {
-  try {
-    const response = await fetch('https://bioindex.hugeamp.org/api/portal/phenotypes?q=md');
-    const data = await response.json();
-    allPhenotypes.value = data.data;
-  } catch (error) {
-    console.error('Error fetching phenotypes:', error);
-    store.errorMessage = 'Failed to load phenotypes';
-    store.showNotification = true;
-  }
-});
-
 const isMetadataValid = computed(() => {
   return !!(values.name && values.study_author && values.phenotype && isPegSourceValid.value && isGwasSourceValid.value);
 });
 
 function filterPhenotypes(event) {
-  filteredPhenotypes.value = allPhenotypes.value.filter((p) => {
-    if (event.query.length < 2) { return false; }
-    const words = event.query.split(" ");
-    let matches = 0;
-    words.forEach((word) => {
-      if (p.description.toLowerCase().includes(word.toLowerCase())) { matches++; }
-    });
-    return matches === words.length;
-  });
+  if (event.query.length < 2) {
+    filteredPhenotypes.value = [];
+    return;
+  }
+  clearTimeout(_phenotypeTimer);
+  _phenotypeTimer = setTimeout(async () => {
+    if (_phenotypeAbort) _phenotypeAbort.abort();
+    _phenotypeAbort = new AbortController();
+    try {
+      const response = await fetch(
+        `https://www.ebi.ac.uk/ols4/api/search?q=${encodeURIComponent(event.query)}&ontology=mondo&type=class&isObsolete=false&isDefiningOntology=true&rows=20`,
+        { signal: _phenotypeAbort.signal }
+      );
+      if (!response.ok) throw new Error(`OLS4 search failed: ${response.status}`);
+      const data = await response.json();
+      filteredPhenotypes.value = (data.response?.docs || [])
+        .filter(doc => doc.obo_id?.startsWith('MONDO:'))
+        .map(doc => ({
+          name: doc.obo_id,
+          description: doc.label,
+        }));
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+      console.error('Error searching MONDO phenotypes:', error);
+      filteredPhenotypes.value = [];
+    }
+  }, 300);
 }
+
+onUnmounted(() => {
+  clearTimeout(_phenotypeTimer);
+  if (_phenotypeAbort) _phenotypeAbort.abort();
+});
 
 watch(phenotypeObj, (newValue) => {
   if (typeof newValue === 'string') {
