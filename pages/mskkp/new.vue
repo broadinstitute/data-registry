@@ -67,7 +67,7 @@ const colOptions = [
     { name: "isImputed", value: "isImputed" },
 ];
 
-const requiredFields = ["chromosome", "position", "effectAllele", "nonEffectAllele", "pValue"];
+const requiredFields = ["chromosome", "position", "effectAllele", "nonEffectAllele", "pValue", "standardError"];
 
 // Computed
 const colMap = computed(() => {
@@ -390,7 +390,7 @@ async function uploadData() {
                         <Chip v-else label="n (or manual)" />
                         </div>
                         <div class="mt-2">
-                            <small style="color: #6c757d;">Optional: standardError, hweP, imputationQuality, isImputed</small>
+                            <small style="color: #6c757d;">Optional: hweP, imputationQuality, isImputed</small>
                         </div>
                     </div>
 
