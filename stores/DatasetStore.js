@@ -746,27 +746,58 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
-        async uploadMSKKPDataset(file, fileName, datasetName, metadata) {
+        async uploadMSKKPReadme(datasetId, file, fileName) {
+            // Step 1: Get presigned URL
+            const { data: presignedData } = await configuredAxios.get(
+                `/api/mskkp/datasets/${datasetId}/readme-presigned-url`,
+                { params: { filename: fileName } }
+            );
+
+            // Step 2: Upload directly to S3
+            const strippedFile = new Blob([file], { type: '' });
+            await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.addEventListener('load', () => {
+                    if (xhr.status >= 200 && xhr.status < 300) resolve();
+                    else reject(new Error(`README upload failed with status ${xhr.status}`));
+                });
+                xhr.addEventListener('error', () => reject(new Error('README upload failed')));
+                xhr.open('PUT', presignedData.presigned_url);
+                xhr.send(strippedFile);
+            });
+
+            // Step 3: Finalize
+            const { data } = await configuredAxios.post(
+                `/api/mskkp/datasets/${datasetId}/finalize-readme`,
+                JSON.stringify(fileName)
+            );
+            return data;
+        },
+
+        async uploadMSKKPDataset(file, fileName, datasetName, metadata, readmeFile = null, readmeFileName = null) {
             this.processing = true;
             this.showProgressBar = false;
             this.modalMsg = "Creating MSKKP Dataset";
             this.uploadProgress = 0;
 
             try {
-                // Step 1: Create dataset metadata (checks for duplicates)
+                // Step 1: Create dataset metadata
                 this.showProgressBar = false;
                 this.modalMsg = "Creating dataset metadata...";
                 const createResult = await this.createMSKKPDataset(metadata);
                 const datasetId = createResult.dataset_id;
 
-                // Step 2: Upload file (will show progress bar during upload)
+                // Step 2: Upload GWAS file
                 this.showProgressBar = true;
                 this.modalMsg = "Uploading file...";
                 const uploadResult = await this.uploadMSKKPFile(datasetId, file, fileName);
-                
-                // Step 3: Server processing (progress bar hidden by this point)
-                this.showProgressBar = false;
-                this.modalMsg = "Processing...";
+
+                // Step 3: Upload README if provided
+                if (readmeFile && readmeFileName) {
+                    this.showProgressBar = false;
+                    this.modalMsg = "Uploading README...";
+                    await this.uploadMSKKPReadme(datasetId, readmeFile, readmeFileName);
+                }
 
                 this.processing = false;
                 this.showNotification = true;

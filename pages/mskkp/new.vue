@@ -23,6 +23,20 @@ const file = ref(null);
 const fileName = ref(null);
 const selectedFields = ref({});
 
+// README file upload (optional)
+const readmeFile = ref(null);
+const readmeFileName = ref(null);
+
+function handleReadmeSelect(e) {
+    readmeFile.value = e.files[0];
+    readmeFileName.value = e.files[0].name;
+}
+
+function resetReadme() {
+    readmeFile.value = null;
+    readmeFileName.value = null;
+}
+
 // Options
 const ancestryOptions = ref([
     { name: "European", value: "EUR" },
@@ -41,15 +55,19 @@ const genomeBuildOptions = ref([
 const colOptions = [
     { name: "chromosome", value: "chromosome" },
     { name: "position", value: "position" },
-    { name: "reference", value: "reference" },
-    { name: "alt", value: "alt" },
+    { name: "effectAllele", value: "effectAllele" },
+    { name: "nonEffectAllele", value: "nonEffectAllele" },
     { name: "pValue", value: "pValue" },
     { name: "beta", value: "beta" },
     { name: "oddsRatio", value: "oddsRatio" },
     { name: "n", value: "n" },
+    { name: "standardError", value: "standardError" },
+    { name: "hweP", value: "hweP" },
+    { name: "imputationQuality", value: "imputationQuality" },
+    { name: "isImputed", value: "isImputed" },
 ];
 
-const requiredFields = ["chromosome", "position", "reference", "alt", "pValue"];
+const requiredFields = ["chromosome", "position", "effectAllele", "nonEffectAllele", "pValue"];
 
 // Computed
 const colMap = computed(() => {
@@ -83,6 +101,7 @@ const formIncomplete = computed(() => {
     return (
         !file.value ||
         !dataSetName.value ||
+        !phenotype.value ||
         !requiredFields.every(
             (field) => field in colMap.value && colMap.value[field],
         ) ||
@@ -96,7 +115,8 @@ const formIncomplete = computed(() => {
 const validationMessages = computed(() => {
     const messages = [];
     if (!file.value) messages.push("Upload a file");
-    if (!dataSetName.value) messages.push("Enter a dataset name");
+    if (!dataSetName.value) messages.push("Enter a cohort name");
+    if (!phenotype.value) messages.push("Enter a phenotype description");
     if (!ancestry.value) messages.push("Select ancestry");
     if (!genomeBuild.value) messages.push("Select genome build");
     return messages;
@@ -154,7 +174,7 @@ async function uploadData() {
         const metadata = {
             name: dataSetName.value,
             ancestry: ancestry.value,
-            phenotype: phenotype.value || null,
+            phenotype: phenotype.value,
             effective_n: effectiveN.value ? parseInt(effectiveN.value) : null,
             genome_build: genomeBuild.value,
             column_map: colMap.value
@@ -165,7 +185,9 @@ async function uploadData() {
             file.value,
             fileName.value,
             dataSetName.value,
-            metadata
+            metadata,
+            readmeFile.value,
+            readmeFileName.value
         );
 
         toast.add({
@@ -240,8 +262,9 @@ async function uploadData() {
                 </template>
                 <template #content>
                     <div class="field">
-                        <label for="dataSetName">Dataset Name <span style="color: darkred">*</span></label>
-                        <InputText id="dataSetName" v-model="dataSetName" class="w-full" />
+                        <label for="dataSetName">Cohort Name <span style="color: darkred">*</span></label>
+                        <InputText id="dataSetName" v-model="dataSetName" class="w-full" placeholder="e.g. UKBB, FinnGen, MyStudyCohort" />
+                        <small>The name of the source cohort or study</small>
                     </div>
 
                     <div class="field">
@@ -258,8 +281,9 @@ async function uploadData() {
                     </div>
 
                     <div class="field">
-                        <label for="phenotype">Phenotype</label>
-                        <InputText id="phenotype" v-model="phenotype" class="w-full" />
+                        <label for="phenotype">Phenotype <span style="color: darkred">*</span></label>
+                        <Textarea id="phenotype" v-model="phenotype" class="w-full" rows="3"
+                            placeholder="Describe the phenotype and how it was defined (e.g. T2D diagnosed by ICD-10 code E11...)" />
                     </div>
 
                     <div class="field">
@@ -302,6 +326,29 @@ async function uploadData() {
                     </div>
                 </template>
             </Card>
+
+            <Card class="mt-3">
+                <template #header>
+                    <div class="p-3">
+                        <h4>README / Data Dictionary <small style="color: #6c757d;">(optional)</small></h4>
+                    </div>
+                </template>
+                <template #content>
+                    <div class="field">
+                        <label>Upload a README or data dictionary describing how the data were collected, cleaned, and analyzed</label>
+                        <FileUpload
+                            mode="basic"
+                            :auto="false"
+                            @select="handleReadmeSelect"
+                            @clear="resetReadme"
+                            accept=".txt,.md,.pdf,.docx"
+                        />
+                        <small v-if="readmeFileName" style="color: #198754;">
+                            <i class="pi pi-check" /> Selected: {{ readmeFileName }}
+                        </small>
+                    </div>
+                </template>
+            </Card>
         </div>
 
         <div class="col-6">
@@ -341,6 +388,9 @@ async function uploadData() {
                             class="selected-chip"
                         />
                         <Chip v-else label="n (or manual)" />
+                        </div>
+                        <div class="mt-2">
+                            <small style="color: #6c757d;">Optional: standardError, hweP, imputationQuality, isImputed</small>
                         </div>
                     </div>
 
