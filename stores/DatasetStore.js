@@ -815,6 +815,29 @@ export const useDatasetStore = defineStore("DatasetStore", {
             }
         },
 
+        async fetchMSKKPDatasets() {
+            const { data } = await configuredAxios.get('/api/mskkp/datasets');
+            return data.datasets;
+        },
+
+        async downloadMSKKPDataset(datasetId) {
+            const { data } = await configuredAxios.get(`/api/mskkp/datasets/${datasetId}/download`);
+            if (data.presigned_url) {
+                window.open(data.presigned_url, '_blank');
+            } else {
+                throw new Error('No download URL found in response');
+            }
+        },
+
+        async downloadMSKKPReadme(datasetId) {
+            const { data } = await configuredAxios.get(`/api/mskkp/datasets/${datasetId}/download-readme`);
+            if (data.presigned_url) {
+                window.open(data.presigned_url, '_blank');
+            } else {
+                throw new Error('No README download URL found in response');
+            }
+        },
+
         // PEG File Uploads
         async uploadPEGList(studyId, file) {
             this.showProgressBar = true;
