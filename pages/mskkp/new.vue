@@ -207,9 +207,9 @@ async function uploadData() {
         let errorSummary = "Upload Failed";
         
         if (error.response?.status === 409) {
-            // Duplicate dataset name
-            errorDetail = error.response.data?.detail || "A dataset with this name already exists. Please choose a different name.";
-            errorSummary = "Duplicate Dataset Name";
+            // Duplicate cohort name
+            errorDetail = error.response.data?.detail || "A cohort with this name already exists. Please choose a different name.";
+            errorSummary = "Duplicate Cohort Name";
         } else if (error.response?.data?.detail) {
             errorDetail = error.response.data.detail;
         } else if (error.message) {
