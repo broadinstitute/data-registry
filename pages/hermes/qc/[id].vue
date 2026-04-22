@@ -1,6 +1,8 @@
 <script setup>
 import { useDatasetStore } from '~/stores/DatasetStore';
 import { useToast } from 'primevue/usetoast';
+import Tag from 'primevue/tag';
+import Button from 'primevue/button';
 
 
 const route = useRoute();
@@ -12,6 +14,8 @@ const toast = useToast();
 const showReview = ref(true);
 const indels = ref(null);
 const adjustment = ref(null);
+const liftoverJob = ref(null);
+const perChromosomeRows = ref([]);
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 
@@ -48,6 +52,17 @@ onMounted(async () => {
   frequencyDifferential.value = scriptOptions.fd;
   if (scriptOptions.it) {
     infoThreshold.value = scriptOptions.it;
+  }
+
+  liftoverJob.value = await store.getLiftoverSummary(id);
+  if (liftoverJob.value && liftoverJob.value.summary && liftoverJob.value.summary.per_chromosome) {
+    perChromosomeRows.value = Object.entries(liftoverJob.value.summary.per_chromosome).map(([chr, stats]) => ({
+      chromosome: chr,
+      input: stats.input,
+      lifted: stats.lifted,
+      unmapped: stats.unmapped,
+      strand_flips: stats.strand_flips,
+    }));
   }
 });
 
@@ -91,6 +106,11 @@ async function rerunQC() {
 
 }
 
+async function downloadUnmapped() {
+  const url = await store.getUnmappedDownloadUrl(id);
+  window.open(url, '_blank');
+}
+
 async function reviewDataset(id, value) {
   await store.reviewDataset(id, value);
   toast.add({
@@ -117,6 +137,58 @@ async function reviewDataset(id, value) {
       @click="openDownloadLink"
   />
   </div>
+  <div class="grid" v-if="liftoverJob">
+    <div class="col col-md-12 mb-4">
+      <Card>
+        <template #title>
+          <span class="mr-2">Liftover Summary: {{ liftoverJob.source_genome_build }} &rarr; {{ liftoverJob.target_genome_build }}</span>
+          <Tag :value="liftoverJob.status" :severity="liftoverJob.status === 'COMPLETE' ? 'success' : liftoverJob.status === 'FAILED' ? 'danger' : 'warning'" />
+        </template>
+        <template #content>
+          <div class="flex gap-4 mb-3">
+            <div>
+              <strong>Total Input:</strong> {{ liftoverJob.summary?.total_input_variants?.toLocaleString() }}
+            </div>
+            <div>
+              <strong>Lifted:</strong> {{ liftoverJob.summary?.total_lifted?.toLocaleString() }}
+            </div>
+            <div>
+              <strong>Unmapped:</strong> {{ liftoverJob.summary?.total_unmapped?.toLocaleString() }} ({{ liftoverJob.summary?.unmapped_pct?.toFixed(2) }}%)
+            </div>
+            <div>
+              <strong>Strand Flips:</strong> {{ liftoverJob.summary?.strand_flips?.toLocaleString() }}
+            </div>
+          </div>
+          <div class="flex gap-4 mb-3">
+            <div>
+              <strong>Chain File:</strong> {{ liftoverJob.summary?.chain_file }}
+            </div>
+            <div>
+              <strong>Duration:</strong> {{ liftoverJob.summary?.duration_seconds }}s
+            </div>
+          </div>
+          <details class="mb-3">
+            <summary class="cursor-pointer mb-2">Per-Chromosome Breakdown</summary>
+            <DataTable :value="perChromosomeRows" size="small" class="mt-2">
+              <Column field="chromosome" header="Chromosome" sortable />
+              <Column field="input" header="Input" sortable />
+              <Column field="lifted" header="Lifted" sortable />
+              <Column field="unmapped" header="Unmapped" sortable />
+              <Column field="strand_flips" header="Strand Flips" sortable />
+            </DataTable>
+          </details>
+          <Button
+              label="Download Unmapped Variants"
+              icon="bi-download"
+              outlined
+              :disabled="!liftoverJob.summary?.total_unmapped"
+              @click="downloadUnmapped"
+          />
+        </template>
+      </Card>
+    </div>
+  </div>
+
   <div class="grid" v-can="'approveUpload'">
     <div class="col col-md-12 mb-4">
       <Card>

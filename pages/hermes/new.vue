@@ -72,6 +72,7 @@ const formSchema = yup.object({
         then: (schema) => schema.required('You must specifiy standard deviation age (controls) when you specify cases'),
         otherwise: (schema) => schema,
       }),
+  genomeBuild: yup.string().label('Genome Build').required().oneOf(['hg19', 'grch38', 'n/a']),
   referenceGenome: yup.string().label('Reference Genome').required(),
   genotypingArray: yup.string().label('Genotyping Array').required(),
   callingAlgorithm: yup.string().label('Calling Algorithm').required(),
@@ -127,6 +128,7 @@ const [maleProportionControls] = defineField('maleProportionControls');
 const [meanAgeCohort] = defineField('meanAgeCohort');
 const [sdAgeCohort] = defineField('sdAgeCohort');
 const [sdAgeControls] = defineField('sdAgeControls');
+const [genomeBuild] = defineField('genomeBuild');
 const [referenceGenome] = defineField('referenceGenome');
 const [genotypingArray] = defineField('genotypingArray');
 const [callingAlgorithm] = defineField('callingAlgorithm');
@@ -197,6 +199,14 @@ const genomeBuildOptions = ref([
     { name: "GRCh37/b37", value: "GRCh37/b37" },
 ]);
 
+const genomeBuildUploadOptions = ref([
+    { name: "GRCh37 / hg19", value: "hg19" },
+    { name: "GRCh38 / hg38", value: "grch38" },
+    { name: "N/A", value: "n/a" },
+]);
+
+const portalConfig = ref(null);
+
 const colOptions = ref([]);
 const requiredFields = ref([]);
 const selectedFields = ref({});
@@ -249,6 +259,7 @@ async function loadExistingData() {
     sdAgeControls.value = metadata.sdAgeControls;
     sdAgeRecruitment.value = metadata.sdAgeRecruitment;
 
+    genomeBuild.value = metadata.genomeBuild;
     referenceGenome.value = metadata.referenceGenome;
     genotypingArray.value = metadata.genotypingArray;
     callingAlgorithm.value = metadata.callingAlgorithm;
@@ -289,6 +300,7 @@ onMounted(async () => {
         limit: 1,
     };
     previousMetadata.value = await store.fetchHermesMetadata();
+    portalConfig.value = await store.getPortalConfig().catch(() => null);
     await loadExistingData();
     let fileInfos = await store.fetchFileUploads(paramsToString(params));
     if (fileInfos.length > 0) {
@@ -384,8 +396,25 @@ const requiredEffectFields = computed(() => {
   return betaAndSe || oddsRatioFields;
 });
 
+const genomeBuildLabel = (build) => {
+    const opt = genomeBuildUploadOptions.value.find(o => o.value === build);
+    return opt ? opt.name : build;
+};
+
+const liftoverNotice = computed(() => {
+    if (!portalConfig.value || !portalConfig.value.target_genome_build) return null;
+    if (!genomeBuild.value || genomeBuild.value === 'n/a') return null;
+    if (genomeBuild.value !== portalConfig.value.target_genome_build) {
+        return {
+            source: genomeBuildLabel(genomeBuild.value),
+            target: genomeBuildLabel(portalConfig.value.target_genome_build),
+        };
+    }
+    return null;
+});
+
 const step1Complete = computed(() => {
-    return Boolean(dataSetName.value);
+    return Boolean(dataSetName.value) && Boolean(genomeBuild.value);
 });
 const step2Complete = computed(() => {
     return Boolean(fileInfo.value.columns);
@@ -509,7 +538,8 @@ async function uploadSubmit(){
           fileName,
           dataSetName.value,
           metadata,
-          { 'fd': .2 }
+          { 'fd': .2 },
+          genomeBuild.value
       )
       if (validationRes.errors) {
         toast.add({
@@ -731,6 +761,26 @@ async function uploadSubmit(){
                 </Fieldset>
 
               <Fieldset legend="Genotyping Information">
+                <div class="field">
+                  <label for="genomeBuild">Genome Build</label>
+                  <Dropdown
+                      id="genomeBuild"
+                      v-model="genomeBuild"
+                      :options="genomeBuildUploadOptions"
+                      optionLabel="name"
+                      optionValue="value"
+                      placeholder="Select Genome Build"
+                      data-cy="genomeBuild"
+                      aria-describedby="genomeBuild-help"
+                      :class="{ 'p-invalid': errors.genomeBuild }"
+                  />
+                  <small id="genomeBuild-help" class="p-error">
+                    {{ errors.genomeBuild }}
+                  </small>
+                  <Message v-if="liftoverNotice" severity="info" :closable="false" class="mt-2">
+                    This file will be lifted from {{ liftoverNotice.source }} &rarr; {{ liftoverNotice.target }} before QC runs.
+                  </Message>
+                </div>
                 <div class="field">
                   <label for="reference">Reference Genome</label>
                   <Dropdown

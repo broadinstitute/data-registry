@@ -390,10 +390,10 @@ export const useDatasetStore = defineStore("DatasetStore", {
             });
             return data;
         },
-        async validateHermesUpload(fileName, dataset, metadata, qc_script_options) {
+        async validateHermesUpload(fileName, dataset, metadata, qc_script_options, genome_build) {
             const { data } = await configuredAxios.post(
                 "/api/validate-hermes",
-              JSON.stringify({'file_name': fileName, dataset, metadata, qc_script_options})
+              JSON.stringify({'file_name': fileName, dataset, metadata, qc_script_options, ...(genome_build && { genome_build })})
             );
             return data;
         },
@@ -1092,6 +1092,28 @@ export const useDatasetStore = defineStore("DatasetStore", {
 
         async getHCMGWASValidationProgress(fileId) {
             const { data } = await hcmAxios.get(`/api/hcm/gwas-validate/${fileId}/progress`);
+            return data;
+        },
+
+        async getLiftoverSummary(fileId) {
+            try {
+                const { data } = await configuredAxios.get(`/api/hermes/liftover/${fileId}`);
+                return data;
+            } catch (err) {
+                if (err.response && err.response.status === 404) return null;
+                throw err;
+            }
+        },
+        async getUnmappedDownloadUrl(fileId) {
+            const { data } = await configuredAxios.get(`/api/hermes/liftover/${fileId}/unmapped-url`);
+            return data;
+        },
+        async getPortalConfig() {
+            const { data } = await configuredAxios.get('/api/hermes/portal-config');
+            return data;
+        },
+        async updatePortalConfig(targetGenomeBuild) {
+            const { data } = await configuredAxios.put('/api/hermes/portal-config', { target_genome_build: targetGenomeBuild });
             return data;
         },
 

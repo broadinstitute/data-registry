@@ -76,6 +76,12 @@ const getSeverity = (status) => {
             return "secondary";
         case "REVIEW REJECTED":
             return "warning";
+        case "SUBMITTED TO LIFTOVER":
+            return "warning";
+        case "LIFTOVER COMPLETE":
+            return "info";
+        case "LIFTOVER FAILED":
+            return "danger";
         default:
             return "info";
     }
@@ -93,6 +99,12 @@ const getIcon = (status) => {
             return "bi-x-square";
         case "REVIEW APPROVED":
             return "bi-check-square";
+        case "SUBMITTED TO LIFTOVER":
+            return "bi-arrow-left-right";
+        case "LIFTOVER COMPLETE":
+            return "bi-check-circle";
+        case "LIFTOVER FAILED":
+            return "bi-exclamation-triangle";
     }
 };
 
@@ -156,6 +168,11 @@ const columns = ref([
     field: "uploaded_by",
     filterType: "text",
     placeholder: "Search uploader",
+    sortable: true
+  },
+  {
+    header: "Build",
+    field: "genome_build",
     sortable: true
   },
   {
