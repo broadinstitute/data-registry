@@ -43,13 +43,12 @@ async function saveBuild() {
 </script>
 
 <template>
-  <div class="grid">
+  <div v-if="isAdmin" class="grid">
     <div class="col-6 col-offset-3">
       <Card>
         <template #title>Portal Liftover Configuration</template>
         <template #content>
-          <div v-if="!isAdmin" class="text-center text-danger">Access denied.</div>
-          <div v-else class="flex flex-column gap-3">
+          <div class="flex flex-column gap-3">
             <div>
               <strong>Current target genome build:</strong>
               {{ currentBuild ? buildOptions.find(o => o.value === currentBuild)?.name ?? currentBuild : 'Not set' }}

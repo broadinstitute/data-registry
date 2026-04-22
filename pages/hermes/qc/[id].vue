@@ -168,7 +168,7 @@ async function reviewDataset(id, value) {
             </div>
           </div>
           <details class="mb-3">
-            <summary class="cursor-pointer mb-2" style="cursor: pointer;">Per-Chromosome Breakdown</summary>
+            <summary class="cursor-pointer mb-2">Per-Chromosome Breakdown</summary>
             <DataTable :value="perChromosomeRows" size="small" class="mt-2">
               <Column field="chromosome" header="Chromosome" sortable />
               <Column field="input" header="Input" sortable />
