@@ -898,12 +898,13 @@ const cooccurrenceMappingComplete = computed(() => {
 });
 
 // Helper function to create flipped mapping for API calls (dropdownValue -> columnName)
+// Filters out file columns that weren't assigned to any canonical field, so cleared
+// dropdowns don't produce a "null" key in the submitted mapping.
 function createFlippedMapping(mappingRef) {
     return Object.fromEntries(
-        Object.entries(mappingRef.value).map(([key, value]) => [
-            value,
-            key,
-        ])
+        Object.entries(mappingRef.value)
+            .filter(([, value]) => value)
+            .map(([key, value]) => [value, key])
     );
 }
 
