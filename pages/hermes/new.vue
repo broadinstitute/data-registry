@@ -160,6 +160,13 @@ const missingFileError = ref('');
 const missingMappingError = ref('');
 let fileName = null;
 let previousMapping = {};
+
+// column_map keys that are aliases of canonical dropdown targets (written on
+// save for downstream workers).  They must be stripped before transposing the
+// map into selectedFields, or they can win the transpose and leave the
+// corresponding dropdown blank — e.g. stdErr (6 chars) sorts after se (2
+// chars) in MySQL's JSON key order, so stdErr would overwrite se.
+const COLUMN_MAP_ALIAS_KEYS = ['stdErr', 'reference', 'alt', 'n'];
 const caseAscertainmentOptions = ref([
     { name: "Electronic Health Records", value: "Electronic Health Records" },
     { name: "Research Study", value: "Research Study" }
@@ -282,7 +289,9 @@ async function loadExistingData() {
     };
 
     selectedFields.value = Object.fromEntries(
-        Object.entries(metadata.column_map).filter(([key]) => key !== 'stdErr').map(([key, value]) => [value, key])
+        Object.entries(metadata.column_map)
+            .filter(([key]) => !COLUMN_MAP_ALIAS_KEYS.includes(key))
+            .map(([key, value]) => [value, key])
     );
 
     if (isUpdate.value) {
@@ -371,7 +380,9 @@ watch(selectedMetadataDetails, (newValue) => {
   }
   if(fileInfo.value.columns){
     selectedFields.value = Object.fromEntries(
-        Object.entries(newValue.column_map).map(([key, value]) => [value, key])
+        Object.entries(newValue.column_map)
+            .filter(([key]) => !COLUMN_MAP_ALIAS_KEYS.includes(key))
+            .map(([key, value]) => [value, key])
     );
   }
 });
