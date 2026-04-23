@@ -557,6 +557,8 @@ async function uploadSubmit(){
     try {
       const { presigned_url } = await store.getHermesPresignedUrl(fileName, dataSetName.value)
       await store.uploadToPresignedUrl(presigned_url, file)
+      store.modalMsg = 'Validating file...'
+      store.showProgressBar = false
       const validationRes = await store.validateHermesUpload(
           fileName,
           dataSetName.value,
@@ -576,6 +578,12 @@ async function uploadSubmit(){
       }
     } catch (e) {
       console.log(e)
+    } finally {
+      // Always clear the upload dialog state — otherwise the spinner/progress
+      // bar can persist across a later navigation back to this page.
+      store.processing = false
+      store.showProgressBar = false
+      store.uploadProgress = 0
     }
   }
 }
@@ -592,11 +600,15 @@ async function uploadSubmit(){
         :draggable="false"
         :resizable="false"
     >
+        <div v-if="store.showProgressBar && store.uploadProgress > 0" class="flex flex-column gap-2">
+            <ProgressBar :value="store.uploadProgress" :showValue="true" />
+            <small class="text-center">{{ store.uploadProgress }}% complete</small>
+        </div>
         <ProgressSpinner
-            v-if="store.showProgressBar"
-            :value="store.uploadProgress"
+            v-else
+            style="width: 50px; height: 50px"
             stroke-width="4"
-            animation-duration="0"
+            animation-duration="1s"
         />
     </Dialog>
   <Toast position="top-center" group="default"/>
