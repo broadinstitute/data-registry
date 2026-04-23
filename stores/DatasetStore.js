@@ -344,6 +344,13 @@ export const useDatasetStore = defineStore("DatasetStore", {
             );
             return data.suggested_map;
         },
+        async suggestHermesColumnMap(columns) {
+            const { data } = await configuredAxios.post(
+                "/api/hermes/suggest-column-map",
+                JSON.stringify({ columns }),
+            );
+            return data;
+        },
         async trackBioindex(request) {
             const { data } = await configuredAxios.post(
                 "/api/trackbioindex",

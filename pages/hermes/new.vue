@@ -468,6 +468,18 @@ async function sampleFile(e) {
         fileInfo.value.columns.forEach((col) => {
             selectedFields.value[col] = null;
         });
+
+        // Auto-suggest mappings from header names → hermes target fields
+        try {
+            const { suggested_map } = await store.suggestHermesColumnMap(fileInfo.value.columns);
+            Object.entries(suggested_map).forEach(([col, target]) => {
+                if (col in selectedFields.value) {
+                    selectedFields.value[col] = target;
+                }
+            });
+        } catch (suggestErr) {
+            console.log('Auto column-map suggestion failed:', suggestErr);
+        }
     } catch (e) {
         console.log(e);
         fileInfo.value = {};
