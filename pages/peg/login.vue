@@ -19,11 +19,59 @@
                     style="border-radius: 53px"
                 >
                     <div class="text-center mb-5">
+                        <img
+                            src="/tenants/peg/icon_1.png"
+                            alt="PEGASUS"
+                            class="mb-3"
+                            style="height: 64px; width: auto"
+                        />
                         <div class="text-900 text-3xl font-medium mb-3">
                             PEG Data Registry
                         </div>
                         <span class="text-600 font-medium">Sign in to continue</span>
                     </div>
+
+                    <div class="peg-welcome-panel mb-5">
+                        <div class="text-primary font-semibold mb-2">
+                            Welcome to PEGASUS data submission
+                        </div>
+                        <p class="text-700 line-height-3 mb-3">
+                            We accept predicted effector gene (PEG) data in PEGASUS
+                            schema for both published and unpublished studies. If you
+                            are the author or owner of PEG data, please first ensure
+                            your results are in PEGASUS format, which includes:
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="peg-file-chip">
+                                <i class="bi-file-earmark-text mr-2"></i>Evidence
+                                matrix (TSV)
+                            </span>
+                            <span class="peg-file-chip">
+                                <i class="bi-file-earmark-spreadsheet mr-2"></i
+                                >Metadata (XLSX)
+                            </span>
+                            <span class="peg-file-chip">
+                                <i class="bi-file-earmark-text mr-2"></i>PEG list
+                                (TSV)
+                            </span>
+                        </div>
+                        <p class="text-700 line-height-3 m-0">
+                            For more details, please refer to the
+                            <a
+                                href="https://ebispot.github.io/PEGASUS/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="font-semibold"
+                                >documentation</a
+                            >. For additional help, please
+                            <a
+                                href="mailto:help@kp4cd.org"
+                                class="font-semibold"
+                                >contact us by email</a
+                            >.
+                        </p>
+                    </div>
+
                     <div>
                         <label
                             for="username"
@@ -153,5 +201,30 @@ onMounted(() => {
 <style scoped>
 label {
     white-space: nowrap;
+}
+
+.peg-welcome-panel {
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+}
+
+.peg-file-chip {
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    color: var(--primary-color);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.peg-welcome-panel a {
+    color: var(--primary-color);
+    text-decoration: underline;
 }
 </style>
