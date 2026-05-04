@@ -18,6 +18,14 @@
                     outlined
                     @click="showUnvalidatedOnly = !showUnvalidatedOnly"
                 />
+                <Button
+                    v-if="runnableCount > 0"
+                    :label="`Validate all unvalidated (${runnableCount})`"
+                    icon="bi-shield-check"
+                    size="small"
+                    severity="warning"
+                    @click="confirmValidateAll = true"
+                />
             </div>
         </div>
 
@@ -198,6 +206,32 @@
         </template>
     </Dialog>
 
+    <!-- Validate All Confirm Dialog -->
+    <Dialog
+        v-model:visible="confirmValidateAll"
+        modal
+        header="Validate all unvalidated"
+        :style="{ width: '450px' }"
+    >
+        <p>
+            Submit validation jobs for <strong>{{ runnableCount }}</strong> file{{ runnableCount === 1 ? '' : 's' }}
+            in this cohort?
+        </p>
+        <p class="text-sm text-600 mt-2">
+            Files that have already been validated or are currently running will be skipped.
+        </p>
+        <template #footer>
+            <Button label="Cancel" icon="pi pi-times" outlined @click="confirmValidateAll = false" class="mr-2" />
+            <Button
+                label="Submit"
+                icon="pi pi-check"
+                severity="warning"
+                :loading="validatingAll"
+                @click="handleValidateAll"
+            />
+        </template>
+    </Dialog>
+
     <!-- Delete GWAS File Dialog -->
     <Dialog
         v-model:visible="deleteGWASDialog"
@@ -241,6 +275,13 @@ const qcErrors = ref({});
 const validatedCount = computed(() =>
     gwasFiles.value.filter(f => qcStatus.value[f.id] === 'COMPLETED' && qcErrors.value[f.id] === 0).length
 );
+
+const runnableCount = computed(() =>
+    gwasFiles.value.filter(f => !['COMPLETED', 'SUBMITTED', 'RUNNING'].includes(qcStatus.value[f.id])).length
+);
+
+const confirmValidateAll = ref(false);
+const validatingAll = ref(false);
 
 const displayedFiles = computed(() => {
     if (!showUnvalidatedOnly.value) return gwasFiles.value;
@@ -304,6 +345,36 @@ async function handleRunQC(fileId) {
     } catch (error) {
         qcStatus.value[fileId] = null;
         toast.add({ severity: 'error', summary: 'Error', detail: error.response?.data?.detail || 'Failed to start QC job.', life: 5000, group: props.toastGroup });
+    }
+}
+
+async function handleValidateAll() {
+    validatingAll.value = true;
+    try {
+        const result = await store.startSGCGWASValidationAll(props.cohortId);
+        const submittedIds = new Set((result.submitted || []).map(s => s.file_id));
+        for (const id of submittedIds) {
+            qcStatus.value[id] = 'SUBMITTED';
+        }
+        startPolling();
+        confirmValidateAll.value = false;
+        toast.add({
+            severity: 'info',
+            summary: 'Validation submitted',
+            detail: `Submitted ${result.submitted_count} job${result.submitted_count === 1 ? '' : 's'}. Status will update automatically.`,
+            life: 4000,
+            group: props.toastGroup,
+        });
+    } catch (error) {
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.response?.data?.detail || 'Failed to submit validation jobs.',
+            life: 5000,
+            group: props.toastGroup,
+        });
+    } finally {
+        validatingAll.value = false;
     }
 }
 

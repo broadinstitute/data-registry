@@ -653,6 +653,11 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
+        async startSGCGWASValidationAll(cohortId) {
+            const { data } = await sgcAxios.post(`/api/sgc/cohorts/${cohortId}/gwas-validate-all`);
+            return data;
+        },
+
         async getSGCGWASValidationProgress(fileId) {
             const { data } = await sgcAxios.get(`/api/sgc/gwas-validate/${fileId}/progress`);
             return data;
