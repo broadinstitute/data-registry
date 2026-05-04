@@ -208,6 +208,8 @@ label {
     border: 1px solid #dbeafe;
     border-radius: 12px;
     padding: 1.25rem 1.5rem;
+    width: 100%;
+    max-width: 30rem;
 }
 
 .peg-file-chip {
