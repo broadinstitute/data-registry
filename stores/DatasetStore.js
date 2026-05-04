@@ -344,6 +344,13 @@ export const useDatasetStore = defineStore("DatasetStore", {
             );
             return data.suggested_map;
         },
+        async suggestHermesColumnMap(columns) {
+            const { data } = await configuredAxios.post(
+                "/api/hermes/suggest-column-map",
+                JSON.stringify({ columns }),
+            );
+            return data;
+        },
         async trackBioindex(request) {
             const { data } = await configuredAxios.post(
                 "/api/trackbioindex",
@@ -366,17 +373,29 @@ export const useDatasetStore = defineStore("DatasetStore", {
             );
         },
         async uploadToPresignedUrl(url, file){
+            // XMLHttpRequest rather than fetch: fetch doesn't expose upload
+            // progress events.  Callers are responsible for resetting
+            // processing/showProgressBar state afterwards.
             const strippedFile = new Blob([file], { type: '' });
-            try {
-                const response = await fetch(url, {
-                    method: 'PUT',
-                    body: strippedFile
+            this.uploadProgress = 0;
+            await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        this.uploadProgress = Math.round((e.loaded * 100) / e.total);
+                    }
                 });
-            } catch (error) {
-                this.processing = false;
-                console.error("File upload failed:", error);
-                throw error;
-            }
+                xhr.addEventListener('load', () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve();
+                    } else {
+                        reject(new Error(`Upload failed with status ${xhr.status}`));
+                    }
+                });
+                xhr.addEventListener('error', () => reject(new Error('Upload failed')));
+                xhr.open('PUT', url);
+                xhr.send(strippedFile);
+            });
         },
         async getHermesPresignedUrl(fileName, dataset, contentType){
             this.showProgressBar = true;
