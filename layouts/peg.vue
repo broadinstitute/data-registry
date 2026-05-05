@@ -17,8 +17,8 @@ useHead({
   ]
 });
 
-// Hide navbar on login page
-const showNavbar = computed(() => route.path !== '/peg/login');
+// Hide navbar on login and register pages
+const showNavbar = computed(() => route.path !== '/peg/login' && route.path !== '/peg/register');
 
 // Handle logout
 async function handleLogout() {
@@ -35,9 +35,17 @@ async function handleLogout() {
       </nuxt-link>
       
       <div class="layout-topbar-menu">
-        <Button 
-          label="Sign Out" 
-          icon="bi-box-arrow-right" 
+        <nuxt-link
+          v-if="userStore.canReviewPEG()"
+          to="/peg/users"
+          class="p-button p-button-text mr-2"
+        >
+          <i class="bi-people mr-2"></i>
+          <span>Users</span>
+        </nuxt-link>
+        <Button
+          label="Sign Out"
+          icon="bi-box-arrow-right"
           text
           @click="handleLogout"
           class="p-button-text"

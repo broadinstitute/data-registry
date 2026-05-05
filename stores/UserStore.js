@@ -346,6 +346,28 @@ export const useUserStore = defineStore("UserStore", {
             this.loginError = null;
         },
 
+        async createPEGUser(email, password) {
+            const config = useRuntimeConfig();
+            const pegAxios = usePEGAxios(config);
+            const response = await pegAxios.post('/api/peg/create-user', {
+                user_name: email,
+                password,
+            });
+            return response.data;
+        },
+
+        async getPEGUsers() {
+            const config = useRuntimeConfig();
+            const pegAxios = usePEGAxios(config);
+            const response = await pegAxios.get('/api/peg/users');
+            const data = response.data;
+            return Array.isArray(data) ? data : (data.users || []);
+        },
+
+        canReviewPEG() {
+            return this.user?.permissions?.includes('peg-review-data') || false;
+        },
+
         // CALR User Service Authentication Methods
         initCALR() {
             const config = useRuntimeConfig();

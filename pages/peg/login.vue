@@ -119,6 +119,15 @@
                             @click="handleLogin"
                             :disabled="!username || !password"
                         ></Button>
+
+                        <div class="text-center mt-4">
+                            <span class="text-600">Don't have an account? </span>
+                            <NuxtLink
+                                to="/peg/register"
+                                class="font-semibold text-primary"
+                                >Create one</NuxtLink
+                            >
+                        </div>
                     </div>
                 </div>
             </div>

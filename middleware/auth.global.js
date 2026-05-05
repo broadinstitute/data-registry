@@ -8,7 +8,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
         return;
     }
     const nuxtApp = useNuxtApp();
-    if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login') || to.path.startsWith('/sgc/login') || to.path.startsWith('/peg/login') || to.path.startsWith('/calr/login') || to.path.startsWith('/hcm/login')){
+    if(to.path.startsWith('/login') || to.path.startsWith('/hermes/login') || to.path.startsWith('/sgc/login') || to.path.startsWith('/peg/login') || to.path.startsWith('/peg/register') || to.path.startsWith('/calr/login') || to.path.startsWith('/hcm/login')){
         return;
     }
     
