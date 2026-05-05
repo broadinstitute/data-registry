@@ -33,6 +33,25 @@ const createStudy = () => {
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString();
 };
+
+const downloadingId = ref(null);
+
+const downloadStudy = async (study) => {
+  if (downloadingId.value) return;
+  downloadingId.value = study.id;
+  try {
+    const fileName = `${study.accession_id || `peg-study-${study.id}`}.zip`;
+    await store.downloadPEGStudyZip(study.id, fileName);
+  } catch (error) {
+    console.error('Error downloading study:', error);
+    const detail = error?.response?.status === 404
+      ? 'No files have been uploaded for this study yet.'
+      : 'Error downloading study. Please try again.';
+    alert(detail);
+  } finally {
+    downloadingId.value = null;
+  }
+};
 </script>
 
 <template>
@@ -110,6 +129,21 @@ const formatDate = (dateString) => {
           <Column field="created_at" header="Created" sortable>
             <template #body="{ data }">
               {{ formatDate(data.created_at) }}
+            </template>
+          </Column>
+
+          <Column header="Download" style="width: 7rem">
+            <template #body="{ data }">
+              <Button
+                icon="pi pi-download"
+                severity="secondary"
+                text
+                rounded
+                :loading="downloadingId === data.id"
+                :disabled="downloadingId !== null"
+                @click="downloadStudy(data)"
+                title="Download study files (zip)"
+              />
             </template>
           </Column>
         </DataTable>

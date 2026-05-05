@@ -935,6 +935,20 @@ export const useDatasetStore = defineStore("DatasetStore", {
             }
         },
 
+        async downloadPEGStudyZip(studyId, fileName) {
+            const response = await pegAxios.get(`/api/peg/studies/${studyId}/download`, {
+                responseType: 'blob'
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/zip' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', fileName || `peg-study-${studyId}.zip`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        },
+
         // CALR File Operations
         async fetchCALRSubmissions() {
             const { data } = await calrAxios.get('/api/calr/files');
