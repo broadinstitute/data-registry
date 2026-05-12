@@ -170,16 +170,20 @@ const removePEGMetadataFile = () => {
   if (pegMetadataInput.value) pegMetadataInput.value.value = '';
 };
 
+const handleContinueToMetadata = () => {
+  activeAccordionIndex.value = 1;
+};
+
 const handleContinueToFiles = async () => {
   const isValid = await validate();
   if (!isValid.valid || !isPegSourceValid.value || !isGwasSourceValid.value) return;
-  activeAccordionIndex.value = 1;
+  activeAccordionIndex.value = 2;
 };
 
 const handleSubmitStudy = async () => {
   const isValid = await validate();
   if (!isValid.valid || !isPegSourceValid.value || !isGwasSourceValid.value) {
-    activeAccordionIndex.value = 0;
+    activeAccordionIndex.value = 1;
     return;
   }
 
@@ -328,6 +332,69 @@ const handleCancel = () => {
   <div class="grid">
     <div class="col-12 md:col-10 md:col-offset-1">
       <Accordion :activeIndex="activeAccordionIndex" @update:activeIndex="activeAccordionIndex = $event">
+        <!-- Before You Begin Section -->
+        <AccordionTab header="Before You Begin">
+          <div class="card">
+            <p class="mb-4 text-gray-600">
+              Before starting your submission, please check that your study and files meet the following requirements.
+            </p>
+
+            <h6 class="mb-2">1. Study scope</h6>
+            <ul class="checklist mb-2">
+              <li>
+                <i class="bi-square mr-2"></i>
+                One PEG study covers one trait and one GWAS source.
+              </li>
+            </ul>
+            <p class="text-sm text-gray-600 mb-4 ml-4">
+              If your study spans multiple traits or GWAS sources, please consider splitting into separate submissions.
+            </p>
+
+            <h6 class="mb-2">2. Submission files</h6>
+            <p class="text-sm text-gray-600 mb-2">
+              Not sure what each file should contain? See our
+              <a
+                href="https://ebispot.github.io/PEGASUS/docs/next/submission-prep/submission-guidance"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary"
+              >
+                file preparation guide
+                <i class="bi-box-arrow-up-right ml-1"></i>
+              </a>
+            </p>
+            <ul class="file-list mb-4">
+              <li>
+                <strong>PEG Evidence Matrix (TSV)</strong> — all genes at each locus, all evidence values included without filtering
+              </li>
+              <li>
+                <strong>PEG Metadata (XLSX)</strong> — completed using the
+                <a
+                  href="https://github.com/jiyue1214/PEGASUS_metadata_template/raw/main/templates/metadata_peg_template.xlsx"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary"
+                >
+                  submission template
+                  <i class="bi-box-arrow-up-right ml-1"></i>
+                </a>
+              </li>
+              <li>
+                <strong>PEG List (TSV)</strong> — one top-priority gene per locus, single integration conclusion per row
+              </li>
+            </ul>
+
+            <div class="flex justify-content-end gap-2 mt-4">
+              <Button
+                label="Continue to Metadata"
+                icon="bi-arrow-right"
+                @click="handleContinueToMetadata"
+                class="p-button-primary"
+              />
+            </div>
+          </div>
+        </AccordionTab>
+
         <!-- Metadata Accordion Section -->
         <AccordionTab header="Study Metadata">
           <div class="p-fluid">
@@ -541,7 +608,17 @@ const handleCancel = () => {
             </Message>
 
             <p class="mb-4 text-gray-600">
-              Upload PEG List and PEG Matrix (TSV files), and PEG Metadata (XLSX file with multiple sheets).
+              Please upload the PEG Metadata, PEG Evidence Matrix and PEG list in PEGASUS format here.
+              Not sure what each file should contain?
+              <a
+                href="https://ebispot.github.io/PEGASUS/docs/next/peg-list"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary"
+              >
+                See the PEGASUS documentation
+                <i class="bi-box-arrow-up-right ml-1"></i>
+              </a>
             </p>
 
             <!-- PEG List Upload -->
@@ -563,9 +640,6 @@ const handleCancel = () => {
                     class="p-button-outlined w-full"
                     @click="$refs.pegListInput.click()"
                   />
-                  <small class="block mt-2 text-gray-600">
-                    <i class="bi-info-circle mr-1"></i>Typical columns include: rsID, Gene, GWAS, FM, PROX, FUNC, QTL, PHEWAS, GENEBASE, PERTUB, DB, Author_conclusion
-                  </small>
                   <div v-if="pegListFile" class="mt-2 p-3 surface-100 border-round">
                     <div class="flex justify-content-between align-items-center">
                       <span class="font-semibold">{{ pegListFile.name }}</span>
@@ -598,9 +672,6 @@ const handleCancel = () => {
                     class="p-button-outlined w-full"
                     @click="$refs.pegMetadataInput.click()"
                   />
-                  <small class="block mt-2 text-gray-600">
-                    <i class="bi-info-circle mr-1"></i>Excel file with multiple sheets (Dataset_description, Genomic_identifier, Evidence, Integration, source, method)
-                  </small>
                   <div v-if="pegMetadataFile" class="mt-2 p-3 surface-100 border-round">
                     <div class="flex justify-content-between align-items-center">
                       <span class="font-semibold">{{ pegMetadataFile.name }}</span>
@@ -633,9 +704,6 @@ const handleCancel = () => {
                     class="p-button-outlined w-full"
                     @click="$refs.pegMatrixInput.click()"
                   />
-                  <small class="block mt-2 text-gray-600">
-                    <i class="bi-info-circle mr-1"></i>Typical columns include: rsID, Locus_name, Locus_number, Gene_symbol, GWAS_pvalue, GWAS_beta, FM_PPA, FM_FGWAS_Most_enriched_tissue, PROX, FUNC_VEP_consequence, QTL_eQTL_gtex_pvalue, QTL_eQTL_gtex_slope, QTL_eQTL_gtex_tissue, PHEWAS_ukbb_diseases, GENEBASE_rare5_SKATO, PERTURB_mouse_phenotype, PERTURB_mouse_model, DB_ClinVar, INT_PoPS_score, INT_PoPS_feature1, INT_author_conclusion
-                  </small>
                   <div v-if="pegMatrixFile" class="mt-2 p-3 surface-100 border-round">
                     <div class="flex justify-content-between align-items-center">
                       <span class="font-semibold">{{ pegMatrixFile.name }}</span>
@@ -767,5 +835,27 @@ const handleCancel = () => {
   border-color: #d97706;
   background: #d97706;
   color: #ffffff;
+}
+
+.checklist {
+  list-style: none;
+  padding-left: 1rem;
+  margin: 0;
+}
+
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.25rem 0;
+}
+
+.file-list {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.file-list li {
+  padding: 0.25rem 0;
+  line-height: 1.5;
 }
 </style>
