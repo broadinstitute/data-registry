@@ -42,6 +42,7 @@ jobs:
                   echo "NUXT_PUBLIC_GOOGLE_AUTH_REDIRECT_URI=https://kpndataregistry.org/login/callback" >> .env
                   echo "NUXT_PUBLIC_API_BASE_URL=https://api.kpndataregistry.org" >> .env
                   echo "NUXT_PUBLIC_SGC_USER_GROUP=sgc-prod" >> .env
+                  echo "NUXT_PUBLIC_HCM_USER_GROUP=hcm-prod" >> .env
                   echo "NUXT_PUBLIC_PEG_USER_GROUP=peg-prod" >> .env
                 fi
 
