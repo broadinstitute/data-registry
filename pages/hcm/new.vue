@@ -121,6 +121,14 @@ const matchedRequiredCount = computed(() => {
     return requiredFields.value.filter(f => Object.values(selectedFields.value).includes(f)).length;
 });
 
+const underscoreFieldErrors = computed(() => {
+    const errors = [];
+    if (cohortName.value && cohortName.value.includes("_")) errors.push("Cohort / Study Name");
+    if (software.value && software.value.includes("_")) errors.push("Software");
+    if (analyst.value && analyst.value.includes("_")) errors.push("Analyst");
+    return errors;
+});
+
 const formIncomplete = computed(() => {
     return (
         !file.value ||
@@ -132,6 +140,7 @@ const formIncomplete = computed(() => {
         !software.value ||
         !analyst.value ||
         !generatedFilename.value ||
+        underscoreFieldErrors.value.length > 0 ||
         matchedRequiredCount.value < requiredFields.value.length
     );
 });
@@ -146,8 +155,20 @@ const validationMessages = computed(() => {
     if (!genomeBuild.value) messages.push("Select genome build");
     if (!software.value) messages.push("Enter software used");
     if (!analyst.value) messages.push("Enter analyst name");
+    if (underscoreFieldErrors.value.length > 0) {
+        messages.push(`Remove underscores from ${underscoreFieldErrors.value.join(", ")} (use dashes instead — underscores break the filename convention)`);
+    }
     const unmapped = requiredFields.value.filter(f => !Object.values(selectedFields.value).includes(f));
-    if (unmapped.length > 0) messages.push(`Map all required columns (missing: ${unmapped.join(', ')})`);
+    if (unmapped.length > 0) {
+        const casesOrControls = unmapped.filter(f => f === "cases" || f === "controls");
+        const others = unmapped.filter(f => f !== "cases" && f !== "controls");
+        if (others.length > 0) {
+            messages.push(`Map all required columns (missing: ${others.join(", ")})`);
+        }
+        if (casesOrControls.length > 0) {
+            messages.push(`Map a column for ${casesOrControls.join(" / ")}, or enter aggregate ${casesOrControls.join(" / ")} counts in the Metadata panel above`);
+        }
+    }
     return messages;
 });
 
@@ -283,7 +304,8 @@ async function uploadData() {
                 <template #content>
                     <div class="field">
                         <label for="cohortName">Cohort / Study Name <span style="color: darkred">*</span></label>
-                        <InputText id="cohortName" v-model="cohortName" class="w-full" placeholder="e.g. UKBiobank" />
+                        <InputText id="cohortName" v-model="cohortName" class="w-full" :class="{ 'p-invalid': cohortName && cohortName.includes('_') }" placeholder="e.g. UKBiobank" />
+                        <small v-if="cohortName && cohortName.includes('_')" class="p-error block">Underscores are not allowed — use dashes (e.g. RBH-ALLCOMER-CLINIC) instead.</small>
                     </div>
 
                     <div class="field">
@@ -340,12 +362,14 @@ async function uploadData() {
 
                     <div class="field">
                         <label for="software">Software <span style="color: darkred">*</span></label>
-                        <InputText id="software" v-model="software" class="w-full" placeholder="e.g. REGENIE, SAIGE" />
+                        <InputText id="software" v-model="software" class="w-full" :class="{ 'p-invalid': software && software.includes('_') }" placeholder="e.g. REGENIE, SAIGE" />
+                        <small v-if="software && software.includes('_')" class="p-error block">Underscores are not allowed — use dashes instead.</small>
                     </div>
 
                     <div class="field">
                         <label for="analyst">Analyst <span style="color: darkred">*</span></label>
-                        <InputText id="analyst" v-model="analyst" class="w-full" placeholder="Analyst name/initials" />
+                        <InputText id="analyst" v-model="analyst" class="w-full" :class="{ 'p-invalid': analyst && analyst.includes('_') }" placeholder="Analyst name/initials" />
+                        <small v-if="analyst && analyst.includes('_')" class="p-error block">Underscores are not allowed — use dashes instead.</small>
                     </div>
 
                     <div class="grid">
@@ -353,14 +377,14 @@ async function uploadData() {
                             <div class="field">
                                 <label for="cases">Cases</label>
                                 <InputText id="cases" v-model="cases" type="number" class="w-full" />
-                                <small>Optional</small>
+                                <small>Enter a count here OR map a "cases" column below</small>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="field">
                                 <label for="controls">Controls</label>
                                 <InputText id="controls" v-model="controls" type="number" class="w-full" />
-                                <small>Optional</small>
+                                <small>Enter a count here OR map a "controls" column below</small>
                             </div>
                         </div>
                     </div>
