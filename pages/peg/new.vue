@@ -26,6 +26,12 @@ const [name] = defineField('name');
 const [study_author] = defineField('study_author');
 const [phenotype] = defineField('phenotype');
 
+// Before You Begin checklist (informational only)
+const ackStudyScope = ref(false);
+const ackEvidenceMatrix = ref(false);
+const ackMetadata = ref(false);
+const ackPegList = ref(false);
+
 // --- PEG Source ---
 const pegSourceType = ref(''); // 'published' | 'pre-published' | 'unpublished'
 const pegSourceValue = ref('');
@@ -77,6 +83,7 @@ const isGwasSourceValid = computed(() => {
 const phenotypeObj = ref({});
 const filteredPhenotypes = ref([]);
 const phenotypeIsCustom = ref(false);
+const mondoId = ref('');
 let _phenotypeTimer = null;
 let _phenotypeAbort = null;
 
@@ -134,8 +141,10 @@ watch(phenotypeObj, (newValue) => {
   if (typeof newValue === 'string') {
     phenotype.value = newValue;
     phenotypeIsCustom.value = true;
+    mondoId.value = '';
   } else {
-    phenotype.value = newValue?.name || '';
+    phenotype.value = newValue?.description || '';
+    mondoId.value = newValue?.name || '';
     phenotypeIsCustom.value = false;
   }
 });
@@ -208,6 +217,7 @@ const handleSubmitStudy = async () => {
         gwas_source: effectiveGwasValue.value,
         gwas_source_type: gwasSourceType.value === 'same' ? 'same_as_pgs' : gwasSourceType.value,
         phenotype_is_custom: phenotypeIsCustom.value,
+        mondo_id: mondoId.value || null,
       }
     };
 
@@ -340,13 +350,17 @@ const handleCancel = () => {
             </p>
 
             <h6 class="mb-2">1. Study scope</h6>
-            <ul class="checklist mb-2">
-              <li>
-                <i class="bi-square mr-2"></i>
+            <div class="flex align-items-start gap-2 mb-2">
+              <Checkbox
+                v-model="ackStudyScope"
+                inputId="ack-study-scope"
+                :binary="true"
+              />
+              <label for="ack-study-scope">
                 One PEG study covers one trait and one GWAS source.
-              </li>
-            </ul>
-            <p class="text-sm text-gray-600 mb-4 ml-4">
+              </label>
+            </div>
+            <p class="text-sm text-gray-600 mb-4 ml-5">
               If your study spans multiple traits or GWAS sources, please consider splitting into separate submissions.
             </p>
 
@@ -363,26 +377,47 @@ const handleCancel = () => {
                 <i class="bi-box-arrow-up-right ml-1"></i>
               </a>
             </p>
-            <ul class="file-list mb-4">
-              <li>
-                <strong>PEG Evidence Matrix (TSV)</strong> — all genes at each locus, all evidence values included without filtering
-              </li>
-              <li>
-                <strong>PEG Metadata (XLSX)</strong> — completed using the
-                <a
-                  href="https://github.com/jiyue1214/PEGASUS_metadata_template/raw/main/templates/metadata_peg_template.xlsx"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-primary"
-                >
-                  submission template
-                  <i class="bi-box-arrow-up-right ml-1"></i>
-                </a>
-              </li>
-              <li>
-                <strong>PEG List (TSV)</strong> — one top-priority gene per locus, single integration conclusion per row
-              </li>
-            </ul>
+            <div class="flex flex-column gap-2 mb-4">
+              <div class="flex align-items-start gap-2">
+                <Checkbox
+                  v-model="ackEvidenceMatrix"
+                  inputId="ack-evidence-matrix"
+                  :binary="true"
+                />
+                <label for="ack-evidence-matrix">
+                  <strong>PEG Evidence Matrix (TSV)</strong> — all genes at each locus, all evidence values included without filtering
+                </label>
+              </div>
+              <div class="flex align-items-start gap-2">
+                <Checkbox
+                  v-model="ackMetadata"
+                  inputId="ack-metadata"
+                  :binary="true"
+                />
+                <label for="ack-metadata">
+                  <strong>PEG Metadata (XLSX)</strong> — completed using the
+                  <a
+                    href="https://github.com/jiyue1214/PEGASUS_metadata_template/raw/main/templates/metadata_peg_template.xlsx"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary"
+                  >
+                    submission template
+                    <i class="bi-box-arrow-up-right ml-1"></i>
+                  </a>
+                </label>
+              </div>
+              <div class="flex align-items-start gap-2">
+                <Checkbox
+                  v-model="ackPegList"
+                  inputId="ack-peg-list"
+                  :binary="true"
+                />
+                <label for="ack-peg-list">
+                  <strong>PEG List (TSV)</strong> — one top-priority gene per locus, single integration conclusion per row
+                </label>
+              </div>
+            </div>
 
             <div class="flex justify-content-end gap-2 mt-4">
               <Button
