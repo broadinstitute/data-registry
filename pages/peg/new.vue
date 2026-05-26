@@ -482,7 +482,7 @@ const handleCancel = () => {
               <!-- PEG Source -->
               <div class="field">
                 <div class="flex align-items-center gap-2 mb-2">
-                  <span class="source-badge source-badge--pgs">PGS SOURCE</span>
+                  <span class="source-badge source-badge--pgs">PEG SOURCE</span>
                   <label class="mb-0">Publication <span class="text-red-500">*</span></label>
                 </div>
                 <SelectButton
