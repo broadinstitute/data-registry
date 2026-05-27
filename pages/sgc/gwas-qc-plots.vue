@@ -99,6 +99,14 @@
                         </template>
                     </Column>
 
+                    <Column field="lambda_1000" header="λ₁₀₀₀" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span :class="lambdaClass(data.lambda_1000)">
+                                {{ data.lambda_1000 != null ? data.lambda_1000.toFixed(3) : '—' }}
+                            </span>
+                        </template>
+                    </Column>
+
                     <Column field="n_variants" header="N variants" sortable :showFilterMenu="false">
                         <template #body="{ data }">
                             <span class="text-sm">{{ data.n_variants != null ? data.n_variants.toLocaleString() : '—' }}</span>
@@ -165,7 +173,6 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount } from 'vue';
 import { useToast } from "primevue/usetoast";
 import { FilterMatchMode } from 'primevue/api';
 
@@ -213,24 +220,9 @@ function lambdaClass(l) {
     return 'text-green-700';
 }
 
-// Revoke blob URLs for a single row and clean up on row collapse / unmount
-function revokeFileUrls(fileId) {
-    const entry = plotUrls.value[fileId];
-    if (!entry) return;
-    if (entry.manhattan) URL.revokeObjectURL(entry.manhattan);
-    if (entry.qq)        URL.revokeObjectURL(entry.qq);
-    delete plotUrls.value[fileId];
-}
-
 function onRowCollapse(event) {
-    revokeFileUrls(event.data.file_id);
+    delete plotUrls.value[event.data.file_id];
 }
-
-onBeforeUnmount(() => {
-    for (const fileId of Object.keys(plotUrls.value)) {
-        revokeFileUrls(fileId);
-    }
-});
 
 // Load presigned plot URLs when a row is expanded
 async function onRowExpand(event) {
@@ -243,15 +235,15 @@ async function onRowExpand(event) {
 
     try {
         const [manhattanResp, qqResp] = await Promise.all([
-            sgcAxios.get(`/api/sgc/qc/plots/${fileId}/manhattan`, { responseType: 'blob' }),
-            sgcAxios.get(`/api/sgc/qc/plots/${fileId}/qq`,        { responseType: 'blob' }),
+            sgcAxios.get(`/api/sgc/qc/plots/${fileId}/manhattan`),
+            sgcAxios.get(`/api/sgc/qc/plots/${fileId}/qq`),
         ]);
 
         plotUrls.value[fileId] = {
             loading: false,
             error: false,
-            manhattan: URL.createObjectURL(manhattanResp.data),
-            qq:        URL.createObjectURL(qqResp.data),
+            manhattan: manhattanResp.data.url,
+            qq:        qqResp.data.url,
         };
     } catch (error) {
         console.error(`Error loading plots for file ${fileId}:`, error);
