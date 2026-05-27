@@ -1,0 +1,290 @@
+<template>
+    <div class="grid">
+        <div class="col-12">
+            <div class="card">
+                <div class="flex justify-content-between align-items-center mb-4">
+                    <h5>GWAS QC Plots</h5>
+                    <Tag :value="rows.length + ' file' + (rows.length !== 1 ? 's' : '')" severity="info" />
+                </div>
+
+                <DataTable
+                    :value="rows"
+                    :paginator="true"
+                    :rows="50"
+                    :loading="loading"
+                    responsiveLayout="scroll"
+                    stripedRows
+                    class="p-datatable-sm"
+                    v-model:expandedRows="expanded"
+                    v-model:filters="filters"
+                    filterDisplay="row"
+                    dataKey="file_id"
+                    :globalFilterFields="['phenotype', 'ancestry', 'dataset', 'file_name']"
+                    @row-expand="onRowExpand"
+                    @row-collapse="onRowCollapse"
+                >
+                    <Column :expander="true" style="width: 3rem" />
+
+                    <Column field="phenotype" header="Phenotype" sortable :showFilterMenu="false" frozen>
+                        <template #body="{ data }">
+                            <span class="font-medium">{{ data.phenotype }}</span>
+                        </template>
+                        <template #filter="{ filterModel, filterCallback }">
+                            <InputText
+                                v-model="filterModel.value"
+                                type="text"
+                                @input="filterCallback()"
+                                class="p-column-filter"
+                                placeholder="Search phenotype"
+                            />
+                        </template>
+                    </Column>
+
+                    <Column field="ancestry" header="Ancestry" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <Tag :value="data.ancestry" severity="secondary" />
+                        </template>
+                        <template #filter="{ filterModel, filterCallback }">
+                            <InputText
+                                v-model="filterModel.value"
+                                type="text"
+                                @input="filterCallback()"
+                                class="p-column-filter"
+                                placeholder="Search ancestry"
+                            />
+                        </template>
+                    </Column>
+
+                    <Column field="dataset" header="Dataset" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.dataset }}</span>
+                        </template>
+                        <template #filter="{ filterModel, filterCallback }">
+                            <InputText
+                                v-model="filterModel.value"
+                                type="text"
+                                @input="filterCallback()"
+                                class="p-column-filter"
+                                placeholder="Search dataset"
+                            />
+                        </template>
+                    </Column>
+
+                    <Column field="file_name" header="File" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.file_name }}</span>
+                        </template>
+                        <template #filter="{ filterModel, filterCallback }">
+                            <InputText
+                                v-model="filterModel.value"
+                                type="text"
+                                @input="filterCallback()"
+                                class="p-column-filter"
+                                placeholder="Search file"
+                            />
+                        </template>
+                    </Column>
+
+                    <Column field="status" header="Status" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <Tag :value="data.status" :severity="statusSeverity(data.status)" />
+                        </template>
+                    </Column>
+
+                    <Column field="lambda_gc" header="λ_GC" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span :class="lambdaClass(data.lambda_gc)">
+                                {{ data.lambda_gc != null ? data.lambda_gc.toFixed(3) : '—' }}
+                            </span>
+                        </template>
+                    </Column>
+
+                    <Column field="n_variants" header="N variants" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.n_variants != null ? data.n_variants.toLocaleString() : '—' }}</span>
+                        </template>
+                    </Column>
+
+                    <Column field="n_sig_5e8" header="n p≤5e-8" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.n_sig_5e8 != null ? data.n_sig_5e8 : '—' }}</span>
+                        </template>
+                    </Column>
+
+                    <Column field="n_sig_1e5" header="n p≤1e-5" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.n_sig_1e5 != null ? data.n_sig_1e5 : '—' }}</span>
+                        </template>
+                    </Column>
+
+                    <template #expansion="{ data }">
+                        <div v-if="data.status === 'SUCCEEDED'" class="grid p-3">
+                            <div class="col-12 md:col-8">
+                                <h6>Manhattan</h6>
+                                <div v-if="plotUrls[data.file_id]?.manhattan">
+                                    <img
+                                        :src="plotUrls[data.file_id].manhattan"
+                                        :alt="`Manhattan ${data.file_name}`"
+                                        style="max-width: 100%;"
+                                    />
+                                </div>
+                                <div v-else-if="plotUrls[data.file_id]?.loading" class="text-gray-500 text-sm">
+                                    Loading Manhattan plot...
+                                </div>
+                                <div v-else-if="plotUrls[data.file_id]?.error" class="text-red-500 text-sm">
+                                    Failed to load Manhattan plot.
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-4">
+                                <h6>QQ</h6>
+                                <div v-if="plotUrls[data.file_id]?.qq">
+                                    <img
+                                        :src="plotUrls[data.file_id].qq"
+                                        :alt="`QQ ${data.file_name}`"
+                                        style="max-width: 100%;"
+                                    />
+                                </div>
+                                <div v-else-if="plotUrls[data.file_id]?.loading" class="text-gray-500 text-sm">
+                                    Loading QQ plot...
+                                </div>
+                                <div v-else-if="plotUrls[data.file_id]?.error" class="text-red-500 text-sm">
+                                    Failed to load QQ plot.
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="p-3">
+                            <p class="text-gray-500 text-sm">{{ data.error_message || 'No plots available yet.' }}</p>
+                        </div>
+                    </template>
+                </DataTable>
+            </div>
+        </div>
+    </div>
+
+    <Toast position="top-center" />
+</template>
+
+<script setup>
+import { onBeforeUnmount } from 'vue';
+import { useToast } from "primevue/usetoast";
+import { FilterMatchMode } from 'primevue/api';
+
+definePageMeta({
+    layout: 'sgc'
+});
+
+const toast = useToast();
+const config = useRuntimeConfig();
+
+// Set up authenticated axios instance for SGC (mirrors DatasetStore pattern)
+const sgcAxios = useSGCAxios(config, undefined, (error) => {
+    return Promise.reject(error);
+});
+
+// Reactive data
+const rows = ref([]);
+const expanded = ref([]);
+const loading = ref(false);
+const plotUrls = ref({});
+
+// Filters
+const filters = ref({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    phenotype: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    ancestry: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    dataset: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    file_name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+
+// Status severity mapping
+function statusSeverity(status) {
+    switch (status) {
+        case 'SUCCEEDED': return 'success';
+        case 'FAILED':    return 'danger';
+        case 'RUNNING':   return 'info';
+        default:          return 'warning';
+    }
+}
+
+// Lambda GC conditional color: red+bold if outside 0.95–1.10, green otherwise
+function lambdaClass(l) {
+    if (l === null || l === undefined) return '';
+    if (l < 0.95 || l > 1.10) return 'text-red-600 font-bold';
+    return 'text-green-700';
+}
+
+// Revoke blob URLs for a single row and clean up on row collapse / unmount
+function revokeFileUrls(fileId) {
+    const entry = plotUrls.value[fileId];
+    if (!entry) return;
+    if (entry.manhattan) URL.revokeObjectURL(entry.manhattan);
+    if (entry.qq)        URL.revokeObjectURL(entry.qq);
+    delete plotUrls.value[fileId];
+}
+
+function onRowCollapse(event) {
+    revokeFileUrls(event.data.file_id);
+}
+
+onBeforeUnmount(() => {
+    for (const fileId of Object.keys(plotUrls.value)) {
+        revokeFileUrls(fileId);
+    }
+});
+
+// Load presigned plot URLs when a row is expanded
+async function onRowExpand(event) {
+    const fileId = event.data.file_id;
+    if (event.data.status !== 'SUCCEEDED') return;
+    if (plotUrls.value[fileId]?.loading) return;
+    if (plotUrls.value[fileId]?.manhattan && plotUrls.value[fileId]?.qq) return;
+
+    plotUrls.value[fileId] = { ...(plotUrls.value[fileId] ?? {}), loading: true, error: false };
+
+    try {
+        const [manhattanResp, qqResp] = await Promise.all([
+            sgcAxios.get(`/api/sgc/qc/plots/${fileId}/manhattan`, { responseType: 'blob' }),
+            sgcAxios.get(`/api/sgc/qc/plots/${fileId}/qq`,        { responseType: 'blob' }),
+        ]);
+
+        plotUrls.value[fileId] = {
+            loading: false,
+            error: false,
+            manhattan: URL.createObjectURL(manhattanResp.data),
+            qq:        URL.createObjectURL(qqResp.data),
+        };
+    } catch (error) {
+        console.error(`Error loading plots for file ${fileId}:`, error);
+        plotUrls.value[fileId] = { ...(plotUrls.value[fileId] ?? {}), loading: false, error: true, manhattan: null, qq: null };
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to load plots. Please try again.',
+            life: 5000
+        });
+    }
+}
+
+// Load QC plot results list
+async function loadQCPlots() {
+    loading.value = true;
+    try {
+        const { data } = await sgcAxios.get('/api/sgc/qc/plots');
+        rows.value = data;
+    } catch (error) {
+        console.error('Error loading GWAS QC plots:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to load GWAS QC plots. Please try again.',
+            life: 5000
+        });
+    } finally {
+        loading.value = false;
+    }
+}
+
+onMounted(() => {
+    loadQCPlots();
+});
+</script>
