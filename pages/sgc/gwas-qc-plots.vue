@@ -304,8 +304,18 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.qc-plot-img {
+/* PrimeVue <Image> renders the <img> inside a child component, so a plain
+   scoped selector never reaches it — use :deep(). Its wrapper <span class="p-image">
+   defaults to inline-block, which leaves the img at natural size; force it to
+   block so the img's max-width:100% resolves against the column width. */
+:deep(.p-image) {
+    display: block;
     max-width: 100%;
+}
+
+:deep(.qc-plot-img) {
+    max-width: 100%;
+    height: auto;
     cursor: zoom-in;
 }
 </style>
