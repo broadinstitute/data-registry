@@ -130,10 +130,11 @@
                             <div class="col-12 md:col-8">
                                 <h6>Manhattan</h6>
                                 <div v-if="plotUrls[data.file_id]?.manhattan">
-                                    <img
+                                    <Image
                                         :src="plotUrls[data.file_id].manhattan"
                                         :alt="`Manhattan ${data.file_name}`"
-                                        style="max-width: 100%;"
+                                        preview
+                                        image-class="qc-plot-img"
                                     />
                                 </div>
                                 <div v-else-if="plotUrls[data.file_id]?.loading" class="text-gray-500 text-sm">
@@ -146,10 +147,11 @@
                             <div class="col-12 md:col-4">
                                 <h6>QQ</h6>
                                 <div v-if="plotUrls[data.file_id]?.qq">
-                                    <img
+                                    <Image
                                         :src="plotUrls[data.file_id].qq"
                                         :alt="`QQ ${data.file_name}`"
-                                        style="max-width: 100%;"
+                                        preview
+                                        image-class="qc-plot-img"
                                     />
                                 </div>
                                 <div v-else-if="plotUrls[data.file_id]?.loading" class="text-gray-500 text-sm">
@@ -280,3 +282,10 @@ onMounted(() => {
     loadQCPlots();
 });
 </script>
+
+<style scoped>
+.qc-plot-img {
+    max-width: 100%;
+    cursor: zoom-in;
+}
+</style>
