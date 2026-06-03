@@ -91,6 +91,18 @@
                         </template>
                     </Column>
 
+                    <Column field="cases" header="Cases" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.cases != null ? data.cases.toLocaleString() : '—' }}</span>
+                        </template>
+                    </Column>
+
+                    <Column field="controls" header="Controls" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.controls != null ? data.controls.toLocaleString() : '—' }}</span>
+                        </template>
+                    </Column>
+
                     <Column field="lambda_gc" header="λ_GC" sortable :showFilterMenu="false">
                         <template #body="{ data }">
                             <span :class="lambdaClass(data.lambda_gc)">
@@ -103,6 +115,14 @@
                         <template #body="{ data }">
                             <span :class="lambdaClass(data.lambda_1000)">
                                 {{ data.lambda_1000 != null ? data.lambda_1000.toFixed(3) : '—' }}
+                            </span>
+                        </template>
+                    </Column>
+
+                    <Column field="lambda_maf01" header="λ (MAF≥1%)" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span :class="lambdaClass(data.lambda_maf01)">
+                                {{ data.lambda_maf01 != null ? data.lambda_maf01.toFixed(3) : '—' }}
                             </span>
                         </template>
                     </Column>
