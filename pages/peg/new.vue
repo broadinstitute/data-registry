@@ -521,7 +521,7 @@ const handleCancel = () => {
                       v-for="opt in [
                         { value: 'catalog', label: 'GWAS Catalog ID' },
                         { value: 'portal', label: 'Knowledge Portal' },
-                        { value: 'same', label: 'Same as PGS source' },
+                        { value: 'same', label: 'Same as PEG source' },
                       ]"
                       :key="opt.value"
                       type="button"
