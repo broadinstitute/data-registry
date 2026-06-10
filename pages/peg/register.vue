@@ -35,9 +35,15 @@
 
                     <div v-if="success" class="peg-welcome-panel mb-5">
                         <div class="text-primary font-semibold mb-2">
-                            Account created
+                            {{ existingUser ? 'You already have an account' : 'Account created' }}
                         </div>
-                        <p class="text-700 line-height-3 mb-3">
+                        <p v-if="existingUser" class="text-700 line-height-3 mb-3">
+                            Your email <strong>{{ submittedEmail }}</strong> already
+                            has an account, so we've given it access to PEG. Your
+                            password is unchanged — sign in with your existing
+                            password.
+                        </p>
+                        <p v-else class="text-700 line-height-3 mb-3">
                             Your account <strong>{{ submittedEmail }}</strong> has
                             been created. You can now sign in.
                         </p>
@@ -150,6 +156,7 @@ const confirmPassword = ref('');
 const loading = ref(false);
 const formError = ref('');
 const success = ref(false);
+const existingUser = ref(false);
 const submittedEmail = ref('');
 
 function isValidEmail(value) {
@@ -174,13 +181,16 @@ async function handleSubmit() {
 
   loading.value = true;
   try {
-    await userStore.createPEGUser(email.value, password.value);
+    const result = await userStore.createPEGUser(email.value, password.value);
     submittedEmail.value = email.value;
+    existingUser.value = !!result?.existing_user;
     success.value = true;
     toast.add({
       severity: 'success',
-      summary: 'Account created',
-      detail: 'You can now sign in with your new credentials.',
+      summary: existingUser.value ? 'Account access granted' : 'Account created',
+      detail: existingUser.value
+        ? 'This email already had an account — sign in with your existing password.'
+        : 'You can now sign in with your new credentials.',
       life: 4000,
     });
   } catch (error) {
