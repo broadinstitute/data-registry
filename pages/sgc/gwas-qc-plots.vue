@@ -127,6 +127,21 @@
                         </template>
                     </Column>
 
+                    <Column field="ldsc_intercept" sortable :showFilterMenu="false">
+                        <template #header>
+                            <span
+                                title="Univariate LDSC intercept. ≈1: no confounding; >1: residual confounding/stratification. Distinguishes confounding from polygenicity, which inflates λ but leaves the intercept near 1."
+                            >
+                                LDSC Intercept
+                            </span>
+                        </template>
+                        <template #body="{ data }">
+                            <span :class="interceptClass(data.ldsc_intercept)">
+                                {{ data.ldsc_intercept != null ? data.ldsc_intercept.toFixed(3) : '—' }}
+                            </span>
+                        </template>
+                    </Column>
+
                     <Column field="n_variants" header="N variants" sortable :showFilterMenu="false">
                         <template #body="{ data }">
                             <span class="text-sm">{{ data.n_variants != null ? data.n_variants.toLocaleString() : '—' }}</span>
@@ -239,6 +254,13 @@ function statusSeverity(status) {
 function lambdaClass(l) {
     if (l === null || l === undefined) return '';
     if (l < 0.95 || l > 1.10) return 'text-red-600 font-bold';
+    return 'text-green-700';
+}
+
+// LDSC intercept color: ~1 is ideal; >1.10 flags residual confounding/stratification.
+function interceptClass(v) {
+    if (v === null || v === undefined) return '';
+    if (v > 1.10) return 'text-red-600 font-bold';
     return 'text-green-700';
 }
 
