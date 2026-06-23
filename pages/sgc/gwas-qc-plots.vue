@@ -142,6 +142,19 @@
                         </template>
                     </Column>
 
+                    <Column field="ldsc_n_snps" sortable :showFilterMenu="false">
+                        <template #header>
+                            <span
+                                title="Number of variants that entered the univariate LDSC regression — after merging with the LD reference panel and filtering (N ≥ 90th-percentile and χ² outlier removal). Distinct from total N variants in the file."
+                            >
+                                LDSC N variants
+                            </span>
+                        </template>
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.ldsc_n_snps != null ? data.ldsc_n_snps.toLocaleString() : '—' }}</span>
+                        </template>
+                    </Column>
+
                     <Column field="n_variants" header="N variants" sortable :showFilterMenu="false">
                         <template #body="{ data }">
                             <span class="text-sm">{{ data.n_variants != null ? data.n_variants.toLocaleString() : '—' }}</span>
