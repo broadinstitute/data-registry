@@ -244,7 +244,7 @@
                                     </Column>
                                     <Column field="position" header="Position" sortable>
                                         <template #body="{ data: locus }">
-                                            <span class="text-sm">{{ locus.position != null ? locus.position.toLocaleString() : '—' }}</span>
+                                            <span class="text-sm">{{ locus.position != null ? locus.position : '—' }}</span>
                                         </template>
                                     </Column>
                                     <Column field="ref" header="Ref">
