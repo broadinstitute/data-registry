@@ -24,6 +24,13 @@
               Phenotype Case Totals
             </NuxtLink>
             <NuxtLink
+              v-if="isReviewer"
+              to="/sgc/ma"
+              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+            >
+              Meta-analysis
+            </NuxtLink>
+            <NuxtLink
               v-if="userStore.canManageUsers()"
               to="/sgc/users"
               class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
