@@ -651,6 +651,21 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
+        async getSGCLiftoverSummary(fileId) {
+            try {
+                const { data } = await sgcAxios.get(`/api/sgc/liftover/${fileId}`);
+                return data;
+            } catch (err) {
+                if (err.response && err.response.status === 404) return null;
+                throw err;
+            }
+        },
+
+        async getSGCLiftoverUnmappedUrl(fileId) {
+            const { data } = await sgcAxios.get(`/api/sgc/liftover/${fileId}/unmapped-url`);
+            return data.presigned_url;
+        },
+
         // SGC GWAS Metadata (Phase 1) — nested under parent cohort
         async fetchSGCGWASCohort(cohortId) {
             const { data } = await sgcAxios.get(`/api/sgc/cohorts/${cohortId}/gwas-metadata`);
