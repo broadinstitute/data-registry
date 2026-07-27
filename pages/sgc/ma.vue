@@ -89,6 +89,18 @@
                         </template>
                     </Column>
 
+                    <Column field="total_cases" header="Total cases" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.total_cases != null ? data.total_cases.toLocaleString() : '—' }}</span>
+                        </template>
+                    </Column>
+
+                    <Column field="total_controls" header="Total controls" sortable :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.total_controls != null ? data.total_controls.toLocaleString() : '—' }}</span>
+                        </template>
+                    </Column>
+
                     <Column field="updated_at" header="Updated" sortable :showFilterMenu="false">
                         <template #body="{ data }">
                             <span class="text-sm">
@@ -183,10 +195,16 @@
                                 <DataTable
                                     v-if="resultData[data.key].summary.per_cohort?.length"
                                     :value="resultData[data.key].summary.per_cohort"
+                                    :rowClass="perCohortRowClass"
                                     class="p-datatable-sm mb-3"
                                     responsiveLayout="scroll"
                                     stripedRows
                                 >
+                                    <Column field="cohort" header="Cohort">
+                                        <template #body="{ data: cohort }">
+                                            <span class="text-sm font-medium">{{ cohort.cohort || '—' }}</span>
+                                        </template>
+                                    </Column>
                                     <Column field="dataset" header="Dataset">
                                         <template #body="{ data: cohort }">
                                             <span class="text-sm">{{ cohort.dataset }}</span>
@@ -210,6 +228,15 @@
                                     <Column field="n_variants_used" header="N variants used">
                                         <template #body="{ data: cohort }">
                                             <span class="text-sm">{{ cohort.n_variants_used != null ? cohort.n_variants_used.toLocaleString() : '—' }}</span>
+                                        </template>
+                                    </Column>
+                                    <Column header="Status">
+                                        <template #body="{ data: cohort }">
+                                            <span v-if="cohort.skipped">
+                                                <Tag :value="maSkipTag(cohort.reason).label" :severity="maSkipTag(cohort.reason).severity" />
+                                                <span class="ml-2 text-sm text-gray-600">{{ maSkipReason(cohort.reason) }}</span>
+                                            </span>
+                                            <span v-else class="text-sm text-green-700">Used</span>
                                         </template>
                                     </Column>
                                 </DataTable>
@@ -369,6 +396,11 @@ function parseLocusRow(row) {
 
 function onRowCollapse(event) {
     delete resultData.value[event.data.key];
+}
+
+// Mute skipped/ignored per-cohort rows so they read as excluded from the meta.
+function perCohortRowClass(cohort) {
+    return cohort.skipped ? 'text-gray-400' : '';
 }
 
 // Load plots + summary + top-loci when a row is expanded
