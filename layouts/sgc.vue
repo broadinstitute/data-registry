@@ -38,6 +38,13 @@
               MA Ignore List
             </NuxtLink>
             <NuxtLink
+              v-if="isReviewer"
+              to="/sgc/gwas-summary"
+              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+            >
+              GWAS Files
+            </NuxtLink>
+            <NuxtLink
               v-if="userStore.canManageUsers()"
               to="/sgc/users"
               class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"

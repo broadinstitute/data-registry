@@ -7,9 +7,9 @@
                     <Tag :value="gwasFiles.length + ' file' + (gwasFiles.length !== 1 ? 's' : '')" severity="info" />
                 </div>
 
-                <DataTable 
-                    :value="gwasFiles" 
-                    :paginator="true" 
+                <DataTable
+                    :value="gwasFiles"
+                    :paginator="true"
                     :rows="50"
                     :loading="loading"
                     responsiveLayout="scroll"
@@ -18,7 +18,11 @@
                     :globalFilterFields="['phenotype', 'ancestry', 'dataset']"
                     v-model:filters="filters"
                     filterDisplay="row"
+                    dataKey="id"
+                    v-model:expandedRows="expandedRows"
+                    @row-expand="onRowExpand"
                 >
+                    <Column :expander="true" style="width: 3rem" />
                     <Column field="phenotype" header="Phenotype" sortable :showFilterMenu="false" frozen>
                         <template #body="{ data }">
                             <span class="font-medium">{{ data.phenotype }}</span>
@@ -92,6 +96,87 @@
                             <span class="text-sm">{{ data.uploaded_by }}</span>
                         </template>
                     </Column>
+
+                    <template #expansion="{ data }">
+                        <div class="p-3">
+                            <div v-if="liftoverData[data.id]?.loading" class="text-gray-500 text-sm">
+                                Loading liftover summary…
+                            </div>
+                            <div v-else-if="liftoverData[data.id]?.error" class="text-red-500 text-sm">
+                                Failed to load liftover summary. Please try again.
+                            </div>
+                            <div v-else-if="liftoverData[data.id]?.job" >
+                                <Card>
+                                    <template #title>
+                                        <span class="mr-2">
+                                            Liftover Summary:
+                                            {{ liftoverData[data.id].job.source_genome_build }} &rarr;
+                                            {{ liftoverData[data.id].job.target_genome_build }}
+                                        </span>
+                                        <Tag
+                                            :value="liftoverData[data.id].job.status"
+                                            :severity="liftoverStatusSeverity(liftoverData[data.id].job.status)"
+                                        />
+                                    </template>
+                                    <template #content>
+                                        <div v-if="liftoverData[data.id].job.summary">
+                                            <div class="flex flex-wrap gap-4 mb-3">
+                                                <div><strong>Total Input:</strong>
+                                                    {{ liftoverData[data.id].job.summary.total_input_variants?.toLocaleString() ?? '—' }}
+                                                </div>
+                                                <div><strong>Lifted:</strong>
+                                                    {{ liftoverData[data.id].job.summary.total_lifted?.toLocaleString() ?? '—' }}
+                                                </div>
+                                                <div><strong>Unmapped:</strong>
+                                                    {{ liftoverData[data.id].job.summary.total_unmapped?.toLocaleString() ?? '—' }}
+                                                    ({{ liftoverData[data.id].job.summary.unmapped_pct?.toFixed(2) ?? '—' }}%)
+                                                </div>
+                                                <div><strong>Strand Flips:</strong>
+                                                    {{ liftoverData[data.id].job.summary.strand_flips?.toLocaleString() ?? '—' }}
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-wrap gap-4 mb-3">
+                                                <div><strong>Chain File:</strong>
+                                                    {{ liftoverData[data.id].job.summary.chain_file ?? '—' }}
+                                                </div>
+                                                <div><strong>Duration:</strong>
+                                                    {{ liftoverData[data.id].job.summary.duration_seconds ?? '—' }}s
+                                                </div>
+                                            </div>
+                                            <details class="mb-3">
+                                                <summary class="cursor-pointer mb-2">Per-Chromosome Breakdown</summary>
+                                                <DataTable
+                                                    :value="liftoverPerChromosomeRows(liftoverData[data.id].job.summary)"
+                                                    size="small"
+                                                    class="mt-2"
+                                                >
+                                                    <Column field="chromosome" header="Chromosome" sortable />
+                                                    <Column field="input" header="Input" sortable />
+                                                    <Column field="lifted" header="Lifted" sortable />
+                                                    <Column field="unmapped" header="Unmapped" sortable />
+                                                    <Column field="strand_flips" header="Strand Flips" sortable />
+                                                </DataTable>
+                                            </details>
+                                            <Button
+                                                label="Download Unmapped Variants"
+                                                icon="bi-download"
+                                                outlined
+                                                :disabled="!liftoverData[data.id].job.summary.total_unmapped"
+                                                @click="downloadUnmapped(data.id)"
+                                            />
+                                        </div>
+                                        <div v-else class="text-gray-500 text-sm">
+                                            No liftover summary is available for this job (status:
+                                            {{ liftoverData[data.id].job.status }}).
+                                        </div>
+                                    </template>
+                                </Card>
+                            </div>
+                            <div v-else class="text-gray-500 text-sm">
+                                This file has not been lifted.
+                            </div>
+                        </div>
+                    </template>
                 </DataTable>
 
                 <!-- Summary Statistics -->
@@ -157,6 +242,10 @@ const filters = ref({
 // GWAS files data from API
 const gwasFiles = ref([]);
 
+// Row-expansion state + per-file liftover job cache (keyed by file id).
+const expandedRows = ref([]);
+const liftoverData = ref({});
+
 // Computed properties for summary statistics
 const uniquePhenotypes = computed(() => {
     return new Set(gwasFiles.value.map(f => f.phenotype));
@@ -189,6 +278,44 @@ async function loadGWASSummary() {
         });
     } finally {
         loading.value = false;
+    }
+}
+
+// Lazily load the most-recent liftover job for a file when its row is expanded.
+async function onRowExpand(event) {
+    const fileId = event.data.id;
+    // Skip refetch if already loaded or in flight.
+    if (liftoverData.value[fileId]?.loading || 'job' in (liftoverData.value[fileId] ?? {})) return;
+
+    liftoverData.value[fileId] = { loading: true, error: false, job: undefined };
+    try {
+        const job = await store.getSGCLiftoverSummary(fileId); // null when 404 (not lifted)
+        liftoverData.value[fileId] = { loading: false, error: false, job };
+    } catch (error) {
+        console.error(`Error loading liftover summary for ${fileId}:`, error);
+        liftoverData.value[fileId] = { loading: false, error: true, job: undefined };
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to load liftover summary. Please try again.',
+            life: 5000,
+        });
+    }
+}
+
+// Presign + open the unmapped-variants file for a lifted GWAS file.
+async function downloadUnmapped(fileId) {
+    try {
+        const url = await store.getSGCLiftoverUnmappedUrl(fileId);
+        if (url) window.open(url, '_blank');
+    } catch (error) {
+        console.error(`Error downloading unmapped variants for ${fileId}:`, error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to download unmapped variants. Please try again.',
+            life: 5000,
+        });
     }
 }
 
