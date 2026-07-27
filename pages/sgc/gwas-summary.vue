@@ -105,7 +105,7 @@
                             <div v-else-if="liftoverData[data.id]?.error" class="text-red-500 text-sm">
                                 Failed to load liftover summary. Please try again.
                             </div>
-                            <div v-else-if="liftoverData[data.id]?.job" >
+                            <div v-else-if="liftoverData[data.id]?.job">
                                 <Card>
                                     <template #title>
                                         <span class="mr-2">
@@ -284,8 +284,11 @@ async function loadGWASSummary() {
 // Lazily load the most-recent liftover job for a file when its row is expanded.
 async function onRowExpand(event) {
     const fileId = event.data.id;
-    // Skip refetch if already loaded or in flight.
-    if (liftoverData.value[fileId]?.loading || 'job' in (liftoverData.value[fileId] ?? {})) return;
+    const state = liftoverData.value[fileId];
+    // Skip only when a fetch is in flight or already resolved: a successful fetch sets
+    // `job` to a concrete value (the job object, or null when not lifted), while an errored
+    // fetch leaves `job` undefined — so re-expanding after a failure retries.
+    if (state?.loading || state?.job !== undefined) return;
 
     liftoverData.value[fileId] = { loading: true, error: false, job: undefined };
     try {
