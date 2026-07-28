@@ -4,7 +4,16 @@
             <div class="card">
                 <div class="flex justify-content-between align-items-center mb-4">
                     <h5>GWAS Files Summary</h5>
-                    <Tag :value="gwasFiles.length + ' file' + (gwasFiles.length !== 1 ? 's' : '')" severity="info" />
+                    <div class="flex align-items-center gap-3">
+                        <Button
+                            label="Run liftover on all needing it"
+                            icon="bi-arrow-repeat"
+                            outlined
+                            :loading="runningLiftover"
+                            @click="runLiftoverAll"
+                        />
+                        <Tag :value="gwasFiles.length + ' file' + (gwasFiles.length !== 1 ? 's' : '')" severity="info" />
+                    </div>
                 </div>
 
                 <DataTable
@@ -255,6 +264,7 @@ const store = useDatasetStore();
 
 // Reactive data
 const loading = ref(false);
+const runningLiftover = ref(false);
 
 // Filters
 const filters = ref({
@@ -349,6 +359,31 @@ async function downloadUnmapped(fileId) {
             detail: 'Failed to download unmapped variants. Please try again.',
             life: 5000,
         });
+    }
+}
+
+// Submit a wave of liftover jobs for all files needing it, then refresh the table.
+async function runLiftoverAll() {
+    runningLiftover.value = true;
+    try {
+        const res = await store.runSGCLiftoverAll();
+        toast.add({
+            severity: 'success',
+            summary: 'Liftover submitted',
+            detail: `Submitted ${res.submitted}, ${res.remaining} remaining`,
+            life: 6000,
+        });
+        await loadGWASSummary();  // submitted files now read as "In progress"
+    } catch (error) {
+        console.error('Error running liftover:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to submit liftover jobs. Please try again.',
+            life: 5000,
+        });
+    } finally {
+        runningLiftover.value = false;
     }
 }
 

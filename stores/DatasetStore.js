@@ -666,6 +666,11 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data.presigned_url;
         },
 
+        async runSGCLiftoverAll() {
+            const { data } = await sgcAxios.post('/api/sgc/liftover/run-all');
+            return data;
+        },
+
         // SGC GWAS Metadata (Phase 1) — nested under parent cohort
         async fetchSGCGWASCohort(cohortId) {
             const { data } = await sgcAxios.get(`/api/sgc/cohorts/${cohortId}/gwas-metadata`);
