@@ -24,3 +24,28 @@ export function liftoverStatusSeverity(status) {
     if (status === 'FAILED') return 'danger';
     return 'warning';
 }
+
+// Display order for the gwas-summary "Genome Build / Liftover" filter. These
+// six strings are the cross-repo contract -- they MUST match the backend
+// classify_liftover_status output (sgc_ma/select.py) byte-for-byte.
+export const LIFTOVER_STATUS_OPTIONS = [
+    'Needs liftover',
+    'In progress',
+    'Failed',
+    'Lifted to GRCh38',
+    'GRCh38 (native)',
+    'Unknown build',
+];
+
+// PrimeVue Tag severity for each liftover-status label. Unknown/unexpected
+// values fall back to 'secondary' (grey).
+export function buildStatusSeverity(status) {
+    switch (status) {
+        case 'Needs liftover': return 'warning';
+        case 'In progress': return 'info';
+        case 'Failed': return 'danger';
+        case 'Lifted to GRCh38': return 'success';
+        case 'GRCh38 (native)': return 'success';
+        default: return 'secondary';
+    }
+}

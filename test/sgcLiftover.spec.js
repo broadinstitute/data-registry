@@ -38,3 +38,29 @@ describe('liftoverStatusSeverity', () => {
         expect(liftoverStatusSeverity(undefined)).toBe('warning');
     });
 });
+
+import { buildStatusSeverity, LIFTOVER_STATUS_OPTIONS } from '../utils/sgcLiftover.js';
+
+describe('buildStatusSeverity', () => {
+    it('maps each of the six statuses to its severity', () => {
+        expect(buildStatusSeverity('Needs liftover')).toBe('warning');
+        expect(buildStatusSeverity('In progress')).toBe('info');
+        expect(buildStatusSeverity('Failed')).toBe('danger');
+        expect(buildStatusSeverity('Lifted to GRCh38')).toBe('success');
+        expect(buildStatusSeverity('GRCh38 (native)')).toBe('success');
+        expect(buildStatusSeverity('Unknown build')).toBe('secondary');
+    });
+    it('falls back to secondary for unexpected values', () => {
+        expect(buildStatusSeverity('whatever')).toBe('secondary');
+        expect(buildStatusSeverity(undefined)).toBe('secondary');
+    });
+});
+
+describe('LIFTOVER_STATUS_OPTIONS', () => {
+    it('lists exactly the six contract labels', () => {
+        expect(LIFTOVER_STATUS_OPTIONS).toEqual([
+            'Needs liftover', 'In progress', 'Failed',
+            'Lifted to GRCh38', 'GRCh38 (native)', 'Unknown build',
+        ]);
+    });
+});
