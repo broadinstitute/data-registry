@@ -15,7 +15,7 @@
                     responsiveLayout="scroll"
                     stripedRows
                     class="p-datatable-sm"
-                    :globalFilterFields="['phenotype', 'ancestry', 'dataset']"
+                    :globalFilterFields="['phenotype', 'ancestry', 'dataset', 'liftover_status']"
                     v-model:filters="filters"
                     filterDisplay="row"
                     dataKey="id"
@@ -64,6 +64,24 @@
                         <template #body="{ data }">
                             <span v-if="data.controls !== null" class="text-sm">{{ formatNumber(data.controls) }}</span>
                             <span v-else class="text-gray-400 text-sm">-</span>
+                        </template>
+                    </Column>
+
+                    <Column field="liftover_status" header="Genome Build / Liftover" sortable
+                            :showFilterMenu="false" :filterMenuStyle="{ width: '14rem' }">
+                        <template #body="{ data }">
+                            <Tag :value="data.liftover_status" :severity="buildStatusSeverity(data.liftover_status)" />
+                        </template>
+                        <template #filter="{ filterModel, filterCallback }">
+                            <MultiSelect
+                                v-model="filterModel.value"
+                                :options="LIFTOVER_STATUS_OPTIONS"
+                                placeholder="Any"
+                                @change="filterCallback()"
+                                :showToggleAll="false"
+                                class="p-column-filter"
+                                style="min-width: 12rem"
+                            />
                         </template>
                     </Column>
 
@@ -207,6 +225,12 @@
                                 <p class="text-2xl font-bold text-orange-700">{{ formatNumber(totalCases) }}</p>
                             </div>
                         </div>
+                        <div class="col-12 md:col-6 lg:col-3">
+                            <div class="bg-orange-50 p-4" style="border-radius: 6px;">
+                                <p class="text-sm text-gray-600 mb-1">Needs Liftover</p>
+                                <p class="text-2xl font-bold text-orange-700">{{ formatNumber(needsLiftoverCount) }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -219,6 +243,7 @@
 <script setup>
 import { useToast } from "primevue/usetoast";
 import { FilterMatchMode } from 'primevue/api';
+import MultiSelect from 'primevue/multiselect';
 import { useDatasetStore } from "~/stores/DatasetStore";
 
 definePageMeta({
@@ -236,7 +261,8 @@ const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     phenotype: { value: null, matchMode: FilterMatchMode.CONTAINS },
     ancestry: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    dataset: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    dataset: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    liftover_status: { value: null, matchMode: FilterMatchMode.IN },
 });
 
 // GWAS files data from API
@@ -259,6 +285,10 @@ const totalCases = computed(() => {
     return gwasFiles.value
         .filter(f => f.cases !== null)
         .reduce((sum, f) => sum + f.cases, 0);
+});
+
+const needsLiftoverCount = computed(() => {
+    return gwasFiles.value.filter(f => f.liftover_status === 'Needs liftover').length;
 });
 
 // Methods
