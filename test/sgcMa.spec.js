@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
     maSkipTag, maSkipReason, cohortNameMap, cohortNameFor, gwasCandidateLabel,
+    groupRunsByPhenoAncestry, runLabel,
 } from '../utils/sgcMa.js';
 
 describe('maSkipTag', () => {
@@ -50,5 +51,38 @@ describe('gwasCandidateLabel', () => {
     it('falls back to cohort_id when the name is unknown', () => {
         const gwas = { cohort_id: 'cX', dataset: 'D', phenotype: 'P', ancestry: 'A' };
         expect(gwasCandidateLabel(gwas, {})).toBe('cX · D · P / A');
+    });
+});
+
+describe('groupRunsByPhenoAncestry', () => {
+    it('groups runs by (phenotype, ancestry), newest run first, groups sorted', () => {
+        const runs = [
+            { id: '1', phenotype: 'PSOR', ancestry: 'EUR', created_at: '2026-07-01' },
+            { id: '2', phenotype: 'PSOR', ancestry: 'EUR', created_at: '2026-07-05' },
+            { id: '3', phenotype: 'AD', ancestry: 'EAS', created_at: '2026-07-03' },
+        ];
+        const out = groupRunsByPhenoAncestry(runs);
+        expect(out.map(g => `${g.phenotype}/${g.ancestry}`)).toEqual(['AD/EAS', 'PSOR/EUR']);
+        const psor = out.find(g => g.phenotype === 'PSOR');
+        expect(psor.runs.map(r => r.id)).toEqual(['2', '1']);   // newest created_at first
+    });
+
+    it('handles empty / null input', () => {
+        expect(groupRunsByPhenoAncestry([])).toEqual([]);
+        expect(groupRunsByPhenoAncestry(null)).toEqual([]);
+    });
+});
+
+describe('runLabel', () => {
+    it('uses the explicit label when present', () => {
+        expect(runLabel({ label: 'core set', run_type: 'manual' })).toBe('core set');
+    });
+    it('falls back to type · N datasets · date', () => {
+        expect(runLabel({ run_type: 'auto', dataset_file_ids: ['a', 'b', 'c'], created_at: '2026-07-05T12:00:00' }))
+            .toBe('auto · 3 datasets · 2026-07-05');
+    });
+    it('singular dataset + missing pieces degrade gracefully', () => {
+        expect(runLabel({ run_type: 'manual', dataset_file_ids: ['a'] })).toBe('manual · 1 dataset');
+        expect(runLabel({})).toBe('run');
     });
 });

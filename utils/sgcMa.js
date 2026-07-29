@@ -45,3 +45,32 @@ export function gwasCandidateLabel(gwas, nameMap) {
     const cohortName = cohortNameFor(nameMap, gwas.cohort_id);
     return `${cohortName} · ${gwas.dataset} · ${gwas.phenotype} / ${gwas.ancestry}`;
 }
+
+// Group a flat MA-run list (from /api/sgc/ma/results) into
+// [{ phenotype, ancestry, runs: [...] }], each group's runs newest-first,
+// groups sorted by phenotype then ancestry.
+export function groupRunsByPhenoAncestry(runs) {
+    const groups = {};
+    for (const r of runs || []) {
+        const key = `${r.phenotype}||${r.ancestry}`;
+        (groups[key] || (groups[key] = { phenotype: r.phenotype, ancestry: r.ancestry, runs: [] })).runs.push(r);
+    }
+    const out = Object.values(groups);
+    for (const g of out) {
+        g.runs.sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
+    }
+    out.sort((a, b) => a.phenotype.localeCompare(b.phenotype) || a.ancestry.localeCompare(b.ancestry));
+    return out;
+}
+
+// Human label for one run: the explicit label if set, else "type · N datasets · date".
+export function runLabel(run) {
+    if (run && run.label) return run.label;
+    const type = (run && run.run_type) || 'run';
+    const n = Array.isArray(run && run.dataset_file_ids) ? run.dataset_file_ids.length : null;
+    const date = run && run.created_at ? String(run.created_at).slice(0, 10) : '';
+    const parts = [type];
+    if (n !== null) parts.push(`${n} dataset${n === 1 ? '' : 's'}`);
+    if (date) parts.push(date);
+    return parts.join(' · ');
+}
