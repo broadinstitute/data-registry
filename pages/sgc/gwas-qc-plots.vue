@@ -225,6 +225,7 @@
 <script setup>
 import { useToast } from "primevue/usetoast";
 import { FilterMatchMode } from 'primevue/api';
+import { useUserStore } from "~/stores/UserStore";
 
 definePageMeta({
     layout: 'sgc'
@@ -232,10 +233,19 @@ definePageMeta({
 
 const toast = useToast();
 const config = useRuntimeConfig();
+const userStore = useUserStore();
+const router = useRouter();
 
 // Set up authenticated axios instance for SGC (mirrors DatasetStore pattern)
 const sgcAxios = useSGCAxios(config, undefined, (error) => {
     return Promise.reject(error);
+});
+
+const isReviewer = computed(() => {
+    const user = userStore.user;
+    if (!user) return false;
+    const roleNames = user.roles?.map(role => role.name || role) || [];
+    return roleNames.includes('sgc-reviewer') || roleNames.includes('admin');
 });
 
 // Reactive data
@@ -334,6 +344,10 @@ async function loadQCPlots() {
 }
 
 onMounted(() => {
+    if (!isReviewer.value) {
+        router.push('/sgc');
+        return;
+    }
     loadQCPlots();
 });
 </script>
