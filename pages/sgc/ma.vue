@@ -3,8 +3,11 @@
         <div class="col-12">
             <div class="card">
                 <div class="flex justify-content-between align-items-center mb-4">
-                    <h5>SGC Meta-Analysis Results</h5>
-                    <Tag :value="rows.length + ' result' + (rows.length !== 1 ? 's' : '')" severity="info" />
+                    <div class="flex align-items-center gap-3">
+                        <h5 class="m-0">SGC Meta-Analysis Results</h5>
+                        <Tag :value="rows.length + ' result' + (rows.length !== 1 ? 's' : '')" severity="info" />
+                    </div>
+                    <Button label="New meta-analysis" icon="pi pi-plus" size="small" @click="openLaunchDialog" />
                 </div>
 
                 <DataTable
@@ -55,9 +58,33 @@
                         </template>
                     </Column>
 
+                    <Column header="Run" :showFilterMenu="false" style="min-width: 15rem">
+                        <template #body="{ data }">
+                            <div class="flex flex-column gap-1">
+                                <span class="text-sm font-medium">{{ runLabel(data) }}</span>
+                                <div class="flex align-items-center gap-2">
+                                    <Tag
+                                        :value="data.run_type || 'manual'"
+                                        :severity="data.run_type === 'auto' ? 'info' : 'secondary'"
+                                    />
+                                    <span class="text-xs text-gray-500">
+                                        {{ data.dataset_file_ids?.length ?? '—' }} dataset{{ (data.dataset_file_ids?.length ?? 0) === 1 ? '' : 's' }}
+                                    </span>
+                                </div>
+                                <span class="text-xs text-gray-500">{{ formatDate(data.created_at) }}</span>
+                            </div>
+                        </template>
+                    </Column>
+
                     <Column field="status" header="Status" sortable :showFilterMenu="false">
                         <template #body="{ data }">
                             <Tag :value="data.status" :severity="statusSeverity(data.status)" />
+                        </template>
+                    </Column>
+
+                    <Column header="MAF / INFO" :showFilterMenu="false">
+                        <template #body="{ data }">
+                            <span class="text-sm">{{ data.maf_min ?? '—' }} / {{ data.info_min ?? '—' }}</span>
                         </template>
                     </Column>
 
@@ -103,15 +130,7 @@
 
                     <Column field="updated_at" header="Updated" sortable :showFilterMenu="false">
                         <template #body="{ data }">
-                            <span class="text-sm">
-                                {{ data.updated_at ? new Date(data.updated_at).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                }) : '—' }}
-                            </span>
+                            <span class="text-sm">{{ formatDate(data.updated_at, true) }}</span>
                         </template>
                     </Column>
 
@@ -331,6 +350,84 @@
         </div>
     </div>
 
+    <Dialog v-model:visible="launchVisible" modal header="New meta-analysis" :style="{ width: '50rem' }">
+        <div class="formgrid grid">
+            <div class="field col-12 md:col-6">
+                <label class="text-sm font-medium block mb-1">Phenotype</label>
+                <InputText v-model="launchForm.phenotype" class="w-full" placeholder="e.g. T2D" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <label class="text-sm font-medium block mb-1">Ancestry</label>
+                <InputText v-model="launchForm.ancestry" class="w-full" placeholder="e.g. EUR" />
+            </div>
+        </div>
+
+        <div v-if="loadingCandidates" class="text-sm text-gray-500 mb-3">Loading eligible datasets...</div>
+        <div
+            v-else-if="launchForm.phenotype.trim() && launchForm.ancestry.trim() && candidates.length === 0"
+            class="text-sm text-gray-500 mb-3"
+        >
+            No eligible QC-passed files for that phenotype/ancestry.
+        </div>
+
+        <DataTable
+            v-if="candidates.length"
+            :value="candidates"
+            v-model:selection="selectedCandidates"
+            dataKey="file_id"
+            class="p-datatable-sm mb-3"
+            responsiveLayout="scroll"
+            stripedRows
+            :paginator="candidates.length > 10"
+            :rows="10"
+        >
+            <Column selectionMode="multiple" headerStyle="width: 3rem" />
+            <Column field="cohort" header="Cohort">
+                <template #body="{ data }"><span class="text-sm">{{ data.cohort }}</span></template>
+            </Column>
+            <Column field="dataset" header="Dataset">
+                <template #body="{ data }"><span class="text-sm">{{ data.dataset }}</span></template>
+            </Column>
+            <Column field="cases" header="Cases">
+                <template #body="{ data }"><span class="text-sm">{{ data.cases != null ? data.cases.toLocaleString() : '—' }}</span></template>
+            </Column>
+            <Column field="controls" header="Controls">
+                <template #body="{ data }"><span class="text-sm">{{ data.controls != null ? data.controls.toLocaleString() : '—' }}</span></template>
+            </Column>
+            <Column header="Ignore-list">
+                <template #body="{ data }">
+                    <Tag v-if="data.ignored" value="Ignored" severity="warning" />
+                </template>
+            </Column>
+        </DataTable>
+
+        <div class="formgrid grid">
+            <div class="field col-6 md:col-3">
+                <label class="text-sm font-medium block mb-1">MAF min</label>
+                <InputNumber v-model="launchForm.maf_min" class="w-full" :minFractionDigits="0" :maxFractionDigits="4" :min="0" :max="1" />
+            </div>
+            <div class="field col-6 md:col-3">
+                <label class="text-sm font-medium block mb-1">INFO min</label>
+                <InputNumber v-model="launchForm.info_min" class="w-full" :minFractionDigits="0" :maxFractionDigits="4" :min="0" :max="1" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <label class="text-sm font-medium block mb-1">Label (optional)</label>
+                <InputText v-model="launchForm.label" class="w-full" placeholder="e.g. sensitivity re-run" />
+            </div>
+        </div>
+
+        <template #footer>
+            <Button label="Cancel" text @click="launchVisible = false" />
+            <Button
+                label="Launch"
+                icon="pi pi-play"
+                :disabled="selectedCandidates.length < 2 || launching"
+                :loading="launching"
+                @click="launchRun"
+            />
+        </template>
+    </Dialog>
+
     <Toast position="top-center" />
 </template>
 
@@ -381,6 +478,17 @@ function lambdaClass(l) {
     return 'text-green-700';
 }
 
+// Shared date formatter for the Run/Updated columns. withTime adds hour:minute.
+function formatDate(value, withTime = false) {
+    if (!value) return '—';
+    const opts = { year: 'numeric', month: 'short', day: 'numeric' };
+    if (withTime) {
+        opts.hour = '2-digit';
+        opts.minute = '2-digit';
+    }
+    return new Date(value).toLocaleDateString('en-US', opts);
+}
+
 // Top-loci rows come back from the API as dicts of strings (parsed straight off
 // the TSV); coerce the numeric fields so sorting/formatting works correctly.
 function parseLocusRow(row) {
@@ -413,13 +521,13 @@ async function onRowExpand(event) {
 
     resultData.value[key] = { ...(resultData.value[key] ?? {}), loading: true, error: false };
 
-    const { phenotype, ancestry } = row;
+    const { phenotype, ancestry, id } = row;
     try {
         const [manhattanResp, qqResp, summaryResp, topLociResp] = await Promise.all([
-            sgcAxios.get(`/api/sgc/ma/results/${phenotype}/${ancestry}/manhattan`),
-            sgcAxios.get(`/api/sgc/ma/results/${phenotype}/${ancestry}/qq`),
-            sgcAxios.get(`/api/sgc/ma/results/${phenotype}/${ancestry}/summary`),
-            sgcAxios.get(`/api/sgc/ma/results/${phenotype}/${ancestry}/top-loci`),
+            sgcAxios.get(`/api/sgc/ma/runs/${id}/manhattan`),
+            sgcAxios.get(`/api/sgc/ma/runs/${id}/qq`),
+            sgcAxios.get(`/api/sgc/ma/runs/${id}/summary`),
+            sgcAxios.get(`/api/sgc/ma/runs/${id}/top-loci`),
         ]);
 
         resultData.value[key] = {
@@ -431,7 +539,7 @@ async function onRowExpand(event) {
             topLoci:   (topLociResp.data || []).map(parseLocusRow),
         };
     } catch (error) {
-        console.error(`Error loading meta-analysis results for ${phenotype}/${ancestry}:`, error);
+        console.error(`Error loading meta-analysis results for ${phenotype}/${ancestry} (run ${id}):`, error);
         resultData.value[key] = { ...(resultData.value[key] ?? {}), loading: false, error: true, manhattan: null, qq: null, summary: null, topLoci: null };
         toast.add({
             severity: 'error',
@@ -447,10 +555,10 @@ async function downloadMeta(row) {
     const key = row.key;
     downloading.value[key] = true;
     try {
-        const resp = await sgcAxios.get(`/api/sgc/ma/results/${row.phenotype}/${row.ancestry}/meta`);
+        const resp = await sgcAxios.get(`/api/sgc/ma/runs/${row.id}/meta`);
         window.open(resp.data.url, '_blank');
     } catch (error) {
-        console.error(`Error downloading meta.tsv.gz for ${row.phenotype}/${row.ancestry}:`, error);
+        console.error(`Error downloading meta.tsv.gz for ${row.phenotype}/${row.ancestry} (run ${row.id}):`, error);
         toast.add({
             severity: 'error',
             summary: 'Error',
@@ -467,7 +575,15 @@ async function loadMAResults() {
     loading.value = true;
     try {
         const { data } = await sgcAxios.get('/api/sgc/ma/results');
-        rows.value = data.map(row => ({ ...row, key: `${row.phenotype}_${row.ancestry}` }));
+        // Key by the run's own id (unique) rather than phenotype+ancestry, which now
+        // collides -- a (phenotype, ancestry) pair can have several runs. Sort by
+        // phenotype, then ancestry, then newest-first so same-group runs sit adjacent.
+        rows.value = data
+            .map(row => ({ ...row, key: row.id, group: `${row.phenotype} / ${row.ancestry}` }))
+            .sort((a, b) =>
+                a.phenotype.localeCompare(b.phenotype) ||
+                a.ancestry.localeCompare(b.ancestry) ||
+                String(b.created_at || '').localeCompare(String(a.created_at || '')));
     } catch (error) {
         console.error('Error loading meta-analysis results:', error);
         toast.add({
@@ -478,6 +594,97 @@ async function loadMAResults() {
         });
     } finally {
         loading.value = false;
+    }
+}
+
+// --- Self-service launch dialog ---------------------------------------
+
+const launchVisible = ref(false);
+const launchForm = ref({ phenotype: '', ancestry: '', maf_min: 0.005, info_min: 0.3, label: '' });
+const candidates = ref([]);
+const selectedCandidates = ref([]);
+const loadingCandidates = ref(false);
+const launching = ref(false);
+
+let candidateFetchToken = 0;
+let candidateDebounce = null;
+
+function openLaunchDialog() {
+    launchForm.value = { phenotype: '', ancestry: '', maf_min: 0.005, info_min: 0.3, label: '' };
+    candidates.value = [];
+    selectedCandidates.value = [];
+    launchVisible.value = true;
+}
+
+// Candidate files for the phenotype/ancestry typed into the launch dialog.
+async function fetchCandidates() {
+    const phenotype = launchForm.value.phenotype.trim();
+    const ancestry = launchForm.value.ancestry.trim();
+    if (!phenotype || !ancestry) {
+        candidates.value = [];
+        selectedCandidates.value = [];
+        return;
+    }
+
+    const token = ++candidateFetchToken;
+    loadingCandidates.value = true;
+    try {
+        const { data } = await sgcAxios.get(`/api/sgc/ma/candidates/${phenotype}/${ancestry}`);
+        if (token !== candidateFetchToken) return; // a newer request superseded this one
+        candidates.value = data || [];
+        selectedCandidates.value = [...candidates.value]; // preselect all eligible files
+    } catch (error) {
+        if (token !== candidateFetchToken) return;
+        console.error(`Error loading MA candidates for ${phenotype}/${ancestry}:`, error);
+        candidates.value = [];
+        selectedCandidates.value = [];
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to load eligible datasets for that phenotype/ancestry.',
+            life: 5000
+        });
+    } finally {
+        if (token === candidateFetchToken) loadingCandidates.value = false;
+    }
+}
+
+// Debounce candidate lookups while the user is typing phenotype/ancestry.
+watch(() => [launchForm.value.phenotype, launchForm.value.ancestry], () => {
+    if (candidateDebounce) clearTimeout(candidateDebounce);
+    candidateDebounce = setTimeout(fetchCandidates, 300);
+});
+
+async function launchRun() {
+    if (selectedCandidates.value.length < 2 || launching.value) return;
+    launching.value = true;
+    try {
+        const { data } = await sgcAxios.post('/api/sgc/ma/run', {
+            phenotype: launchForm.value.phenotype.trim(),
+            ancestry: launchForm.value.ancestry.trim(),
+            file_ids: selectedCandidates.value.map(c => c.file_id),
+            maf_min: launchForm.value.maf_min,
+            info_min: launchForm.value.info_min,
+            label: launchForm.value.label.trim() || undefined,
+        });
+        toast.add({
+            severity: 'success',
+            summary: 'Launched',
+            detail: `Meta-analysis launched (run ${data.run_id})`,
+            life: 5000
+        });
+        launchVisible.value = false;
+        await loadMAResults();
+    } catch (error) {
+        console.error('Error launching meta-analysis:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error?.response?.data?.detail || 'Failed to launch meta-analysis. Please try again.',
+            life: 5000
+        });
+    } finally {
+        launching.value = false;
     }
 }
 
