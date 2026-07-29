@@ -354,11 +354,13 @@
         <div class="formgrid grid">
             <div class="field col-12 md:col-6">
                 <label class="text-sm font-medium block mb-1">Phenotype</label>
-                <InputText v-model="launchForm.phenotype" class="w-full" placeholder="e.g. T2D" />
+                <Dropdown v-model="launchForm.phenotype" :options="phenotypeOptions" filter
+                          placeholder="Select phenotype" class="w-full" :loading="loadingLaunchOptions" />
             </div>
             <div class="field col-12 md:col-6">
                 <label class="text-sm font-medium block mb-1">Ancestry</label>
-                <InputText v-model="launchForm.ancestry" class="w-full" placeholder="e.g. EUR" />
+                <Dropdown v-model="launchForm.ancestry" :options="ancestryOptions"
+                          :disabled="!launchForm.phenotype" placeholder="Select ancestry" class="w-full" />
             </div>
         </div>
 
@@ -606,14 +608,43 @@ const selectedCandidates = ref([]);
 const loadingCandidates = ref(false);
 const launching = ref(false);
 
+// Phenotype/ancestry option source: distinct values from the GWAS files, so the
+// dropdowns only offer combinations that actually have data. Ancestry cascades
+// off the chosen phenotype.
+const launchGwasFiles = ref([]);
+const loadingLaunchOptions = ref(false);
+
+const phenotypeOptions = computed(() =>
+    [...new Set(launchGwasFiles.value.map(f => f.phenotype).filter(Boolean))].sort());
+
+const ancestryOptions = computed(() => {
+    const p = launchForm.value.phenotype;
+    if (!p) return [];
+    return [...new Set(launchGwasFiles.value
+        .filter(f => f.phenotype === p)
+        .map(f => f.ancestry).filter(Boolean))].sort();
+});
+
 let candidateFetchToken = 0;
 let candidateDebounce = null;
 
-function openLaunchDialog() {
+async function openLaunchDialog() {
     launchForm.value = { phenotype: '', ancestry: '', maf_min: 0.005, info_min: 0.3, label: '' };
     candidates.value = [];
     selectedCandidates.value = [];
     launchVisible.value = true;
+    if (!launchGwasFiles.value.length) {
+        loadingLaunchOptions.value = true;
+        try {
+            const { data } = await sgcAxios.get('/api/sgc/gwas-summary');
+            launchGwasFiles.value = data || [];
+        } catch (error) {
+            console.error('Error loading phenotype/ancestry options:', error);
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to load phenotype/ancestry options.', life: 5000 });
+        } finally {
+            loadingLaunchOptions.value = false;
+        }
+    }
 }
 
 // Candidate files for the phenotype/ancestry typed into the launch dialog.
@@ -653,6 +684,13 @@ async function fetchCandidates() {
 watch(() => [launchForm.value.phenotype, launchForm.value.ancestry], () => {
     if (candidateDebounce) clearTimeout(candidateDebounce);
     candidateDebounce = setTimeout(fetchCandidates, 300);
+});
+
+// Changing phenotype invalidates an ancestry that isn't offered for the new one.
+watch(() => launchForm.value.phenotype, () => {
+    if (!ancestryOptions.value.includes(launchForm.value.ancestry)) {
+        launchForm.value.ancestry = '';
+    }
 });
 
 async function launchRun() {
