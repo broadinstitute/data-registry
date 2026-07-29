@@ -245,53 +245,53 @@
         <p class="text-sm text-color-secondary mb-3">Provide the column heading names used in your summary statistics files. An imputation-quality (INFO) column is required for new uploads.</p>
 
         <div class="formgrid grid">
-            <div class="field col-6 md:col-2">
+            <div class="field col-12 md:col-6">
                 <label for="colChromosome">Chromosome <span class="text-red-500">*</span></label>
                 <InputText v-model="formData.col_chromosome" id="colChromosome" type="text" :disabled="disabled" />
             </div>
-            <div class="field col-6 md:col-2">
+            <div class="field col-12 md:col-6">
                 <label for="colPosition">Position <span class="text-red-500">*</span></label>
                 <InputText v-model="formData.col_position" id="colPosition" type="text" :disabled="disabled" />
             </div>
-            <div class="field col-6 md:col-2">
+            <div class="field col-12 md:col-6">
                 <label for="colEffectAllele">Effect Allele <span class="text-red-500">*</span></label>
                 <InputText v-model="formData.col_effect_allele" id="colEffectAllele" type="text" :disabled="disabled" />
             </div>
-            <div class="field col-6 md:col-2">
+            <div class="field col-12 md:col-6">
                 <label for="colNonEffectAllele">Non-Effect Allele <span class="text-red-500">*</span></label>
                 <InputText v-model="formData.col_non_effect_allele" id="colNonEffectAllele" type="text" :disabled="disabled" />
             </div>
-            <div class="field col-6 md:col-2">
+            <div class="field col-12 md:col-6">
                 <label for="colBeta">Beta (log OR) <span class="text-red-500">*</span></label>
                 <InputText v-model="formData.col_beta" id="colBeta" type="text" :disabled="disabled" />
             </div>
-            <div class="field col-6 md:col-2">
+            <div class="field col-12 md:col-6">
                 <label for="colSe">SE <span class="text-red-500">*</span></label>
                 <InputText v-model="formData.col_se" id="colSe" type="text" :disabled="disabled" />
             </div>
         </div>
 
         <div class="formgrid grid">
-            <div class="field col-6 md:col-2">
+            <div class="field col-12 md:col-6">
                 <label for="colPvalue">P-value <span class="text-red-500">*</span></label>
                 <InputText v-model="formData.col_pvalue" id="colPvalue" type="text" :disabled="disabled" />
             </div>
-            <div class="field col-6 md:col-2">
+            <div class="field col-12 md:col-6">
                 <label for="colEffectAlleleFreq">Effect AF <span class="text-red-500">*</span></label>
                 <InputText v-model="formData.col_effect_allele_freq" id="colEffectAlleleFreq" type="text" :disabled="disabled" />
             </div>
-            <div class="field col-6 md:col-2">
+            <div class="field col-12 md:col-6">
                 <label for="colImputationQuality">Imputation Quality <span class="text-red-500">*</span>
                     <i class="pi pi-info-circle text-color-secondary ml-1"
                        v-tooltip="{value: 'Per-variant imputation quality score — also called INFO, R², or imputationInfo. Enter the exact column header from your file.', position: 'top'}"></i>
                 </label>
                 <InputText v-model="formData.col_imputation_quality" id="colImputationQuality" type="text" :disabled="disabled" />
             </div>
-            <div class="field col-6 md:col-2">
+            <div class="field col-12 md:col-6">
                 <label for="colVariantId">Variant ID</label>
                 <InputText v-model="formData.col_variant_id" id="colVariantId" type="text" placeholder="e.g. rsID" :disabled="disabled" />
             </div>
-            <div class="field col-6 md:col-2">
+            <div class="field col-12 md:col-6">
                 <label for="colVariantN">Variant N</label>
                 <InputText v-model="formData.col_variant_n" id="colVariantN" type="text" placeholder="e.g. N" :disabled="disabled" />
             </div>
