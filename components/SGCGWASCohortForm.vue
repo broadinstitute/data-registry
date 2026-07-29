@@ -242,7 +242,7 @@
 
         <Divider />
         <h6 class="mb-1">Summary Statistics Column Headings</h6>
-        <p class="text-sm text-color-secondary mb-3">Provide the column heading names used in your summary statistics files.</p>
+        <p class="text-sm text-color-secondary mb-3">Provide the column heading names used in your summary statistics files. An imputation-quality (INFO) column is required for new uploads.</p>
 
         <div class="formgrid grid">
             <div class="field col-6 md:col-2">
@@ -281,7 +281,10 @@
                 <InputText v-model="formData.col_effect_allele_freq" id="colEffectAlleleFreq" type="text" :disabled="disabled" />
             </div>
             <div class="field col-6 md:col-2">
-                <label for="colImputationQuality">Imputation Quality <span class="text-red-500">*</span></label>
+                <label for="colImputationQuality">Imputation Quality <span class="text-red-500">*</span>
+                    <i class="pi pi-info-circle text-color-secondary ml-1"
+                       v-tooltip="{value: 'Per-variant imputation quality score — also called INFO, R², or imputationInfo. Enter the exact column header from your file.', position: 'top'}"></i>
+                </label>
                 <InputText v-model="formData.col_imputation_quality" id="colImputationQuality" type="text" :disabled="disabled" />
             </div>
             <div class="field col-6 md:col-2">
