@@ -663,8 +663,8 @@ async function launchRun() {
             phenotype: launchForm.value.phenotype.trim(),
             ancestry: launchForm.value.ancestry.trim(),
             file_ids: selectedCandidates.value.map(c => c.file_id),
-            maf_min: launchForm.value.maf_min,
-            info_min: launchForm.value.info_min,
+            maf_min: launchForm.value.maf_min ?? 0.005,
+            info_min: launchForm.value.info_min ?? 0.3,
             label: launchForm.value.label.trim() || undefined,
         });
         toast.add({
