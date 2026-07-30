@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
     maSkipTag, maSkipReason, cohortNameMap, cohortNameFor, gwasCandidateLabel,
     groupRunsByPhenoAncestry, runLabel,
+    MA_TARGET_GROUPS, targetValue, targetFromValue, targetLabel,
 } from '../utils/sgcMa.js';
 
 describe('maSkipTag', () => {
@@ -84,5 +85,50 @@ describe('runLabel', () => {
     it('singular dataset + missing pieces degrade gracefully', () => {
         expect(runLabel({ run_type: 'manual', dataset_file_ids: ['a'] })).toBe('manual · 1 dataset');
         expect(runLabel({})).toBe('run');
+    });
+});
+
+describe('MA target model', () => {
+    it('has three ordered groups and nine unique targets', () => {
+        expect(MA_TARGET_GROUPS.map(g => g.group)).toEqual(
+            ['All individuals', 'Sex-stratified', 'Ancestry-stratified']);
+        const items = MA_TARGET_GROUPS.flatMap(g => g.items);
+        expect(items).toHaveLength(9);
+        expect(new Set(items.map(i => i.value)).size).toBe(9);
+    });
+    it('round-trips value <-> (ancestry, sex) for every target', () => {
+        for (const i of MA_TARGET_GROUPS.flatMap(g => g.items)) {
+            const { ancestry, sex } = targetFromValue(i.value);
+            expect(targetValue(ancestry, sex)).toBe(i.value);
+        }
+    });
+    it('maps the sex-stratified targets to the Combined bucket', () => {
+        const items = MA_TARGET_GROUPS.flatMap(g => g.items);
+        const male = items.find(i => i.label === 'Male');
+        expect(targetFromValue(male.value)).toEqual({ ancestry: 'Combined', sex: 'Male' });
+    });
+    it('labels each bucket, with a defensive fallback', () => {
+        expect(targetLabel('Combined', 'All')).toBe('Combined (all individuals)');
+        expect(targetLabel('Combined', 'Male')).toBe('Male');
+        expect(targetLabel('Combined', 'Female')).toBe('Female');
+        expect(targetLabel('EUR', 'All')).toBe('EUR');
+        expect(targetLabel('EUR', 'Male')).toBe('EUR · Male');   // not a real target
+        expect(targetLabel(undefined, undefined)).toBe('? · ?');
+    });
+});
+
+describe('groupRunsByPhenoAncestry sex-awareness', () => {
+    it('separates same phenotype+ancestry runs by sex', () => {
+        const runs = [
+            { id: 'm', phenotype: 'PSOR', ancestry: 'Combined', sex: 'Male', created_at: '2026-07-01' },
+            { id: 'f', phenotype: 'PSOR', ancestry: 'Combined', sex: 'Female', created_at: '2026-07-02' },
+        ];
+        const out = groupRunsByPhenoAncestry(runs);
+        expect(out).toHaveLength(2);
+        expect(out.map(g => g.sex).sort()).toEqual(['Female', 'Male']);
+    });
+    it('defaults a missing sex to All', () => {
+        const out = groupRunsByPhenoAncestry([{ id: '1', phenotype: 'AD', ancestry: 'EUR', created_at: '2026-07-01' }]);
+        expect(out[0].sex).toBe('All');
     });
 });

@@ -46,20 +46,68 @@ export function gwasCandidateLabel(gwas, nameMap) {
     return `${cohortName} · ${gwas.dataset} · ${gwas.phenotype} / ${gwas.ancestry}`;
 }
 
-// Group a flat MA-run list (from /api/sgc/ma/results) into
-// [{ phenotype, ancestry, runs: [...] }], each group's runs newest-first,
-// groups sorted by phenotype then ancestry.
+// The nine valid MA analyses, presented to the user as one "target". Each maps to a
+// backend (ancestry, sex); ancestry='Combined' is the pooled bucket.
+const MA_TARGETS = [
+    { group: 'All individuals',     label: 'Combined (all individuals)', ancestry: 'Combined', sex: 'All' },
+    { group: 'Sex-stratified',      label: 'Male',                       ancestry: 'Combined', sex: 'Male' },
+    { group: 'Sex-stratified',      label: 'Female',                     ancestry: 'Combined', sex: 'Female' },
+    { group: 'Ancestry-stratified', label: 'AFR', ancestry: 'AFR', sex: 'All' },
+    { group: 'Ancestry-stratified', label: 'AMR', ancestry: 'AMR', sex: 'All' },
+    { group: 'Ancestry-stratified', label: 'EAS', ancestry: 'EAS', sex: 'All' },
+    { group: 'Ancestry-stratified', label: 'EUR', ancestry: 'EUR', sex: 'All' },
+    { group: 'Ancestry-stratified', label: 'MID', ancestry: 'MID', sex: 'All' },
+    { group: 'Ancestry-stratified', label: 'SAS', ancestry: 'SAS', sex: 'All' },
+];
+
+// Stable option key for a target.
+export function targetValue(ancestry, sex) {
+    return `${ancestry}|${sex}`;
+}
+
+// Grouped options for a PrimeVue Dropdown:
+//   optionGroupLabel="group" optionGroupChildren="items" optionLabel="label" optionValue="value"
+export const MA_TARGET_GROUPS = (() => {
+    const order = ['All individuals', 'Sex-stratified', 'Ancestry-stratified'];
+    const byGroup = {};
+    for (const t of MA_TARGETS) {
+        (byGroup[t.group] || (byGroup[t.group] = [])).push(
+            { label: t.label, value: targetValue(t.ancestry, t.sex) });
+    }
+    return order.map(g => ({ group: g, items: byGroup[g] }));
+})();
+
+// "ancestry|sex" -> { ancestry, sex }.
+export function targetFromValue(value) {
+    const [ancestry, sex] = String(value || '').split('|');
+    return { ancestry: ancestry || '', sex: sex || '' };
+}
+
+// (ancestry, sex) -> display label for one of the nine targets; defensive fallback.
+export function targetLabel(ancestry, sex) {
+    if (ancestry === 'Combined' && sex === 'All') return 'Combined (all individuals)';
+    if (ancestry === 'Combined' && (sex === 'Male' || sex === 'Female')) return sex;
+    if (sex === 'All' && ancestry) return ancestry;
+    return `${ancestry || '?'} · ${sex || '?'}`;
+}
+
+// Group a flat MA-run list into [{ phenotype, ancestry, sex, runs: [...] }], each
+// group's runs newest-first, groups sorted by phenotype then ancestry then sex.
+// A run missing `sex` is treated as 'All'.
 export function groupRunsByPhenoAncestry(runs) {
     const groups = {};
     for (const r of runs || []) {
-        const key = `${r.phenotype}||${r.ancestry}`;
-        (groups[key] || (groups[key] = { phenotype: r.phenotype, ancestry: r.ancestry, runs: [] })).runs.push(r);
+        const sex = r.sex || 'All';
+        const key = `${r.phenotype}||${r.ancestry}||${sex}`;
+        (groups[key] || (groups[key] = { phenotype: r.phenotype, ancestry: r.ancestry, sex, runs: [] })).runs.push(r);
     }
     const out = Object.values(groups);
     for (const g of out) {
         g.runs.sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
     }
-    out.sort((a, b) => a.phenotype.localeCompare(b.phenotype) || a.ancestry.localeCompare(b.ancestry));
+    out.sort((a, b) => a.phenotype.localeCompare(b.phenotype)
+        || a.ancestry.localeCompare(b.ancestry)
+        || a.sex.localeCompare(b.sex));
     return out;
 }
 
