@@ -296,7 +296,12 @@ async function uploadBulk() {
     try {
         const fd = new FormData();
         fd.append('file', bulkFile.value);
-        const { data } = await sgcAxios.post('/api/sgc/ma/ignore/bulk', fd);
+        // sgcAxios bakes in a default Content-Type: application/json, which makes axios
+        // JSON-stringify the FormData (dropping the file). `Content-Type: false` disables
+        // that so the browser sets the correct multipart boundary itself.
+        const { data } = await sgcAxios.post('/api/sgc/ma/ignore/bulk', fd, {
+            headers: { 'Content-Type': false },
+        });
         bulkResult.value = data;
         toast.add({
             severity: data.skipped_count ? 'warn' : 'success',
