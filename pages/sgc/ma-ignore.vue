@@ -15,19 +15,30 @@
                 <!-- Add form -->
                 <div class="surface-100 p-3 mb-4" style="border-radius: 6px;">
                     <div class="grid formgrid">
-                        <div class="col-12 md:col-6 field">
-                            <label class="text-sm font-medium block mb-1">GWAS to ignore</label>
+                        <div class="col-12 md:col-4 field">
+                            <label class="text-sm font-medium block mb-1">Cohort &amp; phenotype</label>
                             <Dropdown
                                 v-model="form.candidate"
                                 :options="candidates"
                                 :optionLabel="labelFor"
                                 filter
-                                placeholder="Select cohort · dataset · phenotype / ancestry"
+                                placeholder="Pick any GWAS of the cohort/phenotype"
                                 class="w-full"
                                 :loading="loadingCandidates"
                             />
                         </div>
-                        <div class="col-12 md:col-6 field">
+                        <div class="col-12 md:col-3 field">
+                            <label class="text-sm font-medium block mb-1">Analysis</label>
+                            <Dropdown
+                                v-model="form.target"
+                                :options="MA_TARGET_GROUPS"
+                                optionGroupLabel="group" optionGroupChildren="items"
+                                optionLabel="label" optionValue="value"
+                                placeholder="Select analysis"
+                                class="w-full"
+                            />
+                        </div>
+                        <div class="col-12 md:col-5 field">
                             <label class="text-sm font-medium block mb-1">Reason</label>
                             <Textarea
                                 v-model="form.reason"
@@ -67,8 +78,8 @@
                     <Column field="phenotype" header="Phenotype" sortable>
                         <template #body="{ data: e }"><span class="text-sm">{{ e.phenotype }}</span></template>
                     </Column>
-                    <Column field="ancestry" header="Ancestry" sortable>
-                        <template #body="{ data: e }"><Tag :value="e.ancestry" severity="secondary" /></template>
+                    <Column header="Target" sortable>
+                        <template #body="{ data: e }"><Tag :value="targetLabel(e.ancestry, e.sex)" severity="secondary" /></template>
                     </Column>
                     <Column field="reason" header="Reason">
                         <template #body="{ data: e }"><span class="text-sm">{{ e.reason }}</span></template>
@@ -97,7 +108,7 @@
     <Dialog v-model:visible="deleteVisible" modal header="Remove ignore entry" :style="{ width: '28rem' }">
         <p class="text-sm" v-if="deleteTarget">
             Re-include <span class="font-medium">{{ cohortNameFor(nameMap, deleteTarget.cohort_id) }}</span>
-            for {{ deleteTarget.phenotype }} / {{ deleteTarget.ancestry }} in future meta-analyses?
+            for {{ deleteTarget.phenotype }} / {{ targetLabel(deleteTarget.ancestry, deleteTarget.sex) }} in future meta-analyses?
         </p>
         <template #footer>
             <Button label="Cancel" text @click="deleteVisible = false" />
@@ -137,9 +148,10 @@ const submitting = ref(false);
 const deleting = ref(false);
 const deleteVisible = ref(false);
 const deleteTarget = ref(null);
-const form = ref({ candidate: null, reason: '' });
+const form = ref({ candidate: null, target: '', reason: '' });
 
-const canSubmit = computed(() => !!form.value.candidate && form.value.reason.trim().length > 0);
+const canSubmit = computed(() =>
+    !!form.value.candidate && !!form.value.target && form.value.reason.trim().length > 0);
 
 function labelFor(gwas) {
     return gwasCandidateLabel(gwas, nameMap.value);
@@ -179,15 +191,17 @@ async function addEntry() {
     if (!canSubmit.value) return;
     submitting.value = true;
     const g = form.value.candidate;
+    const { ancestry, sex } = targetFromValue(form.value.target);
     try {
         await sgcAxios.post('/api/sgc/ma/ignore', {
             cohort_id: g.cohort_id,
             phenotype: g.phenotype,
-            ancestry: g.ancestry,
+            ancestry,
+            sex,
             reason: form.value.reason.trim(),
         });
         toast.add({ severity: 'success', summary: 'Added', detail: 'Cohort added to the ignore list.', life: 4000 });
-        form.value = { candidate: null, reason: '' };
+        form.value = { candidate: null, target: '', reason: '' };
         await loadEntries();
     } catch (error) {
         const detail = error?.response?.status === 400
