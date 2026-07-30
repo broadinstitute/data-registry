@@ -60,6 +60,38 @@
                     </div>
                 </div>
 
+                <!-- Bulk upload -->
+                <div class="surface-100 p-3 mb-4" style="border-radius: 6px;">
+                    <div class="flex justify-content-between align-items-center mb-2">
+                        <label class="text-sm font-medium">Bulk upload (CSV / TSV)</label>
+                        <Button label="Download sample" icon="pi pi-download" text size="small" @click="downloadSample" />
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">
+                        Columns: <code>code, phenotype, ancestry, sex, reason</code>.
+                        <code>sex</code> defaults to <code>All</code>. One row per (cohort code, analysis).
+                    </p>
+                    <div class="flex align-items-center gap-2">
+                        <input ref="bulkFileInput" type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values"
+                               @change="onBulkFileChange" />
+                        <Button label="Upload" icon="pi pi-upload" size="small"
+                                :disabled="!bulkFile || bulkUploading" :loading="bulkUploading" @click="uploadBulk" />
+                    </div>
+                    <div v-if="bulkResult" class="mt-3">
+                        <Tag :value="`Added ${bulkResult.added}`" severity="success" class="mr-2" />
+                        <Tag :value="`Skipped ${bulkResult.skipped_count}`"
+                             :severity="bulkResult.skipped_count ? 'warning' : 'secondary'" />
+                        <DataTable v-if="bulkResult.skipped && bulkResult.skipped.length"
+                                   :value="bulkResult.skipped" class="p-datatable-sm mt-2" responsiveLayout="scroll">
+                            <Column field="code" header="Code">
+                                <template #body="{ data: s }"><span class="text-sm">{{ s.code }}</span></template>
+                            </Column>
+                            <Column field="reason" header="Skipped because">
+                                <template #body="{ data: s }"><span class="text-sm">{{ s.reason }}</span></template>
+                            </Column>
+                        </DataTable>
+                    </div>
+                </div>
+
                 <!-- List -->
                 <DataTable
                     :value="entries"
@@ -149,6 +181,10 @@ const deleting = ref(false);
 const deleteVisible = ref(false);
 const deleteTarget = ref(null);
 const form = ref({ candidate: null, target: '', reason: '' });
+const bulkFileInput = ref(null);
+const bulkFile = ref(null);
+const bulkUploading = ref(false);
+const bulkResult = ref(null);
 
 const canSubmit = computed(() =>
     !!form.value.candidate && !!form.value.target && form.value.reason.trim().length > 0);
@@ -233,6 +269,52 @@ async function deleteEntry() {
         toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to remove the ignore entry.', life: 5000 });
     } finally {
         deleting.value = false;
+    }
+}
+
+function onBulkFileChange(e) {
+    bulkFile.value = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+    bulkResult.value = null;
+}
+
+function downloadSample() {
+    const csv = 'code,phenotype,ancestry,sex,reason\n'
+        + 'BV,PSOR,Combined,Male,lambda_gc too high\n'
+        + 'HUNT,PSOR,EUR,All,low effective N\n';
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ma-ignore-sample.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+async function uploadBulk() {
+    if (!bulkFile.value || bulkUploading.value) return;
+    bulkUploading.value = true;
+    bulkResult.value = null;
+    try {
+        const fd = new FormData();
+        fd.append('file', bulkFile.value);
+        const { data } = await sgcAxios.post('/api/sgc/ma/ignore/bulk', fd);
+        bulkResult.value = data;
+        toast.add({
+            severity: data.skipped_count ? 'warn' : 'success',
+            summary: 'Bulk upload complete',
+            detail: `${data.added} added, ${data.skipped_count} skipped.`,
+            life: 5000,
+        });
+        bulkFile.value = null;
+        if (bulkFileInput.value) bulkFileInput.value.value = '';
+        await loadEntries();
+    } catch (error) {
+        const detail = error?.response?.status === 400
+            ? 'No valid rows found in the uploaded file.'
+            : 'Bulk upload failed.';
+        console.error('Error bulk-uploading ignore entries:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail, life: 5000 });
+    } finally {
+        bulkUploading.value = false;
     }
 }
 
