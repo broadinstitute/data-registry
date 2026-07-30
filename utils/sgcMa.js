@@ -91,26 +91,6 @@ export function targetLabel(ancestry, sex) {
     return `${ancestry || '?'} · ${sex || '?'}`;
 }
 
-// Group a flat MA-run list into [{ phenotype, ancestry, sex, runs: [...] }], each
-// group's runs newest-first, groups sorted by phenotype then ancestry then sex.
-// A run missing `sex` is treated as 'All'.
-export function groupRunsByPhenoAncestry(runs) {
-    const groups = {};
-    for (const r of runs || []) {
-        const sex = r.sex || 'All';
-        const key = `${r.phenotype}||${r.ancestry}||${sex}`;
-        (groups[key] || (groups[key] = { phenotype: r.phenotype, ancestry: r.ancestry, sex, runs: [] })).runs.push(r);
-    }
-    const out = Object.values(groups);
-    for (const g of out) {
-        g.runs.sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
-    }
-    out.sort((a, b) => a.phenotype.localeCompare(b.phenotype)
-        || a.ancestry.localeCompare(b.ancestry)
-        || a.sex.localeCompare(b.sex));
-    return out;
-}
-
 // Human label for one run: the explicit label if set, else "type · N datasets · date".
 export function runLabel(run) {
     if (run && run.label) return run.label;

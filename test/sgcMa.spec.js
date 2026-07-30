@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
     maSkipTag, maSkipReason, cohortNameMap, cohortNameFor, gwasCandidateLabel,
-    groupRunsByPhenoAncestry, runLabel,
+    runLabel,
     MA_TARGET_GROUPS, targetValue, targetFromValue, targetLabel,
 } from '../utils/sgcMa.js';
 
@@ -55,25 +55,6 @@ describe('gwasCandidateLabel', () => {
     });
 });
 
-describe('groupRunsByPhenoAncestry', () => {
-    it('groups runs by (phenotype, ancestry), newest run first, groups sorted', () => {
-        const runs = [
-            { id: '1', phenotype: 'PSOR', ancestry: 'EUR', created_at: '2026-07-01' },
-            { id: '2', phenotype: 'PSOR', ancestry: 'EUR', created_at: '2026-07-05' },
-            { id: '3', phenotype: 'AD', ancestry: 'EAS', created_at: '2026-07-03' },
-        ];
-        const out = groupRunsByPhenoAncestry(runs);
-        expect(out.map(g => `${g.phenotype}/${g.ancestry}`)).toEqual(['AD/EAS', 'PSOR/EUR']);
-        const psor = out.find(g => g.phenotype === 'PSOR');
-        expect(psor.runs.map(r => r.id)).toEqual(['2', '1']);   // newest created_at first
-    });
-
-    it('handles empty / null input', () => {
-        expect(groupRunsByPhenoAncestry([])).toEqual([]);
-        expect(groupRunsByPhenoAncestry(null)).toEqual([]);
-    });
-});
-
 describe('runLabel', () => {
     it('uses the explicit label when present', () => {
         expect(runLabel({ label: 'core set', run_type: 'manual' })).toBe('core set');
@@ -114,21 +95,5 @@ describe('MA target model', () => {
         expect(targetLabel('EUR', 'All')).toBe('EUR');
         expect(targetLabel('EUR', 'Male')).toBe('EUR · Male');   // not a real target
         expect(targetLabel(undefined, undefined)).toBe('? · ?');
-    });
-});
-
-describe('groupRunsByPhenoAncestry sex-awareness', () => {
-    it('separates same phenotype+ancestry runs by sex', () => {
-        const runs = [
-            { id: 'm', phenotype: 'PSOR', ancestry: 'Combined', sex: 'Male', created_at: '2026-07-01' },
-            { id: 'f', phenotype: 'PSOR', ancestry: 'Combined', sex: 'Female', created_at: '2026-07-02' },
-        ];
-        const out = groupRunsByPhenoAncestry(runs);
-        expect(out).toHaveLength(2);
-        expect(out.map(g => g.sex).sort()).toEqual(['Female', 'Male']);
-    });
-    it('defaults a missing sex to All', () => {
-        const out = groupRunsByPhenoAncestry([{ id: '1', phenotype: 'AD', ancestry: 'EUR', created_at: '2026-07-01' }]);
-        expect(out[0].sex).toBe('All');
     });
 });
