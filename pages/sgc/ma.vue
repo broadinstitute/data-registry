@@ -22,7 +22,7 @@
                     v-model:filters="filters"
                     filterDisplay="row"
                     dataKey="key"
-                    :globalFilterFields="['phenotype', 'ancestry', 'sex']"
+                    :globalFilterFields="['phenotype', 'target']"
                     @row-expand="onRowExpand"
                     @row-collapse="onRowCollapse"
                 >
@@ -43,7 +43,7 @@
                         </template>
                     </Column>
 
-                    <Column field="ancestry" header="Target" sortable :showFilterMenu="false">
+                    <Column field="target" header="Target" sortable :showFilterMenu="false">
                         <template #body="{ data }">
                             <Tag :value="targetLabel(data.ancestry, data.sex)" severity="secondary" />
                         </template>
@@ -371,7 +371,7 @@
             v-else-if="launchForm.phenotype.trim() && launchForm.target && candidates.length === 0"
             class="text-sm text-gray-500 mb-3"
         >
-            No eligible QC-passed files for that phenotype/ancestry.
+            No eligible QC-passed files for that phenotype/analysis.
         </div>
 
         <DataTable
@@ -463,6 +463,7 @@ const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     phenotype: { value: null, matchMode: FilterMatchMode.CONTAINS },
     ancestry: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    target: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
 // Status severity mapping
@@ -583,7 +584,7 @@ async function loadMAResults() {
         // collides -- a (phenotype, ancestry) pair can have several runs. Sort by
         // phenotype, then ancestry, then newest-first so same-group runs sit adjacent.
         rows.value = data
-            .map(row => ({ ...row, key: row.id, group: `${row.phenotype} / ${row.ancestry}` }))
+            .map(row => ({ ...row, key: row.id, group: `${row.phenotype} / ${row.ancestry}`, target: targetLabel(row.ancestry, row.sex) }))
             .sort((a, b) =>
                 a.phenotype.localeCompare(b.phenotype) ||
                 a.ancestry.localeCompare(b.ancestry) ||
@@ -634,7 +635,7 @@ async function openLaunchDialog() {
             launchGwasFiles.value = data || [];
         } catch (error) {
             console.error('Error loading phenotype/ancestry options:', error);
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to load phenotype/ancestry options.', life: 5000 });
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to load phenotype/analysis options.', life: 5000 });
         } finally {
             loadingLaunchOptions.value = false;
         }
@@ -667,7 +668,7 @@ async function fetchCandidates() {
         toast.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Failed to load eligible datasets for that phenotype/ancestry.',
+            detail: 'Failed to load eligible datasets for that phenotype/analysis.',
             life: 5000
         });
     } finally {

@@ -110,7 +110,7 @@
                     <Column field="phenotype" header="Phenotype" sortable>
                         <template #body="{ data: e }"><span class="text-sm">{{ e.phenotype }}</span></template>
                     </Column>
-                    <Column header="Target" sortable>
+                    <Column field="ancestry" header="Target" sortable>
                         <template #body="{ data: e }"><Tag :value="targetLabel(e.ancestry, e.sex)" severity="secondary" /></template>
                     </Column>
                     <Column field="reason" header="Reason">
