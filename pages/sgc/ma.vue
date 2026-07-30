@@ -22,7 +22,7 @@
                     v-model:filters="filters"
                     filterDisplay="row"
                     dataKey="key"
-                    :globalFilterFields="['phenotype', 'ancestry']"
+                    :globalFilterFields="['phenotype', 'ancestry', 'sex']"
                     @row-expand="onRowExpand"
                     @row-collapse="onRowCollapse"
                 >
@@ -43,9 +43,9 @@
                         </template>
                     </Column>
 
-                    <Column field="ancestry" header="Ancestry" sortable :showFilterMenu="false">
+                    <Column field="ancestry" header="Target" sortable :showFilterMenu="false">
                         <template #body="{ data }">
-                            <Tag :value="data.ancestry" severity="secondary" />
+                            <Tag :value="targetLabel(data.ancestry, data.sex)" severity="secondary" />
                         </template>
                         <template #filter="{ filterModel, filterCallback }">
                             <InputText
@@ -53,7 +53,7 @@
                                 type="text"
                                 @input="filterCallback()"
                                 class="p-column-filter"
-                                placeholder="Search ancestry"
+                                placeholder="Search target"
                             />
                         </template>
                     </Column>
@@ -358,15 +358,17 @@
                           placeholder="Select phenotype" class="w-full" :loading="loadingLaunchOptions" />
             </div>
             <div class="field col-12 md:col-6">
-                <label class="text-sm font-medium block mb-1">Ancestry</label>
-                <Dropdown v-model="launchForm.ancestry" :options="ancestryOptions"
-                          :disabled="!launchForm.phenotype" placeholder="Select ancestry" class="w-full" />
+                <label class="text-sm font-medium block mb-1">Analysis</label>
+                <Dropdown v-model="launchForm.target" :options="MA_TARGET_GROUPS"
+                          optionGroupLabel="group" optionGroupChildren="items"
+                          optionLabel="label" optionValue="value"
+                          :disabled="!launchForm.phenotype" placeholder="Select analysis" class="w-full" />
             </div>
         </div>
 
         <div v-if="loadingCandidates" class="text-sm text-gray-500 mb-3">Loading eligible datasets...</div>
         <div
-            v-else-if="launchForm.phenotype.trim() && launchForm.ancestry.trim() && candidates.length === 0"
+            v-else-if="launchForm.phenotype.trim() && launchForm.target && candidates.length === 0"
             class="text-sm text-gray-500 mb-3"
         >
             No eligible QC-passed files for that phenotype/ancestry.
@@ -602,7 +604,7 @@ async function loadMAResults() {
 // --- Self-service launch dialog ---------------------------------------
 
 const launchVisible = ref(false);
-const launchForm = ref({ phenotype: '', ancestry: '', maf_min: 0.005, info_min: 0.3, label: '' });
+const launchForm = ref({ phenotype: '', target: '', maf_min: 0.005, info_min: 0.3, label: '' });
 const candidates = ref([]);
 const selectedCandidates = ref([]);
 const loadingCandidates = ref(false);
@@ -617,19 +619,11 @@ const loadingLaunchOptions = ref(false);
 const phenotypeOptions = computed(() =>
     [...new Set(launchGwasFiles.value.map(f => f.phenotype).filter(Boolean))].sort());
 
-const ancestryOptions = computed(() => {
-    const p = launchForm.value.phenotype;
-    if (!p) return [];
-    return [...new Set(launchGwasFiles.value
-        .filter(f => f.phenotype === p)
-        .map(f => f.ancestry).filter(Boolean))].sort();
-});
-
 let candidateFetchToken = 0;
 let candidateDebounce = null;
 
 async function openLaunchDialog() {
-    launchForm.value = { phenotype: '', ancestry: '', maf_min: 0.005, info_min: 0.3, label: '' };
+    launchForm.value = { phenotype: '', target: '', maf_min: 0.005, info_min: 0.3, label: '' };
     candidates.value = [];
     selectedCandidates.value = [];
     launchVisible.value = true;
@@ -650,7 +644,7 @@ async function openLaunchDialog() {
 // Candidate files for the phenotype/ancestry typed into the launch dialog.
 async function fetchCandidates() {
     const phenotype = launchForm.value.phenotype.trim();
-    const ancestry = launchForm.value.ancestry.trim();
+    const { ancestry, sex } = targetFromValue(launchForm.value.target);
     if (!phenotype || !ancestry) {
         candidates.value = [];
         selectedCandidates.value = [];
@@ -660,7 +654,8 @@ async function fetchCandidates() {
     const token = ++candidateFetchToken;
     loadingCandidates.value = true;
     try {
-        const { data } = await sgcAxios.get(`/api/sgc/ma/candidates/${phenotype}/${ancestry}`);
+        const { data } = await sgcAxios.get(
+            `/api/sgc/ma/candidates/${phenotype}/${ancestry}?sex=${sex}`);
         if (token !== candidateFetchToken) return; // a newer request superseded this one
         candidates.value = data || [];
         selectedCandidates.value = [...candidates.value]; // preselect all eligible files
@@ -681,25 +676,20 @@ async function fetchCandidates() {
 }
 
 // Debounce candidate lookups while the user is typing phenotype/ancestry.
-watch(() => [launchForm.value.phenotype, launchForm.value.ancestry], () => {
+watch(() => [launchForm.value.phenotype, launchForm.value.target], () => {
     if (candidateDebounce) clearTimeout(candidateDebounce);
     candidateDebounce = setTimeout(fetchCandidates, 300);
-});
-
-// Changing phenotype invalidates an ancestry that isn't offered for the new one.
-watch(() => launchForm.value.phenotype, () => {
-    if (!ancestryOptions.value.includes(launchForm.value.ancestry)) {
-        launchForm.value.ancestry = '';
-    }
 });
 
 async function launchRun() {
     if (selectedCandidates.value.length < 2 || launching.value) return;
     launching.value = true;
     try {
+        const { ancestry, sex } = targetFromValue(launchForm.value.target);
         const { data } = await sgcAxios.post('/api/sgc/ma/run', {
             phenotype: launchForm.value.phenotype.trim(),
-            ancestry: launchForm.value.ancestry.trim(),
+            ancestry,
+            sex,
             file_ids: selectedCandidates.value.map(c => c.file_id),
             maf_min: launchForm.value.maf_min ?? 0.005,
             info_min: launchForm.value.info_min ?? 0.3,
