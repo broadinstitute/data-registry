@@ -4,7 +4,17 @@
             <div class="card">
                 <div class="flex justify-content-between align-items-center mb-4">
                     <h5>HCM GWAS Files Summary</h5>
-                    <Tag :value="gwasFiles.length + ' file' + (gwasFiles.length !== 1 ? 's' : '')" severity="info" />
+                    <div class="flex align-items-center gap-3">
+                        <Button
+                            v-if="isReviewer"
+                            label="Lift GRCh37 → GRCh38"
+                            icon="pi pi-refresh"
+                            outlined
+                            :loading="runningLiftover"
+                            @click="runLiftoverAll"
+                        />
+                        <Tag :value="gwasFiles.length + ' file' + (gwasFiles.length !== 1 ? 's' : '')" severity="info" />
+                    </div>
                 </div>
 
                 <DataTable
@@ -15,7 +25,7 @@
                     responsiveLayout="scroll"
                     stripedRows
                     class="p-datatable-sm"
-                    :globalFilterFields="['cohort_name', 'sarc', 'ancestry', 'sex', 'genome_build', 'software', 'analyst', 'uploaded_by']"
+                    :globalFilterFields="['cohort_name', 'sarc', 'ancestry', 'sex', 'genome_build', 'liftover_status', 'software', 'analyst', 'uploaded_by']"
                     v-model:filters="filters"
                     filterDisplay="row"
                 >
@@ -72,7 +82,18 @@
 
                     <Column field="genome_build" header="Build" sortable :showFilterMenu="false">
                         <template #body="{ data }">
-                            <span class="text-sm">{{ data.genome_build }}</span>
+                            <div class="flex align-items-center gap-2">
+                                <span class="text-sm">{{ data.genome_build }}</span>
+                                <Tag :value="data.liftover_status" :severity="buildStatusSeverity(data.liftover_status)" />
+                                <Button
+                                    v-if="data.liftover_status === 'Lifted to GRCh38'"
+                                    icon="pi pi-download"
+                                    label="Unmapped"
+                                    text
+                                    size="small"
+                                    @click="downloadUnmapped(data.id)"
+                                />
+                            </div>
                         </template>
                     </Column>
 
@@ -177,6 +198,7 @@
 import { useToast } from "primevue/usetoast";
 import { FilterMatchMode } from 'primevue/api';
 import { useDatasetStore } from "~/stores/DatasetStore";
+import { useUserStore } from "~/stores/UserStore";
 
 definePageMeta({
   layout: 'hcm'
@@ -184,9 +206,24 @@ definePageMeta({
 
 const toast = useToast();
 const store = useDatasetStore();
+const userStore = useUserStore();
+const config = useRuntimeConfig();
+
+// Set up authenticated axios instance for HCM (mirrors hcm/ma.vue's pattern)
+const hcmAxios = useHCMAxios(config, undefined, (error) => {
+    return Promise.reject(error);
+});
+
+const isReviewer = computed(() => {
+    const user = userStore.user;
+    if (!user) return false;
+    const roleNames = user.roles?.map(role => role.name || role) || [];
+    return roleNames.includes('hcm-reviewer') || roleNames.includes('admin');
+});
 
 // Reactive data
 const loading = ref(false);
+const runningLiftover = ref(false);
 
 // Filters
 const filters = ref({
@@ -242,6 +279,57 @@ async function loadGWASSummary() {
         }
     } finally {
         loading.value = false;
+    }
+}
+
+// Submit a wave of liftover jobs for all HCM files needing it, then refresh the table.
+async function runLiftoverAll() {
+    runningLiftover.value = true;
+    try {
+        const { data } = await hcmAxios.post('/api/hcm/liftover/run-all');
+        const unrecognizedDetail = data.unrecognized ? `, ${data.unrecognized} unrecognized` : '';
+        toast.add({
+            severity: 'success',
+            summary: 'Liftover submitted',
+            detail: `Submitted ${data.submitted}, ${data.remaining} remaining${unrecognizedDetail}`,
+            life: 6000,
+        });
+        await loadGWASSummary();  // submitted files now read as "In progress"
+    } catch (error) {
+        console.error('Error running HCM liftover:', error);
+        if (error.response?.status === 403) {
+            toast.add({
+                severity: 'warn',
+                summary: 'Access Denied',
+                detail: 'You need reviewer permissions to run liftover.',
+                life: 5000
+            });
+        } else {
+            toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to submit liftover jobs. Please try again.',
+                life: 5000,
+            });
+        }
+    } finally {
+        runningLiftover.value = false;
+    }
+}
+
+// Presign + open the unmapped-variants file for a lifted HCM GWAS file.
+async function downloadUnmapped(fileId) {
+    try {
+        const { data } = await hcmAxios.get(`/api/hcm/liftover/${fileId}/unmapped-url`);
+        if (data.presigned_url) window.open(data.presigned_url, '_blank');
+    } catch (error) {
+        console.error(`Error downloading unmapped variants for ${fileId}:`, error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to download unmapped variants. Please try again.',
+            life: 5000,
+        });
     }
 }
 
