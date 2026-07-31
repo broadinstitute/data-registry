@@ -28,7 +28,12 @@
                     :globalFilterFields="['cohort_name', 'sarc', 'ancestry', 'sex', 'genome_build', 'liftover_status', 'software', 'analyst', 'uploaded_by']"
                     v-model:filters="filters"
                     filterDisplay="row"
+                    dataKey="id"
+                    v-model:expandedRows="expandedRows"
+                    @row-expand="onRowExpand"
                 >
+                    <Column :expander="true" style="width: 3rem" />
+
                     <Column field="cohort_name" header="Cohort" sortable :showFilterMenu="false" frozen>
                         <template #body="{ data }">
                             <span class="font-medium">{{ data.cohort_name }}</span>
@@ -80,20 +85,24 @@
                         </template>
                     </Column>
 
-                    <Column field="genome_build" header="Build" sortable :showFilterMenu="false">
+                    <Column field="liftover_status" header="Build / Liftover" sortable
+                            :showFilterMenu="false" :filterMenuStyle="{ width: '14rem' }">
                         <template #body="{ data }">
                             <div class="flex align-items-center gap-2">
                                 <span class="text-sm">{{ data.genome_build }}</span>
                                 <Tag :value="data.liftover_status" :severity="hcmBuildStatusSeverity(data.liftover_status)" />
-                                <Button
-                                    v-if="data.liftover_status === 'Lifted to GRCh38'"
-                                    icon="pi pi-download"
-                                    label="Unmapped"
-                                    text
-                                    size="small"
-                                    @click="downloadUnmapped(data.id)"
-                                />
                             </div>
+                        </template>
+                        <template #filter="{ filterModel, filterCallback }">
+                            <MultiSelect
+                                v-model="filterModel.value"
+                                :options="HCM_LIFTOVER_STATUS_OPTIONS"
+                                placeholder="Any"
+                                @change="filterCallback()"
+                                :showToggleAll="false"
+                                class="p-column-filter"
+                                style="min-width: 12rem"
+                            />
                         </template>
                     </Column>
 
@@ -155,6 +164,70 @@
                             />
                         </template>
                     </Column>
+
+                    <template #expansion="{ data }">
+                        <div class="p-3">
+                            <div v-if="liftoverData[data.id]?.loading" class="text-gray-500 text-sm">
+                                Loading liftover summary…
+                            </div>
+                            <div v-else-if="liftoverData[data.id]?.error" class="text-red-500 text-sm">
+                                Failed to load liftover summary. Please try again.
+                            </div>
+                            <div v-else-if="liftoverData[data.id]?.job">
+                                <Card>
+                                    <template #title>
+                                        <span class="mr-2">
+                                            Liftover Summary:
+                                            {{ liftoverData[data.id].job.source_genome_build }} &rarr;
+                                            {{ liftoverData[data.id].job.target_genome_build }}
+                                        </span>
+                                        <Tag :value="liftoverData[data.id].job.status"
+                                             :severity="hcmLiftoverStatusSeverity(liftoverData[data.id].job.status)" />
+                                    </template>
+                                    <template #content>
+                                        <div v-if="liftoverData[data.id].job.summary">
+                                            <div class="flex flex-wrap gap-4 mb-3">
+                                                <div><strong>Total Input:</strong>
+                                                    {{ liftoverData[data.id].job.summary.total_input_variants?.toLocaleString() ?? '—' }}</div>
+                                                <div><strong>Lifted:</strong>
+                                                    {{ liftoverData[data.id].job.summary.total_lifted?.toLocaleString() ?? '—' }}</div>
+                                                <div><strong>Unmapped:</strong>
+                                                    {{ liftoverData[data.id].job.summary.total_unmapped?.toLocaleString() ?? '—' }}
+                                                    ({{ liftoverData[data.id].job.summary.unmapped_pct?.toFixed(2) ?? '—' }}%)</div>
+                                                <div><strong>Strand Flips:</strong>
+                                                    {{ liftoverData[data.id].job.summary.strand_flips?.toLocaleString() ?? '—' }}</div>
+                                            </div>
+                                            <div class="flex flex-wrap gap-4 mb-3">
+                                                <div><strong>Chain File:</strong>
+                                                    {{ liftoverData[data.id].job.summary.chain_file ?? '—' }}</div>
+                                                <div><strong>Duration:</strong>
+                                                    {{ liftoverData[data.id].job.summary.duration_seconds ?? '—' }}s</div>
+                                            </div>
+                                            <details class="mb-3">
+                                                <summary class="cursor-pointer mb-2">Per-Chromosome Breakdown</summary>
+                                                <DataTable :value="hcmLiftoverPerChromosomeRows(liftoverData[data.id].job.summary)"
+                                                           size="small" class="mt-2">
+                                                    <Column field="chromosome" header="Chromosome" sortable />
+                                                    <Column field="input" header="Input" sortable />
+                                                    <Column field="lifted" header="Lifted" sortable />
+                                                    <Column field="unmapped" header="Unmapped" sortable />
+                                                    <Column field="strand_flips" header="Strand Flips" sortable />
+                                                </DataTable>
+                                            </details>
+                                            <Button label="Download Unmapped Variants" icon="pi pi-download" outlined
+                                                    :disabled="!liftoverData[data.id].job.summary.total_unmapped"
+                                                    @click="downloadUnmapped(data.id)" />
+                                        </div>
+                                        <div v-else class="text-gray-500 text-sm">
+                                            No liftover summary is available for this job (status:
+                                            {{ liftoverData[data.id].job.status }}).
+                                        </div>
+                                    </template>
+                                </Card>
+                            </div>
+                            <div v-else class="text-gray-500 text-sm">This file has not been lifted.</div>
+                        </div>
+                    </template>
                 </DataTable>
 
                 <!-- Summary Statistics -->
@@ -185,6 +258,12 @@
                                 <p class="text-2xl font-bold text-orange-700">{{ formatNumber(totalCases) }}</p>
                             </div>
                         </div>
+                        <div class="col-12 md:col-6 lg:col-3">
+                            <div class="bg-orange-50 p-4" style="border-radius: 6px;">
+                                <p class="text-sm text-gray-600 mb-1">Needs Liftover</p>
+                                <p class="text-2xl font-bold text-orange-700">{{ formatNumber(needsLiftoverCount) }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -197,6 +276,7 @@
 <script setup>
 import { useToast } from "primevue/usetoast";
 import { FilterMatchMode } from 'primevue/api';
+import MultiSelect from 'primevue/multiselect';
 import { useDatasetStore } from "~/stores/DatasetStore";
 import { useUserStore } from "~/stores/UserStore";
 
@@ -232,10 +312,15 @@ const filters = ref({
     sarc: { value: null, matchMode: FilterMatchMode.CONTAINS },
     ancestry: { value: null, matchMode: FilterMatchMode.CONTAINS },
     uploaded_by: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    liftover_status: { value: null, matchMode: FilterMatchMode.IN },
 });
 
 // GWAS files data from API
 const gwasFiles = ref([]);
+
+// Row-expansion state + per-file liftover job cache (keyed by file id).
+const expandedRows = ref([]);
+const liftoverData = ref({});
 
 // Computed properties for summary statistics
 const uniqueCohorts = computed(() => {
@@ -251,6 +336,8 @@ const totalCases = computed(() => {
         .filter(f => f.cases !== null)
         .reduce((sum, f) => sum + f.cases, 0);
 });
+
+const needsLiftoverCount = computed(() => gwasFiles.value.filter(f => f.liftover_status === 'Needs liftover').length);
 
 // Methods
 async function loadGWASSummary() {
@@ -314,6 +401,27 @@ async function runLiftoverAll() {
         }
     } finally {
         runningLiftover.value = false;
+    }
+}
+
+// Lazily load the most-recent liftover job for a file when its row is expanded.
+async function onRowExpand(event) {
+    const fileId = event.data.id;
+    const state = liftoverData.value[fileId];
+    if (state?.loading || state?.job !== undefined) return;   // in-flight or resolved
+    liftoverData.value[fileId] = { loading: true, error: false, job: undefined };
+    try {
+        const { data } = await hcmAxios.get(`/api/hcm/liftover/${fileId}`);
+        liftoverData.value[fileId] = { loading: false, error: false, job: data };
+    } catch (error) {
+        if (error.response?.status === 404) {
+            liftoverData.value[fileId] = { loading: false, error: false, job: null };  // not lifted
+            return;
+        }
+        console.error(`Error loading liftover summary for ${fileId}:`, error);
+        liftoverData.value[fileId] = { loading: false, error: true, job: undefined };
+        toast.add({ severity: 'error', summary: 'Error',
+                    detail: 'Failed to load liftover summary. Please try again.', life: 5000 });
     }
 }
 
