@@ -237,6 +237,104 @@
                                 </div>
                             </div>
 
+                            <div v-if="resultData[data.id]?.summary" class="mt-4">
+                                <h6 v-if="resultData[data.id].summary.per_cohort?.length">Per-cohort inputs</h6>
+                                <DataTable
+                                    v-if="resultData[data.id].summary.per_cohort?.length"
+                                    :value="resultData[data.id].summary.per_cohort"
+                                    :rowClass="perCohortRowClass"
+                                    class="p-datatable-sm mb-3"
+                                    responsiveLayout="scroll"
+                                    stripedRows
+                                >
+                                    <Column field="cohort" header="Cohort">
+                                        <template #body="{ data: cohort }">
+                                            <span class="text-sm font-medium">{{ cohort.cohort || '—' }}</span>
+                                        </template>
+                                    </Column>
+                                    <Column field="dataset" header="Dataset">
+                                        <template #body="{ data: cohort }">
+                                            <span class="text-sm">{{ cohort.dataset || '—' }}</span>
+                                        </template>
+                                    </Column>
+                                    <Column field="cases" header="Cases">
+                                        <template #body="{ data: cohort }">
+                                            <span class="text-sm">{{ cohort.cases != null ? cohort.cases.toLocaleString() : '—' }}</span>
+                                        </template>
+                                    </Column>
+                                    <Column field="controls" header="Controls">
+                                        <template #body="{ data: cohort }">
+                                            <span class="text-sm">{{ cohort.controls != null ? cohort.controls.toLocaleString() : '—' }}</span>
+                                        </template>
+                                    </Column>
+                                    <Column field="n_variants_in" header="N variants in">
+                                        <template #body="{ data: cohort }">
+                                            <span class="text-sm">{{ cohort.n_variants_in != null ? cohort.n_variants_in.toLocaleString() : '—' }}</span>
+                                        </template>
+                                    </Column>
+                                    <Column field="n_variants_used" header="N variants used">
+                                        <template #body="{ data: cohort }">
+                                            <span class="text-sm">{{ cohort.n_variants_used != null ? cohort.n_variants_used.toLocaleString() : '—' }}</span>
+                                        </template>
+                                    </Column>
+                                    <Column header="Status">
+                                        <template #body="{ data: cohort }">
+                                            <span v-if="cohort.skipped">
+                                                <Tag value="Skipped" severity="warning" />
+                                                <span class="ml-2 text-sm text-gray-600">{{ cohort.reason }}</span>
+                                            </span>
+                                            <span v-else class="text-sm text-green-700">Used</span>
+                                        </template>
+                                    </Column>
+                                </DataTable>
+
+                                <div v-if="resultData[data.id].summary.caveats?.length" class="mb-3">
+                                    <h6>Caveats</h6>
+                                    <ul class="pl-4 text-sm text-gray-600">
+                                        <li v-for="(caveat, idx) in resultData[data.id].summary.caveats" :key="idx">{{ caveat }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div v-if="resultData[data.id]?.topLoci?.length" class="mt-3">
+                                <h6>Lead loci</h6>
+                                <DataTable
+                                    :value="resultData[data.id].topLoci"
+                                    class="p-datatable-sm"
+                                    responsiveLayout="scroll"
+                                    stripedRows
+                                    :paginator="resultData[data.id].topLoci.length > 20"
+                                    :rows="20"
+                                    sortField="pvalue"
+                                    :sortOrder="1"
+                                >
+                                    <Column field="chromosome" header="Chr" sortable>
+                                        <template #body="{ data: locus }"><span class="text-sm">{{ locus.chromosome }}</span></template>
+                                    </Column>
+                                    <Column field="position" header="Position" sortable>
+                                        <template #body="{ data: locus }"><span class="text-sm">{{ locus.position != null ? locus.position : '—' }}</span></template>
+                                    </Column>
+                                    <Column field="ref" header="Ref">
+                                        <template #body="{ data: locus }"><span class="text-sm">{{ locus.ref }}</span></template>
+                                    </Column>
+                                    <Column field="alt" header="Alt">
+                                        <template #body="{ data: locus }"><span class="text-sm">{{ locus.alt }}</span></template>
+                                    </Column>
+                                    <Column field="beta" header="Beta" sortable>
+                                        <template #body="{ data: locus }"><span class="text-sm">{{ locus.beta != null ? locus.beta.toFixed(4) : '—' }}</span></template>
+                                    </Column>
+                                    <Column field="pvalue" header="P-value" sortable>
+                                        <template #body="{ data: locus }"><span class="text-sm">{{ locus.pvalue != null ? locus.pvalue.toExponential(2) : '—' }}</span></template>
+                                    </Column>
+                                    <Column field="n_cohorts" header="N cohorts" sortable>
+                                        <template #body="{ data: locus }"><span class="text-sm">{{ locus.n_cohorts != null ? locus.n_cohorts : '—' }}</span></template>
+                                    </Column>
+                                    <Column field="dir_concordance" header="Dir. concordance" sortable>
+                                        <template #body="{ data: locus }"><span class="text-sm">{{ locus.dir_concordance != null ? (locus.dir_concordance * 100).toFixed(0) + '%' : '—' }}</span></template>
+                                    </Column>
+                                </DataTable>
+                            </div>
+
                             <div class="mt-4 flex gap-2 flex-wrap">
                                 <Button
                                     label="Download meta.tsv.gz"
@@ -246,24 +344,6 @@
                                     size="small"
                                     :disabled="downloading[`${data.id}:meta`]"
                                     @click="downloadArtifact(data, 'meta')"
-                                />
-                                <Button
-                                    label="Download summary.json"
-                                    icon="pi pi-download"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    :disabled="downloading[`${data.id}:summary`]"
-                                    @click="downloadArtifact(data, 'summary')"
-                                />
-                                <Button
-                                    label="Download top-loci.json"
-                                    icon="pi pi-download"
-                                    severity="secondary"
-                                    outlined
-                                    size="small"
-                                    :disabled="downloading[`${data.id}:top-loci`]"
-                                    @click="downloadArtifact(data, 'top-loci')"
                                 />
                             </div>
                         </div>
@@ -413,30 +493,52 @@ function onRowCollapse(event) {
     delete resultData.value[event.data.id];
 }
 
-// Load Manhattan + QQ plots when a SUCCEEDED row is expanded
+// Parse a top-loci row (the endpoint returns all-string cells) into typed numbers.
+function parseLocusRow(row) {
+    return {
+        ...row,
+        position: row.position != null ? Number(row.position) : null,
+        beta: row.beta != null ? Number(row.beta) : null,
+        pvalue: row.pvalue != null ? Number(row.pvalue) : null,
+        n_cohorts: row.n_cohorts != null ? Number(row.n_cohorts) : null,
+        dir_concordance: row.dir_concordance != null ? Number(row.dir_concordance) : null,
+    };
+}
+
+// Mute skipped per-cohort rows so they read as excluded from the meta.
+function perCohortRowClass(cohort) {
+    return cohort.skipped ? 'text-gray-400' : '';
+}
+
+// Load Manhattan + QQ plots, per-cohort inputs, caveats, and lead loci when a SUCCEEDED row is expanded
 async function onRowExpand(event) {
     const row = event.data;
     const id = row.id;
     if (row.status !== 'SUCCEEDED') return;
     if (resultData.value[id]?.loading) return;
-    if (resultData.value[id]?.manhattan && resultData.value[id]?.qq) return;
+    if (resultData.value[id]?.manhattan && resultData.value[id]?.qq
+        && resultData.value[id]?.summary && resultData.value[id]?.topLoci) return;
 
     resultData.value[id] = { ...(resultData.value[id] ?? {}), loading: true, error: false };
 
     try {
-        const [manhattanResp, qqResp] = await Promise.all([
+        const [manhattanResp, qqResp, summaryResp, topLociResp] = await Promise.all([
             hcmAxios.get(`/api/hcm/ma/runs/${id}/manhattan`),
             hcmAxios.get(`/api/hcm/ma/runs/${id}/qq`),
+            hcmAxios.get(`/api/hcm/ma/runs/${id}/summary`),
+            hcmAxios.get(`/api/hcm/ma/runs/${id}/top-loci`),
         ]);
         resultData.value[id] = {
             loading: false,
             error: false,
             manhattan: manhattanResp.data.url,
             qq: qqResp.data.url,
+            summary: summaryResp.data,
+            topLoci: (topLociResp.data || []).map(parseLocusRow),
         };
     } catch (error) {
         console.error(`Error loading plots for HCM meta-analysis run ${id}:`, error);
-        resultData.value[id] = { loading: false, error: true, manhattan: null, qq: null };
+        resultData.value[id] = { loading: false, error: true, manhattan: null, qq: null, summary: null, topLoci: null };
         toast.add({
             severity: 'error',
             summary: 'Error',
