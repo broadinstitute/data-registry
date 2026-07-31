@@ -1,64 +1,64 @@
 import { describe, it, expect } from 'vitest';
-import { liftoverPerChromosomeRows, liftoverStatusSeverity } from '../utils/hcmLiftover.js';
+import { hcmLiftoverPerChromosomeRows, hcmLiftoverStatusSeverity } from '../utils/hcmLiftover.js';
 
-describe('liftoverPerChromosomeRows', () => {
+describe('hcmLiftoverPerChromosomeRows', () => {
     it('maps a per_chromosome object into DataTable rows', () => {
         const summary = { per_chromosome: {
             '1': { input: 100, lifted: 98, unmapped: 2, strand_flips: 1 },
             'X': { input: 50, lifted: 50, unmapped: 0, strand_flips: 0 },
         } };
-        expect(liftoverPerChromosomeRows(summary)).toEqual([
+        expect(hcmLiftoverPerChromosomeRows(summary)).toEqual([
             { chromosome: '1', input: 100, lifted: 98, unmapped: 2, strand_flips: 1 },
             { chromosome: 'X', input: 50, lifted: 50, unmapped: 0, strand_flips: 0 },
         ]);
     });
     it('returns [] when summary is null', () => {
-        expect(liftoverPerChromosomeRows(null)).toEqual([]);
+        expect(hcmLiftoverPerChromosomeRows(null)).toEqual([]);
     });
     it('returns [] when per_chromosome is missing', () => {
-        expect(liftoverPerChromosomeRows({ total_lifted: 10 })).toEqual([]);
+        expect(hcmLiftoverPerChromosomeRows({ total_lifted: 10 })).toEqual([]);
     });
     it('fills missing per-chromosome stat fields with null', () => {
-        expect(liftoverPerChromosomeRows({ per_chromosome: { '1': {} } })).toEqual([
+        expect(hcmLiftoverPerChromosomeRows({ per_chromosome: { '1': {} } })).toEqual([
             { chromosome: '1', input: null, lifted: null, unmapped: null, strand_flips: null },
         ]);
     });
 });
 
-describe('liftoverStatusSeverity', () => {
+describe('hcmLiftoverStatusSeverity', () => {
     it('maps SUCCEEDED to success', () => {
-        expect(liftoverStatusSeverity('SUCCEEDED')).toBe('success');
+        expect(hcmLiftoverStatusSeverity('SUCCEEDED')).toBe('success');
     });
     it('maps FAILED to danger', () => {
-        expect(liftoverStatusSeverity('FAILED')).toBe('danger');
+        expect(hcmLiftoverStatusSeverity('FAILED')).toBe('danger');
     });
     it('maps in-progress and unknown states to warning', () => {
-        expect(liftoverStatusSeverity('RUNNING')).toBe('warning');
-        expect(liftoverStatusSeverity('PENDING')).toBe('warning');
-        expect(liftoverStatusSeverity(undefined)).toBe('warning');
+        expect(hcmLiftoverStatusSeverity('RUNNING')).toBe('warning');
+        expect(hcmLiftoverStatusSeverity('PENDING')).toBe('warning');
+        expect(hcmLiftoverStatusSeverity(undefined)).toBe('warning');
     });
 });
 
-import { buildStatusSeverity, LIFTOVER_STATUS_OPTIONS } from '../utils/hcmLiftover.js';
+import { hcmBuildStatusSeverity, HCM_LIFTOVER_STATUS_OPTIONS } from '../utils/hcmLiftover.js';
 
-describe('buildStatusSeverity', () => {
+describe('hcmBuildStatusSeverity', () => {
     it('maps each of the six statuses to its severity', () => {
-        expect(buildStatusSeverity('Needs liftover')).toBe('warning');
-        expect(buildStatusSeverity('In progress')).toBe('info');
-        expect(buildStatusSeverity('Failed')).toBe('danger');
-        expect(buildStatusSeverity('Lifted to GRCh38')).toBe('success');
-        expect(buildStatusSeverity('GRCh38 (native)')).toBe('success');
-        expect(buildStatusSeverity('Unknown build')).toBe('secondary');
+        expect(hcmBuildStatusSeverity('Needs liftover')).toBe('warning');
+        expect(hcmBuildStatusSeverity('In progress')).toBe('info');
+        expect(hcmBuildStatusSeverity('Failed')).toBe('danger');
+        expect(hcmBuildStatusSeverity('Lifted to GRCh38')).toBe('success');
+        expect(hcmBuildStatusSeverity('GRCh38 (native)')).toBe('success');
+        expect(hcmBuildStatusSeverity('Unknown build')).toBe('secondary');
     });
     it('falls back to secondary for unexpected values', () => {
-        expect(buildStatusSeverity('whatever')).toBe('secondary');
-        expect(buildStatusSeverity(undefined)).toBe('secondary');
+        expect(hcmBuildStatusSeverity('whatever')).toBe('secondary');
+        expect(hcmBuildStatusSeverity(undefined)).toBe('secondary');
     });
 });
 
-describe('LIFTOVER_STATUS_OPTIONS', () => {
+describe('HCM_LIFTOVER_STATUS_OPTIONS', () => {
     it('lists exactly the six contract labels', () => {
-        expect(LIFTOVER_STATUS_OPTIONS).toEqual([
+        expect(HCM_LIFTOVER_STATUS_OPTIONS).toEqual([
             'Needs liftover', 'In progress', 'Failed',
             'Lifted to GRCh38', 'GRCh38 (native)', 'Unknown build',
         ]);

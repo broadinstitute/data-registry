@@ -84,7 +84,7 @@
                         <template #body="{ data }">
                             <div class="flex align-items-center gap-2">
                                 <span class="text-sm">{{ data.genome_build }}</span>
-                                <Tag :value="data.liftover_status" :severity="buildStatusSeverity(data.liftover_status)" />
+                                <Tag :value="data.liftover_status" :severity="hcmBuildStatusSeverity(data.liftover_status)" />
                                 <Button
                                     v-if="data.liftover_status === 'Lifted to GRCh38'"
                                     icon="pi pi-download"

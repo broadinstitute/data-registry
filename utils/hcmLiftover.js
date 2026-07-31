@@ -5,7 +5,7 @@
 // ({ "<chr>": { input, lifted, unmapped, strand_flips } }) into an array of rows
 // for a PrimeVue DataTable. Null-safe: returns [] when the summary or its
 // per_chromosome map is missing; missing per-chromosome stat fields become null.
-export function liftoverPerChromosomeRows(summary) {
+export function hcmLiftoverPerChromosomeRows(summary) {
     const perChr = summary && summary.per_chromosome;
     if (!perChr) return [];
     return Object.entries(perChr).map(([chr, stats]) => ({
@@ -19,7 +19,7 @@ export function liftoverPerChromosomeRows(summary) {
 
 // PrimeVue Tag severity for an HCM liftover job status.
 // Job status vocabulary: PENDING, RUNNING, SUCCEEDED, FAILED.
-export function liftoverStatusSeverity(status) {
+export function hcmLiftoverStatusSeverity(status) {
     if (status === 'SUCCEEDED') return 'success';
     if (status === 'FAILED') return 'danger';
     return 'warning';
@@ -28,7 +28,7 @@ export function liftoverStatusSeverity(status) {
 // Display order for the gwas-summary "Genome Build / Liftover" filter. These
 // six strings are the cross-repo contract -- they MUST match the backend
 // classify_liftover_status output (sgc_ma/select.py) byte-for-byte.
-export const LIFTOVER_STATUS_OPTIONS = [
+export const HCM_LIFTOVER_STATUS_OPTIONS = [
     'Needs liftover',
     'In progress',
     'Failed',
@@ -39,7 +39,7 @@ export const LIFTOVER_STATUS_OPTIONS = [
 
 // PrimeVue Tag severity for each liftover-status label. Unknown/unexpected
 // values fall back to 'secondary' (grey).
-export function buildStatusSeverity(status) {
+export function hcmBuildStatusSeverity(status) {
     switch (status) {
         case 'Needs liftover': return 'warning';
         case 'In progress': return 'info';
