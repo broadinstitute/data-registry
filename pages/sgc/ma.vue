@@ -229,6 +229,16 @@
                                             <span class="text-sm">{{ cohort.dataset }}</span>
                                         </template>
                                     </Column>
+                                    <Column field="ancestry" header="Ancestry">
+                                        <template #body="{ data: cohort }">
+                                            <span class="text-sm">{{ cohort.ancestry != null ? cohort.ancestry : '—' }}</span>
+                                        </template>
+                                    </Column>
+                                    <Column field="sex" header="Sex">
+                                        <template #body="{ data: cohort }">
+                                            <span class="text-sm">{{ cohort.sex != null ? cohort.sex : '—' }}</span>
+                                        </template>
+                                    </Column>
                                     <Column field="cases" header="Cases">
                                         <template #body="{ data: cohort }">
                                             <span class="text-sm">{{ cohort.cases != null ? cohort.cases.toLocaleString() : '—' }}</span>
@@ -397,11 +407,6 @@
             </Column>
             <Column field="controls" header="Controls">
                 <template #body="{ data }"><span class="text-sm">{{ data.controls != null ? data.controls.toLocaleString() : '—' }}</span></template>
-            </Column>
-            <Column header="Ignore-list">
-                <template #body="{ data }">
-                    <Tag v-if="data.ignored" value="Ignored" severity="warning" />
-                </template>
             </Column>
         </DataTable>
 
