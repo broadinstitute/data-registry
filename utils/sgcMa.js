@@ -39,11 +39,19 @@ export function cohortNameFor(nameMap, cohortId) {
     return (nameMap && nameMap[cohortId]) || cohortId;
 }
 
+// Two GWAS files can share a dataset label, cohort, phenotype, ancestry AND sex
+// (a re-upload that superseded an earlier one). The short file id is the only
+// thing that separates them in the UI.
+export function datasetLabel(dataset, fileId) {
+    if (!fileId) return dataset ?? '—';
+    return `${dataset ?? '—'}-${String(fileId).slice(0, 6)}`;
+}
+
 // Label a GWAS candidate for the ignore-list add-form dropdown. Cohort name leads so
 // that duplicated free-text `dataset` labels stay distinguishable.
 export function gwasCandidateLabel(gwas, nameMap) {
     const cohortName = cohortNameFor(nameMap, gwas.cohort_id);
-    return `${cohortName} · ${gwas.dataset} · ${gwas.phenotype} / ${gwas.ancestry}`;
+    return `${cohortName} · ${datasetLabel(gwas.dataset, gwas.id)} · ${gwas.phenotype} / ${gwas.ancestry}`;
 }
 
 // The nine valid MA analyses, presented to the user as one "target". Each maps to a

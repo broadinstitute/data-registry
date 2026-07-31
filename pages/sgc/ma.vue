@@ -226,7 +226,7 @@
                                     </Column>
                                     <Column field="dataset" header="Dataset">
                                         <template #body="{ data: cohort }">
-                                            <span class="text-sm">{{ cohort.dataset }}</span>
+                                            <span class="text-sm">{{ datasetLabel(cohort.dataset, cohort.file_id) }}</span>
                                         </template>
                                     </Column>
                                     <Column field="ancestry" header="Ancestry">
@@ -400,7 +400,7 @@
                 <template #body="{ data }"><span class="text-sm">{{ data.cohort }}</span></template>
             </Column>
             <Column field="dataset" header="Dataset">
-                <template #body="{ data }"><span class="text-sm">{{ data.dataset }}</span></template>
+                <template #body="{ data }"><span class="text-sm">{{ datasetLabel(data.dataset, data.file_id) }}</span></template>
             </Column>
             <Column field="cases" header="Cases">
                 <template #body="{ data }"><span class="text-sm">{{ data.cases != null ? data.cases.toLocaleString() : '—' }}</span></template>

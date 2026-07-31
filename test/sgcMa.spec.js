@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-    maSkipTag, maSkipReason, cohortNameMap, cohortNameFor, gwasCandidateLabel,
+    maSkipTag, maSkipReason, cohortNameMap, cohortNameFor, datasetLabel, gwasCandidateLabel,
     runLabel,
     MA_TARGET_GROUPS, targetValue, targetFromValue, targetLabel,
 } from '../utils/sgcMa.js';
@@ -44,6 +44,20 @@ describe('cohortNameMap / cohortNameFor', () => {
     });
 });
 
+describe('datasetLabel', () => {
+    it('appends the first 6 characters of the file id after a dash', () => {
+        expect(datasetLabel('KPN_BiB_GSA', '083c1e80a7bf')).toBe('KPN_BiB_GSA-083c1e');
+    });
+    it('falls back to the bare dataset when fileId is missing', () => {
+        expect(datasetLabel('KPN_BiB_GSA', null)).toBe('KPN_BiB_GSA');
+        expect(datasetLabel('KPN_BiB_GSA', undefined)).toBe('KPN_BiB_GSA');
+    });
+    it('falls back to an em dash when dataset is missing', () => {
+        expect(datasetLabel(null, '083c1e80a7bf')).toBe('—-083c1e');
+        expect(datasetLabel(undefined, '083c1e80a7bf')).toBe('—-083c1e');
+    });
+});
+
 describe('gwasCandidateLabel', () => {
     it('labels a candidate cohort-name-first', () => {
         const gwas = { cohort_id: 'c1', dataset: 'GEL_batch', phenotype: 'PSOR', ancestry: 'EUR' };
@@ -52,6 +66,10 @@ describe('gwasCandidateLabel', () => {
     it('falls back to cohort_id when the name is unknown', () => {
         const gwas = { cohort_id: 'cX', dataset: 'D', phenotype: 'P', ancestry: 'A' };
         expect(gwasCandidateLabel(gwas, {})).toBe('cX · D · P / A');
+    });
+    it('appends the short file id when the candidate carries one', () => {
+        const gwas = { id: '083c1e80a7bf', cohort_id: 'c1', dataset: 'GEL_batch', phenotype: 'PSOR', ancestry: 'EUR' };
+        expect(gwasCandidateLabel(gwas, { c1: 'GEL_v2' })).toBe('GEL_v2 · GEL_batch-083c1e · PSOR / EUR');
     });
 });
 

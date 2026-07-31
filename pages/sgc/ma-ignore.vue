@@ -93,7 +93,7 @@
                     <Column field="cohort" header="Cohort" sortable>
                         <template #body="{ data: e }"><span class="text-sm font-medium">{{ e.cohort || e.cohort_id }}</span></template>
                     </Column>
-                    <Column field="dataset" header="Dataset"><template #body="{ data: e }"><span class="text-sm">{{ e.dataset }}</span></template></Column>
+                    <Column field="dataset" header="Dataset"><template #body="{ data: e }"><span class="text-sm">{{ datasetLabel(e.dataset, e.file_id) }}</span></template></Column>
                     <Column field="phenotype" header="Phenotype" sortable><template #body="{ data: e }"><span class="text-sm">{{ e.phenotype }}</span></template></Column>
                     <Column field="ancestry" header="Ancestry" sortable><template #body="{ data: e }"><Tag :value="e.ancestry" severity="secondary" /></template></Column>
                     <Column field="sex" header="Sex"><template #body="{ data: e }"><span class="text-sm">{{ e.sex }}</span></template></Column>
@@ -113,7 +113,7 @@
 
     <Dialog v-model:visible="deleteVisible" modal header="Remove ignore entry" :style="{ width: '28rem' }">
         <p class="text-sm" v-if="deleteTarget">
-            Re-include <b>{{ deleteTarget.cohort }} · {{ deleteTarget.dataset }}</b>
+            Re-include <b>{{ deleteTarget.cohort }} · {{ datasetLabel(deleteTarget.dataset, deleteTarget.file_id) }}</b>
             ({{ deleteTarget.phenotype }} / {{ deleteTarget.ancestry }} / {{ deleteTarget.sex }}) in future meta-analyses?
         </p>
         <template #footer>
