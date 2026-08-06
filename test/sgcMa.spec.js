@@ -1,9 +1,31 @@
 import { describe, it, expect } from 'vitest';
 import {
     maSkipTag, maSkipReason, cohortNameMap, cohortNameFor, datasetLabel, gwasCandidateLabel,
-    runLabel,
+    runLabel, maIgnoreEntryCount, maIgnoreClearWarning,
     MA_TARGET_GROUPS, targetValue, targetFromValue, targetLabel,
 } from '../utils/sgcMa.js';
+
+describe('maIgnoreEntryCount', () => {
+    it('singularises exactly one entry', () => {
+        expect(maIgnoreEntryCount(1)).toBe('1 entry');
+    });
+    it('pluralises zero and many', () => {
+        expect(maIgnoreEntryCount(0)).toBe('0 entries');
+        expect(maIgnoreEntryCount(12)).toBe('12 entries');
+    });
+    it('treats a missing count as zero rather than NaN', () => {
+        expect(maIgnoreEntryCount(undefined)).toBe('0 entries');
+        expect(maIgnoreEntryCount(null)).toBe('0 entries');
+    });
+});
+
+describe('maIgnoreClearWarning', () => {
+    it('names the count and the consequence', () => {
+        const msg = maIgnoreClearWarning(6);
+        expect(msg).toContain('6 entries');
+        expect(msg).toContain('included in future meta-analyses again');
+    });
+});
 
 describe('maSkipTag', () => {
     it('flags ignore-list skips as Ignored/info', () => {

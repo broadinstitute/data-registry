@@ -4,7 +4,11 @@
             <div class="card">
                 <div class="flex justify-content-between align-items-center mb-4">
                     <h5>Meta-Analysis Ignore List</h5>
-                    <Tag :value="entries.length + ' entr' + (entries.length !== 1 ? 'ies' : 'y')" severity="info" />
+                    <div class="flex align-items-center gap-2">
+                        <Tag :value="entries.length + ' entr' + (entries.length !== 1 ? 'ies' : 'y')" severity="info" />
+                        <Button label="Delete all" icon="pi pi-trash" severity="danger" outlined size="small"
+                                :disabled="!entries.length || clearing" :loading="clearing" @click="confirmClear" />
+                    </div>
                 </div>
 
                 <p class="text-sm text-gray-600 mb-3">
@@ -122,6 +126,14 @@
         </template>
     </Dialog>
 
+    <Dialog v-model:visible="clearVisible" modal header="Delete the whole ignore list" :style="{ width: '28rem' }">
+        <p class="text-sm">{{ maIgnoreClearWarning(entries.length) }}</p>
+        <template #footer>
+            <Button label="Cancel" text @click="clearVisible = false" />
+            <Button label="Delete all" severity="danger" :loading="clearing" @click="clearAll" />
+        </template>
+    </Dialog>
+
     <Toast position="top-center" />
 </template>
 
@@ -154,6 +166,8 @@ const submitting = ref(false);
 const deleting = ref(false);
 const deleteVisible = ref(false);
 const deleteTarget = ref(null);
+const clearVisible = ref(false);
+const clearing = ref(false);
 const form = ref({ candidate: null, reason: '' });
 const bulkFileInput = ref(null);
 const bulkFile = ref(null);
@@ -218,6 +232,30 @@ async function addEntry() {
 function confirmDelete(entry) {
     deleteTarget.value = entry;
     deleteVisible.value = true;
+}
+
+function confirmClear() {
+    clearVisible.value = true;
+}
+
+async function clearAll() {
+    clearing.value = true;
+    try {
+        const { data } = await sgcAxios.delete('/api/sgc/ma/ignore');
+        toast.add({
+            severity: 'success',
+            summary: 'Ignore list cleared',
+            detail: `${maIgnoreEntryCount(data.removed)} removed.`,
+            life: 4000,
+        });
+        clearVisible.value = false;
+        await loadEntries();
+    } catch (error) {
+        console.error('Error clearing the ignore list:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to clear the ignore list.', life: 5000 });
+    } finally {
+        clearing.value = false;
+    }
 }
 
 async function deleteEntry() {

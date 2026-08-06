@@ -22,6 +22,19 @@ export function maSkipReason(reason) {
     return reason;
 }
 
+// "1 entry" / "12 entries" for the ignore-list counts in warnings and toasts.
+export function maIgnoreEntryCount(count) {
+    const n = Number(count) || 0;
+    return `${n} ${n === 1 ? 'entry' : 'entries'}`;
+}
+
+// Confirmation text for the "Delete all" control. Clearing the list silently re-admits
+// every file on it, so say what the consequence is rather than just asking twice.
+export function maIgnoreClearWarning(count) {
+    return `Remove all ${maIgnoreEntryCount(count)} from the ignore list? `
+        + 'Those files will be included in future meta-analyses again.';
+}
+
 // Build a { cohort_id: name } lookup from the /api/sgc/cohorts payload (each cohort
 // object has `.id` and `.name`).
 export function cohortNameMap(cohorts) {
