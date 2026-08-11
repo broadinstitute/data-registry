@@ -134,6 +134,22 @@
                         </template>
                     </Column>
 
+                    <Column header="" :showFilterMenu="false" style="width: 3rem">
+                        <template #body="{ data }">
+                            <Button
+                                icon="pi pi-trash"
+                                severity="danger"
+                                text
+                                rounded
+                                size="small"
+                                v-tooltip.left="'Delete this meta-analysis'"
+                                :aria-label="`Delete ${data.phenotype} ${data.target} meta-analysis`"
+                                :loading="deleting === data.id"
+                                @click="confirmDelete(data)"
+                            />
+                        </template>
+                    </Column>
+
                     <template #expansion="{ data }">
                         <div v-if="data.status === 'SUCCEEDED'" class="p-3">
                             <div class="grid">
@@ -437,6 +453,14 @@
         </template>
     </Dialog>
 
+    <Dialog v-model:visible="deleteVisible" modal header="Delete meta-analysis" :style="{ width: '28rem' }">
+        <p class="text-sm">{{ maRunDeleteWarning(deleteTarget) }}</p>
+        <template #footer>
+            <Button label="Cancel" text @click="deleteVisible = false" />
+            <Button label="Delete" severity="danger" :loading="deleting === deleteTarget?.id" @click="deleteRun" />
+        </template>
+    </Dialog>
+
     <Toast position="top-center" />
 </template>
 
@@ -577,6 +601,44 @@ async function downloadMeta(row) {
         });
     } finally {
         downloading.value[key] = false;
+    }
+}
+
+// --- Delete a run -----------------------------------------------------
+// Holds the id of the run being deleted (not a bool) so the row's own spinner shows.
+const deleting = ref(null);
+const deleteVisible = ref(false);
+const deleteTarget = ref(null);
+
+function confirmDelete(row) {
+    deleteTarget.value = row;
+    deleteVisible.value = true;
+}
+
+async function deleteRun() {
+    const row = deleteTarget.value;
+    if (!row) return;
+    deleting.value = row.id;
+    try {
+        const { data } = await sgcAxios.delete(`/api/sgc/ma/runs/${row.id}`);
+        deleteVisible.value = false;
+        toast.add({
+            severity: 'success',
+            summary: 'Deleted',
+            detail: `${row.phenotype} · ${row.target} removed (${data.objects_deleted} file${data.objects_deleted === 1 ? '' : 's'}).`,
+            life: 4000
+        });
+        await loadMAResults();
+    } catch (error) {
+        console.error(`Error deleting meta-analysis run ${row.id}:`, error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to delete the meta-analysis. Please try again.',
+            life: 5000
+        });
+    } finally {
+        deleting.value = null;
     }
 }
 

@@ -112,6 +112,21 @@ export function targetLabel(ancestry, sex) {
     return `${ancestry || '?'} · ${sex || '?'}`;
 }
 
+// Statuses after which no Batch job is still running for a meta-analysis.
+const MA_TERMINAL_STATUSES = ['SUCCEEDED', 'FAILED'];
+
+// Confirmation text for deleting one run. Deleting an in-flight run also cancels its
+// Batch job, which is a bigger deal than deleting a finished one — say which it is.
+export function maRunDeleteWarning(run) {
+    const what = `${run?.phenotype ?? '—'} · ${targetLabel(run?.ancestry, run?.sex)}`;
+    if (run && run.status && !MA_TERMINAL_STATUSES.includes(run.status)) {
+        return `Delete the ${what} meta-analysis? It is still ${String(run.status).toLowerCase()}`
+            + ' — the running job will be cancelled and any partial results discarded.';
+    }
+    return `Delete the ${what} meta-analysis? Its plots, summary and meta.tsv.gz`
+        + ' will be permanently removed. This cannot be undone.';
+}
+
 // Human label for one run: the explicit label if set, else "type · N datasets · date".
 export function runLabel(run) {
     if (run && run.label) return run.label;

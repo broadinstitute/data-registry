@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
     maSkipTag, maSkipReason, cohortNameMap, cohortNameFor, datasetLabel, gwasCandidateLabel,
-    runLabel, maIgnoreEntryCount, maIgnoreClearWarning,
+    runLabel, maIgnoreEntryCount, maIgnoreClearWarning, maRunDeleteWarning,
     MA_TARGET_GROUPS, targetValue, targetFromValue, targetLabel,
 } from '../utils/sgcMa.js';
 
@@ -24,6 +24,28 @@ describe('maIgnoreClearWarning', () => {
         const msg = maIgnoreClearWarning(6);
         expect(msg).toContain('6 entries');
         expect(msg).toContain('included in future meta-analyses again');
+    });
+});
+
+describe('maRunDeleteWarning', () => {
+    const finished = { phenotype: 'PSOR', ancestry: 'EUR', sex: 'All', status: 'SUCCEEDED' };
+
+    it('names the run and warns the delete is permanent', () => {
+        const msg = maRunDeleteWarning(finished);
+        expect(msg).toContain('PSOR · EUR');
+        expect(msg).toContain('cannot be undone');
+    });
+    it('warns that an in-flight run will be cancelled', () => {
+        const msg = maRunDeleteWarning({ ...finished, status: 'RUNNING' });
+        expect(msg).toContain('still running');
+        expect(msg).toContain('cancelled');
+    });
+    it('treats FAILED as finished, not in-flight', () => {
+        expect(maRunDeleteWarning({ ...finished, status: 'FAILED' })).toContain('cannot be undone');
+    });
+    it('degrades gracefully on a missing run', () => {
+        expect(() => maRunDeleteWarning(undefined)).not.toThrow();
+        expect(maRunDeleteWarning(undefined)).toContain('—');
     });
 });
 
