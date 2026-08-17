@@ -24,6 +24,9 @@
                         </div>
                         <span class="text-600 font-medium">Sign in to continue</span>
                     </div>
+                    <Message v-if="sessionExpired" severity="warn" :closable="false" class="mb-4">
+                        Your session has expired. Please sign in again.
+                    </Message>
                     <div>
                         <label
                             for="username"
@@ -99,6 +102,8 @@ const username = ref('');
 const password = ref('');
 const loading = ref(false);
 const loginError = ref('');
+
+const sessionExpired = computed(() => route.query.expired === '1');
 
 // Handle login form submission
 async function handleLogin() {
