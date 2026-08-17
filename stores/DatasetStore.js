@@ -165,6 +165,7 @@ export const useDatasetStore = defineStore("DatasetStore", {
             uploadProgress: 0,
             showProgressBar: false,
             hermesPhenotypes: {},
+            kpPortals: [],
         };
     },
     getters: {
@@ -473,6 +474,28 @@ export const useDatasetStore = defineStore("DatasetStore", {
             this.showNotification = true;
             this.isServerSuccess = true;
             this.successMessage = "Metadata saved, you can now upload files.";
+        },
+        async fetchKpPortals() {
+            if (this.kpPortals.length > 0) return;
+            const { data } = await configuredAxios.get("/api/kp-portals");
+            this.kpPortals = data;
+        },
+        async fetchKpDatasetInfo(dsId) {
+            const { data } = await configuredAxios.get(`/api/kp-dataset-info/${dsId}`);
+            return data;
+        },
+        async saveKpDatasetInfo(payload) {
+            this.processing = true;
+            this.modalMsg = "Saving portal display info";
+            try {
+                const { data } = await configuredAxios.post("/api/kp-dataset-info", payload);
+                this.showNotification = true;
+                this.isServerSuccess = true;
+                this.successMessage = "Portal display info saved.";
+                return data;
+            } finally {
+                this.processing = false;
+            }
         },
         async uploadFiles(dataset_id) {
             this.processing = true;
