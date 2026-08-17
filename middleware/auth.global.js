@@ -1,5 +1,6 @@
 import { useUserStore } from "~/stores/UserStore";
 import { callWithNuxt } from "#app";
+import { loginRedirectPath } from "~/utils/sessionExpiry";
 
 // so annoying https://github.com/nuxt/nuxt/issues/14269
 export default defineNuxtRouteMiddleware(async (to) => {
@@ -22,10 +23,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
     // Check SGC authentication for SGC routes
     if (to.path.startsWith('/sgc')) {
+        // Capture before the check: a failed verify may remove the token,
+        // and a token that existed but failed means the session expired.
+        const hadToken = !!localStorage.getItem('sgcAuthToken');
         isLoggedIn = await userStore.isSGCUserLoggedIn();
-        
+
         if (!isLoggedIn) {
-            return callWithNuxt(nuxtApp, navigateTo, ['/sgc/login?redirect=' + to.path]);
+            return callWithNuxt(nuxtApp, navigateTo, [loginRedirectPath('/sgc/login', to.path, hadToken)]);
         }
         // User is authenticated for SGC, allow access
         return;
@@ -55,10 +59,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
     // Check HCM authentication for HCM routes
     if (to.path.startsWith('/hcm')) {
+        // Capture before the check: a failed verify may remove the token,
+        // and a token that existed but failed means the session expired.
+        const hadToken = !!localStorage.getItem('hcmAuthToken');
         isLoggedIn = await userStore.isHCMUserLoggedIn();
 
         if (!isLoggedIn) {
-            return callWithNuxt(nuxtApp, navigateTo, ['/hcm/login?redirect=' + to.path]);
+            return callWithNuxt(nuxtApp, navigateTo, [loginRedirectPath('/hcm/login', to.path, hadToken)]);
         }
         // User is authenticated for HCM, allow access
         return;
