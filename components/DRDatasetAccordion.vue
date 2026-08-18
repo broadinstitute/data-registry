@@ -91,7 +91,7 @@ const localEditMode = ref(props.editMode);
         </h2>
         <div id="drportal" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#dsAccordion">
           <div class="accordion-body">
-            <DRPortalDisplay v-if="store.dataSetId" :dataset-id="props.dsId" :edit-mode="localEditMode" />
+            <DRPortalDisplay v-if="store.dataSetId" :dataset-id="store.dataSetId" :edit-mode="localEditMode" />
             <p v-else class="text-muted">Save the dataset metadata first.</p>
           </div>
         </div>

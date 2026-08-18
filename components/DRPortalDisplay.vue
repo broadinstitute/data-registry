@@ -20,40 +20,65 @@ const loaded = ref(false);
 const preview = computed(() =>
     composeKpBodyPreview(publication.value, phenotypeNames.value, experimentSummary.value));
 const canSave = computed(() =>
-    title.value.trim().length > 0 && selectedPortals.value.length > 0);
+    title.value.trim().length > 0 && selectedPortals.value.length > 0
+    && experimentSummary.value.trim().length > 0);
 
-onMounted(async () => {
+async function loadData() {
     await store.fetchKpPortals();
     await store.fetchPhenotypes();
     const dsId = props.datasetId || store.dataSetId;
     if (!dsId) return;
-    const info = await store.fetchExistingDataset(dsId);
+    const info = await store.fetchDatasetRaw(dsId);
     publication.value = info.dataset.publication || "";
     phenotypeNames.value = (info.phenotypes || []).map(
         (p) => store.phenotypes[p.phenotype]?.description || p.phenotype);
     const existing = await store.fetchKpDatasetInfo(dsId);
-    if (existing) {
-        title.value = existing.title;
-        selectedPortals.value = existing.portals;
-        // A migrated Drupal body is replaced on first save through this form;
-        // the summary starts empty so the user writes/pastes the new text
-        // deliberately, with the preview showing exactly what will be stored.
-        experimentSummary.value = "";
-    } else {
-        const defaults = kpDefaultsFromDataset(info.dataset);
-        title.value = defaults.title;
-        experimentSummary.value = defaults.experimentSummary;
+    // Only prefill user-editable fields on the first successful load, so a
+    // reload triggered by reopening the accordion doesn't clobber in-progress
+    // edits. publication/phenotypeNames above are always refreshed so a
+    // preview reflects phenotypes uploaded after the initial load.
+    if (!loaded.value) {
+        if (existing) {
+            title.value = existing.title;
+            // Legacy portal codes (e.g. mi/bone/mskkp) aren't in the live
+            // portal list; keeping them selected would make every save 422
+            // with no way to untoggle them.
+            selectedPortals.value = existing.portals.filter((p) => store.kpPortals.includes(p));
+            // The API parses the summary back out of a body it generated;
+            // a migrated hand-authored body has no parse-back and yields
+            // null, so the field starts blank and the user writes/pastes
+            // the new text deliberately -- replace, not merge.
+            experimentSummary.value = existing.experiment_summary || "";
+        } else {
+            const defaults = kpDefaultsFromDataset(info.dataset);
+            title.value = defaults.title;
+            experimentSummary.value = defaults.experimentSummary;
+        }
     }
     loaded.value = true;
+}
+
+onMounted(async () => {
+    await loadData();
+    const el = document.getElementById("drportal");
+    if (el) el.addEventListener("show.bs.collapse", loadData);
+});
+onUnmounted(() => {
+    const el = document.getElementById("drportal");
+    if (el) el.removeEventListener("show.bs.collapse", loadData);
 });
 
 async function save() {
-    await store.saveKpDatasetInfo({
-        dataset_id: props.datasetId || store.dataSetId,
-        title: title.value.trim(),
-        portals: selectedPortals.value,
-        experiment_summary: experimentSummary.value,
-    });
+    try {
+        await store.saveKpDatasetInfo({
+            dataset_id: props.datasetId || store.dataSetId,
+            title: title.value.trim(),
+            portals: selectedPortals.value,
+            experiment_summary: experimentSummary.value,
+        });
+    } catch (error) {
+        // store surfaces the notification
+    }
 }
 </script>
 

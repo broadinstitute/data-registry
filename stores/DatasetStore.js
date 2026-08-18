@@ -484,6 +484,10 @@ export const useDatasetStore = defineStore("DatasetStore", {
             const { data } = await configuredAxios.get(`/api/kp-dataset-info/${dsId}`);
             return data;
         },
+        async fetchDatasetRaw(dsId) {
+            const { data } = await configuredAxios.get(`/api/datasets/${dsId}`);
+            return data;
+        },
         async saveKpDatasetInfo(payload) {
             this.processing = true;
             this.modalMsg = "Saving portal display info";
@@ -493,6 +497,11 @@ export const useDatasetStore = defineStore("DatasetStore", {
                 this.isServerSuccess = true;
                 this.successMessage = "Portal display info saved.";
                 return data;
+            } catch (error) {
+                this.showNotification = true;
+                this.isServerSuccess = false;
+                this.errorMessage = error.response?.data?.detail || error.message;
+                throw error;
             } finally {
                 this.processing = false;
             }
