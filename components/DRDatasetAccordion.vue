@@ -76,6 +76,26 @@ const localEditMode = ref(props.editMode);
           </div>
         </div>
       </div>
+      <div class="accordion-item">
+        <h2 id="headingThree" class="accordion-header">
+          <button
+            class="accordion-button collapsed large-accordion-heading dataset-accordion-button"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#drportal"
+            aria-expanded="false"
+            aria-controls="drportal"
+          >
+            Portal Display
+          </button>
+        </h2>
+        <div id="drportal" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#dsAccordion">
+          <div class="accordion-body">
+            <DRPortalDisplay v-if="store.dataSetId" :dataset-id="store.dataSetId" :edit-mode="localEditMode" />
+            <p v-else class="text-muted">Save the dataset metadata first.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <Modal v-if="store.processing" :status-message="store.modalMsg" :progress="store.uploadProgress" :show-progress="store.showProgressBar" />
