@@ -138,3 +138,17 @@ export function runLabel(run) {
     if (date) parts.push(date);
     return parts.join(' · ');
 }
+
+// --- MA permission gating ----------------------------------------------------
+// The user-service grants sgc-review-ma to both SGC roles (reviewer + uploader)
+// for read access to MA results; sgc-review-data stays reviewer-only and is a
+// deliberate superset so reviewers keep access even before sgc-review-ma is
+// attached to their role. Mirrors check_ma_read_permissions in the API.
+
+export function canReviewSgcMa(permissions) {
+    return !!(permissions?.includes('sgc-review-ma') || permissions?.includes('sgc-review-data'));
+}
+
+export function canRunSgcMa(permissions) {
+    return !!permissions?.includes('sgc-review-data');
+}

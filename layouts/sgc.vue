@@ -61,6 +61,10 @@ const isReviewer = computed(() => {
   return roleNames.includes('sgc-reviewer') || roleNames.includes('admin');
 });
 
+// MA results are readable by anyone with the sgc-review-ma permission
+// (uploaders included), not just reviewers.
+const canReviewMa = computed(() => userStore.canReviewSgcMa());
+
 // Menubar items, permission-gated. Sign Out lives in the #end slot, not here.
 const menuItems = computed(() => {
   const items = [
@@ -72,8 +76,10 @@ const menuItems = computed(() => {
     items.push(
       { label: 'GWAS Files', to: '/sgc/gwas-summary', command: () => navigateTo('/sgc/gwas-summary') },
       { label: 'GWAS QC Plots', to: '/sgc/gwas-qc-plots', command: () => navigateTo('/sgc/gwas-qc-plots') },
-      { label: 'Meta-analysis', to: '/sgc/ma', command: () => navigateTo('/sgc/ma') },
     );
+  }
+  if (canReviewMa.value) {
+    items.push({ label: 'Meta-analysis', to: '/sgc/ma', command: () => navigateTo('/sgc/ma') });
   }
 
   const moreItems = [];

@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { canReviewSgcMa as sgcMaCanReview, canRunSgcMa as sgcMaCanRun } from "~/utils/sgcMa";
 
 export const useUserStore = defineStore("UserStore", {
     state: () => {
@@ -240,6 +241,17 @@ export const useUserStore = defineStore("UserStore", {
             return roleNames.includes('sgc-reviewer') ||
                    this.user.permissions?.includes('manage_users') ||
                    roleNames.includes('reviewer');
+        },
+
+        // Read access to SGC meta-analysis results (sgc-review-ma, with
+        // sgc-review-data as a superset — see utils/sgcMa.js).
+        canReviewSgcMa() {
+            return sgcMaCanReview(this.user?.permissions);
+        },
+
+        // Launching or deleting a meta-analysis stays reviewer-only.
+        canRunSgcMa() {
+            return sgcMaCanRun(this.user?.permissions);
         },
 
         // PEG User Service Authentication Methods

@@ -7,7 +7,7 @@
                         <h5 class="m-0">SGC Meta-Analysis Results</h5>
                         <Tag :value="rows.length + ' result' + (rows.length !== 1 ? 's' : '')" severity="info" />
                     </div>
-                    <Button label="New meta-analysis" icon="pi pi-plus" size="small" @click="openLaunchDialog" />
+                    <Button v-if="canRunMa" label="New meta-analysis" icon="pi pi-plus" size="small" @click="openLaunchDialog" />
                 </div>
 
                 <DataTable
@@ -134,7 +134,7 @@
                         </template>
                     </Column>
 
-                    <Column header="" :showFilterMenu="false" style="width: 3rem">
+                    <Column v-if="canRunMa" header="" :showFilterMenu="false" style="width: 3rem">
                         <template #body="{ data }">
                             <Button
                                 icon="pi pi-trash"
@@ -467,6 +467,7 @@
 <script setup>
 import { useToast } from "primevue/usetoast";
 import { FilterMatchMode } from 'primevue/api';
+import { useUserStore } from "~/stores/UserStore";
 
 definePageMeta({
     layout: 'sgc'
@@ -474,6 +475,11 @@ definePageMeta({
 
 const toast = useToast();
 const config = useRuntimeConfig();
+const userStore = useUserStore();
+
+// Read views on this page need only sgc-review-ma (which gates the nav item);
+// launching and deleting runs stay reviewer-only (sgc-review-data).
+const canRunMa = computed(() => userStore.canRunSgcMa());
 
 // Set up authenticated axios instance for SGC (mirrors DatasetStore pattern)
 const sgcAxios = useSGCAxios(config, undefined, (error) => {

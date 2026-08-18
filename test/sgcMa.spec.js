@@ -3,6 +3,7 @@ import {
     maSkipTag, maSkipReason, cohortNameMap, cohortNameFor, datasetLabel, gwasCandidateLabel,
     runLabel, maIgnoreEntryCount, maIgnoreClearWarning, maRunDeleteWarning,
     MA_TARGET_GROUPS, targetValue, targetFromValue, targetLabel,
+    canReviewSgcMa, canRunSgcMa,
 } from '../utils/sgcMa.js';
 
 describe('maIgnoreEntryCount', () => {
@@ -157,5 +158,22 @@ describe('MA target model', () => {
         expect(targetLabel('EUR', 'All')).toBe('EUR');
         expect(targetLabel('EUR', 'Male')).toBe('EUR · Male');   // not a real target
         expect(targetLabel(undefined, undefined)).toBe('? · ?');
+    });
+});
+
+describe('MA permission gating', () => {
+    it('grants read access via sgc-review-ma alone (an uploader)', () => {
+        expect(canReviewSgcMa(['sgc-review-ma', 'sgc-upload-data'])).toBe(true);
+        expect(canRunSgcMa(['sgc-review-ma', 'sgc-upload-data'])).toBe(false);
+    });
+    it('treats sgc-review-data as a superset (a reviewer before role backfill)', () => {
+        expect(canReviewSgcMa(['sgc-review-data'])).toBe(true);
+        expect(canRunSgcMa(['sgc-review-data'])).toBe(true);
+    });
+    it('denies both without either permission, including missing lists', () => {
+        expect(canReviewSgcMa(['sgc-upload-data'])).toBe(false);
+        expect(canRunSgcMa(['sgc-upload-data'])).toBe(false);
+        expect(canReviewSgcMa(undefined)).toBe(false);
+        expect(canRunSgcMa(null)).toBe(false);
     });
 });
