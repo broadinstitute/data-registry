@@ -249,7 +249,8 @@ export const useUserStore = defineStore("UserStore", {
             return sgcMaCanReview(this.user?.permissions);
         },
 
-        // Launching or deleting a meta-analysis stays reviewer-only.
+        // Launching/deleting a meta-analysis and downloading its meta.tsv.gz
+        // stay reviewer-only.
         canRunSgcMa() {
             return sgcMaCanRun(this.user?.permissions);
         },

@@ -355,7 +355,7 @@
                                 Loading lead loci...
                             </div>
 
-                            <div class="mt-4">
+                            <div v-if="canRunMa" class="mt-4">
                                 <Button
                                     :label="downloading[data.key] ? 'Preparing download...' : 'Download meta.tsv.gz'"
                                     icon="pi pi-download"
@@ -478,7 +478,8 @@ const config = useRuntimeConfig();
 const userStore = useUserStore();
 
 // Read views on this page need only sgc-review-ma (which gates the nav item);
-// launching and deleting runs stay reviewer-only (sgc-review-data).
+// launching/deleting runs and downloading meta.tsv.gz stay reviewer-only
+// (sgc-review-data).
 const canRunMa = computed(() => userStore.canRunSgcMa());
 
 // Set up authenticated axios instance for SGC (mirrors DatasetStore pattern)

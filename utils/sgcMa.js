@@ -149,6 +149,8 @@ export function canReviewSgcMa(permissions) {
     return !!(permissions?.includes('sgc-review-ma') || permissions?.includes('sgc-review-data'));
 }
 
+// Also gates the meta.tsv.gz download and run deletion, per tenant request:
+// sgc-review-ma is view-only (plots, summary, top loci), not full results.
 export function canRunSgcMa(permissions) {
     return !!permissions?.includes('sgc-review-data');
 }
