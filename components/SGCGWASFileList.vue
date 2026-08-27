@@ -173,6 +173,47 @@
         </DataTable>
     </div>
 
+    <!-- GWAS excluded from meta-analysis (only shown when the cohort has any) -->
+    <div v-if="maIgnoreEntries.length > 0" class="card">
+        <div class="flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Excluded from Meta-Analysis</h5>
+            <Tag :value="maIgnoreEntries.length + ' file' + (maIgnoreEntries.length !== 1 ? 's' : '')"
+                 severity="warning" />
+        </div>
+        <p class="text-sm text-600 mt-0 mb-3">
+            These GWAS were reviewed and excluded from the SGC meta-analyses for the reasons below.
+            They remain excluded from future runs until the review team removes the exclusion.
+        </p>
+        <DataTable :value="maIgnoreEntries" :paginator="maIgnoreEntries.length > 10" :rows="10">
+            <Column field="dataset" header="Dataset" :sortable="true">
+                <template #body="{ data }">
+                    <span class="font-medium">{{ datasetLabel(data.dataset, data.file_id) }}</span>
+                </template>
+            </Column>
+            <Column field="phenotype" header="Phenotype" :sortable="true" />
+            <Column field="ancestry" header="Ancestry" :sortable="true">
+                <template #body="{ data }">
+                    <Tag :value="data.ancestry" severity="secondary" />
+                </template>
+            </Column>
+            <Column field="sex" header="Sex">
+                <template #body="{ data }">
+                    <span class="text-sm">{{ data.sex || '-' }}</span>
+                </template>
+            </Column>
+            <Column field="reason" header="Reason">
+                <template #body="{ data }">
+                    <span class="text-sm">{{ data.reason }}</span>
+                </template>
+            </Column>
+            <Column field="created_at" header="Excluded" :sortable="true">
+                <template #body="{ data }">
+                    <span class="text-sm">{{ maExclusionDate(data.created_at) }}</span>
+                </template>
+            </Column>
+        </DataTable>
+    </div>
+
     <!-- QC Errors Dialog -->
     <Dialog
         v-model:visible="errorsDialog"
@@ -253,6 +294,7 @@
 <script setup>
 import { useToast } from "primevue/usetoast";
 import { useDatasetStore } from "~/stores/DatasetStore";
+import { datasetLabel, maExclusionDate } from "~/utils/sgcMa";
 
 const props = defineProps({
     cohortId: { type: String, required: true },
@@ -263,6 +305,7 @@ const toast = useToast();
 const store = useDatasetStore();
 
 const gwasFiles = ref([]);
+const maIgnoreEntries = ref([]);
 const loading = ref(true);
 const deleteGWASDialog = ref(false);
 const gwasFileToDelete = ref(null);
@@ -303,6 +346,12 @@ onMounted(async () => {
         gwasFiles.value = [];
     } finally {
         loading.value = false;
+    }
+    try {
+        maIgnoreEntries.value = await store.getSGCMAIgnoreForCohort(props.cohortId);
+    } catch {
+        // No exclusions shown rather than an error state — the table is informational.
+        maIgnoreEntries.value = [];
     }
 });
 

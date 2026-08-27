@@ -3,8 +3,19 @@ import {
     maSkipTag, maSkipReason, cohortNameMap, cohortNameFor, datasetLabel, gwasCandidateLabel,
     runLabel, maIgnoreEntryCount, maIgnoreClearWarning, maRunDeleteWarning,
     MA_TARGET_GROUPS, targetValue, targetFromValue, targetLabel,
-    canReviewSgcMa, canRunSgcMa,
+    canReviewSgcMa, canRunSgcMa, maExclusionDate,
 } from '../utils/sgcMa.js';
+
+describe('maExclusionDate', () => {
+    it('renders an ISO timestamp as a short date', () => {
+        expect(maExclusionDate('2026-07-27T14:03:00')).toBe('Jul 27, 2026');
+    });
+    it('renders nothing for a missing or unparseable timestamp', () => {
+        expect(maExclusionDate(null)).toBe('');
+        expect(maExclusionDate(undefined)).toBe('');
+        expect(maExclusionDate('not-a-date')).toBe('');
+    });
+});
 
 describe('maIgnoreEntryCount', () => {
     it('singularises exactly one entry', () => {

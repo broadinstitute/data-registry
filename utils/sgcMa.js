@@ -139,6 +139,15 @@ export function runLabel(run) {
     return parts.join(' · ');
 }
 
+// Short date for when a file was excluded from meta-analysis ('' when the API
+// row carries no created_at, so the table cell renders empty rather than "Invalid Date").
+export function maExclusionDate(createdAt) {
+    if (!createdAt) return '';
+    const d = new Date(createdAt);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
 // --- MA permission gating ----------------------------------------------------
 // The user-service grants sgc-review-ma to both SGC roles (reviewer + uploader)
 // for read access to MA results; sgc-review-data stays reviewer-only and is a

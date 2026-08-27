@@ -660,6 +660,11 @@ export const useDatasetStore = defineStore("DatasetStore", {
             return data;
         },
 
+        async getSGCMAIgnoreForCohort(cohortId) {
+            const { data } = await sgcAxios.get(`/api/sgc/cohorts/${cohortId}/ma-ignore`);
+            return data;
+        },
+
         async downloadSGCGWASFile(fileId) {
             const { data } = await sgcAxios.get(`/api/sgc/gwas-file/${fileId}/download`);
             if (data.presigned_url) {
