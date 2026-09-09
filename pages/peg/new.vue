@@ -368,7 +368,7 @@ const handleCancel = () => {
             <p class="text-sm text-gray-600 mb-2">
               Not sure what each file should contain? See our
               <a
-                href="https://ebispot.github.io/PEGASUS/docs/next/submission-prep/submission-guidance"
+                href="https://gwas-catalog.github.io/PEGASUS/docs/next/submission-prep/submission-guidance"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="text-primary"
@@ -646,7 +646,7 @@ const handleCancel = () => {
               Please upload the PEG Metadata, PEG Evidence Matrix and PEG list in PEGASUS format here.
               Not sure what each file should contain?
               <a
-                href="https://ebispot.github.io/PEGASUS/docs/next/peg-list"
+                href="https://gwas-catalog.github.io/PEGASUS/"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="text-primary"

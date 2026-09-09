@@ -58,7 +58,7 @@
                         <p class="text-700 line-height-3 m-0">
                             For more details, please refer to the
                             <a
-                                href="https://ebispot.github.io/PEGASUS/"
+                                href="https://gwas-catalog.github.io/PEGASUS/"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="font-semibold"
