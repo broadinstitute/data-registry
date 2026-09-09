@@ -368,7 +368,7 @@ const handleCancel = () => {
             <p class="text-sm text-gray-600 mb-2">
               Not sure what each file should contain? See our
               <a
-                href="https://ebispot.github.io/PEGASUS/docs/next/submission-prep/submission-guidance"
+                href="https://gwas-catalog.github.io/PEGASUS/docs/next/submission-prep/submission-guidance"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="text-primary"
