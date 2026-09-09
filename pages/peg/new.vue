@@ -646,7 +646,7 @@ const handleCancel = () => {
               Please upload the PEG Metadata, PEG Evidence Matrix and PEG list in PEGASUS format here.
               Not sure what each file should contain?
               <a
-                href="https://ebispot.github.io/PEGASUS/docs/next/peg-list"
+                href="https://gwas-catalog.github.io/PEGASUS/"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="text-primary"
