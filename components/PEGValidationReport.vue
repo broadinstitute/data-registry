@@ -10,7 +10,7 @@ const sections = computed(() => flattenReport(props.report));
 const summary = computed(() => reportSummary(props.report));
 const overall = computed(() => (props.report?.status === 'error' ? 'error' : 'success'));
 
-const severityFor = (status) => ({ error: 'danger', warning: 'warn', ok: 'success' }[status] || 'info');
+const severityFor = (status) => ({ error: 'danger', warning: 'warning', ok: 'success' }[status] || 'info');
 const chipLabel = (status) => ({ error: 'Errors', warning: 'Warnings', ok: 'OK' }[status] || status);
 </script>
 
