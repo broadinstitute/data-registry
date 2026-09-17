@@ -34,6 +34,12 @@ describe('formatRows', () => {
     expect(out.split(', ').length).toBe(MAX_ROWS_SHOWN);
   });
   it('handles empty', () => expect(formatRows([])).toBe(''));
+  it('does not truncate at exactly MAX_ROWS_SHOWN', () => {
+    const rows = Array.from({ length: MAX_ROWS_SHOWN }, (_, i) => i + 1);
+    const out = formatRows(rows);
+    expect(out).not.toContain('more');
+    expect(out.split(', ').length).toBe(MAX_ROWS_SHOWN);
+  });
 });
 
 describe('flattenEntry', () => {
@@ -70,10 +76,18 @@ describe('flattenReport', () => {
     expect(sections.length).toBe(4);
     expect(sections[1]).toMatchObject({ key: 'matrix', status: 'ok', entries: [], fileName: null });
   });
+  it('exposes flattened info entries', () => {
+    const sections = flattenReport(report);
+    expect(sections[0].info).toEqual([{ level: 'info', step: 'a', message: 'ok', columnErrors: [], rowErrors: [], line: null }]);
+  });
 });
 
 describe('reportSummary', () => {
   it('counts errors and warnings', () => expect(reportSummary(report)).toBe('1 error, 2 warnings'));
   it('says all passed', () => expect(reportSummary({ status: 'success', summary: { total_errors: 0, total_warnings: 0 } })).toBe('All checks passed'));
   it('handles warnings only', () => expect(reportSummary({ status: 'success', summary: { total_errors: 0, total_warnings: 1 } })).toBe('No errors, 1 warning'));
+  it('handles errors only', () => {
+    expect(reportSummary({ status: 'error', summary: { total_errors: 1, total_warnings: 0 } })).toBe('1 error, 0 warnings');
+    expect(reportSummary({ status: 'error', summary: { total_errors: 3, total_warnings: 0 } })).toBe('3 errors, 0 warnings');
+  });
 });
