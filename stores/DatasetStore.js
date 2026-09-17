@@ -919,59 +919,45 @@ export const useDatasetStore = defineStore("DatasetStore", {
             }
         },
 
-        // PEG File Uploads
-        async uploadPEGList(studyId, file) {
-            this.showProgressBar = true;
-            this.processing = true;
-            this.modalMsg = "Uploading PEG List";
-            
+        // PEG file validation and upload (all three files together)
+        _pegFilesFormData({ list, matrix, metadata }) {
             const formData = new FormData();
-            formData.append('file', file);
-            
-            const { data } = await pegAxios.post(
-                `/api/peg/studies/${studyId}/peg-list`,
-                formData,
-                { headers: { 'Content-Type': 'multipart/form-data' } }
-            );
-            
-            this.processing = false;
-            return data;
+            formData.append('peg_list', list);
+            formData.append('peg_matrix', matrix);
+            formData.append('peg_metadata', metadata);
+            return formData;
         },
 
-        async uploadPEGMatrix(studyId, file) {
+        async validatePEGFiles(files) {
             this.showProgressBar = true;
             this.processing = true;
-            this.modalMsg = "Uploading PEG Matrix";
-            
-            const formData = new FormData();
-            formData.append('file', file);
-            
-            const { data } = await pegAxios.post(
-                `/api/peg/studies/${studyId}/peg-matrix`,
-                formData,
-                { headers: { 'Content-Type': 'multipart/form-data' } }
-            );
-            
-            this.processing = false;
-            return data;
+            this.modalMsg = "Validating PEG files";
+            try {
+                const { data } = await pegAxios.post(
+                    `/api/peg/validate-files`,
+                    this._pegFilesFormData(files),
+                    { headers: { 'Content-Type': 'multipart/form-data' } }
+                );
+                return data;
+            } finally {
+                this.processing = false;
+            }
         },
 
-        async uploadPEGMetadata(studyId, file) {
+        async uploadPEGFiles(studyId, files) {
             this.showProgressBar = true;
             this.processing = true;
-            this.modalMsg = "Uploading PEG Metadata";
-            
-            const formData = new FormData();
-            formData.append('file', file);
-            
-            const { data } = await pegAxios.post(
-                `/api/peg/studies/${studyId}/peg-metadata`,
-                formData,
-                { headers: { 'Content-Type': 'multipart/form-data' } }
-            );
-            
-            this.processing = false;
-            return data;
+            this.modalMsg = "Uploading PEG files";
+            try {
+                const { data } = await pegAxios.post(
+                    `/api/peg/studies/${studyId}/files`,
+                    this._pegFilesFormData(files),
+                    { headers: { 'Content-Type': 'multipart/form-data' } }
+                );
+                return data;
+            } finally {
+                this.processing = false;
+            }
         },
 
         async fetchPEGFiles(studyId) {

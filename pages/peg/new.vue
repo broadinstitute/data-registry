@@ -96,6 +96,32 @@ const pegMatrixInput = ref(null);
 const pegMetadataInput = ref(null);
 
 const submitting = ref(false);
+const validating = ref(false);
+const validationReport = ref(null);
+
+const canValidate = computed(() => !!(pegListFile.value && pegMatrixFile.value && pegMetadataFile.value));
+
+const pegFiles = () => ({
+  list: pegListFile.value,
+  matrix: pegMatrixFile.value,
+  metadata: pegMetadataFile.value,
+});
+
+// Any file change invalidates the last report.
+watch([pegListFile, pegMatrixFile, pegMetadataFile], () => { validationReport.value = null; });
+
+const handleValidateFiles = async () => {
+  if (!canValidate.value) return;
+  validating.value = true;
+  try {
+    validationReport.value = await store.validatePEGFiles(pegFiles());
+  } catch (error) {
+    handleUploadError(error, 'PEG');
+  } finally {
+    validating.value = false;
+  }
+};
+
 const activeAccordionIndex = ref(0);
 
 const isMetadataValid = computed(() => {
@@ -206,6 +232,14 @@ const handleSubmitStudy = async () => {
   let createdStudyId = null;
 
   try {
+    // Validate first so no study is created for a submission that cannot be stored.
+    const report = await store.validatePEGFiles(pegFiles());
+    validationReport.value = report;
+    if (report.status === 'error') {
+      activeAccordionIndex.value = 2;
+      return;
+    }
+
     const metadata = {
       name: values.name,
       metadata: {
@@ -225,25 +259,12 @@ const handleSubmitStudy = async () => {
     createdStudyId = response.id;
 
     try {
-      await store.uploadPEGList(createdStudyId, pegListFile.value);
+      const result = await store.uploadPEGFiles(createdStudyId, pegFiles());
+      validationReport.value = result.report;
     } catch (error) {
-      handleUploadError(error, 'PEG List');
-      await rollbackStudy(createdStudyId);
-      return;
-    }
-
-    try {
-      await store.uploadPEGMatrix(createdStudyId, pegMatrixFile.value);
-    } catch (error) {
-      handleUploadError(error, 'PEG Matrix');
-      await rollbackStudy(createdStudyId);
-      return;
-    }
-
-    try {
-      await store.uploadPEGMetadata(createdStudyId, pegMetadataFile.value);
-    } catch (error) {
-      handleUploadError(error, 'PEG Metadata');
+      const report = error.response?.data?.report;
+      if (report) validationReport.value = report;
+      handleUploadError(error, 'PEG');
       await rollbackStudy(createdStudyId);
       return;
     }
@@ -278,9 +299,12 @@ const rollbackStudy = async (studyId) => {
 
 const handleUploadError = (error, fileType) => {
   store.processing = false;
-  let errorMessage = `Failed to upload ${fileType} file`;
-  if (error.status === 400 || error.response?.status === 400) {
-    const errorData = error.data || error.response?.data;
+  let errorMessage = `Failed to upload ${fileType} files`;
+  const status = error.status || error.response?.status;
+  const errorData = error.data || error.response?.data;
+  if (status === 422 && errorData?.report) {
+    errorMessage = 'Your files did not pass validation. See the report below.';
+  } else if (status === 400) {
     if (typeof errorData === 'string') errorMessage = errorData;
     else if (errorData?.detail) errorMessage = errorData.detail;
     else if (errorData?.message) errorMessage = errorData.message;
@@ -656,6 +680,8 @@ const handleCancel = () => {
               </a>
             </p>
 
+            <PEGValidationReport v-if="validationReport" :report="validationReport" class="mb-4" />
+
             <!-- PEG List Upload -->
             <div class="field">
               <label for="peg-list">PEG List (TSV)</label>
@@ -757,6 +783,14 @@ const handleCancel = () => {
                 @click="handleCancel"
                 class="p-button-secondary p-button-outlined"
                 :disabled="submitting"
+              />
+              <Button
+                label="Validate files"
+                icon="bi-clipboard-check"
+                @click="handleValidateFiles"
+                :loading="validating"
+                :disabled="!canValidate || submitting"
+                class="p-button-secondary"
               />
               <Button
                 label="Submit Study"
