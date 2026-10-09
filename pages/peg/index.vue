@@ -114,7 +114,7 @@ const downloadStudy = async (study) => {
             </template>
           </Column>
 
-          <Column field="metadata.study_author" header="Author" sortable>
+          <Column field="metadata.study_author" header="Study Author" sortable>
             <template #body="{ data }">
               {{ data.metadata?.study_author || '-' }}
             </template>
